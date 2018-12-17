@@ -1,32 +1,30 @@
 import * as crypto from 'crypto';
-// Actions
 
 type FieldTypes = 'string' | 'boolean' | 'number';
 
-type ActionName = 'New' | 'Rename' | 'Required' | 'Optional' | 'Delete' |
-  'SetDefault' | 'RemoveDefault' | 'UpdateDescription' | 'Add' | 'Reference';
+type FieldDefaults = string | boolean | number;
+
+type Hash = string | null;
 
 class Action {
-  action: ActionName;
   changeLog: string;
-  hash: string;
+  hash: string | null;
 
-  constructor(action: ActionName, changeLog: string, hash: string) {
-    this.action = action;
+  constructor(changeLog: string, hash: string | null) {
     this.changeLog = changeLog;
     this.hash = hash;
   }
 
   fieldsToHash(): string {
-    return `${this.action}_${this.changeLog}`;
+    return `${this.changeLog}`;
   };
 }
 
 export class NewAction extends Action {
   name: string;
 
-  constructor(changeLog: string, hash: string, name: string) {
-    super('New', changeLog, hash);
+  constructor(changeLog: string, hash: string | null, name: string) {
+    super(changeLog, hash);
     this.name = name;
   }
 
@@ -39,8 +37,8 @@ export class RenameAction extends Action {
   _from: string;
   to: string;
 
-  constructor(changeLog: string, hash: string, _from: string, to: string) {
-    super('Rename', changeLog, hash);
+  constructor(changeLog: string, hash: string | null, _from: string, to: string) {
+    super(changeLog, hash);
     this._from = _from;
     this.to = to;
   }
@@ -49,8 +47,8 @@ export class RenameAction extends Action {
 export class RequiredAction extends Action {
   name: string;
 
-  constructor(changeLog: string, hash: string, name: string) {
-    super('Required', changeLog, hash);
+  constructor(changeLog: string, hash: string | null, name: string) {
+    super(changeLog, hash);
     this.name = name;
   }
 
@@ -62,8 +60,8 @@ export class RequiredAction extends Action {
 export class OptionalAction extends Action {
   name: string;
 
-  constructor(changeLog: string, hash: string, name: string) {
-    super('Optional', changeLog, hash);
+  constructor(changeLog: string, hash: string | null, name: string) {
+    super(changeLog, hash);
     this.name = name;
   }
 
@@ -75,8 +73,8 @@ export class OptionalAction extends Action {
 export class DeleteAction extends Action {
   name: string;
 
-  constructor(changeLog: string, hash: string, name: string) {
-    super('Delete', changeLog, hash);
+  constructor(changeLog: string, hash: string | null, name: string) {
+    super(changeLog, hash);
     this.name = name;
   }
 
@@ -87,10 +85,10 @@ export class DeleteAction extends Action {
 
 export class SetDefaultAction extends Action {
   name: string;
-  _default: string | boolean | number;
+  _default: FieldDefaults;
 
-  constructor(changeLog: string, hash: string, name: string, _default: string | boolean | number) {
-    super('SetDefault', changeLog, hash);
+  constructor(changeLog: string, hash: string | null, name: string, _default: FieldDefaults) {
+    super(changeLog, hash);
     this.name = name;
     this._default = _default;
   }
@@ -103,8 +101,8 @@ export class SetDefaultAction extends Action {
 export class RemoveDefaultAction extends Action {
   name: string;
 
-  constructor(changeLog: string, hash: string, name: string) {
-    super('RemoveDefault', changeLog, hash);
+  constructor(changeLog: string, hash: string | null, name: string) {
+    super(changeLog, hash);
     this.name = name;
   }
 
@@ -118,13 +116,13 @@ export class AddAction extends Action {
   type: FieldTypes;
   description: string;
   optional: boolean;
-  _default: string | boolean | number;
+  _default: FieldDefaults | null;
 
   constructor(
-    changeLog: string, hash: string, name: string, type: FieldTypes,
-    description: string, optional: boolean, _default: string | boolean | number
+    changeLog: string, hash: string | null, name: string, type: FieldTypes,
+    description: string, optional: boolean, _default: FieldDefaults | null
   ) {
-    super('Add', changeLog, hash);
+    super(changeLog, hash);
     this.name = name;
     this.type = type;
     this.description = description;
@@ -141,8 +139,8 @@ export class UpdateDescriptionAction extends Action {
   name: string;
   description: string;
 
-  constructor(changeLog: string, hash: string, name: string, description: string) {
-    super('UpdateDescription', changeLog, hash);
+  constructor(changeLog: string, hash: string | null, name: string, description: string) {
+    super(changeLog, hash);
     this.name = name;
     this.description = description;
   }
@@ -156,10 +154,10 @@ export class ReferenceAction extends Action {
   referenceHash: string;
 
   constructor(
-    changeLog: string, hash: string, name: string, description: string,
+    changeLog: string, hash: string | null, name: string, description: string,
     optional: boolean, referenceType: string, referenceHash: string
   ) {
-    super('Reference', changeLog, hash);
+    super(changeLog, hash);
     this.name = name;
     this.description = description;
     this.optional = optional;
@@ -173,11 +171,11 @@ export class ReferenceAction extends Action {
 }
 // services
 
-function service(name) {
+function service(name: string) {
 
 }
 
-function hashAction(action: Action, previous: string) {
+function hashAction(action: Action, previous: string | null) {
   const hash = crypto.createHash('sha256');
 
   if (previous !== null) {
@@ -187,22 +185,29 @@ function hashAction(action: Action, previous: string) {
   const fieldsToHash = action.fieldsToHash();
   hash.update(fieldsToHash);
 
-  return hash.digest('base64');
+  return hash.digest('hex');
 }
 
 /*
 Take a list of types and services and verify the types and generate any empty
 types.
  */
-export function hash(types: Array<Array<Action>>, services: any) {
-  const newHashes = [];
+export function hashTypes(
+  types: Array<Array<Action>>,
+  services: any
+): Array<Array<[number, string]>> {
+  const hashedTypes: Array<Array<[number, string]>> = [];
   for (const type of types) {
+    const newHashes: Array<[number, string]> = [];
     const first = type[0];
-    if (first.action !== 'New') {
+    if (!(first instanceof NewAction)) {
       throw new Error(`Type must start with a NewAction element ${first}`);
     }
     let previousHash = hashAction(first, null);
-    if (previousHash !== first.hash) {
+    if (first.hash === null) {
+      newHashes.push([0, previousHash]);
+    }
+    if (first.hash !== null && previousHash !== first.hash) {
       throw new Error(`Invalid hash at item ${0} ${first}, did you change something?`)
     }
     let createHashes = false;
@@ -214,7 +219,7 @@ export function hash(types: Array<Array<Action>>, services: any) {
           throw new Error(`Hash entered when there were previous items without hashes index: ${n} action: ${action}`);
         }
         previousHash = hashAction(action, previousHash);
-        newHashes.push([n, hashAction(action, previousHash)]);
+        newHashes.push([n, previousHash]);
       } else {
         if (action.hash === null) {
           previousHash = hashAction(action, previousHash);
@@ -229,41 +234,74 @@ export function hash(types: Array<Array<Action>>, services: any) {
         }
       }
     }
+
+    hashedTypes.push(newHashes);
   }
 
-  return newHashes;
+  return hashedTypes;
 }
 
-export class Field {
+export class BaseField {
   name: string;
-  type: FieldTypes;
   changeLog: string;
   description: string;
   optional: boolean;
-  _default: number | boolean | string;
 
   constructor(
     name: string,
-    type: FieldTypes,
     changeLog: string,
     description: string,
     optional: boolean,
-    _default: number | boolean | string
   ) {
     this.name = name;
-    this.type = type;
     this.changeLog = changeLog;
     this.description = description;
     this.optional = optional;
-    this._default = _default;
+  }
+
+  fieldType(): string {
+    throw new Error("Not implemented");
+  }
+
+  copy(): BaseField {
+    throw new Error("Not implemented");
   }
 }
 
-export class ReferenceField {
-  name: string;
-  changeLog: string;
-  description: string;
-  optional: boolean;
+export class Field extends BaseField {
+  type: FieldTypes;
+  _default: FieldDefaults | null;
+
+  constructor(
+    name: string,
+    changeLog: string,
+    description: string,
+    optional: boolean,
+    type: FieldTypes,
+    _default: FieldDefaults | null
+  ) {
+    super(name, changeLog, description, optional);
+    this.type = type;
+    this._default = _default;
+  }
+
+  copy(): Field {
+    return new Field(
+      this.name,
+      this.changeLog,
+      this.description,
+      this.optional,
+      this.type,
+      this._default
+    );
+  }
+
+  fieldType(): string {
+    return this.type;
+  }
+}
+
+export class ReferenceField extends BaseField {
   referenceType: string;
   referenceHash: string;
 
@@ -275,22 +313,36 @@ export class ReferenceField {
     referenceType: string,
     referenceHash: string
   ) {
-    this.name = name;
-    this.changeLog = changeLog;
-    this.description = description;
-    this.optional = optional;
+    super(name, changeLog, description, optional);
     this.referenceType = referenceType;
     this.referenceHash = referenceHash;
   }
+
+  copy() {
+    return new ReferenceField(
+      this.name,
+      this.changeLog,
+      this.description,
+      this.optional,
+      this.referenceType,
+      this.referenceHash
+    );
+  }
+
+  fieldType() {
+    return `${this.referenceType}.h_${this.referenceHash}`;
+  }
 }
 
-export class Version {
-  name: string;
-  hash: string;
-  fields: {};
+type FieldObject = {
+  [key: string]: BaseField;
+};
 
-  constructor(name: string, hash: string, fields: Array<Field>) {
-    this.name = name;
+export class Version {
+  hash: string | null;
+  fields: FieldObject;
+
+  constructor(hash: string | null, fields: FieldObject) {
     this.hash = hash;
     this.fields = fields;
   }
@@ -305,10 +357,11 @@ export class Type {
     this.versions = [];
   }
 }
+
 /*
 Generate types and services (and verify).
  */
-export function generateTypes(types: any, services: any): Type[] {
+export function generateTypes(types: Array<Array<Action>>, services: any): Type[] {
   const generatedTypes = [];
   for (const type of types) {
     const versions = [];
@@ -319,8 +372,8 @@ export function generateTypes(types: any, services: any): Type[] {
       }
     }
 
-    const first = type[0];
-    if (first.action !== 'New') {
+    const first = (<NewAction>type[0]);
+    if (!(first instanceof NewAction)) {
       throw new Error(`Type must start with a NewAction element ${first}`);
     }
     let previousHash = hashAction(first, null);
@@ -344,55 +397,69 @@ export function generateTypes(types: any, services: any): Type[] {
 
     for (let n = 1; n < type.length; n++) {
       let action = type[n];
-      const newVersion = {...previousVersion};
-      const newFields = {...newVersion.fields};
-      newVersion.fields = newFields;
-      const currentField = newVersion.fields.get(action.name);
+      const newVersion = new Version(action.hash, {});
+      if (previousVersion) {
+        newVersion.fields = {...previousVersion.fields}
+      }
 
       if (action instanceof RenameAction) {
-        const newField = {...currentField};
+        const currentField = newVersion.fields[action._from];
+        const newField = currentField.copy();
         newField.name = action.to;
         newField.changeLog = action.changeLog;
-        delete newFields[newField.from];
-        newFields[newField.name] = newField;
+        delete newVersion.fields[action._from];
+        newVersion.fields[action.to] = newField;
       } else if (action instanceof RequiredAction) {
-        const newField = {...currentField};
+        const currentField = newVersion.fields[action.name];
+        const newField = currentField.copy();
         newField.optional = false;
         newField.changeLog = action.changeLog;
-        newFields[newField.name] = newField;
+        newVersion.fields[newField.name] = newField;
       } else if (action instanceof OptionalAction) {
-        const newField = {...currentField};
+        const currentField = newVersion.fields[action.name];
+        const newField = currentField.copy();
         newField.optional = true;
         newField.changeLog = action.changeLog;
-        newFields[newField.name] = newField;
+        newVersion.fields[newField.name] = newField;
       } else if (action instanceof DeleteAction) {
-        delete newFields[currentField.name];
+        const currentField = newVersion.fields[action.name];
+        const newField = currentField.copy();
+        delete newVersion.fields[currentField.name];
       } else if (action instanceof SetDefaultAction) {
-        const newField = {...currentField};
-        newField._default = action._default;
+        const currentField = newVersion.fields[action.name];
+        const newField = currentField.copy();
+        if (newField instanceof Field) {
+          newField._default = action._default;
+        }
         newField.changeLog = action.changeLog;
-        newFields[newField.name] = newField;
+        newVersion.fields[newField.name] = newField;
       } else if (action instanceof RemoveDefaultAction) {
-        const newField = {...currentField};
-        newField._default = null;
+        const currentField = newVersion.fields[action.name];
+        const newField = currentField.copy();
+        if (newField instanceof Field) {
+          newField._default = null;
+        }
         newField.changeLog = action.changeLog;
-        newFields[newField.name] = newField;
+        newVersion.fields[newField.name] = newField;
       } else if (action instanceof AddAction) {
+        const currentField = newVersion.fields[action.name];
         const newField = new Field(
           action.name,
-          action.type,
           action.changeLog,
           action.description,
           action.optional,
+          action.type,
           action._default
         );
-        newFields[newField.name] = newField;
+        newVersion.fields[newField.name] = newField;
       } else if (action instanceof UpdateDescriptionAction) {
-        const newField = {...currentField};
+        const currentField = newVersion.fields[action.name];
+        const newField = currentField.copy();
         newField.description = action.description;
         newField.changeLog = action.changeLog;
-        newFields[newField.name] = newField;
+        newVersion.fields[newField.name] = newField;
       } else if (action instanceof ReferenceAction) {
+        const currentField = newVersion.fields[action.name];
         const newField = new ReferenceField(
           action.name,
           action.changeLog,
@@ -401,7 +468,7 @@ export function generateTypes(types: any, services: any): Type[] {
           action.referenceType,
           action.referenceHash
         );
-        newFields[newField.name] = newField;
+        newVersion.fields[newField.name] = newField;
       }
 
       newType.versions.push(newVersion);
@@ -414,13 +481,84 @@ export function generateTypes(types: any, services: any): Type[] {
 }
 
 export function generateTypescript(types: Type[]) {
+  const generatedTypes = [];
+  for (const type of types) {
+    // load imports.
+    const imports = new Set();
+    const generatedVersions = [];
 
+    for (const i in type.versions) {
+      const version = type.versions[i];
 
-  const fileTemplate = `
+      // Load fields
+      const fields = [];
+      const constructorAssignments = [];
+      const constructorFields = [];
 
-  
-  
-  
-  
-`
+      for (const field of Object.values(version.fields)) {
+        const generatedField = `readonly ${field.name}: ${field.fieldType()};`;
+        fields.push(generatedField);
+        if (field instanceof Field && field._default) {
+          let formattedDefault = field._default;
+          if (field.fieldType() === 'string') {
+            formattedDefault = `"${field._default}"`;
+          }
+          const constructorField = `this.${field.name} = ${field.name} || ${formattedDefault};`;
+          constructorAssignments.push(constructorField);
+          constructorFields.push(`${field.name}: ${field.fieldType()} | null`);
+        } else {
+          const constructorField = `this.${field.name} = ${field.name};`;
+          constructorAssignments.push(constructorField);
+          constructorFields.push(`${field.name}: ${field.fieldType()}`);
+        }
+        if (field instanceof ReferenceField) {
+          imports.add(field.referenceType);
+        }
+      }
+
+      const generatedVersion = `export class H_${version.hash}() {
+  ${fields.join("\n  ")}
+
+  constructor(${constructorFields.join(', ')}) {
+    ${constructorAssignments.join('\n    ')}
+  }
 }
+
+export type V_${i} = H_${version.hash};`;
+
+      generatedVersions.push(generatedVersion);
+    }
+    const generatedImports = [];
+    for (const imp of imports) {
+      generatedImports.push(`import * as ${imp} from './${imp}';`);
+    }
+    generatedTypes.push(
+      [
+        type,
+        (generatedImports.length > 0 ? generatedImports.join('\n') + '\n\n': "") + generatedVersions.join('\n\n')
+      ]
+    );
+  }
+
+  return generatedTypes;
+}
+
+export function addHashes(
+  unhashedType: Action[],
+  hashes: Array<[number, string]>
+) {
+  const hashed = unhashedType.slice();
+  for (let i = hashes[0][0]; i < unhashedType.length; i++) {
+    const hash = hashes[i][1];
+    const action = unhashedType[i];
+    const newAction = Object.assign(
+      Object.create(Object.getPrototypeOf(action)),
+      action
+    );
+    newAction.hash = hash
+    hashed[i] = newAction;
+  }
+
+  return hashed;
+}
+

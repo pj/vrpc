@@ -1,0 +1,73 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Add a field 1`] = `
+"export class H_4d4811a080c4836894870539238817298cdd65b74ee6971448292d13e182c5d1() {
+  readonly test_field: string;
+
+  constructor(test_field: string) {
+    this.test_field = test_field;
+  }
+}
+
+export type V_0 = H_4d4811a080c4836894870539238817298cdd65b74ee6971448292d13e182c5d1;"
+`;
+
+exports[`Add a field with a default value 1`] = `
+"export class H_86521d2dadb97b4b9031cf5ec3ab5e317e40742fb3399b8785374496331f553d() {
+  readonly test_field: string;
+
+  constructor(test_field: string | null) {
+    this.test_field = test_field || \\"A value\\";
+  }
+}
+
+export type V_0 = H_86521d2dadb97b4b9031cf5ec3ab5e317e40742fb3399b8785374496331f553d;"
+`;
+
+exports[`Multiple types with type reference 1`] = `
+"export class H_4d4811a080c4836894870539238817298cdd65b74ee6971448292d13e182c5d1() {
+  readonly test_field: string;
+
+  constructor(test_field: string) {
+    this.test_field = test_field;
+  }
+}
+
+export type V_0 = H_4d4811a080c4836894870539238817298cdd65b74ee6971448292d13e182c5d1;"
+`;
+
+exports[`Multiple types with type reference 2`] = `
+"import * as Test from './Test';
+
+export class H_cd720515143f85d0e2a57782d79f22b64ed413ad029320c1f9dde25d7b6e3e99() {
+  readonly test_field2: Test.h_4d4811a080c4836894870539238817298cdd65b74ee6971448292d13e182c5d1;
+
+  constructor(test_field2: Test.h_4d4811a080c4836894870539238817298cdd65b74ee6971448292d13e182c5d1) {
+    this.test_field2 = test_field2;
+  }
+}
+
+export type V_0 = H_cd720515143f85d0e2a57782d79f22b64ed413ad029320c1f9dde25d7b6e3e99;"
+`;
+
+exports[`Rename a field 1`] = `
+"export class H_86521d2dadb97b4b9031cf5ec3ab5e317e40742fb3399b8785374496331f553d() {
+  readonly test_field: string;
+
+  constructor(test_field: string | null) {
+    this.test_field = test_field || \\"A value\\";
+  }
+}
+
+export type V_0 = H_86521d2dadb97b4b9031cf5ec3ab5e317e40742fb3399b8785374496331f553d;
+
+export class H_b13e50a74a5ccb0ee47900a6ccdfeec4b34e23d03c6e9de3045c464a6ecf44be() {
+  readonly renamed_field: string;
+
+  constructor(renamed_field: string | null) {
+    this.renamed_field = renamed_field || \\"A value\\";
+  }
+}
+
+export type V_1 = H_b13e50a74a5ccb0ee47900a6ccdfeec4b34e23d03c6e9de3045c464a6ecf44be;"
+`;
