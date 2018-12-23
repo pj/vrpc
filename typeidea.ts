@@ -1,4 +1,15 @@
 import * as crypto from 'crypto';
+import {compile} from 'ejs';
+import * as fs from 'fs';
+import * as prettier from 'prettier';
+
+const typescriptTypeFile = fs.readFileSync(
+  './templates/typescript.ejs',
+  {
+    encoding: "utf8",
+  }
+);
+const typescriptTypeTemplate = compile(typescriptTypeFile);
 
 type FieldTypes = 'string' | 'boolean' | 'number';
 
@@ -297,7 +308,17 @@ export class Field extends BaseField {
   }
 
   fieldType(): string {
-    return this.type;
+    return this.type + (this.optional ? " | null" : "");
+  }
+
+  formattedDefault(): string {
+    if (!this._default) {
+      return "";
+    }
+    if (this.type === 'string') {
+      return `"${this._default}"`;
+    }
+    return "" + this._default;
   }
 }
 
@@ -331,6 +352,10 @@ export class ReferenceField extends BaseField {
 
   fieldType() {
     return `${this.referenceType}.h_${this.referenceHash}`;
+  }
+
+  formattedDefault(): string {
+    return "";
   }
 }
 
@@ -481,66 +506,83 @@ export function generateTypes(types: Array<Array<Action>>, services: any): Type[
 }
 
 export function generateTypescript(types: Type[]) {
-  const generatedTypes = [];
-  for (const type of types) {
+//  const generatedTypes = [];
+//  for (const type of types) {
+//    // load imports.
+//    const imports = new Set();
+//    const generatedVersions = [];
+//
+//    for (const i in type.versions) {
+//      const version = type.versions[i];
+//
+//      // Load fields
+//      const fields = [];
+//      const constructorAssignments = [];
+//      const constructorFields = [];
+//
+//      for (const field of Object.values(version.fields)) {
+//        const generatedField = `readonly ${field.name}: ${field.fieldType()};`;
+//        fields.push(generatedField);
+//        if (field instanceof Field && field._default) {
+//          let formattedDefault = field._default;
+//          if (field.fieldType() === 'string') {
+//            formattedDefault = `"${field._default}"`;
+//          }
+//          const constructorField = `this.${field.name} = ${field.name} || ${formattedDefault};`;
+//          constructorAssignments.push(constructorField);
+//          constructorFields.push(`${field.name}: ${field.fieldType()} | null`);
+//        } else {
+//          const constructorField = `this.${field.name} = ${field.name};`;
+//          constructorAssignments.push(constructorField);
+//          constructorFields.push(`${field.name}: ${field.fieldType()}`);
+//        }
+//        if (field instanceof ReferenceField) {
+//          imports.add(field.referenceType);
+//        }
+//      }
+//
+//      const generatedVersion = `export class H_${version.hash}() {
+//  ${fields.join("\n  ")}
+//
+//  constructor(${constructorFields.join(', ')}) {
+//    ${constructorAssignments.join('\n    ')}
+//  }
+//}
+//
+//export type V_${i} = H_${version.hash};`;
+//
+//      generatedVersions.push(generatedVersion);
+//    }
+//    const generatedImports = [];
+//    for (const imp of imports) {
+//      generatedImports.push(`import * as ${imp} from './${imp}';`);
+//    }
+//    generatedTypes.push(
+//      [
+//        type,
+//        (generatedImports.length > 0 ? generatedImports.join('\n') + '\n\n': "") + generatedVersions.join('\n\n')
+//      ]
+//    );
+//  }
+//
+//  return generatedTypes;
+
+  return types.map((_type) => {
     // load imports.
     const imports = new Set();
-    const generatedVersions = [];
-
-    for (const i in type.versions) {
-      const version = type.versions[i];
-
-      // Load fields
-      const fields = [];
-      const constructorAssignments = [];
-      const constructorFields = [];
-
+    for (const version of _type.versions) {
       for (const field of Object.values(version.fields)) {
-        const generatedField = `readonly ${field.name}: ${field.fieldType()};`;
-        fields.push(generatedField);
-        if (field instanceof Field && field._default) {
-          let formattedDefault = field._default;
-          if (field.fieldType() === 'string') {
-            formattedDefault = `"${field._default}"`;
-          }
-          const constructorField = `this.${field.name} = ${field.name} || ${formattedDefault};`;
-          constructorAssignments.push(constructorField);
-          constructorFields.push(`${field.name}: ${field.fieldType()} | null`);
-        } else {
-          const constructorField = `this.${field.name} = ${field.name};`;
-          constructorAssignments.push(constructorField);
-          constructorFields.push(`${field.name}: ${field.fieldType()}`);
-        }
         if (field instanceof ReferenceField) {
           imports.add(field.referenceType);
         }
       }
-
-      const generatedVersion = `export class H_${version.hash}() {
-  ${fields.join("\n  ")}
-
-  constructor(${constructorFields.join(', ')}) {
-    ${constructorAssignments.join('\n    ')}
-  }
-}
-
-export type V_${i} = H_${version.hash};`;
-
-      generatedVersions.push(generatedVersion);
     }
-    const generatedImports = [];
-    for (const imp of imports) {
-      generatedImports.push(`import * as ${imp} from './${imp}';`);
-    }
-    generatedTypes.push(
-      [
-        type,
-        (generatedImports.length > 0 ? generatedImports.join('\n') + '\n\n': "") + generatedVersions.join('\n\n')
-      ]
-    );
+    return [
+      _type,
+      prettier.format(typescriptTypeTemplate({versions: _type.versions, imports: imports}), { parser: 'typescript' })
+    ];
   }
-
-  return generatedTypes;
+  );
 }
 
 export function addHashes(
