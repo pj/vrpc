@@ -104,64 +104,6 @@ it('Changing a hash makes hashing invalid', () => {
   }).toThrow(/Invalid hash at item \d+ .*, did you change something\?/);
 });
 
-it('Add a field', () => {
-  const addField = [
-    new typeidea.NewAction(
-      'Creating a new type',
-      null,
-      'Test'
-    ),
-    new typeidea.AddAction(
-      'Adding a field',
-      null,
-      'test_field',
-      'string',
-      'A field that helps testing',
-      true,
-      null
-    )
-  ];
-
-  const hashes = typeidea.hashTypes([addField], []);
-  const hashedAddField = typeidea.addHashes(addField, hashes[0]);
-
-  const types = typeidea.generateTypes([hashedAddField], []);
-  expect(types).toHaveLength(1);
-  const typescript = typeidea.generateTypescript(types);
-  //console.log(typescript);
-
-  expect(typescript[0][1]).toMatchSnapshot();
-});
-
-it('Add a field with a default value', () => {
-  const addField = [
-    new typeidea.NewAction(
-      'Creating a new type',
-      null,
-      'Test'
-    ),
-    new typeidea.AddAction(
-      'Adding a field',
-      null,
-      'test_field',
-      'string',
-      'A field that helps testing',
-      true,
-      'A value'
-    )
-  ];
-
-  const hashes = typeidea.hashTypes([addField], []);
-  const hashedAddField = typeidea.addHashes(addField, hashes[0]);
-
-  const types = typeidea.generateTypes([hashedAddField], []);
-  expect(types).toHaveLength(1);
-  const typescript = typeidea.generateTypescript(types);
-  //console.log(typescript);
-
-  expect(typescript[0][1]).toMatchSnapshot();
-});
-
 it('Multiple types with type reference', () => {
   const addField = [
     new typeidea.NewAction(
@@ -212,36 +154,25 @@ it('Multiple types with type reference', () => {
   expect(typescript[1][1]).toMatchSnapshot();
 });
 
-it('Rename a field', () => {
-  const addField = [
-    new typeidea.NewAction(
-      'Creating a new type',
-      null,
-      'Test'
-    ),
-    new typeidea.AddAction(
-      'Adding a field',
-      null,
-      'test_field',
-      'string',
-      'A field that helps testing',
-      true,
-      'A value'
-    ),
-    new typeidea.RenameAction(
-      'Renaming a field',
-      null,
-      'test_field',
-      'renamed_field'
-    )
-  ];
+const json_snapshot_tests = [
+  ['Add a field', './tests/add_field.json'],
+  ['Add a field with a default value', './tests/add_field_with_default_value.json'],
+  ['Rename a field', './tests/rename_field.json'],
+  ['Make a field optional', './tests/optional_field.json'],
+  ['Delete a field', './tests/delete_field.json'],
+];
 
-  const hashes = typeidea.hashTypes([addField], []);
-  const hashedAddField = typeidea.addHashes(addField, hashes[0]);
+for (const [name, path] of json_snapshot_tests) {
+  it(name, () => {
+    const addField = typeidea.loadActions(path);
 
-  const types = typeidea.generateTypes([hashedAddField], []);
-  const typescript = typeidea.generateTypescript(types);
+    const hashes = typeidea.hashTypes(addField, []);
+    const hashedAddField = typeidea.addHashes(addField[0], hashes[0]);
 
-  expect(typescript[0][1]).toMatchSnapshot();
-});
+    const types = typeidea.generateTypes([hashedAddField], []);
+    const typescript = typeidea.generateTypescript(types);
+
+    expect(typescript[0][1]).toMatchSnapshot();
+  });
+}
 

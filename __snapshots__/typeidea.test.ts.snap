@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Add a field 1`] = `
-"export class H_4d4811a080c4836894870539238817298cdd65b74ee6971448292d13e182c5d1 {
+"export class H_b0454866573235dea6946475288c49c7f4640d2dd564b6fc23a6c02810e839d8 {
   readonly test_field: string | null;
 
   constructor(test_field: string | null) {
@@ -9,12 +9,12 @@ exports[`Add a field 1`] = `
   }
 }
 
-export type V_0 = H_4d4811a080c4836894870539238817298cdd65b74ee6971448292d13e182c5d1;
+export type V_0 = H_b0454866573235dea6946475288c49c7f4640d2dd564b6fc23a6c02810e839d8;
 "
 `;
 
 exports[`Add a field with a default value 1`] = `
-"export class H_86521d2dadb97b4b9031cf5ec3ab5e317e40742fb3399b8785374496331f553d {
+"export class H_720b8a1ccf05f41bae7dead753ce6227f6a82bef2a0ab487afa53be67f8b2198 {
   readonly test_field: string | null;
 
   constructor(test_field: string | null) {
@@ -22,7 +22,67 @@ exports[`Add a field with a default value 1`] = `
   }
 }
 
-export type V_0 = H_86521d2dadb97b4b9031cf5ec3ab5e317e40742fb3399b8785374496331f553d;
+export type V_0 = H_720b8a1ccf05f41bae7dead753ce6227f6a82bef2a0ab487afa53be67f8b2198;
+"
+`;
+
+exports[`Delete a field 1`] = `
+"export class H_b0454866573235dea6946475288c49c7f4640d2dd564b6fc23a6c02810e839d8 {
+  readonly test_field: string | null;
+
+  constructor(test_field: string | null) {
+    this.test_field = test_field;
+  }
+}
+
+export type V_0 = H_b0454866573235dea6946475288c49c7f4640d2dd564b6fc23a6c02810e839d8;
+
+export class H_246b5befe2b4d210fa3812e0d2bd5cc082332c770b7d83511bb45276db301d98 {
+  readonly test_field: string | null;
+
+  readonly test_field2: string;
+
+  constructor(test_field: string | null, test_field2: string) {
+    this.test_field = test_field;
+
+    this.test_field2 = test_field2 || \\"blah\\";
+  }
+}
+
+export type V_1 = H_246b5befe2b4d210fa3812e0d2bd5cc082332c770b7d83511bb45276db301d98;
+
+export class H_6f32904a63ccb14a73c3324622e4e739d17587c9b4a1c44f411850e164c4ef2c {
+  readonly test_field: string | null;
+
+  constructor(test_field: string | null) {
+    this.test_field = test_field;
+  }
+}
+
+export type V_2 = H_6f32904a63ccb14a73c3324622e4e739d17587c9b4a1c44f411850e164c4ef2c;
+"
+`;
+
+exports[`Make a field optional 1`] = `
+"export class H_94734beb843b03c23ee234e546a569b0a76a9ce620570682f35c5cbe873e330b {
+  readonly test_field: string;
+
+  constructor(test_field: string) {
+    this.test_field = test_field;
+  }
+}
+
+export type V_0 = H_94734beb843b03c23ee234e546a569b0a76a9ce620570682f35c5cbe873e330b;
+
+export class H_e4714969dd9f0b8a1b17aa2767b27276ee9866cd6f732d97b4057658da84e3f1 {
+  readonly test_field: string | null;
+
+  constructor(test_field: string | null) {
+    this.test_field = test_field;
+  }
+}
+
+export type V_1 = H_e4714969dd9f0b8a1b17aa2767b27276ee9866cd6f732d97b4057658da84e3f1;
 "
 `;
 
@@ -57,7 +117,7 @@ export type V_0 = H_cd720515143f85d0e2a57782d79f22b64ed413ad029320c1f9dde25d7b6e
 `;
 
 exports[`Rename a field 1`] = `
-"export class H_86521d2dadb97b4b9031cf5ec3ab5e317e40742fb3399b8785374496331f553d {
+"export class H_720b8a1ccf05f41bae7dead753ce6227f6a82bef2a0ab487afa53be67f8b2198 {
   readonly test_field: string | null;
 
   constructor(test_field: string | null) {
@@ -65,9 +125,9 @@ exports[`Rename a field 1`] = `
   }
 }
 
-export type V_0 = H_86521d2dadb97b4b9031cf5ec3ab5e317e40742fb3399b8785374496331f553d;
+export type V_0 = H_720b8a1ccf05f41bae7dead753ce6227f6a82bef2a0ab487afa53be67f8b2198;
 
-export class H_b13e50a74a5ccb0ee47900a6ccdfeec4b34e23d03c6e9de3045c464a6ecf44be {
+export class H_9bc74507c3f1d1f92952b91a04397d3308b80dc867154de12ec0d2f45d6c6c79 {
   readonly renamed_field: string | null;
 
   constructor(renamed_field: string | null) {
@@ -75,6 +135,6 @@ export class H_b13e50a74a5ccb0ee47900a6ccdfeec4b34e23d03c6e9de3045c464a6ecf44be 
   }
 }
 
-export type V_1 = H_b13e50a74a5ccb0ee47900a6ccdfeec4b34e23d03c6e9de3045c464a6ecf44be;
+export type V_1 = H_9bc74507c3f1d1f92952b91a04397d3308b80dc867154de12ec0d2f45d6c6c79;
 "
 `;

@@ -506,67 +506,6 @@ export function generateTypes(types: Array<Array<Action>>, services: any): Type[
 }
 
 export function generateTypescript(types: Type[]) {
-//  const generatedTypes = [];
-//  for (const type of types) {
-//    // load imports.
-//    const imports = new Set();
-//    const generatedVersions = [];
-//
-//    for (const i in type.versions) {
-//      const version = type.versions[i];
-//
-//      // Load fields
-//      const fields = [];
-//      const constructorAssignments = [];
-//      const constructorFields = [];
-//
-//      for (const field of Object.values(version.fields)) {
-//        const generatedField = `readonly ${field.name}: ${field.fieldType()};`;
-//        fields.push(generatedField);
-//        if (field instanceof Field && field._default) {
-//          let formattedDefault = field._default;
-//          if (field.fieldType() === 'string') {
-//            formattedDefault = `"${field._default}"`;
-//          }
-//          const constructorField = `this.${field.name} = ${field.name} || ${formattedDefault};`;
-//          constructorAssignments.push(constructorField);
-//          constructorFields.push(`${field.name}: ${field.fieldType()} | null`);
-//        } else {
-//          const constructorField = `this.${field.name} = ${field.name};`;
-//          constructorAssignments.push(constructorField);
-//          constructorFields.push(`${field.name}: ${field.fieldType()}`);
-//        }
-//        if (field instanceof ReferenceField) {
-//          imports.add(field.referenceType);
-//        }
-//      }
-//
-//      const generatedVersion = `export class H_${version.hash}() {
-//  ${fields.join("\n  ")}
-//
-//  constructor(${constructorFields.join(', ')}) {
-//    ${constructorAssignments.join('\n    ')}
-//  }
-//}
-//
-//export type V_${i} = H_${version.hash};`;
-//
-//      generatedVersions.push(generatedVersion);
-//    }
-//    const generatedImports = [];
-//    for (const imp of imports) {
-//      generatedImports.push(`import * as ${imp} from './${imp}';`);
-//    }
-//    generatedTypes.push(
-//      [
-//        type,
-//        (generatedImports.length > 0 ? generatedImports.join('\n') + '\n\n': "") + generatedVersions.join('\n\n')
-//      ]
-//    );
-//  }
-//
-//  return generatedTypes;
-
   return types.map((_type) => {
     // load imports.
     const imports = new Set();
@@ -604,3 +543,48 @@ export function addHashes(
   return hashed;
 }
 
+export function loadActions(path: string): Array<Array<Action>> {
+  const types = require(path);
+  const outputTypes = [];
+
+  for (const _type of types) {
+    const log = [];
+    for (const action of _type) {
+      switch(action._action_type) {
+        case 'RenameAction':
+          log.push(new RenameAction(action.changeLog, action.hash, action._from, action.to));
+          break;
+        case 'RequiredAction':
+          log.push(new RequiredAction(action.changeLog, action.hash, action.name));
+          break;
+        case 'OptionalAction':
+          log.push(new OptionalAction(action.changeLog, action.hash, action.name));
+          break;
+        case 'DeleteAction':
+          log.push(new DeleteAction(action.changeLog, action.hash, action.name));
+          break;
+        case 'SetDefaultAction':
+          log.push(new SetDefaultAction(action.changeLog, action.hash, action.name, action._default));
+          break;
+        case 'RemoveDefaultAction':
+          log.push(new RemoveDefaultAction(action.changeLog, action.hash, action.name));
+          break;
+        case 'AddAction':
+          log.push(new AddAction(action.changeLog, action.hash, action.name, action.type, action.description, action.optional, action._default));
+          break;
+        case 'UpdateDescriptionAction':
+          log.push(new UpdateDescriptionAction(action.changeLog, action.hash, action.name, action.description));
+          break;
+        case 'ReferenceAction':
+          log.push(new ReferenceAction(action.changeLog, action.hash, action.name, action.description, action.optional, action.referenceType, action.referenceHash));
+          break;
+        case 'NewAction':
+          log.push(new NewAction(action.changeLog, action.hash, action.name));
+          break;
+      }
+    }
+    outputTypes.push(log);
+  }
+
+  return outputTypes;
+}
