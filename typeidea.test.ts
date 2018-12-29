@@ -36,9 +36,9 @@ it('hashTypes generates hashes for types', () => {
   const hashes = typeidea.hashTypes([addField, addField2], []);
   expect(hashes).toHaveLength(2);
 
-  const hashedAddField = typeidea.addHashes(addField, hashes[0]);
+  const hashedAddField = typeidea.addHashes(addField, hashes[0], null);
   expect(hashedAddField).toHaveLength(2);
-  const hashedAddField2 = typeidea.addHashes(addField2, hashes[1]);
+  const hashedAddField2 = typeidea.addHashes(addField2, hashes[1], null);
   expect(hashedAddField2).toHaveLength(2);
 
   for (const hashedAction of hashedAddField) {
@@ -69,7 +69,7 @@ it('Changing an action makes hashing invalid', () => {
   ];
 
   const hashes = typeidea.hashTypes([addField], []);
-  const hashedAddField = typeidea.addHashes(addField, hashes[0]);
+  const hashedAddField = typeidea.addHashes(addField, hashes[0], null);
   hashedAddField[0].changeLog = "Don't do this!";
   expect(() => {
     typeidea.hashTypes([hashedAddField], []);
@@ -96,7 +96,8 @@ it('Changing a hash makes hashing invalid', () => {
 
   const hashedAddField = typeidea.addHashes(
     addField,
-    typeidea.hashTypes([addField], [])[0]
+    typeidea.hashTypes([addField], [])[0],
+    null
   );
   hashedAddField[0].hash = "Don't do this!";
   expect(() => {
@@ -140,12 +141,12 @@ it('Multiple types with type reference', () => {
   ];
 
   const hashes = typeidea.hashTypes([addField], []);
-  const hashedAddField = typeidea.addHashes(addField, hashes[0]);
+  const hashedAddField = typeidea.addHashes(addField, hashes[0], null);
 
   addField2[1].referenceHash = hashedAddField[1].hash;
 
   const hashes2 = typeidea.hashTypes([addField2], []);
-  const hashedAddField2 = typeidea.addHashes(addField2, hashes2[0]);
+  const hashedAddField2 = typeidea.addHashes(addField2, hashes2[0], null);
 
   const types = typeidea.generateTypes([hashedAddField, hashedAddField2], []);
   const typescript = typeidea.generateTypescript(types);
@@ -154,20 +155,22 @@ it('Multiple types with type reference', () => {
   expect(typescript[1][1]).toMatchSnapshot();
 });
 
-const json_snapshot_tests = [
-  ['Add a field', './tests/add_field.json'],
-  ['Add a field with a default value', './tests/add_field_with_default_value.json'],
-  ['Rename a field', './tests/rename_field.json'],
-  ['Make a field optional', './tests/optional_field.json'],
-  ['Delete a field', './tests/delete_field.json'],
-];
+const json_snapshot_tests = ([
+  ['Add a field', './tests/add_field.json', null],
+  ['Add a field with a default value', './tests/add_field_with_default_value.json', null],
+  ['Rename a field', './tests/rename_field.json', null],
+  ['Make a field optional', './tests/optional_field.json', null],
+  ['Delete a field', './tests/delete_field.json', null],
+  ['Type with latest', './tests/type_with_latest.json', 3],
+  ['Type with GroupAction', './tests/type_with_group.json', null],
+] as Array<[string, string, number | null]>);
 
-for (const [name, path] of json_snapshot_tests) {
+for (const [name, path, hashTo] of json_snapshot_tests) {
   it(name, () => {
     const addField = typeidea.loadActions(path);
 
     const hashes = typeidea.hashTypes(addField, []);
-    const hashedAddField = typeidea.addHashes(addField[0], hashes[0]);
+    const hashedAddField = typeidea.addHashes(addField[0], hashes[0], hashTo);
 
     const types = typeidea.generateTypes([hashedAddField], []);
     const typescript = typeidea.generateTypescript(types);

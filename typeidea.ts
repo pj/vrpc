@@ -180,6 +180,26 @@ export class ReferenceAction extends Action {
     return `${super.fieldsToHash()}_${this.name}_${this.description}_${this.optional}_${this.referenceType}_${this.referenceHash}`;
   };
 }
+
+export class GroupAction extends Action {
+  actions: Action[];
+
+  constructor(
+    changeLog: string, hash: string | null, actions: Action[],
+  ) {
+    super(changeLog, hash);
+    this.actions = actions;
+  }
+
+  fieldsToHash(): string {
+    const subHashes: string[] = [];
+    for (const action of this.actions) {
+      subHashes.push(action.fieldsToHash());
+    }
+    return subHashes.join('_');
+  };
+}
+
 // services
 
 function service(name: string) {
@@ -376,10 +396,90 @@ export class Version {
 export class Type {
   name: string;
   versions: Version[];
+  latest: Version | null;
 
   constructor(name: string) {
     this.name = name;
     this.versions = [];
+    this.latest = null;
+  }
+}
+
+
+function updateFields(action: Action, version: Version): void {
+  if (action instanceof RenameAction) {
+    const currentField = version.fields[action._from];
+    const newField = currentField.copy();
+    newField.name = action.to;
+    newField.changeLog = action.changeLog;
+    delete version.fields[action._from];
+    version.fields[action.to] = newField;
+  } else if (action instanceof RequiredAction) {
+    const currentField = version.fields[action.name];
+    const newField = currentField.copy();
+    newField.optional = false;
+    newField.changeLog = action.changeLog;
+    version.fields[newField.name] = newField;
+  } else if (action instanceof OptionalAction) {
+    const currentField = version.fields[action.name];
+    const newField = currentField.copy();
+    newField.optional = true;
+    newField.changeLog = action.changeLog;
+    version.fields[newField.name] = newField;
+  } else if (action instanceof DeleteAction) {
+    const currentField = version.fields[action.name];
+    const newField = currentField.copy();
+    delete version.fields[currentField.name];
+  } else if (action instanceof SetDefaultAction) {
+    const currentField = version.fields[action.name];
+    const newField = currentField.copy();
+    if (newField instanceof Field) {
+      newField._default = action._default;
+    }
+    newField.changeLog = action.changeLog;
+    version.fields[newField.name] = newField;
+  } else if (action instanceof RemoveDefaultAction) {
+    const currentField = version.fields[action.name];
+    const newField = currentField.copy();
+    if (newField instanceof Field) {
+      newField._default = null;
+    }
+    newField.changeLog = action.changeLog;
+    version.fields[newField.name] = newField;
+  } else if (action instanceof AddAction) {
+    const currentField = version.fields[action.name];
+    const newField = new Field(
+      action.name,
+      action.changeLog,
+      action.description,
+      action.optional,
+      action.type,
+      action._default
+    );
+    version.fields[newField.name] = newField;
+  } else if (action instanceof UpdateDescriptionAction) {
+    const currentField = version.fields[action.name];
+    const newField = currentField.copy();
+    newField.description = action.description;
+    newField.changeLog = action.changeLog;
+    version.fields[newField.name] = newField;
+  } else if (action instanceof ReferenceAction) {
+    const currentField = version.fields[action.name];
+    const newField = new ReferenceField(
+      action.name,
+      action.changeLog,
+      action.description,
+      action.optional,
+      action.referenceType,
+      action.referenceHash
+    );
+    version.fields[newField.name] = newField;
+  } else if (action instanceof GroupAction) {
+    for (const subAction of action.actions) {
+      updateFields(subAction, version);
+    }
+  } else {
+    throw new Error(`Unknown action type: ${action.constructor.name}`)
   }
 }
 
@@ -390,115 +490,58 @@ export function generateTypes(types: Array<Array<Action>>, services: any): Type[
   const generatedTypes = [];
   for (const type of types) {
     const versions = [];
+    let previousHash = null;
+    const hashed = [];
+    const latest = [];
+    let notHashed = false;
     for (let n = 0; n < type.length; n++) {
       const action = type[n];
-      if (action.hash === null) {
-        throw new Error(`No hash at ${n} ${action}, did you forget to add it?`)
+      if (notHashed) {
+        if (action.hash !== null) {
+          throw new Error(`Hashed action after unhashed action at ${n} ${action}`);
+        }
+        latest.push(action);
+      } else if (action.hash === null) {
+        notHashed = true;
+        latest.push(action);
+      } else {
+        const expectedHash = hashAction(action, previousHash);
+        if (expectedHash !== action.hash) {
+          throw new Error(`Invalid hash at item ${n} ${action}, did you change something?`)
+        }
+        hashed.push(action);
+        previousHash = expectedHash;
       }
     }
 
-    const first = (<NewAction>type[0]);
-    if (!(first instanceof NewAction)) {
-      throw new Error(`Type must start with a NewAction element ${first}`);
-    }
-    let previousHash = hashAction(first, null);
-    if (previousHash !== first.hash) {
-      throw new Error(`Invalid hash at item ${0} ${first}, did you change something?`)
-    }
-    let createHashes = false;
-
-    for (let n = 1; n < type.length; n++) {
-      let action = type[n];
-      const expectedHash = hashAction(action, previousHash);
-      if (expectedHash !== action.hash) {
-        throw new Error(`Invalid hash at item ${n} ${action}, did you change something?`)
-      }
-      previousHash = action.hash;
-    }
-
-    const name = first.name;
+    const name = (hashed[0] as NewAction).name;
     let previousVersion = null;
     const newType = new Type(name);
 
-    for (let n = 1; n < type.length; n++) {
-      let action = type[n];
+    for (let n = 1; n < hashed.length; n++) {
+      let action = hashed[n];
       const newVersion = new Version(action.hash, {});
       if (previousVersion) {
         newVersion.fields = {...previousVersion.fields}
       }
 
-      if (action instanceof RenameAction) {
-        const currentField = newVersion.fields[action._from];
-        const newField = currentField.copy();
-        newField.name = action.to;
-        newField.changeLog = action.changeLog;
-        delete newVersion.fields[action._from];
-        newVersion.fields[action.to] = newField;
-      } else if (action instanceof RequiredAction) {
-        const currentField = newVersion.fields[action.name];
-        const newField = currentField.copy();
-        newField.optional = false;
-        newField.changeLog = action.changeLog;
-        newVersion.fields[newField.name] = newField;
-      } else if (action instanceof OptionalAction) {
-        const currentField = newVersion.fields[action.name];
-        const newField = currentField.copy();
-        newField.optional = true;
-        newField.changeLog = action.changeLog;
-        newVersion.fields[newField.name] = newField;
-      } else if (action instanceof DeleteAction) {
-        const currentField = newVersion.fields[action.name];
-        const newField = currentField.copy();
-        delete newVersion.fields[currentField.name];
-      } else if (action instanceof SetDefaultAction) {
-        const currentField = newVersion.fields[action.name];
-        const newField = currentField.copy();
-        if (newField instanceof Field) {
-          newField._default = action._default;
-        }
-        newField.changeLog = action.changeLog;
-        newVersion.fields[newField.name] = newField;
-      } else if (action instanceof RemoveDefaultAction) {
-        const currentField = newVersion.fields[action.name];
-        const newField = currentField.copy();
-        if (newField instanceof Field) {
-          newField._default = null;
-        }
-        newField.changeLog = action.changeLog;
-        newVersion.fields[newField.name] = newField;
-      } else if (action instanceof AddAction) {
-        const currentField = newVersion.fields[action.name];
-        const newField = new Field(
-          action.name,
-          action.changeLog,
-          action.description,
-          action.optional,
-          action.type,
-          action._default
-        );
-        newVersion.fields[newField.name] = newField;
-      } else if (action instanceof UpdateDescriptionAction) {
-        const currentField = newVersion.fields[action.name];
-        const newField = currentField.copy();
-        newField.description = action.description;
-        newField.changeLog = action.changeLog;
-        newVersion.fields[newField.name] = newField;
-      } else if (action instanceof ReferenceAction) {
-        const currentField = newVersion.fields[action.name];
-        const newField = new ReferenceField(
-          action.name,
-          action.changeLog,
-          action.description,
-          action.optional,
-          action.referenceType,
-          action.referenceHash
-        );
-        newVersion.fields[newField.name] = newField;
-      }
+      updateFields(action, newVersion);
 
       newType.versions.push(newVersion);
       previousVersion = newVersion;
     }
+    let latestVersion = null;
+    if (latest.length > 0) {
+      latestVersion = new Version(null, {});
+      if (previousVersion) {
+        latestVersion.fields = {...previousVersion.fields};
+      }
+      for (let n = 0; n < latest.length; n++) {
+        const action = latest[n];
+        updateFields(action, latestVersion);
+      }
+    }
+    newType.latest = latestVersion;
     generatedTypes.push(newType);
   }
 
@@ -518,7 +561,16 @@ export function generateTypescript(types: Type[]) {
     }
     return [
       _type,
-      prettier.format(typescriptTypeTemplate({versions: _type.versions, imports: imports}), { parser: 'typescript' })
+      prettier.format(
+        typescriptTypeTemplate(
+          {
+            versions: _type.versions,
+            imports: imports,
+            latest: _type.latest
+          }
+        ),
+        {parser: 'typescript'},
+      )
     ];
   }
   );
@@ -526,10 +578,14 @@ export function generateTypescript(types: Type[]) {
 
 export function addHashes(
   unhashedType: Action[],
-  hashes: Array<[number, string]>
+  hashes: Array<[number, string]>,
+  hashTo: number | null
 ) {
   const hashed = unhashedType.slice();
-  for (let i = hashes[0][0]; i < unhashedType.length; i++) {
+  if (hashTo === null) {
+    hashTo = unhashedType.length;
+  }
+  for (let i = hashes[0][0]; i < hashTo; i++) {
     const hash = hashes[i][1];
     const action = unhashedType[i];
     const newAction = Object.assign(
@@ -543,46 +599,57 @@ export function addHashes(
   return hashed;
 }
 
+function createActions(actions: any[]): Action[] {
+  const log = [];
+
+  for (const action of actions) {
+    switch(action._action_type) {
+      case 'RenameAction':
+        log.push(new RenameAction(action.changeLog, action.hash, action._from, action.to));
+        break;
+      case 'RequiredAction':
+        log.push(new RequiredAction(action.changeLog, action.hash, action.name));
+        break;
+      case 'OptionalAction':
+        log.push(new OptionalAction(action.changeLog, action.hash, action.name));
+        break;
+      case 'DeleteAction':
+        log.push(new DeleteAction(action.changeLog, action.hash, action.name));
+        break;
+      case 'SetDefaultAction':
+        log.push(new SetDefaultAction(action.changeLog, action.hash, action.name, action._default));
+        break;
+      case 'RemoveDefaultAction':
+        log.push(new RemoveDefaultAction(action.changeLog, action.hash, action.name));
+        break;
+      case 'AddAction':
+        log.push(new AddAction(action.changeLog, action.hash, action.name, action.type, action.description, action.optional, action._default));
+        break;
+      case 'UpdateDescriptionAction':
+        log.push(new UpdateDescriptionAction(action.changeLog, action.hash, action.name, action.description));
+        break;
+      case 'ReferenceAction':
+        log.push(new ReferenceAction(action.changeLog, action.hash, action.name, action.description, action.optional, action.referenceType, action.referenceHash));
+        break;
+      case 'NewAction':
+        log.push(new NewAction(action.changeLog, action.hash, action.name));
+        break;
+      case 'GroupAction':
+        const groupedActions = createActions(action.actions);
+        log.push(new GroupAction(action.changeLog, action.hash, groupedActions));
+        break;
+    }
+  }
+
+  return log;
+}
+
 export function loadActions(path: string): Array<Array<Action>> {
   const types = require(path);
   const outputTypes = [];
 
   for (const _type of types) {
-    const log = [];
-    for (const action of _type) {
-      switch(action._action_type) {
-        case 'RenameAction':
-          log.push(new RenameAction(action.changeLog, action.hash, action._from, action.to));
-          break;
-        case 'RequiredAction':
-          log.push(new RequiredAction(action.changeLog, action.hash, action.name));
-          break;
-        case 'OptionalAction':
-          log.push(new OptionalAction(action.changeLog, action.hash, action.name));
-          break;
-        case 'DeleteAction':
-          log.push(new DeleteAction(action.changeLog, action.hash, action.name));
-          break;
-        case 'SetDefaultAction':
-          log.push(new SetDefaultAction(action.changeLog, action.hash, action.name, action._default));
-          break;
-        case 'RemoveDefaultAction':
-          log.push(new RemoveDefaultAction(action.changeLog, action.hash, action.name));
-          break;
-        case 'AddAction':
-          log.push(new AddAction(action.changeLog, action.hash, action.name, action.type, action.description, action.optional, action._default));
-          break;
-        case 'UpdateDescriptionAction':
-          log.push(new UpdateDescriptionAction(action.changeLog, action.hash, action.name, action.description));
-          break;
-        case 'ReferenceAction':
-          log.push(new ReferenceAction(action.changeLog, action.hash, action.name, action.description, action.optional, action.referenceType, action.referenceHash));
-          break;
-        case 'NewAction':
-          log.push(new NewAction(action.changeLog, action.hash, action.name));
-          break;
-      }
-    }
+    const log = createActions(_type);
     outputTypes.push(log);
   }
 

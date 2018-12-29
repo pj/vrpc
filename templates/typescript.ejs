@@ -24,3 +24,24 @@
 
   export type V_<%= index %> = H_<%= version.hash %>;
 <% }) %>
+
+<% if (latest !== null) { %>
+  export class Latest {
+    <% Object.keys(latest.fields).forEach(function (key) { %>
+      <% var field = latest.fields[key]; %>
+      readonly <%= field.name %>: <%= field.fieldType() %>;
+    <% }) %>
+    constructor(
+      <% Object.keys(latest.fields).forEach(function (key) { %>
+        <% var field = latest.fields[key]; %>
+        <%= field.name %>: <%= field.fieldType() %><%= %>,
+      <% }) %>
+    ) {
+      <% Object.keys(latest.fields).forEach(function (key) { %>
+        <% var field = latest.fields[key]; %>
+        this.<%= field.name %> = <%= field.name %>
+        <% if (field.formattedDefault()) { %> || <%- field.formattedDefault() %><% } %>;
+      <% }) %>
+    }
+  }
+<% } %>

@@ -1,0 +1,40 @@
+[
+  [
+    {
+      "_action_type": "NewAction",
+      "changeLog": "Creating a new type",
+      "hash": null,
+      "description": "Test"
+    },
+    {
+      "_action_type": "AddAction",
+      "changeLog": "Adding a field",
+      "hash": null,
+      "name": "test_field",
+      "type": "string",
+      "description": "A field that helps testing",
+      "optional": true,
+      "_default": null
+    },
+    {
+      "_action_type": "AddAction",
+      "changeLog": "Adding another field",
+      "hash": null,
+      "name": "test_field2",
+      "type": "string",
+      "description": "A field that helps testing, again",
+      "optional": false,
+      "_default": "blah"
+    },
+    {
+      "_action_type": "AddAction",
+      "changeLog": "Adding yet another field",
+      "hash": null,
+      "name": "test_field3",
+      "type": "number",
+      "description": "Yet another field for testing",
+      "optional": false
+    }
+
+  ]
+]
