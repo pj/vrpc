@@ -3,45 +3,13 @@
 <% }) %>
 
 <% versions.forEach(function (version, index) { %>
-  export class H_<%= version.hash %> {
-    <% Object.keys(version.fields).forEach(function (key) { %>
-      <% var field = version.fields[key]; %>
-      readonly <%= field.name %>: <%= field.fieldType() %>;
-    <% }) %>
-    constructor(
-      <% Object.keys(version.fields).forEach(function (key) { %>
-        <% var field = version.fields[key]; %>
-        <%= field.name %>: <%= field.fieldType() %><%= %>,
-      <% }) %>
-    ) {
-      <% Object.keys(version.fields).forEach(function (key) { %>
-        <% var field = version.fields[key]; %>
-        this.<%= field.name %> = <%= field.name %>
-        <% if (field.formattedDefault()) { %> || <%- field.formattedDefault() %><% } %>;
-      <% }) %>
-    }
-  }
+  <% if (version.state === 'active' || version.state === 'deprecated') { %>
+    <%- include('typescript_class', {className: 'H_' + version.hash, version: version}); %>
 
-  export type V_<%= index %> = H_<%= version.hash %>;
+    export type V_<%= index %> = H_<%= version.hash %>;
+  <% } %>
 <% }) %>
 
 <% if (latest !== null) { %>
-  export class Latest {
-    <% Object.keys(latest.fields).forEach(function (key) { %>
-      <% var field = latest.fields[key]; %>
-      readonly <%= field.name %>: <%= field.fieldType() %>;
-    <% }) %>
-    constructor(
-      <% Object.keys(latest.fields).forEach(function (key) { %>
-        <% var field = latest.fields[key]; %>
-        <%= field.name %>: <%= field.fieldType() %><%= %>,
-      <% }) %>
-    ) {
-      <% Object.keys(latest.fields).forEach(function (key) { %>
-        <% var field = latest.fields[key]; %>
-        this.<%= field.name %> = <%= field.name %>
-        <% if (field.formattedDefault()) { %> || <%- field.formattedDefault() %><% } %>;
-      <% }) %>
-    }
-  }
+  <%- include('typescript_class', {className: 'Latest', version: latest}); %>
 <% } %>

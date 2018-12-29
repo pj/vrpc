@@ -174,6 +174,45 @@ export type V_1 = H_7d215a81e117de86ba5d68d845ccc1af4f058be1b0629e7751989890f033
 "
 `;
 
+exports[`Type with deprecated and dont generate 1`] = `
+"export class H_246b5befe2b4d210fa3812e0d2bd5cc082332c770b7d83511bb45276db301d98 {
+  readonly test_field: string | null;
+
+  readonly test_field2: string;
+
+  constructor(test_field: string | null, test_field2: string) {
+    this.test_field = test_field;
+
+    this.test_field2 = test_field2 || \\"blah\\";
+  }
+}
+
+export type V_1 = H_246b5befe2b4d210fa3812e0d2bd5cc082332c770b7d83511bb45276db301d98;
+
+export class H_cdca28aa20de27c5c3939226b4e1b978ab6c63a662787c375d095a26cc9ecc68 {
+  readonly test_field: string | null;
+
+  readonly test_field2: string;
+
+  readonly test_field3: number;
+
+  constructor(
+    test_field: string | null,
+    test_field2: string,
+    test_field3: number
+  ) {
+    this.test_field = test_field;
+
+    this.test_field2 = test_field2 || \\"blah\\";
+
+    this.test_field3 = test_field3;
+  }
+}
+
+export type V_2 = H_cdca28aa20de27c5c3939226b4e1b978ab6c63a662787c375d095a26cc9ecc68;
+"
+`;
+
 exports[`Type with latest 1`] = `
 "export class H_b0454866573235dea6946475288c49c7f4640d2dd564b6fc23a6c02810e839d8 {
   readonly test_field: string | null;

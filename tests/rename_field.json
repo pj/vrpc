@@ -4,11 +4,13 @@
       "_action_type": "NewAction",
       "changeLog": "Creating a new type",
       "hash": null,
+      "state": "active",
       "description": "Test"
     },{
       "_action_type": "AddAction",
       "changeLog": "Adding a field",
       "hash": null,
+      "state": "active",
       "name": "test_field",
       "type": "string",
       "description": "A field that helps testing",
@@ -18,6 +20,7 @@
       "_action_type": "RenameAction",
       "changeLog": "Renaming a field",
       "hash": null,
+      "state": "active",
       "_from": "test_field",
       "to": "renamed_field"
     }

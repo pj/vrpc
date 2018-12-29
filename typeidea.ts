@@ -9,7 +9,12 @@ const typescriptTypeFile = fs.readFileSync(
     encoding: "utf8",
   }
 );
-const typescriptTypeTemplate = compile(typescriptTypeFile);
+const typescriptTypeTemplate = compile(
+  typescriptTypeFile,
+  {
+    filename: './templates/typescript.ejs'
+  }
+);
 
 type FieldTypes = 'string' | 'boolean' | 'number';
 
@@ -17,13 +22,17 @@ type FieldDefaults = string | boolean | number;
 
 type Hash = string | null;
 
+type VersionState = 'active' | 'deprecated' | 'dont_generate';
+
 class Action {
   changeLog: string;
   hash: string | null;
+  state: VersionState;
 
-  constructor(changeLog: string, hash: string | null) {
+  constructor(changeLog: string, hash: string | null, state: VersionState) {
     this.changeLog = changeLog;
     this.hash = hash;
+    this.state = state;
   }
 
   fieldsToHash(): string {
@@ -34,8 +43,8 @@ class Action {
 export class NewAction extends Action {
   name: string;
 
-  constructor(changeLog: string, hash: string | null, name: string) {
-    super(changeLog, hash);
+  constructor(changeLog: string, hash: string | null, state: VersionState, name: string) {
+    super(changeLog, hash, state);
     this.name = name;
   }
 
@@ -48,8 +57,8 @@ export class RenameAction extends Action {
   _from: string;
   to: string;
 
-  constructor(changeLog: string, hash: string | null, _from: string, to: string) {
-    super(changeLog, hash);
+  constructor(changeLog: string, hash: string | null, state: VersionState, _from: string, to: string) {
+    super(changeLog, hash, state);
     this._from = _from;
     this.to = to;
   }
@@ -58,8 +67,8 @@ export class RenameAction extends Action {
 export class RequiredAction extends Action {
   name: string;
 
-  constructor(changeLog: string, hash: string | null, name: string) {
-    super(changeLog, hash);
+  constructor(changeLog: string, hash: string | null, state: VersionState, name: string) {
+    super(changeLog, hash, state);
     this.name = name;
   }
 
@@ -71,8 +80,8 @@ export class RequiredAction extends Action {
 export class OptionalAction extends Action {
   name: string;
 
-  constructor(changeLog: string, hash: string | null, name: string) {
-    super(changeLog, hash);
+  constructor(changeLog: string, hash: string | null, state: VersionState, name: string) {
+    super(changeLog, hash, state);
     this.name = name;
   }
 
@@ -84,8 +93,8 @@ export class OptionalAction extends Action {
 export class DeleteAction extends Action {
   name: string;
 
-  constructor(changeLog: string, hash: string | null, name: string) {
-    super(changeLog, hash);
+  constructor(changeLog: string, hash: string | null, state: VersionState, name: string) {
+    super(changeLog, hash, state);
     this.name = name;
   }
 
@@ -98,8 +107,8 @@ export class SetDefaultAction extends Action {
   name: string;
   _default: FieldDefaults;
 
-  constructor(changeLog: string, hash: string | null, name: string, _default: FieldDefaults) {
-    super(changeLog, hash);
+  constructor(changeLog: string, hash: string | null, state: VersionState, name: string, _default: FieldDefaults) {
+    super(changeLog, hash, state);
     this.name = name;
     this._default = _default;
   }
@@ -112,8 +121,8 @@ export class SetDefaultAction extends Action {
 export class RemoveDefaultAction extends Action {
   name: string;
 
-  constructor(changeLog: string, hash: string | null, name: string) {
-    super(changeLog, hash);
+  constructor(changeLog: string, hash: string | null, state: VersionState, name: string) {
+    super(changeLog, hash, state);
     this.name = name;
   }
 
@@ -130,10 +139,10 @@ export class AddAction extends Action {
   _default: FieldDefaults | null;
 
   constructor(
-    changeLog: string, hash: string | null, name: string, type: FieldTypes,
+    changeLog: string, hash: string | null, state: VersionState, name: string, type: FieldTypes,
     description: string, optional: boolean, _default: FieldDefaults | null
   ) {
-    super(changeLog, hash);
+    super(changeLog, hash, state);
     this.name = name;
     this.type = type;
     this.description = description;
@@ -150,8 +159,8 @@ export class UpdateDescriptionAction extends Action {
   name: string;
   description: string;
 
-  constructor(changeLog: string, hash: string | null, name: string, description: string) {
-    super(changeLog, hash);
+  constructor(changeLog: string, hash: string | null, state: VersionState, name: string, description: string) {
+    super(changeLog, hash, state);
     this.name = name;
     this.description = description;
   }
@@ -165,10 +174,10 @@ export class ReferenceAction extends Action {
   referenceHash: string;
 
   constructor(
-    changeLog: string, hash: string | null, name: string, description: string,
+    changeLog: string, hash: string | null, state: VersionState, name: string, description: string,
     optional: boolean, referenceType: string, referenceHash: string
   ) {
-    super(changeLog, hash);
+    super(changeLog, hash, state);
     this.name = name;
     this.description = description;
     this.optional = optional;
@@ -185,9 +194,9 @@ export class GroupAction extends Action {
   actions: Action[];
 
   constructor(
-    changeLog: string, hash: string | null, actions: Action[],
+    changeLog: string, hash: string | null, state: VersionState, actions: Action[],
   ) {
-    super(changeLog, hash);
+    super(changeLog, hash, state);
     this.actions = actions;
   }
 
@@ -385,10 +394,12 @@ type FieldObject = {
 
 export class Version {
   hash: string | null;
+  state: VersionState;
   fields: FieldObject;
 
-  constructor(hash: string | null, fields: FieldObject) {
+  constructor(hash: string | null, fields: FieldObject, state: VersionState) {
     this.hash = hash;
+    this.state = state;
     this.fields = fields;
   }
 }
@@ -520,7 +531,7 @@ export function generateTypes(types: Array<Array<Action>>, services: any): Type[
 
     for (let n = 1; n < hashed.length; n++) {
       let action = hashed[n];
-      const newVersion = new Version(action.hash, {});
+      const newVersion = new Version(action.hash, {}, action.state);
       if (previousVersion) {
         newVersion.fields = {...previousVersion.fields}
       }
@@ -532,7 +543,7 @@ export function generateTypes(types: Array<Array<Action>>, services: any): Type[
     }
     let latestVersion = null;
     if (latest.length > 0) {
-      latestVersion = new Version(null, {});
+      latestVersion = new Version(null, {}, 'active');
       if (previousVersion) {
         latestVersion.fields = {...previousVersion.fields};
       }
@@ -605,38 +616,44 @@ function createActions(actions: any[]): Action[] {
   for (const action of actions) {
     switch(action._action_type) {
       case 'RenameAction':
-        log.push(new RenameAction(action.changeLog, action.hash, action._from, action.to));
+        log.push(new RenameAction(
+          action.changeLog,
+          action.hash,
+          action.state,
+          action._from,
+          action.to)
+        );
         break;
       case 'RequiredAction':
-        log.push(new RequiredAction(action.changeLog, action.hash, action.name));
+        log.push(new RequiredAction(action.changeLog, action.hash, action.state, action.name));
         break;
       case 'OptionalAction':
-        log.push(new OptionalAction(action.changeLog, action.hash, action.name));
+        log.push(new OptionalAction(action.changeLog, action.hash, action.state, action.name));
         break;
       case 'DeleteAction':
-        log.push(new DeleteAction(action.changeLog, action.hash, action.name));
+        log.push(new DeleteAction(action.changeLog, action.hash, action.state, action.name));
         break;
       case 'SetDefaultAction':
-        log.push(new SetDefaultAction(action.changeLog, action.hash, action.name, action._default));
+        log.push(new SetDefaultAction(action.changeLog, action.hash, action.state, action.name, action._default));
         break;
       case 'RemoveDefaultAction':
-        log.push(new RemoveDefaultAction(action.changeLog, action.hash, action.name));
+        log.push(new RemoveDefaultAction(action.changeLog, action.hash, action.state, action.name));
         break;
       case 'AddAction':
-        log.push(new AddAction(action.changeLog, action.hash, action.name, action.type, action.description, action.optional, action._default));
+        log.push(new AddAction(action.changeLog, action.hash, action.state, action.name, action.type, action.description, action.optional, action._default));
         break;
       case 'UpdateDescriptionAction':
-        log.push(new UpdateDescriptionAction(action.changeLog, action.hash, action.name, action.description));
+        log.push(new UpdateDescriptionAction(action.changeLog, action.hash, action.state, action.name, action.description));
         break;
       case 'ReferenceAction':
-        log.push(new ReferenceAction(action.changeLog, action.hash, action.name, action.description, action.optional, action.referenceType, action.referenceHash));
+        log.push(new ReferenceAction(action.changeLog, action.hash, action.state, action.name, action.description, action.optional, action.referenceType, action.referenceHash));
         break;
       case 'NewAction':
-        log.push(new NewAction(action.changeLog, action.hash, action.name));
+        log.push(new NewAction(action.changeLog, action.hash, action.state, action.name));
         break;
       case 'GroupAction':
         const groupedActions = createActions(action.actions);
-        log.push(new GroupAction(action.changeLog, action.hash, groupedActions));
+        log.push(new GroupAction(action.changeLog, action.hash, action.state, groupedActions));
         break;
     }
   }

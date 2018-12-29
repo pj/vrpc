@@ -1,0 +1,18 @@
+export class <%= className %> {
+  <% Object.keys(version.fields).forEach(function (key) { %>
+    <% var field = version.fields[key]; %>
+    readonly <%= field.name %>: <%= field.fieldType() %>;
+  <% }) %>
+  constructor(
+    <% Object.keys(version.fields).forEach(function (key) { %>
+      <% var field = version.fields[key]; %>
+      <%= field.name %>: <%= field.fieldType() %><%= %>,
+    <% }) %>
+  ) {
+    <% Object.keys(version.fields).forEach(function (key) { %>
+      <% var field = version.fields[key]; %>
+      this.<%= field.name %> = <%= field.name %>
+      <% if (field.formattedDefault()) { %> || <%- field.formattedDefault() %><% } %>;
+    <% }) %>
+  }
+}

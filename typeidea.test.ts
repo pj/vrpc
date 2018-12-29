@@ -5,11 +5,13 @@ it('hashTypes generates hashes for types', () => {
     new typeidea.NewAction(
       'Creating a new type',
       null,
+      'active',
       'Test'
     ),
     new typeidea.AddAction(
       'Adding a field',
       null,
+      'active',
       'test_field',
       'string',
       'A field that helps testing',
@@ -21,11 +23,13 @@ it('hashTypes generates hashes for types', () => {
     new typeidea.NewAction(
       'Creating a new type',
       null,
+      'active',
       'Test2'
     ),
     new typeidea.AddAction(
       'asdf',
       null,
+      'active',
       'test_field2',
       'string',
       'A field that helps testing',
@@ -55,11 +59,13 @@ it('Changing an action makes hashing invalid', () => {
     new typeidea.NewAction(
       'Creating a new type',
       null,
+      'active',
       'Test'
     ),
     new typeidea.AddAction(
       'Adding a field',
       null,
+      'active',
       'test_field',
       'string',
       'A field that helps testing',
@@ -81,11 +87,13 @@ it('Changing a hash makes hashing invalid', () => {
     new typeidea.NewAction(
       'Creating a new type',
       null,
+      'active',
       'Test'
     ),
     new typeidea.AddAction(
       'Adding a field',
       null,
+      'active',
       'test_field',
       'string',
       'A field that helps testing',
@@ -110,11 +118,13 @@ it('Multiple types with type reference', () => {
     new typeidea.NewAction(
       'Creating a new type',
       null,
+      'active',
       'Test'
     ),
     new typeidea.AddAction(
       'Adding a field',
       null,
+      'active',
       'test_field',
       'string',
       'A field that helps testing',
@@ -126,11 +136,13 @@ it('Multiple types with type reference', () => {
     new typeidea.NewAction(
       'Creating a new type',
       null,
+      'active',
       'Test2'
     ),
     new typeidea.ReferenceAction(
       'asdf',
       null,
+      'active',
       'test_field2',
       'A reference',
       true,
@@ -163,6 +175,7 @@ const json_snapshot_tests = ([
   ['Delete a field', './tests/delete_field.json', null],
   ['Type with latest', './tests/type_with_latest.json', 3],
   ['Type with GroupAction', './tests/type_with_group.json', null],
+  ['Type with deprecated and dont generate', './tests/deprecated_and_dont_generated.json', null],
 ] as Array<[string, string, number | null]>);
 
 for (const [name, path, hashTo] of json_snapshot_tests) {
