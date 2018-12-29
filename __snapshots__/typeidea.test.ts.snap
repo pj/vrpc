@@ -1,7 +1,22 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Add a field 1`] = `
-"export class H_b0454866573235dea6946475288c49c7f4640d2dd564b6fc23a6c02810e839d8 {
+"/**
+ * **GENERATED CODE DO NOT EDIT!**
+ *
+ * Test
+ *
+ * # Change Log:
+ * 1. Adding a field
+ */
+
+/**
+ * @param test_field A field that helps testing
+ *
+ * @sealed
+ *
+ */
+export class H_b0454866573235dea6946475288c49c7f4640d2dd564b6fc23a6c02810e839d8 {
   readonly test_field: string | null;
 
   constructor(test_field: string | null) {
@@ -14,7 +29,22 @@ export type V_0 = H_b0454866573235dea6946475288c49c7f4640d2dd564b6fc23a6c02810e8
 `;
 
 exports[`Add a field with a default value 1`] = `
-"export class H_720b8a1ccf05f41bae7dead753ce6227f6a82bef2a0ab487afa53be67f8b2198 {
+"/**
+ * **GENERATED CODE DO NOT EDIT!**
+ *
+ * Test
+ *
+ * # Change Log:
+ * 1. Adding a field
+ */
+
+/**
+ * @param test_field A field that helps testing
+ *
+ * @sealed
+ *
+ */
+export class H_720b8a1ccf05f41bae7dead753ce6227f6a82bef2a0ab487afa53be67f8b2198 {
   readonly test_field: string | null;
 
   constructor(test_field: string | null) {
@@ -27,7 +57,24 @@ export type V_0 = H_720b8a1ccf05f41bae7dead753ce6227f6a82bef2a0ab487afa53be67f8b
 `;
 
 exports[`Delete a field 1`] = `
-"export class H_b0454866573235dea6946475288c49c7f4640d2dd564b6fc23a6c02810e839d8 {
+"/**
+ * **GENERATED CODE DO NOT EDIT!**
+ *
+ * Test
+ *
+ * # Change Log:
+ * 1. Adding a field
+ * 2. Adding another field
+ * 3. didn&#39;t actually need that
+ */
+
+/**
+ * @param test_field A field that helps testing
+ *
+ * @sealed
+ *
+ */
+export class H_b0454866573235dea6946475288c49c7f4640d2dd564b6fc23a6c02810e839d8 {
   readonly test_field: string | null;
 
   constructor(test_field: string | null) {
@@ -37,6 +84,13 @@ exports[`Delete a field 1`] = `
 
 export type V_0 = H_b0454866573235dea6946475288c49c7f4640d2dd564b6fc23a6c02810e839d8;
 
+/**
+ * @param test_field A field that helps testing
+ * @param test_field2 A field that helps testing, again
+ *
+ * @sealed
+ *
+ */
 export class H_246b5befe2b4d210fa3812e0d2bd5cc082332c770b7d83511bb45276db301d98 {
   readonly test_field: string | null;
 
@@ -51,6 +105,12 @@ export class H_246b5befe2b4d210fa3812e0d2bd5cc082332c770b7d83511bb45276db301d98 
 
 export type V_1 = H_246b5befe2b4d210fa3812e0d2bd5cc082332c770b7d83511bb45276db301d98;
 
+/**
+ * @param test_field A field that helps testing
+ *
+ * @sealed
+ *
+ */
 export class H_6f32904a63ccb14a73c3324622e4e739d17587c9b4a1c44f411850e164c4ef2c {
   readonly test_field: string | null;
 
@@ -64,7 +124,23 @@ export type V_2 = H_6f32904a63ccb14a73c3324622e4e739d17587c9b4a1c44f411850e164c4
 `;
 
 exports[`Make a field optional 1`] = `
-"export class H_94734beb843b03c23ee234e546a569b0a76a9ce620570682f35c5cbe873e330b {
+"/**
+ * **GENERATED CODE DO NOT EDIT!**
+ *
+ * Test
+ *
+ * # Change Log:
+ * 1. Adding a field
+ * 2. Oops needed to make it optional
+ */
+
+/**
+ * @param test_field A field that helps testing
+ *
+ * @sealed
+ *
+ */
+export class H_94734beb843b03c23ee234e546a569b0a76a9ce620570682f35c5cbe873e330b {
   readonly test_field: string;
 
   constructor(test_field: string) {
@@ -74,6 +150,12 @@ exports[`Make a field optional 1`] = `
 
 export type V_0 = H_94734beb843b03c23ee234e546a569b0a76a9ce620570682f35c5cbe873e330b;
 
+/**
+ * @param test_field A field that helps testing
+ *
+ * @sealed
+ *
+ */
 export class H_e4714969dd9f0b8a1b17aa2767b27276ee9866cd6f732d97b4057658da84e3f1 {
   readonly test_field: string | null;
 
@@ -87,7 +169,22 @@ export type V_1 = H_e4714969dd9f0b8a1b17aa2767b27276ee9866cd6f732d97b4057658da84
 `;
 
 exports[`Multiple types with type reference 1`] = `
-"export class H_4d4811a080c4836894870539238817298cdd65b74ee6971448292d13e182c5d1 {
+"/**
+ * **GENERATED CODE DO NOT EDIT!**
+ *
+ *
+ *
+ * # Change Log:
+ * 1. Adding a field
+ */
+
+/**
+ * @param test_field A field that helps testing
+ *
+ * @sealed
+ *
+ */
+export class H_4d4811a080c4836894870539238817298cdd65b74ee6971448292d13e182c5d1 {
   readonly test_field: string | null;
 
   constructor(test_field: string | null) {
@@ -100,8 +197,23 @@ export type V_0 = H_4d4811a080c4836894870539238817298cdd65b74ee6971448292d13e182
 `;
 
 exports[`Multiple types with type reference 2`] = `
-"import * as Test from \\"./Test\\";
+"/**
+ * **GENERATED CODE DO NOT EDIT!**
+ *
+ *
+ *
+ * # Change Log:
+ * 1. asdf
+ */
 
+import * as Test from \\"./Test\\";
+
+/**
+ * @param test_field2 A reference
+ *
+ * @sealed
+ *
+ */
 export class H_cd720515143f85d0e2a57782d79f22b64ed413ad029320c1f9dde25d7b6e3e99 {
   readonly test_field2: Test.h_4d4811a080c4836894870539238817298cdd65b74ee6971448292d13e182c5d1;
 
@@ -117,7 +229,23 @@ export type V_0 = H_cd720515143f85d0e2a57782d79f22b64ed413ad029320c1f9dde25d7b6e
 `;
 
 exports[`Rename a field 1`] = `
-"export class H_720b8a1ccf05f41bae7dead753ce6227f6a82bef2a0ab487afa53be67f8b2198 {
+"/**
+ * **GENERATED CODE DO NOT EDIT!**
+ *
+ * Test
+ *
+ * # Change Log:
+ * 1. Adding a field
+ * 2. Renaming a field
+ */
+
+/**
+ * @param test_field A field that helps testing
+ *
+ * @sealed
+ *
+ */
+export class H_720b8a1ccf05f41bae7dead753ce6227f6a82bef2a0ab487afa53be67f8b2198 {
   readonly test_field: string | null;
 
   constructor(test_field: string | null) {
@@ -127,6 +255,12 @@ exports[`Rename a field 1`] = `
 
 export type V_0 = H_720b8a1ccf05f41bae7dead753ce6227f6a82bef2a0ab487afa53be67f8b2198;
 
+/**
+ * @param renamed_field A field that helps testing
+ *
+ * @sealed
+ *
+ */
 export class H_9bc74507c3f1d1f92952b91a04397d3308b80dc867154de12ec0d2f45d6c6c79 {
   readonly renamed_field: string | null;
 
@@ -140,7 +274,23 @@ export type V_1 = H_9bc74507c3f1d1f92952b91a04397d3308b80dc867154de12ec0d2f45d6c
 `;
 
 exports[`Type with GroupAction 1`] = `
-"export class H_b0454866573235dea6946475288c49c7f4640d2dd564b6fc23a6c02810e839d8 {
+"/**
+ * **GENERATED CODE DO NOT EDIT!**
+ *
+ * Test
+ *
+ * # Change Log:
+ * 1. Adding a field
+ * 2. Adding some stuff
+ */
+
+/**
+ * @param test_field A field that helps testing
+ *
+ * @sealed
+ *
+ */
+export class H_b0454866573235dea6946475288c49c7f4640d2dd564b6fc23a6c02810e839d8 {
   readonly test_field: string | null;
 
   constructor(test_field: string | null) {
@@ -150,6 +300,14 @@ exports[`Type with GroupAction 1`] = `
 
 export type V_0 = H_b0454866573235dea6946475288c49c7f4640d2dd564b6fc23a6c02810e839d8;
 
+/**
+ * @param test_field A field that helps testing
+ * @param test_field2 A field that helps testing, again
+ * @param test_field3 Yet another field for testing
+ *
+ * @sealed
+ *
+ */
 export class H_7d215a81e117de86ba5d68d845ccc1af4f058be1b0629e7751989890f0335098 {
   readonly test_field: string | null;
 
@@ -175,7 +333,25 @@ export type V_1 = H_7d215a81e117de86ba5d68d845ccc1af4f058be1b0629e7751989890f033
 `;
 
 exports[`Type with deprecated and dont generate 1`] = `
-"export class H_246b5befe2b4d210fa3812e0d2bd5cc082332c770b7d83511bb45276db301d98 {
+"/**
+ * **GENERATED CODE DO NOT EDIT!**
+ *
+ * Test
+ *
+ * # Change Log:
+ * 1. Adding a field
+ * 2. Adding another field
+ * 3. Adding yet another field
+ */
+
+/**
+ * @param test_field A field that helps testing
+ * @param test_field2 A field that helps testing, again
+ *
+ * @sealed
+ * @deprecated
+ */
+export class H_246b5befe2b4d210fa3812e0d2bd5cc082332c770b7d83511bb45276db301d98 {
   readonly test_field: string | null;
 
   readonly test_field2: string;
@@ -189,6 +365,14 @@ exports[`Type with deprecated and dont generate 1`] = `
 
 export type V_1 = H_246b5befe2b4d210fa3812e0d2bd5cc082332c770b7d83511bb45276db301d98;
 
+/**
+ * @param test_field A field that helps testing
+ * @param test_field2 A field that helps testing, again
+ * @param test_field3 Yet another field for testing
+ *
+ * @sealed
+ *
+ */
 export class H_cdca28aa20de27c5c3939226b4e1b978ab6c63a662787c375d095a26cc9ecc68 {
   readonly test_field: string | null;
 
@@ -214,7 +398,24 @@ export type V_2 = H_cdca28aa20de27c5c3939226b4e1b978ab6c63a662787c375d095a26cc9e
 `;
 
 exports[`Type with latest 1`] = `
-"export class H_b0454866573235dea6946475288c49c7f4640d2dd564b6fc23a6c02810e839d8 {
+"/**
+ * **GENERATED CODE DO NOT EDIT!**
+ *
+ * Test
+ *
+ * # Change Log:
+ * 1. Adding a field
+ * 2. Adding another field
+ * 3. Adding yet another field
+ */
+
+/**
+ * @param test_field A field that helps testing
+ *
+ * @sealed
+ *
+ */
+export class H_b0454866573235dea6946475288c49c7f4640d2dd564b6fc23a6c02810e839d8 {
   readonly test_field: string | null;
 
   constructor(test_field: string | null) {
@@ -224,6 +425,13 @@ exports[`Type with latest 1`] = `
 
 export type V_0 = H_b0454866573235dea6946475288c49c7f4640d2dd564b6fc23a6c02810e839d8;
 
+/**
+ * @param test_field A field that helps testing
+ * @param test_field2 A field that helps testing, again
+ *
+ * @sealed
+ *
+ */
 export class H_246b5befe2b4d210fa3812e0d2bd5cc082332c770b7d83511bb45276db301d98 {
   readonly test_field: string | null;
 
@@ -238,6 +446,14 @@ export class H_246b5befe2b4d210fa3812e0d2bd5cc082332c770b7d83511bb45276db301d98 
 
 export type V_1 = H_246b5befe2b4d210fa3812e0d2bd5cc082332c770b7d83511bb45276db301d98;
 
+/**
+ * @param test_field A field that helps testing
+ * @param test_field2 A field that helps testing, again
+ * @param test_field3 Yet another field for testing
+ *
+ * @sealed
+ *
+ */
 export class Latest {
   readonly test_field: string | null;
 

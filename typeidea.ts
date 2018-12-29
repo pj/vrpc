@@ -42,10 +42,18 @@ class Action {
 
 export class NewAction extends Action {
   name: string;
+  description: string;
 
-  constructor(changeLog: string, hash: string | null, state: VersionState, name: string) {
+  constructor(
+    changeLog: string,
+    hash: string | null,
+    state: VersionState,
+    name: string,
+    description: string
+  ) {
     super(changeLog, hash, state);
     this.name = name;
+    this.description = description;
   }
 
   fieldsToHash(): string {
@@ -408,11 +416,15 @@ export class Type {
   name: string;
   versions: Version[];
   latest: Version | null;
+  changeLog: string[];
+  description: string;
 
-  constructor(name: string) {
+  constructor(name: string, description: string) {
     this.name = name;
+    this.description = description;
     this.versions = [];
     this.latest = null;
+    this.changeLog = [];
   }
 }
 
@@ -504,6 +516,7 @@ export function generateTypes(types: Array<Array<Action>>, services: any): Type[
     let previousHash = null;
     const hashed = [];
     const latest = [];
+    const changeLog = [];
     let notHashed = false;
     for (let n = 0; n < type.length; n++) {
       const action = type[n];
@@ -526,8 +539,9 @@ export function generateTypes(types: Array<Array<Action>>, services: any): Type[
     }
 
     const name = (hashed[0] as NewAction).name;
+    const description = (hashed[0] as NewAction).description;
     let previousVersion = null;
-    const newType = new Type(name);
+    const newType = new Type(name, description);
 
     for (let n = 1; n < hashed.length; n++) {
       let action = hashed[n];
@@ -537,6 +551,7 @@ export function generateTypes(types: Array<Array<Action>>, services: any): Type[
       }
 
       updateFields(action, newVersion);
+      changeLog.push(action.changeLog);
 
       newType.versions.push(newVersion);
       previousVersion = newVersion;
@@ -549,10 +564,12 @@ export function generateTypes(types: Array<Array<Action>>, services: any): Type[
       }
       for (let n = 0; n < latest.length; n++) {
         const action = latest[n];
+        changeLog.push(action.changeLog);
         updateFields(action, latestVersion);
       }
     }
     newType.latest = latestVersion;
+    newType.changeLog = changeLog;
     generatedTypes.push(newType);
   }
 
@@ -577,7 +594,9 @@ export function generateTypescript(types: Type[]) {
           {
             versions: _type.versions,
             imports: imports,
-            latest: _type.latest
+            latest: _type.latest,
+            changeLog: _type.changeLog,
+            description: _type.description
           }
         ),
         {parser: 'typescript'},
@@ -649,7 +668,7 @@ function createActions(actions: any[]): Action[] {
         log.push(new ReferenceAction(action.changeLog, action.hash, action.state, action.name, action.description, action.optional, action.referenceType, action.referenceHash));
         break;
       case 'NewAction':
-        log.push(new NewAction(action.changeLog, action.hash, action.state, action.name));
+        log.push(new NewAction(action.changeLog, action.hash, action.state, action.name, action.description));
         break;
       case 'GroupAction':
         const groupedActions = createActions(action.actions);

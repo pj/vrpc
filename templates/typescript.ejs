@@ -1,3 +1,13 @@
+/**
+* **GENERATED CODE DO NOT EDIT!**
+*
+* <%= description %>
+*
+* # Change Log:
+<% changeLog.forEach(function (log, index) { -%>
+* <%= index + 1 %>. <%= log %>
+<%_ }) -%>
+*/
 <% imports.forEach(function (imp) { %>
   import * as <%= imp %> from './<%= imp %>';
 <% }) %>

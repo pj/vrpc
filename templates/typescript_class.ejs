@@ -1,3 +1,11 @@
+/**
+<% Object.keys(version.fields).forEach(function (key) { -%>
+* @param <% var field = version.fields[key]; %><%= field.name %> <%= field.description %>
+<%_ }) -%>
+*
+* @sealed
+<%_ if (version.state === 'deprecated') { %>* @deprecated<% } else { %>*<%_ } %>
+*/
 export class <%= className %> {
   <% Object.keys(version.fields).forEach(function (key) { %>
     <% var field = version.fields[key]; %>
