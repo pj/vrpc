@@ -261,7 +261,7 @@ export type V_0 = H_720b8a1ccf05f41bae7dead753ce6227f6a82bef2a0ab487afa53be67f8b
  * @sealed
  *
  */
-export class H_9bc74507c3f1d1f92952b91a04397d3308b80dc867154de12ec0d2f45d6c6c79 {
+export class H_4c66851118f97f31f24e52cf34463d771aed8e5a7ce988d3e8aa521e922bebbe {
   readonly renamed_field: string | null;
 
   constructor(renamed_field: string | null) {
@@ -269,7 +269,7 @@ export class H_9bc74507c3f1d1f92952b91a04397d3308b80dc867154de12ec0d2f45d6c6c79 
   }
 }
 
-export type V_1 = H_9bc74507c3f1d1f92952b91a04397d3308b80dc867154de12ec0d2f45d6c6c79;
+export type V_1 = H_4c66851118f97f31f24e52cf34463d771aed8e5a7ce988d3e8aa521e922bebbe;
 "
 `;
 

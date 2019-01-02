@@ -1,14 +1,15 @@
 import * as typeidea from './typeidea';
+import * as types from './types';
 
 it('hashTypes generates hashes for types', () => {
   const addField = [
-    new typeidea.NewAction(
+    new types.NewAction(
       'Creating a new type',
       null,
       'active',
       'Test'
     ),
-    new typeidea.AddAction(
+    new types.AddAction(
       'Adding a field',
       null,
       'active',
@@ -20,13 +21,13 @@ it('hashTypes generates hashes for types', () => {
     )
   ];
   const addField2 = [
-    new typeidea.NewAction(
+    new types.NewAction(
       'Creating a new type',
       null,
       'active',
       'Test2'
     ),
-    new typeidea.AddAction(
+    new types.AddAction(
       'asdf',
       null,
       'active',
@@ -56,13 +57,13 @@ it('hashTypes generates hashes for types', () => {
 
 it('Changing an action makes hashing invalid', () => {
   const addField = [
-    new typeidea.NewAction(
+    new types.NewAction(
       'Creating a new type',
       null,
       'active',
       'Test'
     ),
-    new typeidea.AddAction(
+    new types.AddAction(
       'Adding a field',
       null,
       'active',
@@ -84,13 +85,13 @@ it('Changing an action makes hashing invalid', () => {
 
 it('Changing a hash makes hashing invalid', () => {
   const addField = [
-    new typeidea.NewAction(
+    new types.NewAction(
       'Creating a new type',
       null,
       'active',
       'Test'
     ),
-    new typeidea.AddAction(
+    new types.AddAction(
       'Adding a field',
       null,
       'active',
@@ -115,13 +116,13 @@ it('Changing a hash makes hashing invalid', () => {
 
 it('Multiple types with type reference', () => {
   const addField = [
-    new typeidea.NewAction(
+    new types.NewAction(
       'Creating a new type',
       null,
       'active',
       'Test'
     ),
-    new typeidea.AddAction(
+    new types.AddAction(
       'Adding a field',
       null,
       'active',
@@ -133,13 +134,13 @@ it('Multiple types with type reference', () => {
     )
   ];
   const addField2 = [
-    new typeidea.NewAction(
+    new types.NewAction(
       'Creating a new type',
       null,
       'active',
       'Test2'
     ),
-    new typeidea.ReferenceAction(
+    new types.ReferenceAction(
       'asdf',
       null,
       'active',
@@ -160,8 +161,8 @@ it('Multiple types with type reference', () => {
   const hashes2 = typeidea.hashTypes([addField2], []);
   const hashedAddField2 = typeidea.addHashes(addField2, hashes2[0], null);
 
-  const types = typeidea.generateTypes([hashedAddField, hashedAddField2], []);
-  const typescript = typeidea.generateTypescript(types);
+  const generatedTypes = typeidea.generateTypes([hashedAddField, hashedAddField2], []);
+  const typescript = typeidea.generateTypescript(generatedTypes);
 
   expect(typescript[0][1]).toMatchSnapshot();
   expect(typescript[1][1]).toMatchSnapshot();
