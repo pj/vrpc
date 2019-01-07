@@ -1,0 +1,38 @@
+/**
+* **GENERATED CODE DO NOT EDIT!**
+*
+* <%= service.name %>
+*
+* <%= service.description %>
+*
+* # Change Log:
+<% service.changeLog.forEach(function (log, index) { -%>
+* <%= index + 1 %>. <%= log %>
+<%_ }) -%>
+*/
+
+import * as <%= service.inputType %> from './<%= service.inputType %>';
+import * as <%= service.outputType %> from './<%= service.outputType %>';
+
+import * as express from 'express';
+import * as bodyParser from 'body-parser';
+
+const app = express();
+app.use(bodyParser.json());
+
+function <%= service.name %>(
+func: (
+<%= service.inputVersions.map(function (inputVersion) { return inputVersion.version } ).join(' | ') %>
+) => <%= service.outputVersions.map(function (outputVersion) { return outputVersion.version } ).join(' | ') %>
+): void {
+  app.get('/<%= service.name %>', (req, res) => {
+    const inputMessage = <%= service.inputType %>.deserialize(req.body);
+    const response = func(inputMessage);
+    const outputMessage = <%= service.outputType %>.serialize(response);
+    res.json(outputMessage);
+  });
+}
+
+export function startServices() {
+  app.listen(3000, () => console.log(`Example app listening on port ${port}!`));
+}

@@ -1,13 +1,14 @@
 import * as typeidea from './typeidea';
 import * as types from './types';
 
-it('hashTypes generates hashes for types', () => {
+it('hashActions generates hashes for types', () => {
   const addField = [
     new types.NewAction(
       'Creating a new type',
       null,
       'active',
-      'Test'
+      'Test',
+      'A useful type'
     ),
     new types.AddAction(
       'Adding a field',
@@ -25,7 +26,8 @@ it('hashTypes generates hashes for types', () => {
       'Creating a new type',
       null,
       'active',
-      'Test2'
+      'Test2',
+      'Another useful type'
     ),
     new types.AddAction(
       'asdf',
@@ -38,7 +40,7 @@ it('hashTypes generates hashes for types', () => {
       null
     )
   ];
-  const hashes = typeidea.hashTypes([addField, addField2], []);
+  const hashes = typeidea.hashActions([addField, addField2]);
   expect(hashes).toHaveLength(2);
 
   const hashedAddField = typeidea.addHashes(addField, hashes[0], null);
@@ -61,7 +63,8 @@ it('Changing an action makes hashing invalid', () => {
       'Creating a new type',
       null,
       'active',
-      'Test'
+      'Test',
+      'a useful type'
     ),
     new types.AddAction(
       'Adding a field',
@@ -75,11 +78,11 @@ it('Changing an action makes hashing invalid', () => {
     )
   ];
 
-  const hashes = typeidea.hashTypes([addField], []);
+  const hashes = typeidea.hashActions([addField]);
   const hashedAddField = typeidea.addHashes(addField, hashes[0], null);
   hashedAddField[0].changeLog = "Don't do this!";
   expect(() => {
-    typeidea.hashTypes([hashedAddField], []);
+    typeidea.hashActions([hashedAddField]);
   }).toThrow(/Invalid hash at item \d+ .*, did you change something\?/);
 });
 
@@ -89,7 +92,8 @@ it('Changing a hash makes hashing invalid', () => {
       'Creating a new type',
       null,
       'active',
-      'Test'
+      'Test',
+      'a useful type'
     ),
     new types.AddAction(
       'Adding a field',
@@ -105,12 +109,12 @@ it('Changing a hash makes hashing invalid', () => {
 
   const hashedAddField = typeidea.addHashes(
     addField,
-    typeidea.hashTypes([addField], [])[0],
+    typeidea.hashActions([addField])[0],
     null
   );
   hashedAddField[0].hash = "Don't do this!";
   expect(() => {
-    typeidea.hashTypes([hashedAddField], []);
+    typeidea.hashActions([hashedAddField]);
   }).toThrow(/Invalid hash at item \d+ .*, did you change something\?/);
 });
 
@@ -120,7 +124,8 @@ it('Multiple types with type reference', () => {
       'Creating a new type',
       null,
       'active',
-      'Test'
+      'Test',
+      'A useful type'
     ),
     new types.AddAction(
       'Adding a field',
@@ -138,7 +143,8 @@ it('Multiple types with type reference', () => {
       'Creating a new type',
       null,
       'active',
-      'Test2'
+      'Test2',
+      'a useful type'
     ),
     new types.ReferenceAction(
       'asdf',
@@ -153,12 +159,12 @@ it('Multiple types with type reference', () => {
     )
   ];
 
-  const hashes = typeidea.hashTypes([addField], []);
+  const hashes = typeidea.hashActions([addField]);
   const hashedAddField = typeidea.addHashes(addField, hashes[0], null);
 
   addField2[1].referenceHash = hashedAddField[1].hash;
 
-  const hashes2 = typeidea.hashTypes([addField2], []);
+  const hashes2 = typeidea.hashActions([addField2]);
   const hashedAddField2 = typeidea.addHashes(addField2, hashes2[0], null);
 
   const generatedTypes = typeidea.generateTypes([hashedAddField, hashedAddField2], []);
@@ -183,7 +189,7 @@ for (const [name, path, hashTo] of json_snapshot_tests) {
   it(name, () => {
     const addField = typeidea.loadActions(path);
 
-    const hashes = typeidea.hashTypes(addField, []);
+    const hashes = typeidea.hashActions(addField);
     const hashedAddField = typeidea.addHashes(addField[0], hashes[0], hashTo);
 
     const types = typeidea.generateTypes([hashedAddField], []);

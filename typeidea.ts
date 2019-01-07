@@ -20,7 +20,7 @@ const typescriptTypeTemplate = compile(
 
 type Hash = string | null;
 
-function hashAction(
+export function hashAction(
   action: types.Action | service.ServiceAction,
   previous: string | null
 ) {
@@ -39,14 +39,14 @@ function hashAction(
 /**
 * Take a list of types and verify the types and generate any empty types.
 */
-export function hashTypes(
-  hashableTypes: Array<Array<types.Action>>,
+export function hashActions(
+  hashables: Array<Array<types.Action>> | Array<Array<service.ServiceAction>>,
 ): Array<Array<[number, string]>> {
   const hashedTypes: Array<Array<[number, string]>> = [];
-  for (const type of hashableTypes) {
+  for (const type of hashables) {
     const newHashes: Array<[number, string]> = [];
     const first = type[0];
-    if (!(first instanceof types.NewAction)) {
+    if (!(first instanceof types.NewAction || first instanceof service.NewServiceAction)) {
       throw new Error(`Type must start with a NewAction element ${first}`);
     }
     let previousHash = hashAction(first, null);
@@ -85,54 +85,6 @@ export function hashTypes(
   }
 
   return hashedTypes;
-}
-
-export function hashServices(
-  hashableServices: Array<Array<service.ServiceAction>>
-): Array<Array<[number, string]>> {
-  const hashedServices: Array<Array<[number, string]>> = [];
-  for (const hashableService of hashableServices) {
-    const newHashes: Array<[number, string]> = [];
-    const first = hashableService[0];
-    if (!(first instanceof service.NewServiceAction)) {
-      throw new Error(`Type must start with a NewServiceAction element ${first}`);
-    }
-    let previousHash = hashAction(first, null);
-    if (first.hash === null) {
-      newHashes.push([0, previousHash]);
-    }
-    if (first.hash !== null && previousHash !== first.hash) {
-      throw new Error(`Invalid hash at item ${0} ${first}, did you change something?`)
-    }
-    let createHashes = false;
-
-    for (let n = 1; n < hashableService.length; n++) {
-      let action = hashableService[n];
-      if (createHashes) {
-        if (action.hash !== null) {
-          throw new Error(`Hash entered when there were previous items without hashes index: ${n} action: ${action}`);
-        }
-        previousHash = hashAction(action, previousHash);
-        newHashes.push([n, previousHash]);
-      } else {
-        if (action.hash === null) {
-          previousHash = hashAction(action, previousHash);
-          newHashes.push([n, previousHash]);
-          createHashes = true;
-        } else {
-          const expectedHash = hashAction(action, previousHash);
-          if (expectedHash !== action.hash) {
-            throw new Error(`Invalid hash at item ${n} ${action}, did you change something?`)
-          }
-          previousHash = action.hash;
-        }
-      }
-    }
-
-    hashedServices.push(newHashes);
-  }
-
-  return hashedServices;
 }
 
 export class BaseField {
@@ -355,7 +307,7 @@ function updateFields(action: types.Action, version: Version): void {
 /*
 Generate types and services (and verify).
  */
-export function generateTypes(types: Array<Array<types.Action>>, services: any): Type[] {
+export function generateTypes(types: Array<Array<types.Action>>): Type[] {
   const generatedTypes = [];
   for (const type of types) {
     const versions = [];
@@ -453,7 +405,7 @@ export function generateTypescript(types: Type[]) {
 }
 
 export function addHashes(
-  unhashedType: types.Action[],
+  unhashedType: types.Action[] | service.ServiceAction[],
   hashes: Array<[number, string]>,
   hashTo: number | null
 ) {

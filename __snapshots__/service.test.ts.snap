@@ -1,0 +1,36 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Create a service 1`] = `
+"/**
+ * **GENERATED CODE DO NOT EDIT!**
+ *
+ * TestService
+ *
+ * This is a Test service
+ *
+ * # Change Log:
+ */
+
+import * as TestInputMessage from \\"./TestInputMessage\\";
+import * as TestOutputMessage from \\"./TestOutputMessage\\";
+
+import * as express from \\"express\\";
+import * as bodyParser from \\"body-parser\\";
+
+const app = express();
+app.use(bodyParser.json());
+
+function TestService(func: (V0) => V0): void {
+  app.get(\\"/TestService\\", (req, res) => {
+    const inputMessage = TestInputMessage.deserialize(req.body);
+    const response = func(inputMessage);
+    const outputMessage = TestOutputMessage.serialize(response);
+    res.json(outputMessage);
+  });
+}
+
+export function startServices() {
+  app.listen(3000, () => console.log(\`Example app listening on port \${port}!\`));
+}
+"
+`;

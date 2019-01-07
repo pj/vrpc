@@ -172,7 +172,7 @@ exports[`Multiple types with type reference 1`] = `
 "/**
  * **GENERATED CODE DO NOT EDIT!**
  *
- *
+ * A useful type
  *
  * # Change Log:
  * 1. Adding a field
@@ -200,7 +200,7 @@ exports[`Multiple types with type reference 2`] = `
 "/**
  * **GENERATED CODE DO NOT EDIT!**
  *
- *
+ * a useful type
  *
  * # Change Log:
  * 1. asdf
