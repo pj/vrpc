@@ -2,8 +2,7 @@ import * as crypto from 'crypto';
 import {compile} from 'ejs';
 import * as fs from 'fs';
 import * as prettier from 'prettier';
-import * as service from './service';
-import * as types from './types';
+import * as action from './action';
 
 const typescriptTypeFile = fs.readFileSync(
   './templates/typescript.ejs',
@@ -40,8 +39,8 @@ export function hashAction(
 * Take a list of types and verify the types and generate any empty types.
 */
 export function hashActions(
-  hashables: Array<Array<types.Action>> | Array<Array<service.ServiceAction>>,
-): Array<Array<[number, string]>> {
+  hashables: Array<action.Action>,
+): Array<[number, string]> {
   const hashedTypes: Array<Array<[number, string]>> = [];
   for (const type of hashables) {
     const newHashes: Array<[number, string]> = [];
@@ -405,7 +404,7 @@ export function generateTypescript(types: Type[]) {
 }
 
 export function addHashes(
-  unhashedType: types.Action[] | service.ServiceAction[],
+  unhashedType: action.Action[],
   hashes: Array<[number, string]>,
   hashTo: number | null
 ) {
@@ -425,67 +424,4 @@ export function addHashes(
   }
 
   return hashed;
-}
-
-function createActions(actions: any[]): types.Action[] {
-  const log = [];
-
-  for (const action of actions) {
-    switch(action._action_type) {
-      case 'RenameAction':
-        log.push(new types.RenameAction(
-          action.changeLog,
-          action.hash,
-          action.state,
-          action._from,
-          action.to)
-        );
-        break;
-      case 'RequiredAction':
-        log.push(new types.RequiredAction(action.changeLog, action.hash, action.state, action.name));
-        break;
-      case 'OptionalAction':
-        log.push(new types.OptionalAction(action.changeLog, action.hash, action.state, action.name));
-        break;
-      case 'DeleteAction':
-        log.push(new types.DeleteAction(action.changeLog, action.hash, action.state, action.name));
-        break;
-      case 'SetDefaultAction':
-        log.push(new types.SetDefaultAction(action.changeLog, action.hash, action.state, action.name, action._default));
-        break;
-      case 'RemoveDefaultAction':
-        log.push(new types.RemoveDefaultAction(action.changeLog, action.hash, action.state, action.name));
-        break;
-      case 'AddAction':
-        log.push(new types.AddAction(action.changeLog, action.hash, action.state, action.name, action.type, action.description, action.optional, action._default));
-        break;
-      case 'UpdateDescriptionAction':
-        log.push(new types.UpdateDescriptionAction(action.changeLog, action.hash, action.state, action.name, action.description));
-        break;
-      case 'ReferenceAction':
-        log.push(new types.ReferenceAction(action.changeLog, action.hash, action.state, action.name, action.description, action.optional, action.referenceType, action.referenceHash));
-        break;
-      case 'NewAction':
-        log.push(new types.NewAction(action.changeLog, action.hash, action.state, action.name, action.description));
-        break;
-      case 'GroupAction':
-        const groupedActions = createActions(action.actions);
-        log.push(new types.GroupAction(action.changeLog, action.hash, action.state, groupedActions));
-        break;
-    }
-  }
-
-  return log;
-}
-
-export function loadActions(path: string): Array<Array<types.Action>> {
-  const types = require(path);
-  const outputTypes = [];
-
-  for (const _type of types) {
-    const log = createActions(_type);
-    outputTypes.push(log);
-  }
-
-  return outputTypes;
 }
