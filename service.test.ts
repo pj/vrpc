@@ -6,7 +6,7 @@ const json_snapshot_tests = ([
 ] as Array<[string, string, number | null]>);
 
 for (const [name, path, hashTo] of json_snapshot_tests) {
-  it(name, () => {
+  it.skip(name, () => {
     const addField = service.loadActions(path);
 
     const hashes = typeidea.hashActions(addField);
