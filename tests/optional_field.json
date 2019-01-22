@@ -1,28 +1,26 @@
 [
-  [
-    {
-      "_action_type": "NewAction",
-      "changeLog": "Creating a new type",
-      "hash": null,
-      "state": "active",
-      "description": "Test"
-    },
-    {
-      "_action_type": "AddAction",
-      "changeLog": "Adding a field",
-      "hash": null,
-      "state": "active",
-      "name": "test_field",
-      "type": "string",
-      "description": "A field that helps testing",
-      "optional": false,
-      "_default": null
-    },{
-      "_action_type": "OptionalAction",
-      "changeLog": "Oops needed to make it optional",
-      "hash": null,
-      "state": "active",
-      "name": "test_field"
-    }
-  ]
+  {
+    "_action_type": "NewTypeAction",
+    "changeLog": "Creating a new type",
+    "hash": null,
+    "state": "active",
+    "description": "Test"
+  },
+  {
+    "_action_type": "AddFieldTypeAction",
+    "changeLog": "Adding a field",
+    "hash": null,
+    "state": "active",
+    "name": "test_field",
+    "type": "string",
+    "description": "A field that helps testing",
+    "optional": false,
+    "_default": null
+  },{
+    "_action_type": "OptionalFieldTypeAction",
+    "changeLog": "Oops needed to make it optional",
+    "hash": null,
+    "state": "active",
+    "name": "test_field"
+  }
 ]

@@ -144,10 +144,14 @@ it('Multiple types with type reference', () => {
     )
   ];
 
-  const hashes = typeidea.hashActions(addField);
-  const hashedAddField = typeidea.addHashes(addField, hashes, null);
+  let hashes = typeidea.hashActions(addField);
+  let hashedAddField = typeidea.addHashes(addField, hashes, 2);
 
   addField[3].referenceHash = hashedAddField[1].hash;
+
+  // Now that we have the correct hash, generate all
+  hashes = typeidea.hashActions(addField);
+  hashedAddField = typeidea.addHashes(addField, hashes, null);
 
   const [generatedTypes, generatedServices] = generate.generateDefinitions(
     hashedAddField,

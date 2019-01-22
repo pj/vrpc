@@ -14,6 +14,7 @@ export class Action {
   fieldsToHash(): string {
     return `${this.changeLog}`;
   };
+
 }
 
 // Type Actions
@@ -35,6 +36,10 @@ export class NewTypeAction extends Action {
   fieldsToHash(): string {
     return `${super.fieldsToHash()}_${this.name}_${this.description}`;
   };
+
+  toString(): string {
+    return `NewTypeAction(${this.changeLog}, ${this.hash}, ${this.name}, ${this.description})`;
+  }
 }
 
 export class RenameFieldTypeAction extends Action {
@@ -58,6 +63,10 @@ export class RenameFieldTypeAction extends Action {
   fieldsToHash(): string {
     return `${super.fieldsToHash()}_${this.typeName}_${this._from}_${this.to}`;
   };
+
+  toString(): string {
+    return `RenameFieldTypeAction(${this.changeLog}, ${this.hash}, ${this.typeName}, ${this._from}, ${this.to})`;
+  }
 }
 
 export class RequiredFieldTypeAction extends Action {
@@ -78,6 +87,10 @@ export class RequiredFieldTypeAction extends Action {
   fieldsToHash(): string {
     return `${super.fieldsToHash()}_${this.typeName}_${this.name}`;
   };
+
+  toString(): string {
+    return `RequiredFieldTypeAction(${this.changeLog}, ${this.hash}, ${this.typeName}, ${this.name})`;
+  }
 }
 
 export class OptionalFieldTypeAction extends Action {
@@ -98,6 +111,10 @@ export class OptionalFieldTypeAction extends Action {
   fieldsToHash(): string {
     return `${super.fieldsToHash()}_${this.typeName}_${this.name}`;
   };
+
+  toString(): string {
+    return `OptionalFieldTypeAction(${this.changeLog}, ${this.hash}, ${this.typeName}, ${this.name})`;
+  }
 }
 
 export class DeleteFieldTypeAction extends Action {
@@ -118,6 +135,10 @@ export class DeleteFieldTypeAction extends Action {
   fieldsToHash(): string {
     return `${super.fieldsToHash()}_${this.typeName}_${this.name}`;
   };
+
+  toString(): string {
+    return `DeleteFieldTypeAction(${this.changeLog}, ${this.hash}, ${this.typeName}, ${this.name})`;
+  }
 }
 
 export class SetDefaultFieldTypeAction extends Action {
@@ -141,6 +162,10 @@ export class SetDefaultFieldTypeAction extends Action {
   fieldsToHash(): string {
     return `${super.fieldsToHash()}_${this.typeName}_${this.name}_${this._default}`;
   };
+
+  toString(): string {
+    return `SetDefaultFieldTypeAction(${this.changeLog}, ${this.hash}, ${this.typeName}, ${this.name}, ${this._default})`;
+  }
 }
 
 export class RemoveDefaultFieldTypeAction extends Action {
@@ -161,6 +186,10 @@ export class RemoveDefaultFieldTypeAction extends Action {
   fieldsToHash(): string {
     return `${super.fieldsToHash()}_${this.typeName}_${this.name}`;
   };
+
+  toString(): string {
+    return `RemoveDefaultFieldTypeAction(${this.changeLog}, ${this.hash}, ${this.typeName}, ${this.name})`;
+  }
 }
 
 export class AddFieldTypeAction extends Action {
@@ -193,6 +222,10 @@ export class AddFieldTypeAction extends Action {
   fieldsToHash(): string {
     return `${super.fieldsToHash()}_${this.typeName}_${this.name}_${this.type}_${this.description}_${this.optional}_${this._default}`;
   };
+
+  toString(): string {
+    return `AddFieldTypeAction(${this.changeLog}, ${this.hash}, ${this.typeName}, ${this.name}, ${this.type}, ${this.description}, ${this.optional}, ${this._default})`;
+  }
 }
 
 export class UpdateDescriptionTypeAction extends Action {
@@ -216,6 +249,10 @@ export class UpdateDescriptionTypeAction extends Action {
   fieldsToHash(): string {
     return `${super.fieldsToHash()}_${this.typeName}_${this.name}_${this.description}`;
   };
+
+  toString(): string {
+    return `UpdateDescriptionTypeAction(${this.changeLog}, ${this.hash}, ${this.typeName}, ${this.name}, ${this.description})`;
+  }
 }
 
 export class ReferenceFieldTypeAction extends Action {
@@ -248,6 +285,10 @@ export class ReferenceFieldTypeAction extends Action {
   fieldsToHash(): string {
     return `${super.fieldsToHash()}_${this.typeName}_${this.name}_${this.description}_${this.optional}_${this.referenceType}_${this.referenceHash}`;
   };
+
+  toString(): string {
+    return `ReferenceFieldTypeAction(${this.changeLog}, ${this.hash}, ${this.typeName}, ${this.name}, ${this.description}, ${this.optional}, ${this.referenceType}, ${this.referenceHash})`;
+  }
 }
 
 export class GroupAction extends Action {
@@ -272,6 +313,11 @@ export class GroupAction extends Action {
     }
     return subHashes.join('_');
   };
+
+  toString(): string {
+    const formattedActions = this.actions.map(action => action.toString());
+    return `GroupAction(${this.changeLog}, ${this.hash}, ${this.typeOrServiceName}, ${formattedActions})`;
+  }
 }
 
 // Service Definitions
@@ -305,6 +351,10 @@ export class NewServiceAction extends Action {
   fieldsToHash(): string {
     return `${super.fieldsToHash()}_${this.serviceName}_${this.description}_${this.inputType}_${this.outputType}_${this.inputVersion}_${this.outputVersion}`;
   };
+
+  toString(): string {
+    return `NewServiceAction(${this.changeLog}, ${this.hash}, ${this.serviceName}, ${this.description}, ${this.inputType}, ${this.outputType}, ${this.inputVersion}, ${this.outputVersion})`;
+  }
 }
 
 export class UpdateDescriptionServiceAction extends Action {
@@ -325,6 +375,10 @@ export class UpdateDescriptionServiceAction extends Action {
   fieldsToHash(): string {
     return `${super.fieldsToHash()}_${this.serviceName}_${this.description}`;
   };
+
+  toString(): string {
+    return `UpdateDescriptionServiceAction(${this.changeLog}, ${this.hash}, ${this.serviceName}, ${this.description})`;
+  }
 }
 
 export class AddInputVersionServiceAction extends Action {
@@ -345,6 +399,10 @@ export class AddInputVersionServiceAction extends Action {
   fieldsToHash(): string {
     return `${super.fieldsToHash()}_${this.serviceName}_${this.version}`;
   };
+
+  toString(): string {
+    return `AddInputVersionServiceAction(${this.changeLog}, ${this.hash}, ${this.serviceName}, ${this.version})`;
+  }
 }
 
 export class RemoveInputVersionServiceAction extends Action {
@@ -365,6 +423,10 @@ export class RemoveInputVersionServiceAction extends Action {
   fieldsToHash(): string {
     return `${super.fieldsToHash()}_${this.serviceName}_${this.version}`;
   };
+
+  toString(): string {
+    return `RemoveInputVersionServiceAction(${this.changeLog}, ${this.hash}, ${this.serviceName}, ${this.version})`;
+  }
 }
 
 export class DeprecateInputVersionServiceAction extends Action {
@@ -385,6 +447,10 @@ export class DeprecateInputVersionServiceAction extends Action {
   fieldsToHash(): string {
     return `${super.fieldsToHash()}_${this.serviceName}_${this.version}`;
   };
+
+  toString(): string {
+    return `DeprecateInputVersionServiceAction(${this.changeLog}, ${this.hash}, ${this.serviceName}, ${this.version})`;
+  }
 }
 
 export class AddOutputVersionServiceAction extends Action {
@@ -405,6 +471,10 @@ export class AddOutputVersionServiceAction extends Action {
   fieldsToHash(): string {
     return `${super.fieldsToHash()}_${this.serviceName}_${this.version}`;
   };
+
+  toString(): string {
+    return `AddOutputVersionServiceAction(${this.changeLog}, ${this.hash}, ${this.serviceName}, ${this.version})`;
+  }
 }
 
 export class RemoveOutputVersionServiceAction extends Action {
@@ -425,6 +495,10 @@ export class RemoveOutputVersionServiceAction extends Action {
   fieldsToHash(): string {
     return `${super.fieldsToHash()}_${this.serviceName}_${this.version}`;
   };
+
+  toString(): string {
+    return `RemoveOutputVersionServiceAction(${this.changeLog}, ${this.hash}, ${this.serviceName}, ${this.version})`;
+  }
 }
 
 export class DeprecateOutputVersionServiceAction extends Action {
@@ -445,6 +519,10 @@ export class DeprecateOutputVersionServiceAction extends Action {
   fieldsToHash(): string {
     return `${super.fieldsToHash()}_${this.serviceName}_${this.version}`;
   };
+
+  toString(): string {
+    return `DeprecateOutputVersionServiceAction(${this.changeLog}, ${this.hash}, ${this.serviceName}, ${this.version})`;
+  }
 }
 
 function loadAction(action: any): Action {
@@ -593,7 +671,7 @@ function loadAction(action: any): Action {
       );
     case 'GroupAction':
       const groupedActions = [];
-      for (const subAction in action.actions) {
+      for (const subAction of action.actions) {
         groupedActions.push(loadAction(subAction));
       }
       return new GroupAction(

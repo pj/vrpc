@@ -194,6 +194,7 @@ export class Service {
   outputType: string;
   inputVersions: ServiceVersion[];
   outputVersions: ServiceVersion[];
+  latest: ServiceVersion[] | null;
 
   constructor(
     name: string,
@@ -208,52 +209,11 @@ export class Service {
     this.outputType = outputType;
     this.inputVersions = [];
     this.outputVersions = [];
+    this.latest = [];
   }
 }
 
-function updateTypeFields(
-  logAction: action.Action,
-  types: Map<string, Type>,
-  groupingVersions: Map<string, Version> | null,
-) {
-  if (!(
-    logAction instanceof action.RenameFieldTypeAction ||
-    logAction instanceof action.RequiredFieldTypeAction ||
-    logAction instanceof action.OptionalFieldTypeAction ||
-    logAction instanceof action.DeleteFieldTypeAction ||
-    logAction instanceof action.SetDefaultFieldTypeAction ||
-    logAction instanceof action.RemoveDefaultFieldTypeAction ||
-    logAction instanceof action.AddFieldTypeAction ||
-    logAction instanceof action.UpdateDescriptionTypeAction ||
-    logAction instanceof action.ReferenceFieldTypeAction)
-  ) {
-    return;
-  }
-
-  if (!types.has(logAction.typeName)) {
-    throw new Error(`Type ${logAction.typeName} does not exist.`);
-  }
-  const _type = types.get(logAction.typeName);
-  if (_type === undefined) {
-    throw new Error(`This should not happen because it was added for typescript`);
-  }
-
-  let newVersion;
-  if (groupingVersions === null) {
-    newVersion = new Version(logAction.hash, {});
-    if (_type.versions.length > 0) {
-      newVersion.fields = {..._type.versions[_type.versions.length-1].fields};
-    }
-  } else {
-    newVersion = groupingVersions.get(_type.name);
-    if (newVersion === undefined) {
-      newVersion = new Version(logAction.hash, {});
-      if (_type.versions.length > 0) {
-        newVersion.fields = {..._type.versions[_type.versions.length-1].fields};
-      }
-    }
-  }
-
+function updateVersion(newVersion: Version, logAction: action.Action) {
   if (logAction instanceof action.RenameFieldTypeAction) {
     const currentField = newVersion.fields[logAction._from];
     const newField = currentField.copy();
@@ -322,17 +282,79 @@ function updateTypeFields(
     );
     newVersion.fields[newField.name] = newField;
   }
+}
 
-  if (groupingVersions === null) {
-    _type.versions.push(newVersion)
+function updateTypeFields(
+  logAction: action.Action,
+  types: Map<string, Type>,
+  groupingVersions: Map<string, Version> | null,
+  isLatest: boolean,
+) {
+  if (!(
+    logAction instanceof action.RenameFieldTypeAction ||
+    logAction instanceof action.RequiredFieldTypeAction ||
+    logAction instanceof action.OptionalFieldTypeAction ||
+    logAction instanceof action.DeleteFieldTypeAction ||
+    logAction instanceof action.SetDefaultFieldTypeAction ||
+    logAction instanceof action.RemoveDefaultFieldTypeAction ||
+    logAction instanceof action.AddFieldTypeAction ||
+    logAction instanceof action.UpdateDescriptionTypeAction ||
+    logAction instanceof action.ReferenceFieldTypeAction)
+  ) {
+    return;
+  }
+
+  if (!types.has(logAction.typeName)) {
+    throw new Error(`Type ${logAction.typeName} does not exist.`);
+  }
+  const _type = types.get(logAction.typeName);
+  if (_type === undefined) {
+    throw new Error(`This should not happen because it was added for typescript`);
+  }
+
+  let newVersion;
+  if (isLatest) {
+    if (_type.latest === null) {
+      newVersion = new Version(logAction.hash, {});
+      if (_type.versions.length > 0) {
+        newVersion.fields = {..._type.versions[_type.versions.length-1].fields};
+      }
+      _type.latest = newVersion;
+    } else {
+      newVersion = _type.latest;
+    }
+  } else if (groupingVersions === null) {
+    newVersion = new Version(logAction.hash, {});
+    if (_type.versions.length > 0) {
+      newVersion.fields = {..._type.versions[_type.versions.length-1].fields};
+    }
   } else {
-    groupingVersions.set(_type.name, newVersion);
+    newVersion = groupingVersions.get(_type.name);
+    if (newVersion === undefined) {
+      newVersion = new Version(logAction.hash, {});
+      if (_type.versions.length > 0) {
+        newVersion.fields = {..._type.versions[_type.versions.length-1].fields};
+      }
+    }
+  }
+
+  updateVersion(newVersion, logAction);
+
+  _type.changeLog.push(logAction.changeLog);
+
+  if (!isLatest) {
+    if (groupingVersions === null) {
+      _type.versions.push(newVersion)
+    } else {
+      groupingVersions.set(_type.name, newVersion);
+    }
   }
 }
 
 function updateServices(
   logAction: action.Action,
-  services: Map<string, Service>
+  services: Map<string, Service>,
+  isLatest: boolean,
 ) {
   if (!(
     logAction instanceof action.UpdateDescriptionServiceAction ||
@@ -401,6 +423,7 @@ function updateTypesAndServices(
   types: Map<string, Type>,
   services: Map<string, Service>,
   groupingVersions: Map<string, Version> | null,
+  isLatest: boolean,
 ) {
   if (logAction instanceof action.NewTypeAction) {
     if (types.has(logAction.name)) {
@@ -410,14 +433,17 @@ function updateTypesAndServices(
       logAction.name,
       logAction.description,
     );
+    newType.changeLog.push(logAction.changeLog);
     types.set(newType.name, newType);
   } else if (logAction instanceof action.GroupAction) {
     const subGroupingVersions = new Map();
     for (const subAction of logAction.actions) {
-      updateTypesAndServices(subAction, types, services, subGroupingVersions);
+      updateTypesAndServices(subAction, types, services, subGroupingVersions, isLatest);
     }
 
     for (const [typeName, newVersion] of subGroupingVersions.entries()) {
+      // Rethink this, should every version have the same hash?
+      newVersion.hash = logAction.hash;
       const _type = types.get(typeName);
       if (_type === undefined) {
         throw new Error(`Can't find type that was updated in group.`);
@@ -430,16 +456,17 @@ function updateTypesAndServices(
     if (types.has(logAction.serviceName)) {
       throw new Error(`Service ${logAction.serviceName} defined twice!`);
     }
-    const newType = new Service(
+    const newService = new Service(
       logAction.serviceName,
       logAction.description,
       logAction.inputType,
       logAction.outputType,
     );
-    services.set(newType.name, newType);
+    newService.changeLog.push(logAction.changeLog);
+    services.set(newService.name, newService);
   } else {
-    updateTypeFields(logAction, types, groupingVersions);
-    updateServices(logAction, services);
+    updateTypeFields(logAction, types, groupingVersions, isLatest);
+    updateServices(logAction, services, isLatest);
   }
 }
 
@@ -462,7 +489,9 @@ export function generateDefinitions(log: action.Action[]): [Type[], Service[]] {
     } else {
       const expectedHash = typeidea.hashAction(action, previousHash);
       if (expectedHash !== action.hash) {
-        throw new Error(`Invalid hash at item ${n} ${action}, did you change something?`)
+        throw new Error(
+          `Invalid hash at item ${n} ${action}, did you change something?`
+        );
       }
       hashed.push(action);
       previousHash = expectedHash;
@@ -473,8 +502,14 @@ export function generateDefinitions(log: action.Action[]): [Type[], Service[]] {
   const services = new Map();
   for (let n = 0; n < hashed.length; n++) {
     const logAction = hashed[n];
-    updateTypesAndServices(logAction, types, services, null);
+    updateTypesAndServices(logAction, types, services, null, false);
   }
+
+  for (let n = 0; n < latest.length; n++) {
+    const logAction = latest[n];
+    updateTypesAndServices(logAction, types, services, null, true);
+  }
+
   return [Array.from(types.values()), Array.from(services.values())];
 }
 
@@ -484,6 +519,7 @@ const typescriptTypeFile = fs.readFileSync(
     encoding: "utf8",
   }
 );
+
 const typescriptTypeTemplate = compile(
   typescriptTypeFile,
   {
@@ -497,6 +533,7 @@ const typescriptServiceFile = fs.readFileSync(
     encoding: "utf8",
   }
 );
+
 const typescriptServiceTemplate = compile(
   typescriptServiceFile,
   {
@@ -505,8 +542,11 @@ const typescriptServiceTemplate = compile(
 );
 
 
-export function generateTypescript(types: Type[], services: Service[]) {
-  return types.map((_type) => {
+export function generateTypescript(
+  types: Type[],
+  services: Service[],
+): Array<[Type, string]> {
+  return types.map((_type): [Type, string] => {
     // load imports.
     const imports = new Set();
     for (const version of _type.versions) {

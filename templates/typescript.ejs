@@ -13,11 +13,9 @@
 <% }) %>
 
 <% versions.forEach(function (version, index) { %>
-  <% if (version.state === 'active' || version.state === 'deprecated') { %>
-    <%- include('typescript_class', {className: 'H_' + version.hash, version: version}); %>
+  <%- include('typescript_class', {className: 'H_' + version.hash, version: version}); %>
 
-    export type V_<%= index %> = H_<%= version.hash %>;
-  <% } %>
+  export type V_<%= index %> = H_<%= version.hash %>;
 <% }) %>
 
 <% if (latest !== null) { %>
