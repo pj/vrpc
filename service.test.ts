@@ -32,7 +32,7 @@ const service_test_dirs = ([
 ] as Array<[string, string]>);
 
 for (const [name, dir] of service_test_dirs) {
-  it.skip(name, () => {
+  it(name, () => {
     const actions = action.loadActionLog(path.join(dir, 'actions.json'));
 
     const hashes = typeidea.hashActions(actions);
@@ -46,17 +46,23 @@ for (const [name, dir] of service_test_dirs) {
 
     // Write files to temp dir
     const testDir = tmp.dirSync({unsafeCleanup: true});
+    console.log(testDir.name);
 
     for (const [_type, contents] of generatedTypes) {
-      const file = fs.writeFileSync(path.join(testDir.name, _type.name, '.ts'));
+      const file = fs.writeFileSync(
+        path.join(testDir.name, _type.name, '.ts'),
+        contents,
+      );
     }
 
     for (const [_type, contents] of generatedServices) {
-      const file = fs.writeFileSync(path.join(testDir.name, _type.name, '.ts'));
+      const file = fs.writeFileSync(
+        path.join(testDir.name, _type.name, '.ts'),
+        contents,
+      );
     }
 
     // import service functions file
-
 
     // load functions into express
 
