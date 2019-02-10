@@ -158,7 +158,6 @@ it('Multiple types with type reference', () => {
   );
   const typescript = generate.generateTypescript(
     generatedTypes,
-    generatedServices,
   );
 
   expect(typescript[0][1]).toMatchSnapshot();
@@ -194,10 +193,7 @@ for (const [name, path, hashTo] of json_snapshot_tests) {
     const [generatedTypes, generatedServices] = generate.generateDefinitions(
       hashedAddField
     );
-    const typescript = generate.generateTypescript(
-      generatedTypes,
-      generatedServices
-    );
+    const typescript = generate.generateTypescript(generatedTypes);
 
     expect(typescript[0][1]).toMatchSnapshot();
   });

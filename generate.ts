@@ -527,25 +527,7 @@ const typescriptTypeTemplate = compile(
   }
 );
 
-const typescriptServiceFile = fs.readFileSync(
-  './templates/service.ejs',
-  {
-    encoding: "utf8",
-  }
-);
-
-const typescriptServiceTemplate = compile(
-  typescriptServiceFile,
-  {
-    filename: './templates/service.ejs'
-  }
-);
-
-
-export function generateTypescript(
-  types: Type[],
-  services: Service[],
-): Array<[Type, string]> {
+export function generateTypescript(types: Type[]): Array<[Type, string]> {
   return types.map((_type): [Type, string] => {
     // load imports.
     const imports = new Set();
@@ -575,3 +557,42 @@ export function generateTypescript(
   );
 }
 
+const typescriptServiceFile = fs.readFileSync(
+  './templates/express.ejs',
+  {
+    encoding: "utf8",
+  }
+);
+
+const typescriptServiceTemplate = compile(
+  typescriptServiceFile,
+  {
+    filename: './templates/service.ejs'
+  }
+);
+
+export function generateTypescriptServices(
+  services: Service[],
+): Array<[Service, string]> {
+  return services.map((service): [Service, string] => {
+    return [
+      service,
+      prettier.format(
+        typescriptServiceTemplate(
+        ),
+        {parser: 'typescript'},
+      )
+    ];
+  }
+  );
+}
+
+export function generateTypescriptBoth(
+  types: Type[],
+  services: Service[],
+): [Array<[Type, string]>, Array<[Service, string]>] {
+  const generatedTypes = generateTypescript(types);
+  const generatedServices = generateTypescriptServices(services);
+
+  return [generatedTypes, generatedServices];
+}

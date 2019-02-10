@@ -12,7 +12,7 @@
 */
 
 import * as <%= service.inputType %> from './<%= service.inputType %>';
-import * as <%= service.outputType %> from './<%= service.outputType %>';
+import * as <%= service.outputType %> from './<%= service.inputType %>';
 
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
@@ -22,8 +22,8 @@ app.use(bodyParser.json());
 
 function <%= service.name %>(
 func: (
-<%= service.inputVersions.map(function (inputVersion) { return inputVersion.version } ).join(' | ') %>
-) => <%= service.outputVersions.map(function (outputVersion) { return outputVersion.version } ).join(' | ') %>
+<% service.inputVersions.map(function (inputVersion) { return inputVersion.version } ).join(' | ') %>
+) => <% service.outputVersions.map(function (outputVersion) { return outputVersion.version } ).join(' | ') %>
 ): void {
   app.get('/<%= service.name %>', (req, res) => {
     const inputMessage = <%= service.inputType %>.deserialize(req.body);
@@ -36,3 +36,5 @@ func: (
 export function startServices() {
   app.listen(3000, () => console.log(`Example app listening on port ${port}!`));
 }
+
+export app;
