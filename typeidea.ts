@@ -47,13 +47,13 @@ export function hashActions(
   for (let n = 0; n < hashables.length; n++) {
     let hashable = hashables[n];
     if (createHashes) {
-      if (hashable.hash !== null) {
+      if (hashable.hash !== null && hashable.hash !== undefined) {
         throw new Error(`Hash entered when there were previous items without hashes index: ${n} action: ${hashable}`);
       }
       previousHash = hashAction(hashable, previousHash);
       newHashes.push([n, previousHash]);
     } else {
-      if (hashable.hash === null) {
+      if (hashable.hash === null || hashable.hash === undefined) {
         previousHash = hashAction(hashable, previousHash);
         newHashes.push([n, previousHash]);
         createHashes = true;
@@ -75,6 +75,9 @@ export function addHashes(
   hashes: Array<[number, string]>,
   hashTo: number | null
 ) {
+  if (hashes.length === 0) {
+    return unhashedType;
+  }
   const hashed = unhashedType.slice();
   if (hashTo === null) {
     hashTo = unhashedType.length;

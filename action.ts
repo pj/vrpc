@@ -1,3 +1,5 @@
+import * as fs from 'fs';
+
 export type FieldTypes = 'string' | 'boolean' | 'number';
 
 export type FieldDefaults = string | boolean | number;
@@ -677,7 +679,7 @@ function loadAction(action: any): Action {
       return new GroupAction(
         action.changeLog,
         action.hash,
-        action.state,
+        action.name,
         groupedActions
       );
     default:
@@ -692,6 +694,333 @@ export function loadActionLog(path: string): Array<Action> {
   for (const action of actions) {
     const log = loadAction(action);
     outputActions.push(log);
+  }
+
+  return outputActions;
+}
+
+function loadSimpleAction(fields: any): Action {
+  var name, inputType, inputVersion, outputType, outputVersion, changeLog,
+    description, hash, serviceName, version, typeName, _from, to, _default,
+    type, optional, referenceType, referenceHash, _;
+  switch(fields[0]) {
+    // Services
+    case 'new_service':
+      [
+        _,
+        name,
+        inputType,
+        inputVersion,
+        outputType,
+        outputVersion,
+        changeLog,
+        description,
+        hash
+      ] = fields;
+      return new NewServiceAction(
+        changeLog,
+        hash,
+        name,
+        description,
+        inputType, outputType,
+        inputVersion,
+        outputVersion,
+      );
+    case 'update_service_description':
+      [
+        _,
+        serviceName,
+        changeLog,
+        description,
+        hash
+      ] = fields;
+      return new UpdateDescriptionServiceAction(
+        changeLog,
+        hash,
+        serviceName,
+        description
+      );
+    case 'add_service_input_version':
+      [
+        _,
+        serviceName,
+        version,
+        changeLog,
+        hash
+      ] = fields;
+      return new AddInputVersionServiceAction(
+        changeLog,
+        hash,
+        serviceName,
+        version
+      );
+    case 'remove_service_input_version':
+      [
+        _,
+        serviceName,
+        version,
+        changeLog,
+        hash
+      ] = fields;
+      return new RemoveInputVersionServiceAction(
+        changeLog,
+        hash,
+        serviceName,
+        version
+      );
+    case 'deprecate_service_input_version':
+      [
+        _,
+        serviceName,
+        version,
+        changeLog,
+        hash
+      ] = fields;
+      return new DeprecateInputVersionServiceAction(
+        changeLog,
+        hash,
+        serviceName,
+        version
+      );
+    case 'add_service_output_version':
+      [
+        _,
+        serviceName,
+        version,
+        changeLog,
+        hash
+      ] = fields;
+      return new AddOutputVersionServiceAction(
+        changeLog,
+        hash,
+        serviceName,
+        version
+      );
+    case 'remove_service_output_version':
+      [
+        _,
+        serviceName,
+        version,
+        changeLog,
+        hash
+      ] = fields;
+      return new RemoveOutputVersionServiceAction(
+        changeLog,
+        hash,
+        serviceName,
+        version
+      );
+    case 'deprecate_service_output_version':
+      [
+        _,
+        serviceName,
+        version,
+        changeLog,
+        hash
+      ] = fields;
+      return new DeprecateOutputVersionServiceAction(
+        changeLog,
+        hash,
+        serviceName,
+        version
+      );
+    // Types
+    case 'rename_field':
+      [
+        _,
+        typeName,
+        _from,
+        to,
+        changeLog,
+        hash
+      ] = fields;
+      return new RenameFieldTypeAction(
+        changeLog,
+        hash,
+        typeName,
+        _from,
+        to
+      );
+    case 'required_field':
+      [
+        _,
+        typeName,
+        name,
+        changeLog,
+        hash
+      ] = fields;
+      return new RequiredFieldTypeAction(
+        changeLog,
+        hash,
+        typeName,
+        name
+      );
+    case 'optional_field':
+      [
+        _,
+        typeName,
+        name,
+        changeLog,
+        hash
+      ] = fields;
+      return new OptionalFieldTypeAction(
+        changeLog,
+        hash,
+        typeName,
+        name
+      );
+    case 'delete_field':
+      [
+        _,
+        typeName,
+        name,
+        changeLog,
+        hash
+      ] = fields;
+      return new DeleteFieldTypeAction(
+        changeLog,
+        hash,
+        typeName,
+        name
+      );
+    case 'set_field_default':
+      [
+        _,
+        typeName,
+        name,
+        _default,
+        changeLog,
+        hash
+      ] = fields;
+      return new SetDefaultFieldTypeAction(
+        changeLog,
+        hash,
+        typeName,
+        name,
+        _default
+      );
+    case 'remove_field_default':
+      [
+        _,
+        typeName,
+        name,
+        changeLog,
+        hash
+      ] = fields;
+      return new RemoveDefaultFieldTypeAction(
+        changeLog,
+        hash,
+        typeName,
+        name
+      );
+    case 'add_field':
+      [
+        _,
+        typeName,
+        name,
+        type,
+        optional,
+        _default,
+        description,
+        changeLog,
+        hash
+      ] = fields;
+      return new AddFieldTypeAction(
+        changeLog,
+        hash,
+        typeName,
+        name,
+        type,
+        description,
+        optional,
+        _default
+      );
+    case 'update_description':
+      [
+        _,
+        typeName,
+        name,
+        description,
+        changeLog,
+        hash
+      ] = fields;
+      return new UpdateDescriptionTypeAction(
+        changeLog,
+        hash,
+        typeName,
+        name,
+        description
+      );
+    case 'reference_field':
+      [
+        _,
+        typeName,
+        name,
+        optional,
+        referenceType,
+        referenceHash,
+        description,
+        changeLog,
+        hash
+      ] = fields;
+      return new ReferenceFieldTypeAction(
+        changeLog,
+        hash,
+        typeName,
+        name,
+        description,
+        optional,
+        referenceType,
+        referenceHash
+      );
+    case 'new_type':
+      [
+        _,
+        name,
+        description,
+        changeLog,
+        hash
+      ] = fields;
+      return new NewTypeAction(
+        changeLog,
+        hash,
+        name,
+        description
+      );
+    default:
+      throw new Error(`Unknown Action: ${fields}`);
+  }
+}
+
+export function loadSimpleActionLog(path: string): Array<Action> {
+  const contents = fs.readFileSync(path, {'encoding': 'utf8'});
+  const lines = contents.split('\n');
+  const outputActions = [];
+  let currentGroup = null;
+
+  for (const line of lines) {
+    if (line === '') {
+      continue;
+    }
+    const action = loadSimpleAction(line.split(','));
+    outputActions.push(action);
+    //if (line[0] === 'start_group') {
+    //  currentGroup = [];
+    //} else if (line[0] === 'end_group') {
+    //  outputActions.push(new GroupAction(
+    //    "todo",
+    //    ,
+    //    action.state,
+    //    currentGroup
+    //  ));
+    //  currentGroup = null;
+    //} else {
+    //  if (currentGroup !== null) {
+    //    currentGroup.push(action);
+    //  } else {
+    //    outputActions.push(action);
+    //  }
+    //}
   }
 
   return outputActions;

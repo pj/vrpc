@@ -33,8 +33,7 @@ const service_test_dirs = ([
 
 for (const [name, dir] of service_test_dirs) {
   it(name, () => {
-    const actions = action.loadActionLog(path.join(dir, 'actions.json'));
-
+    const actions = action.loadSimpleActionLog(path.join(dir, 'actions.log'));
     const hashes = typeidea.hashActions(actions);
     const hashedActions = typeidea.addHashes(actions, hashes, null);
 
