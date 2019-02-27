@@ -1,4 +1,4 @@
-new_type,TestInputType,"An awesome input type","Needs this for testing new type",80452e433f2f3a59cd58ed803086ec183a9fdd793218aab06bf01c3c4b3fab71
-add_field,TestInputType,a_field,string,false,,"An awesome field on the input type","Need this for testing add field input",f9625d333a32ef1f481fbdb00252fbd3650aa166d1b7027b35c756739678829d
+action: new_type,TestInputType,"An awesome input type","Needs this for testing new type",80452e433f2f3a59cd58ed803086ec183a9fdd793218aab06bf01c3c4b3fab71
+action: add_field,TestInputType,a_field,string,false,,"An awesome field on the input type","Need this for testing add field input",f9625d333a32ef1f481fbdb00252fbd3650aa166d1b7027b35c756739678829d
 new_type,TestOutputType,"An awesome output type","Need this for testing new output type",b67641035d766156810c521e0e629b5f16538dc6c798504bb08a49e7e87755f4
 add_field,TestOutputType,a_field,string,false,,"An awesome field on the output type","Need this field for testing new output type",ee070b9ea7a7cee38a0d55c658f7d974ee4f1f907514c0be8b2d79a369309cbf

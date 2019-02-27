@@ -73,7 +73,7 @@ it('Changing an action makes hashing invalid', () => {
   hashedAddField[0].changeLog = "Don't do this!";
   expect(() => {
     typeidea.hashActions(hashedAddField);
-  }).toThrow(/Invalid hash at item \d+ .*, did you change something\?/);
+  }).toThrow(/Invalid hash at item \d+ .*/);
 });
 
 it('Changing a hash makes hashing invalid', () => {
@@ -104,7 +104,7 @@ it('Changing a hash makes hashing invalid', () => {
   hashedAddField[0].hash = "Don't do this!";
   expect(() => {
     typeidea.hashActions(hashedAddField);
-  }).toThrow(/Invalid hash at item \d+ .*, did you change something\?/);
+  }).toThrow(/Invalid hash at item \d+ .*/);
 });
 
 it('Multiple types with type reference', () => {

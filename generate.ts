@@ -579,6 +579,9 @@ export function generateTypescriptServices(
       service,
       prettier.format(
         typescriptServiceTemplate(
+          {
+            service: service
+          }
         ),
         {parser: 'typescript'},
       )

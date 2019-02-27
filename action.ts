@@ -534,7 +534,7 @@ function loadAction(action: any): Action {
       return new NewServiceAction(
         action.changeLog,
         action.hash,
-        action.name,
+        action.serviceName,
         action.description,
         action.inputType, action.outputType,
         action.inputVersion,
@@ -699,329 +699,499 @@ export function loadActionLog(path: string): Array<Action> {
   return outputActions;
 }
 
-function loadSimpleAction(fields: any): Action {
-  var name, inputType, inputVersion, outputType, outputVersion, changeLog,
-    description, hash, serviceName, version, typeName, _from, to, _default,
-    type, optional, referenceType, referenceHash, _;
-  switch(fields[0]) {
-    // Services
-    case 'new_service':
-      [
-        _,
-        name,
-        inputType,
-        inputVersion,
-        outputType,
-        outputVersion,
-        changeLog,
-        description,
-        hash
-      ] = fields;
-      return new NewServiceAction(
-        changeLog,
-        hash,
-        name,
-        description,
-        inputType, outputType,
-        inputVersion,
-        outputVersion,
-      );
-    case 'update_service_description':
-      [
-        _,
-        serviceName,
-        changeLog,
-        description,
-        hash
-      ] = fields;
-      return new UpdateDescriptionServiceAction(
-        changeLog,
-        hash,
-        serviceName,
-        description
-      );
-    case 'add_service_input_version':
-      [
-        _,
-        serviceName,
-        version,
-        changeLog,
-        hash
-      ] = fields;
-      return new AddInputVersionServiceAction(
-        changeLog,
-        hash,
-        serviceName,
-        version
-      );
-    case 'remove_service_input_version':
-      [
-        _,
-        serviceName,
-        version,
-        changeLog,
-        hash
-      ] = fields;
-      return new RemoveInputVersionServiceAction(
-        changeLog,
-        hash,
-        serviceName,
-        version
-      );
-    case 'deprecate_service_input_version':
-      [
-        _,
-        serviceName,
-        version,
-        changeLog,
-        hash
-      ] = fields;
-      return new DeprecateInputVersionServiceAction(
-        changeLog,
-        hash,
-        serviceName,
-        version
-      );
-    case 'add_service_output_version':
-      [
-        _,
-        serviceName,
-        version,
-        changeLog,
-        hash
-      ] = fields;
-      return new AddOutputVersionServiceAction(
-        changeLog,
-        hash,
-        serviceName,
-        version
-      );
-    case 'remove_service_output_version':
-      [
-        _,
-        serviceName,
-        version,
-        changeLog,
-        hash
-      ] = fields;
-      return new RemoveOutputVersionServiceAction(
-        changeLog,
-        hash,
-        serviceName,
-        version
-      );
-    case 'deprecate_service_output_version':
-      [
-        _,
-        serviceName,
-        version,
-        changeLog,
-        hash
-      ] = fields;
-      return new DeprecateOutputVersionServiceAction(
-        changeLog,
-        hash,
-        serviceName,
-        version
-      );
-    // Types
-    case 'rename_field':
-      [
-        _,
-        typeName,
-        _from,
-        to,
-        changeLog,
-        hash
-      ] = fields;
-      return new RenameFieldTypeAction(
-        changeLog,
-        hash,
-        typeName,
-        _from,
-        to
-      );
-    case 'required_field':
-      [
-        _,
-        typeName,
-        name,
-        changeLog,
-        hash
-      ] = fields;
-      return new RequiredFieldTypeAction(
-        changeLog,
-        hash,
-        typeName,
-        name
-      );
-    case 'optional_field':
-      [
-        _,
-        typeName,
-        name,
-        changeLog,
-        hash
-      ] = fields;
-      return new OptionalFieldTypeAction(
-        changeLog,
-        hash,
-        typeName,
-        name
-      );
-    case 'delete_field':
-      [
-        _,
-        typeName,
-        name,
-        changeLog,
-        hash
-      ] = fields;
-      return new DeleteFieldTypeAction(
-        changeLog,
-        hash,
-        typeName,
-        name
-      );
-    case 'set_field_default':
-      [
-        _,
-        typeName,
-        name,
-        _default,
-        changeLog,
-        hash
-      ] = fields;
-      return new SetDefaultFieldTypeAction(
-        changeLog,
-        hash,
-        typeName,
-        name,
-        _default
-      );
-    case 'remove_field_default':
-      [
-        _,
-        typeName,
-        name,
-        changeLog,
-        hash
-      ] = fields;
-      return new RemoveDefaultFieldTypeAction(
-        changeLog,
-        hash,
-        typeName,
-        name
-      );
-    case 'add_field':
-      [
-        _,
-        typeName,
-        name,
-        type,
-        optional,
-        _default,
-        description,
-        changeLog,
-        hash
-      ] = fields;
-      return new AddFieldTypeAction(
-        changeLog,
-        hash,
-        typeName,
-        name,
-        type,
-        description,
-        optional,
-        _default
-      );
-    case 'update_description':
-      [
-        _,
-        typeName,
-        name,
-        description,
-        changeLog,
-        hash
-      ] = fields;
-      return new UpdateDescriptionTypeAction(
-        changeLog,
-        hash,
-        typeName,
-        name,
-        description
-      );
-    case 'reference_field':
-      [
-        _,
-        typeName,
-        name,
-        optional,
-        referenceType,
-        referenceHash,
-        description,
-        changeLog,
-        hash
-      ] = fields;
-      return new ReferenceFieldTypeAction(
-        changeLog,
-        hash,
-        typeName,
-        name,
-        description,
-        optional,
-        referenceType,
-        referenceHash
-      );
-    case 'new_type':
-      [
-        _,
-        name,
-        description,
-        changeLog,
-        hash
-      ] = fields;
-      return new NewTypeAction(
-        changeLog,
-        hash,
-        name,
-        description
-      );
-    default:
-      throw new Error(`Unknown Action: ${fields}`);
-  }
-}
-
-export function loadSimpleActionLog(path: string): Array<Action> {
-  const contents = fs.readFileSync(path, {'encoding': 'utf8'});
-  const lines = contents.split('\n');
-  const outputActions = [];
-  let currentGroup = null;
-
-  for (const line of lines) {
-    if (line === '') {
-      continue;
-    }
-    const action = loadSimpleAction(line.split(','));
-    outputActions.push(action);
-    //if (line[0] === 'start_group') {
-    //  currentGroup = [];
-    //} else if (line[0] === 'end_group') {
-    //  outputActions.push(new GroupAction(
-    //    "todo",
-    //    ,
-    //    action.state,
-    //    currentGroup
-    //  ));
-    //  currentGroup = null;
-    //} else {
-    //  if (currentGroup !== null) {
-    //    currentGroup.push(action);
-    //  } else {
-    //    outputActions.push(action);
-    //  }
-    //}
-  }
-
-  return outputActions;
-}
+//function loadArrayAction(fields: any): Action {
+//  var name, inputType, inputVersion, outputType, outputVersion, changeLog,
+//    description, hash, serviceName, version, typeName, _from, to, _default,
+//    type, optional, referenceType, referenceHash, _;
+//  switch(fields[0]) {
+//    // Services
+//    case 'new_service':
+//      [
+//        _,
+//        name,
+//        inputType,
+//        inputVersion,
+//        outputType,
+//        outputVersion,
+//        changeLog,
+//        description,
+//        hash
+//      ] = fields;
+//      return new NewServiceAction(
+//        changeLog,
+//        hash,
+//        name,
+//        description,
+//        inputType, outputType,
+//        inputVersion,
+//        outputVersion,
+//      );
+//    case 'update_service_description':
+//      [
+//        _,
+//        serviceName,
+//        changeLog,
+//        description,
+//        hash
+//      ] = fields;
+//      return new UpdateDescriptionServiceAction(
+//        changeLog,
+//        hash,
+//        serviceName,
+//        description
+//      );
+//    case 'add_service_input_version':
+//      [
+//        _,
+//        serviceName,
+//        version,
+//        changeLog,
+//        hash
+//      ] = fields;
+//      return new AddInputVersionServiceAction(
+//        changeLog,
+//        hash,
+//        serviceName,
+//        version
+//      );
+//    case 'remove_service_input_version':
+//      [
+//        _,
+//        serviceName,
+//        version,
+//        changeLog,
+//        hash
+//      ] = fields;
+//      return new RemoveInputVersionServiceAction(
+//        changeLog,
+//        hash,
+//        serviceName,
+//        version
+//      );
+//    case 'deprecate_service_input_version':
+//      [
+//        _,
+//        serviceName,
+//        version,
+//        changeLog,
+//        hash
+//      ] = fields;
+//      return new DeprecateInputVersionServiceAction(
+//        changeLog,
+//        hash,
+//        serviceName,
+//        version
+//      );
+//    case 'add_service_output_version':
+//      [
+//        _,
+//        serviceName,
+//        version,
+//        changeLog,
+//        hash
+//      ] = fields;
+//      return new AddOutputVersionServiceAction(
+//        changeLog,
+//        hash,
+//        serviceName,
+//        version
+//      );
+//    case 'remove_service_output_version':
+//      [
+//        _,
+//        serviceName,
+//        version,
+//        changeLog,
+//        hash
+//      ] = fields;
+//      return new RemoveOutputVersionServiceAction(
+//        changeLog,
+//        hash,
+//        serviceName,
+//        version
+//      );
+//    case 'deprecate_service_output_version':
+//      [
+//        _,
+//        serviceName,
+//        version,
+//        changeLog,
+//        hash
+//      ] = fields;
+//      return new DeprecateOutputVersionServiceAction(
+//        changeLog,
+//        hash,
+//        serviceName,
+//        version
+//      );
+//    // Types
+//    case 'rename_field':
+//      [
+//        _,
+//        typeName,
+//        _from,
+//        to,
+//        changeLog,
+//        hash
+//      ] = fields;
+//      return new RenameFieldTypeAction(
+//        changeLog,
+//        hash,
+//        typeName,
+//        _from,
+//        to
+//      );
+//    case 'required_field':
+//      [
+//        _,
+//        typeName,
+//        name,
+//        changeLog,
+//        hash
+//      ] = fields;
+//      return new RequiredFieldTypeAction(
+//        changeLog,
+//        hash,
+//        typeName,
+//        name
+//      );
+//    case 'optional_field':
+//      [
+//        _,
+//        typeName,
+//        name,
+//        changeLog,
+//        hash
+//      ] = fields;
+//      return new OptionalFieldTypeAction(
+//        changeLog,
+//        hash,
+//        typeName,
+//        name
+//      );
+//    case 'delete_field':
+//      [
+//        _,
+//        typeName,
+//        name,
+//        changeLog,
+//        hash
+//      ] = fields;
+//      return new DeleteFieldTypeAction(
+//        changeLog,
+//        hash,
+//        typeName,
+//        name
+//      );
+//    case 'set_field_default':
+//      [
+//        _,
+//        typeName,
+//        name,
+//        _default,
+//        changeLog,
+//        hash
+//      ] = fields;
+//      return new SetDefaultFieldTypeAction(
+//        changeLog,
+//        hash,
+//        typeName,
+//        name,
+//        _default
+//      );
+//    case 'remove_field_default':
+//      [
+//        _,
+//        typeName,
+//        name,
+//        changeLog,
+//        hash
+//      ] = fields;
+//      return new RemoveDefaultFieldTypeAction(
+//        changeLog,
+//        hash,
+//        typeName,
+//        name
+//      );
+//    case 'add_field':
+//      [
+//        _,
+//        typeName,
+//        name,
+//        type,
+//        optional,
+//        _default,
+//        description,
+//        changeLog,
+//        hash
+//      ] = fields;
+//      return new AddFieldTypeAction(
+//        changeLog,
+//        hash,
+//        typeName,
+//        name,
+//        type,
+//        description,
+//        optional,
+//        _default
+//      );
+//    case 'update_description':
+//      [
+//        _,
+//        typeName,
+//        name,
+//        description,
+//        changeLog,
+//        hash
+//      ] = fields;
+//      return new UpdateDescriptionTypeAction(
+//        changeLog,
+//        hash,
+//        typeName,
+//        name,
+//        description
+//      );
+//    case 'reference_field':
+//      [
+//        _,
+//        typeName,
+//        name,
+//        optional,
+//        referenceType,
+//        referenceHash,
+//        description,
+//        changeLog,
+//        hash
+//      ] = fields;
+//      return new ReferenceFieldTypeAction(
+//        changeLog,
+//        hash,
+//        typeName,
+//        name,
+//        description,
+//        optional,
+//        referenceType,
+//        referenceHash
+//      );
+//    case 'new_type':
+//      [
+//        _,
+//        name,
+//        description,
+//        changeLog,
+//        hash
+//      ] = fields;
+//      return new NewTypeAction(
+//        changeLog,
+//        hash,
+//        name,
+//        description
+//      );
+//    default:
+//      throw new Error(`Unknown Action: ${fields}`);
+//  }
+//}
+//
+//function loadSimpleAction(action: any): Action {
+//  switch(action.action) {
+//    // Services
+//    case 'new_service_action':
+//      return new NewServiceAction(
+//        action.changeLog,
+//        action.hash,
+//        action.name,
+//        action.description,
+//        action.inputType, action.outputType,
+//        action.input_version,
+//        action.output_version,
+//      );
+//    case 'update_description_service_action':
+//      return new UpdateDescriptionServiceAction(
+//        action.changeLog,
+//        action.hash,
+//        action.serviceName,
+//        action.description
+//      );
+//    case 'add_input_version_service_action':
+//      return new AddInputVersionServiceAction(
+//        action.changeLog,
+//        action.hash,
+//        action.serviceName,
+//        action.version
+//      );
+//    case 'remove_input_version_service_action':
+//      return new RemoveInputVersionServiceAction(
+//        action.changeLog,
+//        action.hash,
+//        action.serviceName,
+//        action.version
+//      );
+//    case 'deprecate_input_version_service_action':
+//      return new DeprecateInputVersionServiceAction(
+//        action.changeLog,
+//        action.hash,
+//        action.serviceName,
+//        action.version
+//      );
+//    case 'add_output_version_service_action':
+//      return new AddOutputVersionServiceAction(
+//        action.changeLog,
+//        action.hash,
+//        action.serviceName,
+//        action.version
+//      );
+//    case 'remove_output_version_service_action':
+//      return new RemoveOutputVersionServiceAction(
+//        action.changeLog,
+//        action.hash,
+//        action.serviceName,
+//        action.version
+//      );
+//    case 'deprecate_output_version_service_action':
+//      return new DeprecateOutputVersionServiceAction(
+//        action.changeLog,
+//        action.hash,
+//        action.serviceName,
+//        action.version
+//      );
+//    // Types
+//    case 'rename_field_type_action':
+//      return new RenameFieldTypeAction(
+//        action.changeLog,
+//        action.hash,
+//        action.typeName,
+//        action._from,
+//        action.to
+//      );
+//    case 'required_field_type_action':
+//      return new RequiredFieldTypeAction(
+//        action.changeLog,
+//        action.hash,
+//        action.typeName,
+//        action.name
+//      );
+//    case 'optional_field_type_action':
+//      return new OptionalFieldTypeAction(
+//        action.changeLog,
+//        action.hash,
+//        action.typeName,
+//        action.name
+//      );
+//    case 'delete_field_type_action':
+//      return new DeleteFieldTypeAction(
+//        action.changeLog,
+//        action.hash,
+//        action.typeName,
+//        action.name
+//      );
+//    case 'set_default_field_type_action':
+//      return new SetDefaultFieldTypeAction(
+//        action.changeLog,
+//        action.hash,
+//        action.typeName,
+//        action.name,
+//        action._default
+//      );
+//    case 'remove_default_field_type_action':
+//      return new RemoveDefaultFieldTypeAction(
+//        action.changeLog,
+//        action.hash,
+//        action.typeName,
+//        action.name
+//      );
+//    case 'add_field_type_action':
+//      return new AddFieldTypeAction(
+//        action.changeLog,
+//        action.hash,
+//        action.typeName,
+//        action.name,
+//        action.type,
+//        action.description,
+//        action.optional,
+//        action._default
+//      );
+//    case 'update_description_type_action':
+//      return new UpdateDescriptionTypeAction(
+//        action.changeLog,
+//        action.hash,
+//        action.typeName,
+//        action.name,
+//        action.description
+//      );
+//    case 'reference_field_type_action':
+//      return new ReferenceFieldTypeAction(
+//        action.changeLog,
+//        action.hash,
+//        action.typeName,
+//        action.name,
+//        action.description,
+//        action.optional,
+//        action.referenceType,
+//        action.referenceHash
+//      );
+//    case 'new_type_action':
+//      return new NewTypeAction(
+//        action.changeLog,
+//        action.hash,
+//        action.name,
+//        action.description
+//      );
+//    case 'group_action':
+//      const groupedActions = [];
+//      for (const subAction of action.actions) {
+//        groupedActions.push(loadAction(subAction));
+//      }
+//      return new GroupAction(
+//        action.changeLog,
+//        action.hash,
+//        action.name,
+//        groupedActions
+//      );
+//    default:
+//      throw new Error(`Unknown Action: ${action}`)
+//  }
+//}
+//
+//const rowRegex = /(([a-z]):.+(?<=\\),)/g;
+//function parseRow(row: string) {
+//  let matches;
+//  while ((matches = rowRegex.exec(row)) !== null) {
+//    console.log(matches);
+//    // expected output: "Found foo. Next starts at 9."
+//    // expected output: "Found foo. Next starts at 19."
+//  }
+//}
+//
+//export function loadSimpleActionLog(path: string): Array<Action> {
+//  const contents = fs.readFileSync(path, {'encoding': 'utf8'});
+//  const lines = contents.split('\n');
+//  const outputActions = [];
+//  let currentGroup = null;
+//
+//  for (const line of lines) {
+//    if (line === '') {
+//      continue;
+//    }
+//    const action = loadSimpleAction(parseRow(line));
+//    outputActions.push(action);
+//    //if (line[0] === 'start_group') {
+//    //  currentGroup = [];
+//    //} else if (line[0] === 'end_group') {
+//    //  outputActions.push(new GroupAction(
+//    //    "todo",
+//    //    ,
+//    //    action.state,
+//    //    currentGroup
+//    //  ));
+//    //  currentGroup = null;
+//    //} else {
+//    //  if (currentGroup !== null) {
+//    //    currentGroup.push(action);
+//    //  } else {
+//    //    outputActions.push(action);
+//    //  }
+//    //}
+//  }
+//
+//  return outputActions;
+//}

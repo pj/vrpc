@@ -60,7 +60,7 @@ export function hashActions(
       } else {
         const expectedHash = hashAction(hashable, previousHash);
         if (expectedHash !== hashable.hash) {
-          throw new Error(`Invalid hash at item ${n} ${hashable}, did you change something?`)
+          throw new Error(`Invalid hash at item ${n} expected ${expectedHash} got ${hashable.hash} object: ${hashable}`)
         }
         previousHash = hashable.hash;
       }
@@ -82,15 +82,31 @@ export function addHashes(
   if (hashTo === null) {
     hashTo = unhashedType.length;
   }
-  for (let i = hashes[0][0]; i < hashTo; i++) {
-    const hash = hashes[i][1];
-    const action = unhashedType[i];
-    const newAction = Object.assign(
-      Object.create(Object.getPrototypeOf(action)),
-      action
-    );
-    newAction.hash = hash
-    hashed[i] = newAction;
+  //for (let i = hashes[0][0]; i < hashTo; i++) {
+  //  const hash = hashes[i][1];
+  //  const action = unhashedType[i];
+  //  const newAction = Object.assign(
+  //    Object.create(Object.getPrototypeOf(action)),
+  //    action
+  //  );
+  //  newAction.hash = hash
+  //  hashed[i] = newAction;
+  //}
+
+  for (let i = 0; i < hashTo; i++) {
+    const action = hashed[i];
+    if (action.hash === null) {
+      for (let [idx, hash] of hashes) {
+        if (idx === i) {
+          const newAction = Object.assign(
+            Object.create(Object.getPrototypeOf(action)),
+            action
+          );
+          newAction.hash = hash
+          hashed[i] = newAction;
+        }
+      }
+    }
   }
 
   return hashed;

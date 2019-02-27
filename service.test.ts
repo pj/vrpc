@@ -28,13 +28,16 @@ tmp.setGracefulCleanup();
 //}
 //
 const service_test_dirs = ([
-  ['Simple Service', './tests/services/simple_service'],
-] as Array<[string, string]>);
+  './tests/services/simple_service',
+] as Array<string>);
 
-for (const [name, dir] of service_test_dirs) {
-  it(name, () => {
-    const actions = action.loadSimpleActionLog(path.join(dir, 'actions.log'));
+for (const dir of service_test_dirs) {
+  it(dir, () => {
+    fs.mkdirSync(path.join('runtest', dir), {recursive: true});
+    const actions = action.loadActionLog("./" + path.join(dir, 'actions.json'));
+    console.log(actions)
     const hashes = typeidea.hashActions(actions);
+    console.log(hashes);
     const hashedActions = typeidea.addHashes(actions, hashes, null);
 
     const [types, services] = generate.generateDefinitions(hashedActions);
@@ -44,19 +47,19 @@ for (const [name, dir] of service_test_dirs) {
     );
 
     // Write files to temp dir
-    const testDir = tmp.dirSync({unsafeCleanup: true});
-    console.log(testDir.name);
+    //const testDir = tmp.dirSync({unsafeCleanup: true});
+    //console.log(testDir.name);
 
     for (const [_type, contents] of generatedTypes) {
       const file = fs.writeFileSync(
-        path.join(testDir.name, _type.name, '.ts'),
+        path.join('runtest', dir, _type.name + '.ts'),
         contents,
       );
     }
 
     for (const [_type, contents] of generatedServices) {
       const file = fs.writeFileSync(
-        path.join(testDir.name, _type.name, '.ts'),
+        path.join('runtest', dir, _type.name + '.ts'),
         contents,
       );
     }
@@ -71,6 +74,7 @@ for (const [name, dir] of service_test_dirs) {
     //const typescript = service.generateTypescript(services);
     //
     //expect(typescript[0][1]).toMatchSnapshot();
+    //testDir.removeCallback();
   });
 }
 
