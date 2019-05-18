@@ -17,8 +17,16 @@ import * as <%= service.outputType %> from './<%= service.inputType %>';
 export default function <%= service.name %>(
 app: any,
 func: (
-<%= service.inputVersions.map(function (inputVersion) { return inputVersion.version } ).join(' | ') %>
-) => <%= service.outputVersions.map(function (outputVersion) { return outputVersion.version } ).join(' | ') %>
+  <%= service.inputVersions.map(function (inputVersion) {
+    return "input: " + service.inputType + "." + inputVersion.version;
+  } ).join(' | ') %>
+)
+=>
+<%=
+  service.outputVersions.map(function (outputVersion) {
+    return service.outputType + "." + outputVersion.version;
+  } ).join(' | ');
+%>
 ): void {
   app.get('/<%= service.name %>', (req, res) => {
     const inputMessage = <%= service.inputType %>.deserialize(req.body);

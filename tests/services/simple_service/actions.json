@@ -43,6 +43,20 @@
     "outputType": "TestOutputType",
     "outputVersion": "c503f8a6a87dcd268e82e6cffa2e58db72866839a676faa2df84f470f889ae80",
     "hash": null
+  },
+  {
+    "_action_type": "AddInputVersionServiceAction",
+    "changeLog": "Add an output version to our awesome service",
+    "hash": null,
+    "serviceName": "AwesomeService",
+    "version": "V1"
+  },
+  {
+    "_action_type": "AddOutputVersionServiceAction",
+    "changeLog": "Add an input version to our awesome service",
+    "hash": null,
+    "serviceName": "AwesomeService",
+    "version": "V1"
   }
 
 ]

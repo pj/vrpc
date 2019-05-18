@@ -33,11 +33,9 @@ const service_test_dirs = ([
 
 for (const dir of service_test_dirs) {
   it(dir, () => {
-    fs.mkdirSync(path.join('runtest', dir), {recursive: true});
+    fs.mkdirSync(path.join('./runtest', dir), {recursive: true});
     const actions = action.loadActionLog("./" + path.join(dir, 'actions.json'));
-    console.log(actions)
     const hashes = typeidea.hashActions(actions);
-    console.log(hashes);
     const hashedActions = typeidea.addHashes(actions, hashes, null);
 
     const [types, services] = generate.generateDefinitions(hashedActions);
@@ -58,6 +56,7 @@ for (const dir of service_test_dirs) {
     }
 
     for (const [_type, contents] of generatedServices) {
+      console.log(contents);
       const file = fs.writeFileSync(
         path.join('runtest', dir, _type.name + '.ts'),
         contents,

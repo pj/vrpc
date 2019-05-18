@@ -8,8 +8,10 @@
     "@types/ejs": "^2.6.1",
     "@types/node": "^10.12.15",
     "@types/prettier": "^1.15.2",
+    "@types/tmp": "^0.1.0",
     "ejs": "^2.6.1",
     "prettier": "^1.15.3",
+    "tmp": "^0.1.0",
     "typescript": "^3.2.1"
   },
   "devDependencies": {
@@ -21,6 +23,9 @@
     "test": "jest --watch"
   },
   "jest": {
-     "modulePathIgnorePatterns": ["<rootDir>/runtest/", "<rootDir>/node_modules/"]
+    "modulePathIgnorePatterns": [
+      "<rootDir>/runtest/",
+      "<rootDir>/node_modules/"
+    ]
   }
 }

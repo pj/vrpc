@@ -574,6 +574,7 @@ const typescriptServiceTemplate = compile(
 export function generateTypescriptServices(
   services: Service[],
 ): Array<[Service, string]> {
+  console.log(services);
   return services.map((service): [Service, string] => {
     return [
       service,
