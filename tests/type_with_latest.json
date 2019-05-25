@@ -1,9 +1,9 @@
 [
   {
     "_action_type": "NewTypeAction",
+    "name": "Test",
     "changeLog": "Creating a new type",
     "hash": null,
-    "name": "Test",
     "description": "Test"
   },
   {

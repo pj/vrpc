@@ -527,33 +527,12 @@ const typescriptTypeTemplate = compile(
   }
 );
 
-export function generateTypescript(types: Type[]): Array<[Type, string]> {
-  return types.map((_type): [Type, string] => {
-    // load imports.
-    const imports = new Set();
-    for (const version of _type.versions) {
-      for (const field of Object.values(version.fields)) {
-        if (field instanceof ReferenceField) {
-          imports.add(field.referenceType);
-        }
-      }
-    }
-    return [
-      _type,
-      prettier.format(
-        typescriptTypeTemplate(
-          {
-            versions: _type.versions,
-            imports: imports,
-            latest: _type.latest,
-            changeLog: _type.changeLog,
-            description: _type.description
-          }
-        ),
-        {parser: 'typescript'},
-      )
-    ];
-  }
+export function generateTypescript(types: Type[]): string {
+  return (
+    prettier.format(
+      typescriptTypeTemplate({types: types}),
+      {parser: 'typescript'},
+    )
   );
 }
 
@@ -573,28 +552,19 @@ const typescriptServiceTemplate = compile(
 
 export function generateTypescriptServices(
   services: Service[],
-): Array<[Service, string]> {
-  console.log(services);
-  return services.map((service): [Service, string] => {
-    return [
-      service,
-      prettier.format(
-        typescriptServiceTemplate(
-          {
-            service: service
-          }
-        ),
-        {parser: 'typescript'},
-      )
-    ];
-  }
+): string {
+  return (
+    prettier.format(
+      typescriptServiceTemplate({services: services}),
+      {parser: 'typescript'},
+    )
   );
 }
 
 export function generateTypescriptBoth(
   types: Type[],
   services: Service[],
-): [Array<[Type, string]>, Array<[Service, string]>] {
+): [string, string] {
   const generatedTypes = generateTypescript(types);
   const generatedServices = generateTypescriptServices(services);
 

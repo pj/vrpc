@@ -1,12 +1,14 @@
 [
   {
     "_action_type": "NewTypeAction",
+    "name": "Test",
     "changeLog": "Creating a new type",
     "hash": null,
     "state": "active",
     "description": "Test"
   },{
     "_action_type": "AddFieldTypeAction",
+    "typeName": "Test",
     "changeLog": "Adding a field",
     "hash": null,
     "state": "active",
@@ -17,6 +19,7 @@
     "_default": "A value"
   }, {
     "_action_type": "RenameFieldTypeAction",
+    "typeName": "Test",
     "changeLog": "Renaming a field",
     "hash": null,
     "state": "active",

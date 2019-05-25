@@ -1,23 +1,47 @@
 /**
 * **GENERATED CODE DO NOT EDIT!**
-*
-* <%= description %>
-*
-* # Change Log:
-<% changeLog.forEach(function (log, index) { -%>
-* <%= index + 1 %>. <%= log %>
-<%_ }) -%>
 */
-<% imports.forEach(function (imp) { %>
-  import * as <%= imp %> from './<%= imp %>';
+<% types.forEach(function (type) { -%>
+/*
+* <%= type.name %>
+* <%= type.description %>
+* Change Log:
+  <% type.changeLog.forEach(function (log, index) { -%>
+* <%= index + 1 %>. <%= log %>
+  <%_ }) -%>
+*/
+<% }) %>
+<% types.forEach(function (type) { %>
+  <% type.versions.forEach(function (version) { %>
+    <% Object.keys(version.fields).forEach(function (key) { -%>
+      <% var field = version.fields[key]; %>
+      <% if (field.referenceType) { %>
+        // import * as <%= field.referenceType %> from './<%= field.referenceType %>';
+      <% } %>
+    <% }) %>
+  <% }) %>
 <% }) %>
 
-<% versions.forEach(function (version, index) { %>
-  <%- include('typescript_class', {className: 'H_' + version.hash, version: version}); %>
+<% types.forEach(function (type) { %>
+  <% type.versions.forEach(function (version, index) { %>
+    <%- include('typescript_class', {className: type.name + '_H' + version.hash, version: version}); %>
 
-  export type V_<%= index %> = H_<%= version.hash %>;
+    export type <%= type.name %>_V<%= index %> = <%= type.name %>_H<%= version.hash %>;
+  <% }) %>
+  <% if (type.latest !== null) { %>
+    <% include('typescript_class', {className: 'Latest', version: type.latest}); %>
+  <% } %>
+
+  export class <%= type.name %> {
+    deserialize(message: any):
+      <%= type.versions.map((version, index) => type.name + '_V' + index).join(' | ') %> {
+      return null;
+    }
+    serialize(message:
+      <%= type.versions.map((version, index) => type.name + '_V' + index).join(' | ') %>
+    ): any {
+      return null;
+    }
+  }
 <% }) %>
 
-<% if (latest !== null) { %>
-  <%- include('typescript_class', {className: 'Latest', version: latest}); %>
-<% } %>

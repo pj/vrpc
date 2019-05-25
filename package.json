@@ -6,6 +6,7 @@
   "license": "MIT",
   "dependencies": {
     "@types/ejs": "^2.6.1",
+    "@types/express": "^4.16.1",
     "@types/node": "^10.12.15",
     "@types/prettier": "^1.15.2",
     "@types/tmp": "^0.1.0",
@@ -26,6 +27,11 @@
     "modulePathIgnorePatterns": [
       "<rootDir>/runtest/",
       "<rootDir>/node_modules/"
+    ],
+    "watchPathIgnorePatterns": [
+      "<rootDir>/runtest/",
+      "<rootDir>/node_modules/",
+      "/runtest/"
     ]
   }
 }

@@ -1,6 +1,7 @@
 [
   {
     "_action_type": "NewTypeAction",
+    "name": "Test",
     "changeLog": "Creating a new type",
     "hash": null,
     "state": "active",
@@ -8,6 +9,7 @@
   },
   {
     "_action_type": "AddFieldTypeAction",
+    "typeName": "Test",
     "changeLog": "Adding a field",
     "hash": null,
     "state": "dont_generate",
@@ -19,6 +21,7 @@
   },
   {
     "_action_type": "AddFieldTypeAction",
+    "typeName": "Test",
     "changeLog": "Adding another field",
     "hash": null,
     "state": "deprecated",
@@ -30,6 +33,7 @@
   },
   {
     "_action_type": "AddFieldTypeAction",
+    "typeName": "Test",
     "changeLog": "Adding yet another field",
     "hash": null,
     "state": "active",

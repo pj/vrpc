@@ -3,10 +3,11 @@
 exports[`Add a field 1`] = `
 "/**
  * **GENERATED CODE DO NOT EDIT!**
- *
+ */
+/*
  * Test
- *
- * # Change Log:
+ * Test
+ * Change Log:
  * 1. Creating a new type
  * 2. Adding a field
  */
@@ -17,7 +18,7 @@ exports[`Add a field 1`] = `
  * @sealed
  *
  */
-export class H_c3e59f8b85cd9add5612c007fb3ce30456e5cd06c926583f7457652449323868 {
+export class Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d {
   readonly test_field: string | null;
 
   constructor(test_field: string | null) {
@@ -25,17 +26,18 @@ export class H_c3e59f8b85cd9add5612c007fb3ce30456e5cd06c926583f7457652449323868 
   }
 }
 
-export type V_0 = H_c3e59f8b85cd9add5612c007fb3ce30456e5cd06c926583f7457652449323868;
+export type Test_V0 = Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d;
 "
 `;
 
 exports[`Add a field with a default value 1`] = `
 "/**
  * **GENERATED CODE DO NOT EDIT!**
- *
+ */
+/*
  * Test
- *
- * # Change Log:
+ * Test
+ * Change Log:
  * 1. Creating a new type
  * 2. Adding a field
  */
@@ -46,7 +48,7 @@ exports[`Add a field with a default value 1`] = `
  * @sealed
  *
  */
-export class H_036cb58d4009b695ef9c0a35e42cfd356c5ca922f3340d79db2364efd0d0da4c {
+export class Test_H036cb58d4009b695ef9c0a35e42cfd356c5ca922f3340d79db2364efd0d0da4c {
   readonly test_field: string | null;
 
   constructor(test_field: string | null) {
@@ -54,17 +56,18 @@ export class H_036cb58d4009b695ef9c0a35e42cfd356c5ca922f3340d79db2364efd0d0da4c 
   }
 }
 
-export type V_0 = H_036cb58d4009b695ef9c0a35e42cfd356c5ca922f3340d79db2364efd0d0da4c;
+export type Test_V0 = Test_H036cb58d4009b695ef9c0a35e42cfd356c5ca922f3340d79db2364efd0d0da4c;
 "
 `;
 
 exports[`Delete a field 1`] = `
 "/**
  * **GENERATED CODE DO NOT EDIT!**
- *
+ */
+/*
  * Test
- *
- * # Change Log:
+ * Test
+ * Change Log:
  * 1. Creating a new type
  * 2. Adding a field
  * 3. Adding another field
@@ -77,7 +80,7 @@ exports[`Delete a field 1`] = `
  * @sealed
  *
  */
-export class H_c3e59f8b85cd9add5612c007fb3ce30456e5cd06c926583f7457652449323868 {
+export class Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d {
   readonly test_field: string | null;
 
   constructor(test_field: string | null) {
@@ -85,7 +88,7 @@ export class H_c3e59f8b85cd9add5612c007fb3ce30456e5cd06c926583f7457652449323868 
   }
 }
 
-export type V_0 = H_c3e59f8b85cd9add5612c007fb3ce30456e5cd06c926583f7457652449323868;
+export type Test_V0 = Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d;
 
 /**
  * @param test_field A field that helps testing
@@ -94,7 +97,7 @@ export type V_0 = H_c3e59f8b85cd9add5612c007fb3ce30456e5cd06c926583f745765244932
  * @sealed
  *
  */
-export class H_3c1b77e268fa9b90684f1cca49f38385dcb2197b37bd686163019acb53a05342 {
+export class Test_H4ce3d4cfba96f0cdcce4bf1d2812eea0c5b1cf529ac93763f6f33d0600a652f0 {
   readonly test_field: string | null;
 
   readonly test_field2: string;
@@ -106,7 +109,7 @@ export class H_3c1b77e268fa9b90684f1cca49f38385dcb2197b37bd686163019acb53a05342 
   }
 }
 
-export type V_1 = H_3c1b77e268fa9b90684f1cca49f38385dcb2197b37bd686163019acb53a05342;
+export type Test_V1 = Test_H4ce3d4cfba96f0cdcce4bf1d2812eea0c5b1cf529ac93763f6f33d0600a652f0;
 
 /**
  * @param test_field A field that helps testing
@@ -114,7 +117,7 @@ export type V_1 = H_3c1b77e268fa9b90684f1cca49f38385dcb2197b37bd686163019acb53a0
  * @sealed
  *
  */
-export class H_eb87414a9c9aea122801f9f9918dd3d570adf8b2906deb164192832407201470 {
+export class Test_Hd6cc2965f8ee5ebb6de4a255956c869a8c212bcc4d0bccf1dff40a440c2343f7 {
   readonly test_field: string | null;
 
   constructor(test_field: string | null) {
@@ -122,17 +125,18 @@ export class H_eb87414a9c9aea122801f9f9918dd3d570adf8b2906deb164192832407201470 
   }
 }
 
-export type V_2 = H_eb87414a9c9aea122801f9f9918dd3d570adf8b2906deb164192832407201470;
+export type Test_V2 = Test_Hd6cc2965f8ee5ebb6de4a255956c869a8c212bcc4d0bccf1dff40a440c2343f7;
 "
 `;
 
 exports[`Make a field optional 1`] = `
 "/**
  * **GENERATED CODE DO NOT EDIT!**
- *
+ */
+/*
  * Test
- *
- * # Change Log:
+ * Test
+ * Change Log:
  * 1. Creating a new type
  * 2. Adding a field
  * 3. Oops needed to make it optional
@@ -144,7 +148,7 @@ exports[`Make a field optional 1`] = `
  * @sealed
  *
  */
-export class H_e960605cda10a46f833a32ce0d9699ae1a35b1e764a54dffa6df08691f99d202 {
+export class Test_H3b9ac56de579e9a69937f2d1d2c27a4cfbedfd0710682f8ab629b18aac4efe14 {
   readonly test_field: string;
 
   constructor(test_field: string) {
@@ -152,7 +156,7 @@ export class H_e960605cda10a46f833a32ce0d9699ae1a35b1e764a54dffa6df08691f99d202 
   }
 }
 
-export type V_0 = H_e960605cda10a46f833a32ce0d9699ae1a35b1e764a54dffa6df08691f99d202;
+export type Test_V0 = Test_H3b9ac56de579e9a69937f2d1d2c27a4cfbedfd0710682f8ab629b18aac4efe14;
 
 /**
  * @param test_field A field that helps testing
@@ -160,7 +164,7 @@ export type V_0 = H_e960605cda10a46f833a32ce0d9699ae1a35b1e764a54dffa6df08691f99
  * @sealed
  *
  */
-export class H_4af369e10d1e7103f4a16e9849140032afd335a48eaa464f36ee1791e998a37e {
+export class Test_H818de92c4372ef16f0eba77a342f97cd788f18b24d52b54a2870236d82184a0b {
   readonly test_field: string | null;
 
   constructor(test_field: string | null) {
@@ -168,46 +172,25 @@ export class H_4af369e10d1e7103f4a16e9849140032afd335a48eaa464f36ee1791e998a37e 
   }
 }
 
-export type V_1 = H_4af369e10d1e7103f4a16e9849140032afd335a48eaa464f36ee1791e998a37e;
+export type Test_V1 = Test_H818de92c4372ef16f0eba77a342f97cd788f18b24d52b54a2870236d82184a0b;
 "
 `;
 
 exports[`Multiple types with type reference 1`] = `
 "/**
  * **GENERATED CODE DO NOT EDIT!**
- *
+ */
+/*
+ * Test
  * A useful type
- *
- * # Change Log:
+ * Change Log:
  * 1. Creating a new type
  * 2. Adding a field
  */
-
-/**
- * @param test_field A field that helps testing
- *
- * @sealed
- *
- */
-export class H_c68b1dfae49d22c7332dcfcb86145926907e4171e3a7bb1f3861e9e3b0c2bdfb {
-  readonly test_field: string | null;
-
-  constructor(test_field: string | null) {
-    this.test_field = test_field;
-  }
-}
-
-export type V_0 = H_c68b1dfae49d22c7332dcfcb86145926907e4171e3a7bb1f3861e9e3b0c2bdfb;
-"
-`;
-
-exports[`Multiple types with type reference 2`] = `
-"/**
- * **GENERATED CODE DO NOT EDIT!**
- *
+/*
+ * Test2
  * a useful type
- *
- * # Change Log:
+ * Change Log:
  * 1. Creating a new type
  * 2. asdf
  */
@@ -215,12 +198,28 @@ exports[`Multiple types with type reference 2`] = `
 import * as Test from \\"./Test\\";
 
 /**
+ * @param test_field A field that helps testing
+ *
+ * @sealed
+ *
+ */
+export class Test_Hc68b1dfae49d22c7332dcfcb86145926907e4171e3a7bb1f3861e9e3b0c2bdfb {
+  readonly test_field: string | null;
+
+  constructor(test_field: string | null) {
+    this.test_field = test_field;
+  }
+}
+
+export type Test_V0 = Test_Hc68b1dfae49d22c7332dcfcb86145926907e4171e3a7bb1f3861e9e3b0c2bdfb;
+
+/**
  * @param test_field2 A reference
  *
  * @sealed
  *
  */
-export class H_e396d1be414c1504f56969feff04b4bcdf1c52ca1cb653c75f959a3a24d37c49 {
+export class Test2_He396d1be414c1504f56969feff04b4bcdf1c52ca1cb653c75f959a3a24d37c49 {
   readonly test_field2: Test.h_c68b1dfae49d22c7332dcfcb86145926907e4171e3a7bb1f3861e9e3b0c2bdfb;
 
   constructor(
@@ -230,17 +229,18 @@ export class H_e396d1be414c1504f56969feff04b4bcdf1c52ca1cb653c75f959a3a24d37c49 
   }
 }
 
-export type V_0 = H_e396d1be414c1504f56969feff04b4bcdf1c52ca1cb653c75f959a3a24d37c49;
+export type Test2_V0 = Test2_He396d1be414c1504f56969feff04b4bcdf1c52ca1cb653c75f959a3a24d37c49;
 "
 `;
 
 exports[`Rename a field 1`] = `
 "/**
  * **GENERATED CODE DO NOT EDIT!**
- *
+ */
+/*
  * Test
- *
- * # Change Log:
+ * Test
+ * Change Log:
  * 1. Creating a new type
  * 2. Adding a field
  * 3. Renaming a field
@@ -252,7 +252,7 @@ exports[`Rename a field 1`] = `
  * @sealed
  *
  */
-export class H_f504fb22397795f0f503db79829121561d81e430e7d0d1bef9139625cba94e40 {
+export class Test_H036cb58d4009b695ef9c0a35e42cfd356c5ca922f3340d79db2364efd0d0da4c {
   readonly test_field: string | null;
 
   constructor(test_field: string | null) {
@@ -260,7 +260,7 @@ export class H_f504fb22397795f0f503db79829121561d81e430e7d0d1bef9139625cba94e40 
   }
 }
 
-export type V_0 = H_f504fb22397795f0f503db79829121561d81e430e7d0d1bef9139625cba94e40;
+export type Test_V0 = Test_H036cb58d4009b695ef9c0a35e42cfd356c5ca922f3340d79db2364efd0d0da4c;
 
 /**
  * @param renamed_field A field that helps testing
@@ -268,7 +268,7 @@ export type V_0 = H_f504fb22397795f0f503db79829121561d81e430e7d0d1bef9139625cba9
  * @sealed
  *
  */
-export class H_ec5f673726117df5a56796abaad8f15c03fed119159cf951c1a5ca6248d732b0 {
+export class Test_He41f7b607671faf485204483dcf344ef15bbd2856a51485d9876e73178fe07bf {
   readonly renamed_field: string | null;
 
   constructor(renamed_field: string | null) {
@@ -276,17 +276,18 @@ export class H_ec5f673726117df5a56796abaad8f15c03fed119159cf951c1a5ca6248d732b0 
   }
 }
 
-export type V_1 = H_ec5f673726117df5a56796abaad8f15c03fed119159cf951c1a5ca6248d732b0;
+export type Test_V1 = Test_He41f7b607671faf485204483dcf344ef15bbd2856a51485d9876e73178fe07bf;
 "
 `;
 
 exports[`Type with GroupAction 1`] = `
 "/**
  * **GENERATED CODE DO NOT EDIT!**
- *
+ */
+/*
  * Test
- *
- * # Change Log:
+ * Test
+ * Change Log:
  * 1. Creating a new type
  * 2. Adding a field
  * 3. Adding another field
@@ -299,7 +300,7 @@ exports[`Type with GroupAction 1`] = `
  * @sealed
  *
  */
-export class H_56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d {
+export class Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d {
   readonly test_field: string | null;
 
   constructor(test_field: string | null) {
@@ -307,7 +308,7 @@ export class H_56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d 
   }
 }
 
-export type V_0 = H_56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d;
+export type Test_V0 = Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d;
 
 /**
  * @param test_field A field that helps testing
@@ -317,7 +318,7 @@ export type V_0 = H_56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57
  * @sealed
  *
  */
-export class H_bb0785e92709010380229df8b379c9f411db9447547b8f285c4647ec91667e7d {
+export class Test_Hbb0785e92709010380229df8b379c9f411db9447547b8f285c4647ec91667e7d {
   readonly test_field: string | null;
 
   readonly test_field2: string;
@@ -337,17 +338,18 @@ export class H_bb0785e92709010380229df8b379c9f411db9447547b8f285c4647ec91667e7d 
   }
 }
 
-export type V_1 = H_bb0785e92709010380229df8b379c9f411db9447547b8f285c4647ec91667e7d;
+export type Test_V1 = Test_Hbb0785e92709010380229df8b379c9f411db9447547b8f285c4647ec91667e7d;
 "
 `;
 
 exports[`Type with deprecated and dont generate 1`] = `
 "/**
  * **GENERATED CODE DO NOT EDIT!**
- *
+ */
+/*
  * Test
- *
- * # Change Log:
+ * Test
+ * Change Log:
  * 1. Creating a new type
  * 2. Adding a field
  * 3. Adding another field
@@ -360,7 +362,7 @@ exports[`Type with deprecated and dont generate 1`] = `
  * @sealed
  *
  */
-export class H_c3e59f8b85cd9add5612c007fb3ce30456e5cd06c926583f7457652449323868 {
+export class Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d {
   readonly test_field: string | null;
 
   constructor(test_field: string | null) {
@@ -368,7 +370,7 @@ export class H_c3e59f8b85cd9add5612c007fb3ce30456e5cd06c926583f7457652449323868 
   }
 }
 
-export type V_0 = H_c3e59f8b85cd9add5612c007fb3ce30456e5cd06c926583f7457652449323868;
+export type Test_V0 = Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d;
 
 /**
  * @param test_field A field that helps testing
@@ -377,7 +379,7 @@ export type V_0 = H_c3e59f8b85cd9add5612c007fb3ce30456e5cd06c926583f745765244932
  * @sealed
  *
  */
-export class H_3c1b77e268fa9b90684f1cca49f38385dcb2197b37bd686163019acb53a05342 {
+export class Test_H4ce3d4cfba96f0cdcce4bf1d2812eea0c5b1cf529ac93763f6f33d0600a652f0 {
   readonly test_field: string | null;
 
   readonly test_field2: string;
@@ -389,7 +391,7 @@ export class H_3c1b77e268fa9b90684f1cca49f38385dcb2197b37bd686163019acb53a05342 
   }
 }
 
-export type V_1 = H_3c1b77e268fa9b90684f1cca49f38385dcb2197b37bd686163019acb53a05342;
+export type Test_V1 = Test_H4ce3d4cfba96f0cdcce4bf1d2812eea0c5b1cf529ac93763f6f33d0600a652f0;
 
 /**
  * @param test_field A field that helps testing
@@ -399,7 +401,7 @@ export type V_1 = H_3c1b77e268fa9b90684f1cca49f38385dcb2197b37bd686163019acb53a0
  * @sealed
  *
  */
-export class H_7cc89e1a3e8006a4253c348be2802baddcde45ffea24e1aecc62a1f0113f0bd3 {
+export class Test_Habb52b859471c90b51d0b3103f4ce61cd35664c4e579b49597721df71fd6c655 {
   readonly test_field: string | null;
 
   readonly test_field2: string;
@@ -419,17 +421,18 @@ export class H_7cc89e1a3e8006a4253c348be2802baddcde45ffea24e1aecc62a1f0113f0bd3 
   }
 }
 
-export type V_2 = H_7cc89e1a3e8006a4253c348be2802baddcde45ffea24e1aecc62a1f0113f0bd3;
+export type Test_V2 = Test_Habb52b859471c90b51d0b3103f4ce61cd35664c4e579b49597721df71fd6c655;
 "
 `;
 
 exports[`Type with latest 1`] = `
 "/**
  * **GENERATED CODE DO NOT EDIT!**
- *
+ */
+/*
  * Test
- *
- * # Change Log:
+ * Test
+ * Change Log:
  * 1. Creating a new type
  * 2. Adding a field
  * 3. Adding another field
@@ -442,7 +445,7 @@ exports[`Type with latest 1`] = `
  * @sealed
  *
  */
-export class H_56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d {
+export class Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d {
   readonly test_field: string | null;
 
   constructor(test_field: string | null) {
@@ -450,7 +453,7 @@ export class H_56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d 
   }
 }
 
-export type V_0 = H_56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d;
+export type Test_V0 = Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d;
 
 /**
  * @param test_field A field that helps testing
@@ -459,7 +462,7 @@ export type V_0 = H_56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57
  * @sealed
  *
  */
-export class H_4ce3d4cfba96f0cdcce4bf1d2812eea0c5b1cf529ac93763f6f33d0600a652f0 {
+export class Test_H4ce3d4cfba96f0cdcce4bf1d2812eea0c5b1cf529ac93763f6f33d0600a652f0 {
   readonly test_field: string | null;
 
   readonly test_field2: string;
@@ -471,34 +474,6 @@ export class H_4ce3d4cfba96f0cdcce4bf1d2812eea0c5b1cf529ac93763f6f33d0600a652f0 
   }
 }
 
-export type V_1 = H_4ce3d4cfba96f0cdcce4bf1d2812eea0c5b1cf529ac93763f6f33d0600a652f0;
-
-/**
- * @param test_field A field that helps testing
- * @param test_field2 A field that helps testing, again
- * @param test_field3 Yet another field for testing
- *
- * @sealed
- *
- */
-export class Latest {
-  readonly test_field: string | null;
-
-  readonly test_field2: string;
-
-  readonly test_field3: number;
-
-  constructor(
-    test_field: string | null,
-    test_field2: string,
-    test_field3: number
-  ) {
-    this.test_field = test_field;
-
-    this.test_field2 = test_field2 || \\"blah\\";
-
-    this.test_field3 = test_field3;
-  }
-}
+export type Test_V1 = Test_H4ce3d4cfba96f0cdcce4bf1d2812eea0c5b1cf529ac93763f6f33d0600a652f0;
 "
 `;
