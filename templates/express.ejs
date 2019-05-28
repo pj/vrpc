@@ -14,6 +14,8 @@ import {Request, Response} from "express";
 <%_ }) -%>
 */
   import {
+    <%= service.inputType %>,
+    <%= service.outputType %>,
     <%= service.inputVersions.map(function (inputVersion) {
       return service.inputType + "_V" + inputVersion.version;
     } ).join(',\n') %>

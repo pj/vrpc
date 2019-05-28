@@ -28,6 +28,8 @@ for (const dir of test_dirs) {
       types,
       services
     );
+    expect(generatedTypes).toMatchSnapshot();
+    expect(generatedServices).toMatchSnapshot();
     const typesFile = fs.writeFileSync(
       path.join('runtest', dir, 'types.ts'),
       generatedTypes,

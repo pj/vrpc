@@ -7,16 +7,22 @@
 <%_ if (version.state === 'deprecated') { %>* @deprecated<% } else { %>*<%_ } %>
 */
 export class <%= className %> {
+  readonly version: number;
+  readonly hash: string;
   <% Object.keys(version.fields).forEach(function (key) { %>
     <% var field = version.fields[key]; %>
     readonly <%= field.name %>: <%= field.fieldType() %>;
   <% }) %>
   constructor(
+    version: number,
+    hash: string,
     <% Object.keys(version.fields).forEach(function (key) { %>
       <% var field = version.fields[key]; %>
       <%= field.name %>: <%= field.fieldType() %><%= %>,
     <% }) %>
   ) {
+    this.version = version;
+    this.hash = hash;
     <% Object.keys(version.fields).forEach(function (key) { %>
       <% var field = version.fields[key]; %>
       this.<%= field.name %> = <%= field.name %>
