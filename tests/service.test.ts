@@ -43,8 +43,8 @@ for (const dir of test_dirs) {
     );
 
     // import service functions file
-    const typesImport = require('./' + path.join('runtest', dir, 'types.ts'));
-    const servicesImport = require('./' + path.join('runtest', dir, 'services.ts'));
+    const typesImport = require('../' + path.join('runtest', dir, 'types.ts'));
+    const servicesImport = require('../' + path.join('runtest', dir, 'services.ts'));
 
     // load functions into express
 
