@@ -1,25 +1,26 @@
+import {expect} from 'chai';
+import * as fs from 'fs';
 import * as path from 'path';
 import * as tmp from 'tmp';
-import * as fs from 'fs';
 
-import * as typeidea from './typeidea';
-import * as service from './service';
-import * as action from './action';
-import * as generate from './generate';
+import * as typeidea from '../lib/typeidea';
+import * as service from '../lib/service';
+import * as action from '../lib/action';
+import * as generate from '../lib/generate';
 
 tmp.setGracefulCleanup();
 
-const test_dirs = fs.readdirSync('./tests/services');
+const test_dirs = fs.readdirSync('./tests/test_data/services');
 
 for (const dir of test_dirs) {
-  const stat = fs.statSync(path.join('./tests', 'services', dir));
+  const stat = fs.statSync(path.join('./tests', 'test_data', 'services', dir));
   if (!stat.isDirectory()) {
     continue;
   }
 
   it(dir, () => {
     fs.mkdirSync(path.join('./runtest', dir), {recursive: true});
-    const actions = action.loadActionLog('./tests/' + path.join('services', dir, 'actions.json'));
+    const actions = action.loadActionLog('../tests/' + path.join('test_data', 'services', dir, 'actions.json'));
     const hashes = typeidea.hashActions(actions);
     const hashedActions = typeidea.addHashes(actions, hashes, null);
 
@@ -28,8 +29,10 @@ for (const dir of test_dirs) {
       types,
       services
     );
-    expect(generatedTypes).toMatchSnapshot();
-    expect(generatedServices).toMatchSnapshot();
+    // @ts-ignore
+    expect(generatedTypes).to.matchSnapshot();
+    // @ts-ignore
+    expect(generatedServices).to.matchSnapshot();
     const typesFile = fs.writeFileSync(
       path.join('runtest', dir, 'types.ts'),
       generatedTypes,
@@ -46,7 +49,6 @@ for (const dir of test_dirs) {
     // load functions into express
 
     // run express tests
-
   });
 }
 

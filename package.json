@@ -11,17 +11,26 @@
     "@types/prettier": "^1.15.2",
     "@types/tmp": "^0.1.0",
     "ejs": "^2.6.1",
+    "enzyme": "^3.9.0",
     "prettier": "^1.15.3",
     "tmp": "^0.1.0",
     "typescript": "^3.2.1"
   },
   "devDependencies": {
+    "@types/chai": "^4.1.7",
     "@types/jest": "^23.3.10",
+    "chai": "^4.2.0",
     "jest": "^23.6.0",
-    "ts-jest": "^23.10.5"
+    "mocha": "^6.1.4",
+    "mocha-snapshots": "^4.2.0",
+    "supertest": "^4.0.2",
+    "ts-jest": "^23.10.5",
+    "ts-node": "^8.2.0"
   },
   "scripts": {
-    "test": "jest --watch"
+    "test": "jest --watch",
+    "test:mocha": "mocha --require mocha-snapshots ./tests/*.test.ts",
+    "mocha:watch": "mocha --watch --watch-extensions ts --require mocha-snapshots --require ts-node/register --require mocha-snapshots ./tests/*.test.ts"
   },
   "jest": {
     "modulePathIgnorePatterns": [

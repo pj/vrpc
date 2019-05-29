@@ -1,6 +1,8 @@
-import * as typeidea from './typeidea';
-import * as action from './action';
-import * as generate from './generate';
+import {expect} from 'chai';
+
+import * as typeidea from '../lib/typeidea';
+import * as action from '../lib/action';
+import * as generate from '../lib/generate';
 
 it('hashActions generates hashes for types', () => {
   const addField = [
@@ -38,13 +40,13 @@ it('hashActions generates hashes for types', () => {
     )
   ];
   const hashes = typeidea.hashActions(addField);
-  expect(hashes).toHaveLength(4);
+  expect(hashes).to.have.lengthOf(4);
 
   const hashedAddField = typeidea.addHashes(addField, hashes, null);
-  expect(hashedAddField).toHaveLength(4);
+  expect(hashedAddField).to.have.lengthOf(4);
 
   for (const hashedAction of hashedAddField) {
-    expect(hashedAction.hash).not.toBeNull();
+    expect(hashedAction.hash).to.not.be.null;
   }
 });
 
@@ -73,7 +75,7 @@ it('Changing an action makes hashing invalid', () => {
   hashedAddField[0].changeLog = "Don't do this!";
   expect(() => {
     typeidea.hashActions(hashedAddField);
-  }).toThrow(/Invalid hash at item \d+ .*/);
+  }).to.throw(/Invalid hash at item \d+ .*/);
 });
 
 it('Changing a hash makes hashing invalid', () => {
@@ -104,7 +106,7 @@ it('Changing a hash makes hashing invalid', () => {
   hashedAddField[0].hash = "Don't do this!";
   expect(() => {
     typeidea.hashActions(hashedAddField);
-  }).toThrow(/Invalid hash at item \d+ .*/);
+  }).to.throw(/Invalid hash at item \d+ .*/);
 });
 
 it('Multiple types with type reference', () => {
@@ -160,24 +162,25 @@ it('Multiple types with type reference', () => {
     generatedTypes,
   );
 
-  expect(typescript).toMatchSnapshot();
+  // @ts-ignore
+  expect(typescript).to.matchSnapshot();
 });
 
 const json_snapshot_tests = ([
-  ['Add a field', './tests/add_field.json', null],
+  ['Add a field', '../tests/test_data/add_field.json', null],
   [
     'Add a field with a default value',
-    './tests/add_field_with_default_value.json',
+    '../tests/test_data/add_field_with_default_value.json',
     null
   ],
-  ['Rename a field', './tests/rename_field.json', null],
-  ['Make a field optional', './tests/optional_field.json', null],
-  ['Delete a field', './tests/delete_field.json', null],
-  ['Type with latest', './tests/type_with_latest.json', 3],
-  ['Type with GroupAction', './tests/type_with_group.json', null],
+  ['Rename a field', '../tests/test_data/rename_field.json', null],
+  ['Make a field optional', '../tests/test_data/optional_field.json', null],
+  ['Delete a field', '../tests/test_data/delete_field.json', null],
+  ['Type with latest', '../tests/test_data/type_with_latest.json', 3],
+  ['Type with GroupAction', '../tests/test_data/type_with_group.json', null],
   [
     'Type with deprecated and dont generate',
-    './tests/deprecated_and_dont_generated.json',
+    '../tests/test_data/deprecated_and_dont_generated.json',
     null
   ],
 ] as Array<[string, string, number | null]>);
@@ -194,7 +197,8 @@ for (const [name, path, hashTo] of json_snapshot_tests) {
     );
     const typescript = generate.generateTypescript(generatedTypes);
 
-    expect(typescript).toMatchSnapshot();
+    // @ts-ignore
+    expect(typescript).to.matchSnapshot();
   });
 }
 
