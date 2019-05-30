@@ -20,6 +20,7 @@
     "@types/chai": "^4.1.7",
     "@types/jest": "^23.3.10",
     "chai": "^4.2.0",
+    "chokidar-cli": "^1.2.2",
     "jest": "^23.6.0",
     "mocha": "^6.1.4",
     "mocha-snapshots": "^4.2.0",
@@ -28,9 +29,22 @@
     "ts-node": "^8.2.0"
   },
   "scripts": {
-    "test": "jest --watch",
+    "test": "mocha",
+    "test:watch": "chokidar \"lib/**/*.ts\" \"tests/**/*.test.ts\" -c \"yarn run test\" --ignore runtest --ignore tests/snapshots",
     "test:mocha": "mocha --require mocha-snapshots ./tests/*.test.ts",
-    "mocha:watch": "mocha --watch --watch-extensions ts --require mocha-snapshots --require ts-node/register --require mocha-snapshots ./tests/*.test.ts"
+    "mocha:watch": "mocha --watch"
+  },
+  "mocha": {
+    "watch-extensions": [
+      "ts"
+    ],
+    "require": [
+      "mocha-snapshots",
+      "ts-node/register"
+    ],
+    "spec": [
+      "./tests/*.test.ts"
+    ]
   },
   "jest": {
     "modulePathIgnorePatterns": [

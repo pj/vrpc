@@ -688,7 +688,6 @@ function loadAction(action: any): Action {
 }
 
 export function loadActionLog(path: string): Array<Action> {
-  console.log(process.cwd());
   const actions = require(path);
   const outputActions = [];
 
