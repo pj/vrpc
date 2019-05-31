@@ -1,4 +1,3 @@
-import {expect} from 'chai';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as tmp from 'tmp';
@@ -29,10 +28,8 @@ for (const dir of test_dirs) {
       types,
       services
     );
-    // @ts-ignore
-    expect(generatedTypes).to.matchSnapshot();
-    // @ts-ignore
-    expect(generatedServices).to.matchSnapshot();
+    expect(generatedTypes).toMatchSnapshot();
+    expect(generatedServices).toMatchSnapshot();
     const typesFile = fs.writeFileSync(
       path.join('runtest', dir, 'types.ts'),
       generatedTypes,

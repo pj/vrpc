@@ -1,5 +1,3 @@
-import {expect} from 'chai';
-
 import * as typeidea from '../lib/typeidea';
 import * as action from '../lib/action';
 import * as generate from '../lib/generate';
@@ -40,13 +38,13 @@ it('hashActions generates hashes for types', () => {
     )
   ];
   const hashes = typeidea.hashActions(addField);
-  expect(hashes).to.have.lengthOf(4);
+  expect(hashes).toHaveLength(4);
 
   const hashedAddField = typeidea.addHashes(addField, hashes, null);
-  expect(hashedAddField).to.have.lengthOf(4);
+  expect(hashedAddField).toHaveLength(4);
 
   for (const hashedAction of hashedAddField) {
-    expect(hashedAction.hash).to.not.be.null;
+    expect(hashedAction.hash).not.toBeNull();
   }
 });
 
@@ -75,7 +73,7 @@ it('Changing an action makes hashing invalid', () => {
   hashedAddField[0].changeLog = "Don't do this!";
   expect(() => {
     typeidea.hashActions(hashedAddField);
-  }).to.throw(/Invalid hash at item \d+ .*/);
+  }).toThrow(/Invalid hash at item \d+ .*/);
 });
 
 it('Changing a hash makes hashing invalid', () => {
@@ -106,7 +104,7 @@ it('Changing a hash makes hashing invalid', () => {
   hashedAddField[0].hash = "Don't do this!";
   expect(() => {
     typeidea.hashActions(hashedAddField);
-  }).to.throw(/Invalid hash at item \d+ .*/);
+  }).toThrow(/Invalid hash at item \d+ .*/);
 });
 
 it('Multiple types with type reference', () => {
@@ -162,8 +160,7 @@ it('Multiple types with type reference', () => {
     generatedTypes,
   );
 
-  // @ts-ignore
-  expect(typescript).to.matchSnapshot();
+  expect(typescript).toMatchSnapshot();
 });
 
 const json_snapshot_tests = ([
@@ -197,8 +194,7 @@ for (const [name, path, hashTo] of json_snapshot_tests) {
     );
     const typescript = generate.generateTypescript(generatedTypes);
 
-    // @ts-ignore
-    expect(typescript).to.matchSnapshot();
+    expect(typescript).toMatchSnapshot();
   });
 }
 

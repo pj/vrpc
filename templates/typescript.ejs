@@ -24,17 +24,31 @@
 
 <% types.forEach(function (type) { %>
   <% type.versions.forEach(function (version, index) { %>
-    <%- include('typescript_class', {className: type.name + '_H' + version.hash, version: version}); %>
-
-    export type <%= type.name %>_V<%= index %> = <%= type.name %>_H<%= version.hash %>;
+    <%- include(
+      'typescript_class',
+      {
+        className: type.name + '_H' + version.hash,
+        version: version,
+        index: index,
+        type: type
+      });
+    %>
   <% }) %>
   <% if (type.latest !== null) { %>
-    <% include('typescript_class', {className: 'Latest', version: type.latest}); %>
+    <%- include(
+      'typescript_class',
+      {
+        className: 'Latest',
+        version: type.latest,
+        index: null,
+        type: type
+      });
+    %>
   <% } %>
 
   export class <%= type.name %> {
     static deserialize(message: any):
-      <%= type.versions.map((version, index) => type.name + '_V' + index).join(' | ') %>
+      <%= type.versions.map((version, index) => type.name + '_H' + version.hash).join(' | ') %>
     {
       if (message.version === null || message.version === undefined) {
         throw new Error(`version not present: ${message}`);
@@ -62,7 +76,7 @@
     }
 
     static serialize(
-      message: <%= type.versions.map((version, index) => type.name + '_V' + index).join(' | ') %>
+      message: <%= type.versions.map((version, index) => type.name + '_H' + version.hash).join(' | ') %>
     ): string {
       if (message.version === null || message.version === undefined) {
         throw new Error(`version not present: ${message}`);

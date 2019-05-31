@@ -1,0 +1,168 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`simple_service 1`] = `
+"/**
+ * **GENERATED CODE DO NOT EDIT!**
+ */
+/*
+ * TestInputType
+ * An awesome input type
+ * Change Log:
+ * 1. Needs this for testing new type
+ * 2. Need this for testing add field input
+ */
+/*
+ * TestOutputType
+ * An awesome output type
+ * Change Log:
+ * 1. Needs this for testing new output type
+ * 2. Need this field for testing new output type
+ */
+
+/**
+ * @param a_field An awesome field on the input type
+ *
+ * @sealed
+ *
+ */
+class TestInputType_H716a611faeb9d2ddaa02e37a5d187183ff4d388f47c740bb2202109b3e3c8fc0 {
+  readonly version: number;
+  readonly hash: string;
+
+  readonly a_field: string;
+
+  constructor(version: number, hash: string, a_field: string) {
+    this.version = version;
+    this.hash = hash;
+
+    this.a_field = a_field;
+  }
+}
+
+export {
+  TestInputType_H716a611faeb9d2ddaa02e37a5d187183ff4d388f47c740bb2202109b3e3c8fc0,
+  TestInputType_H716a611faeb9d2ddaa02e37a5d187183ff4d388f47c740bb2202109b3e3c8fc0 as TestInputType_V0
+};
+
+export class TestInputType {
+  static deserialize(
+    message: any
+  ): TestInputType_H716a611faeb9d2ddaa02e37a5d187183ff4d388f47c740bb2202109b3e3c8fc0 {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\`version not present: \${message}\`);
+    }
+    switch (message.version) {
+      case \\"TestInputType_V0\\":
+      case \\"TestInputType_H716a611faeb9d2ddaa02e37a5d187183ff4d388f47c740bb2202109b3e3c8fc0\\":
+        return new TestInputType_H716a611faeb9d2ddaa02e37a5d187183ff4d388f47c740bb2202109b3e3c8fc0(
+          0,
+          \\"716a611faeb9d2ddaa02e37a5d187183ff4d388f47c740bb2202109b3e3c8fc0\\",
+          message.a_field
+        );
+
+      default:
+        throw new Error(
+          \`Unknown version error or version not present: \${message}\`
+        );
+    }
+  }
+
+  static serialize(
+    message: TestInputType_H716a611faeb9d2ddaa02e37a5d187183ff4d388f47c740bb2202109b3e3c8fc0
+  ): string {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\`version not present: \${message}\`);
+    }
+    return JSON.stringify(message);
+  }
+}
+
+/**
+ * @param a_field An awesome field on the output type
+ *
+ * @sealed
+ *
+ */
+class TestOutputType_Hc503f8a6a87dcd268e82e6cffa2e58db72866839a676faa2df84f470f889ae80 {
+  readonly version: number;
+  readonly hash: string;
+
+  readonly a_field: string;
+
+  constructor(version: number, hash: string, a_field: string) {
+    this.version = version;
+    this.hash = hash;
+
+    this.a_field = a_field;
+  }
+}
+
+export {
+  TestOutputType_Hc503f8a6a87dcd268e82e6cffa2e58db72866839a676faa2df84f470f889ae80,
+  TestOutputType_Hc503f8a6a87dcd268e82e6cffa2e58db72866839a676faa2df84f470f889ae80 as TestOutputType_V0
+};
+
+export class TestOutputType {
+  static deserialize(
+    message: any
+  ): TestOutputType_Hc503f8a6a87dcd268e82e6cffa2e58db72866839a676faa2df84f470f889ae80 {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\`version not present: \${message}\`);
+    }
+    switch (message.version) {
+      case \\"TestOutputType_V0\\":
+      case \\"TestOutputType_Hc503f8a6a87dcd268e82e6cffa2e58db72866839a676faa2df84f470f889ae80\\":
+        return new TestOutputType_Hc503f8a6a87dcd268e82e6cffa2e58db72866839a676faa2df84f470f889ae80(
+          0,
+          \\"c503f8a6a87dcd268e82e6cffa2e58db72866839a676faa2df84f470f889ae80\\",
+          message.a_field
+        );
+
+      default:
+        throw new Error(
+          \`Unknown version error or version not present: \${message}\`
+        );
+    }
+  }
+
+  static serialize(
+    message: TestOutputType_Hc503f8a6a87dcd268e82e6cffa2e58db72866839a676faa2df84f470f889ae80
+  ): string {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\`version not present: \${message}\`);
+    }
+    return JSON.stringify(message);
+  }
+}
+"
+`;
+
+exports[`simple_service 2`] = `
+"/**
+ * **GENERATED CODE DO NOT EDIT!**
+ */
+import { Request, Response } from \\"express\\";
+/*
+ * AwesomeService
+ *
+ * An awesome service
+ *
+ * # Change Log:
+ * 1. Services are good
+ */
+import { TestInputType, TestOutputType, TestInputType_V0 } from \\"./types\\";
+import { TestOutputType_V0 } from \\"./types\\";
+
+export default function AwesomeService(
+  app: any,
+  func: (input: TestInputType_V0) => TestOutputType_V0
+): void {
+  app.get(\\"/AwesomeService\\", (req: Request, res: Response) => {
+    const inputMessage = TestInputType.deserialize(req.body);
+    const response = func(inputMessage);
+    const outputMessage = TestOutputType.serialize(response);
+    res.json(outputMessage);
+  });
+}
+"
+`;

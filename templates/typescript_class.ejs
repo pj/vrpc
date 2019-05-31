@@ -6,7 +6,7 @@
 * @sealed
 <%_ if (version.state === 'deprecated') { %>* @deprecated<% } else { %>*<%_ } %>
 */
-export class <%= className %> {
+class <%= className %> {
   readonly version: number;
   readonly hash: string;
   <% Object.keys(version.fields).forEach(function (key) { %>
@@ -29,4 +29,11 @@ export class <%= className %> {
       <% if (field.formattedDefault()) { %> || <%- field.formattedDefault() %><% } %>;
     <% }) %>
   }
+}
+
+export {
+  <%= className %>
+<% if (index !== null) { %>
+, <%= className %> as <%= type.name %>_V<%= index %>
+<% } %>
 }
