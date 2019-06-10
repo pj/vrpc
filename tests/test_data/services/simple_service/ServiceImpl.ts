@@ -1,4 +1,24 @@
-[
+import {Express} from "express";
+import {
+  TestInputType_V0,
+  TestOutputType_V0
+} from "../../../../runtest/simple_service/types";
+
+const implementations = [
+  [
+    "AwesomeService",
+    function (app: Express) {
+      const service = require("../../../../runtest/simple_service/services");
+
+      service.service(app, function (input: TestInputType_V0): TestOutputType_V0 {
+        return new TestOutputType_V0(input.version, input.hash, "hello " + input.a_field);
+      });
+    }
+  ]
+];
+export {implementations};
+
+const actionLog = [
   {
     "_action_type": "NewTypeAction",
     "name": "TestInputType",
@@ -58,5 +78,5 @@
     "serviceName": "AwesomeService",
     "version": 0
   }
-
-]
+];
+export {actionLog};

@@ -1,13 +1,12 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as tmp from 'tmp';
+import * as request from 'supertest';
+import * as express from 'express';
 
 import * as typeidea from '../lib/typeidea';
 import * as service from '../lib/service';
 import * as action from '../lib/action';
 import * as generate from '../lib/generate';
-
-tmp.setGracefulCleanup();
 
 const test_dirs = fs.readdirSync('./tests/test_data/services');
 
@@ -17,9 +16,10 @@ for (const dir of test_dirs) {
     continue;
   }
 
-  it(dir, () => {
+  it(dir, async () => {
     fs.mkdirSync(path.join('./runtest', dir), {recursive: true});
-    const actions = action.loadActionLog('../tests/' + path.join('test_data', 'services', dir, 'actions.json'));
+    const testData = require('../tests/' + path.join('test_data', 'services', dir, 'ServiceImpl.ts'));
+    const actions = action.loadActionLogFromList(testData.actionLog);
     const hashes = typeidea.hashActions(actions);
     const hashedActions = typeidea.addHashes(actions, hashes, null);
 
@@ -43,9 +43,23 @@ for (const dir of test_dirs) {
     const typesImport = require('../' + path.join('runtest', dir, 'types.ts'));
     const servicesImport = require('../' + path.join('runtest', dir, 'services.ts'));
 
-    // load functions into express
-
     // run express tests
+    for (const implementation of testData.implementations) {
+      const app = express();
+      app.use(express.json());
+      implementation[1](app);
+      await request(app)
+        .post('/' + implementation[0])
+        .send({
+          'a_field': 'world',
+          'version': "TestInputType_V0",
+          'hash': "716a611faeb9d2ddaa02e37a5d187183ff4d388f47c740bb2202109b3e3c8fc0"
+        })
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(200)
+        .then((response) => expect(response.text).toMatchSnapshot());
+    }
   });
 }
 

@@ -699,6 +699,17 @@ export function loadActionLog(path: string): Array<Action> {
   return outputActions;
 }
 
+export function loadActionLogFromList(actions: any[]): Array<Action> {
+  const outputActions = [];
+
+  for (const action of actions) {
+    const log = loadAction(action);
+    outputActions.push(log);
+  }
+
+  return outputActions;
+}
+
 //function loadArrayAction(fields: any): Action {
 //  var name, inputType, inputVersion, outputType, outputVersion, changeLog,
 //    description, hash, serviceName, version, typeName, _from, to, _default,

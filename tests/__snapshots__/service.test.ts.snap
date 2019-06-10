@@ -153,16 +153,20 @@ import { Request, Response } from \\"express\\";
 import { TestInputType, TestOutputType, TestInputType_V0 } from \\"./types\\";
 import { TestOutputType_V0 } from \\"./types\\";
 
-export default function AwesomeService(
+const serviceName = \\"AwesomeService\\";
+function AwesomeService(
   app: any,
   func: (input: TestInputType_V0) => TestOutputType_V0
 ): void {
-  app.get(\\"/AwesomeService\\", (req: Request, res: Response) => {
+  app.post(\\"/AwesomeService\\", (req: Request, res: Response) => {
     const inputMessage = TestInputType.deserialize(req.body);
     const response = func(inputMessage);
     const outputMessage = TestOutputType.serialize(response);
     res.json(outputMessage);
   });
 }
+export { AwesomeService, AwesomeService as service, serviceName };
 "
 `;
+
+exports[`simple_service 3`] = `"\\"{\\\\\\"version\\\\\\":0,\\\\\\"hash\\\\\\":\\\\\\"716a611faeb9d2ddaa02e37a5d187183ff4d388f47c740bb2202109b3e3c8fc0\\\\\\",\\\\\\"a_field\\\\\\":\\\\\\"hello hello\\\\\\"}\\""`;

@@ -26,7 +26,8 @@ import {Request, Response} from "express";
     } ).join(',\n') %>
   } from './types';
 
-  export default function <%= service.name %>(
+  const serviceName = "<%= service.name %>";
+  function <%= service.name %>(
   app: any,
   func: (
     <%= service.inputVersions.map(function (inputVersion) {
@@ -40,11 +41,12 @@ import {Request, Response} from "express";
     } ).join(' | ');
   %>
   ): void {
-    app.get('/<%= service.name %>', (req: Request, res: Response) => {
+    app.post('/<%= service.name %>', (req: Request, res: Response) => {
       const inputMessage = <%= service.inputType %>.deserialize(req.body);
       const response = func(inputMessage);
       const outputMessage = <%= service.outputType %>.serialize(response);
       res.json(outputMessage);
     });
   }
+  export {<%= service.name %>, <%= service.name %> as service, serviceName};
 <% }) %>
