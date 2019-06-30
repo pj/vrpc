@@ -3,10 +3,12 @@
     "module": "commonjs",
     "noImplicitAny": true,
     "strictNullChecks": true,
-    "target": "ES2017"
+    "target": "ES2017",
+    "rootDir": "lib",
+    "outDir": "dist"
   },
   "include": [
-    "*"
+    "lib"
   ],
   "exclude": [
     "node_modules"

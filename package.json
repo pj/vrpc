@@ -1,8 +1,11 @@
 {
-  "name": "typeidea",
+  "name": "vrpc",
   "version": "1.0.0",
   "description": "Type idea",
   "main": "index.js",
+  "bin": {
+    "vrpc": "./dist/cli.js"
+  },
   "license": "MIT",
   "dependencies": {
     "@types/ejs": "^2.6.1",
@@ -11,13 +14,15 @@
     "@types/prettier": "^1.15.2",
     "@types/supertest": "^2.0.7",
     "@types/tmp": "^0.1.0",
+    "@types/yargs": "^13.0.0",
     "ejs": "^2.6.1",
     "enzyme": "^3.9.0",
     "express": "^4.17.1",
     "prettier": "^1.15.3",
     "superagent": "^5.0.6",
     "tmp": "^0.1.0",
-    "typescript": "^3.2.1"
+    "typescript": "^3.2.1",
+    "yargs": "^13.2.4"
   },
   "devDependencies": {
     "@types/jest": "^23.3.10",
@@ -29,6 +34,7 @@
   },
   "scripts": {
     "test": "jest",
-    "test:watch": "chokidar \"templates/**/*.ejs\" \"lib/**/*.ts\" \"tests/**/*.ts\" -c \"yarn run test\" --ignore runtest --ignore tests/snapshots"
+    "test:watch": "chokidar \"templates/**/*.ejs\" \"lib/**/*.ts\" \"tests/**/*.ts\" -c \"yarn run test\" --ignore runtest --ignore tests/snapshots",
+    "build": "tsc --outDir dist --rootDir lib"
   }
 }

@@ -40,6 +40,7 @@ export function hashAction(
 */
 export function hashActions(
   hashables: Array<action.Action>,
+  requireHashes: boolean
 ): Array<[number, string]> {
   const newHashes: Array<[number, string]> = [];
   let previousHash = null;
@@ -54,6 +55,9 @@ export function hashActions(
       newHashes.push([n, previousHash]);
     } else {
       if (hashable.hash === null || hashable.hash === undefined) {
+        if (requireHashes) {
+          throw new Error(`Unhashed action found at item ${n} action: ${hashable}`);
+        }
         previousHash = hashAction(hashable, previousHash);
         newHashes.push([n, previousHash]);
         createHashes = true;
