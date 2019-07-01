@@ -3,6 +3,7 @@ import * as typeidea from './typeidea';
 import {compile} from 'ejs';
 import * as fs from 'fs';
 import * as prettier from 'prettier';
+import * as path from 'path';
 
 type VersionState = 'active' | 'removed' | 'deprecated';
 
@@ -514,7 +515,7 @@ export function generateDefinitions(log: action.Action[]): [Type[], Service[]] {
 }
 
 const typescriptTypeFile = fs.readFileSync(
-  './templates/typescript.ejs',
+  path.join(__dirname, 'templates', 'typescript.ejs'),
   {
     encoding: "utf8",
   }
@@ -523,7 +524,7 @@ const typescriptTypeFile = fs.readFileSync(
 const typescriptTypeTemplate = compile(
   typescriptTypeFile,
   {
-    filename: './templates/typescript.ejs'
+    filename: path.join(__dirname, 'templates', 'typescript.ejs'),
   }
 );
 
@@ -537,7 +538,7 @@ export function generateTypescript(types: Type[]): string {
 }
 
 const typescriptServiceFile = fs.readFileSync(
-  './templates/express.ejs',
+  path.join(__dirname, 'templates', 'express.ejs'),
   {
     encoding: "utf8",
   }
@@ -546,7 +547,7 @@ const typescriptServiceFile = fs.readFileSync(
 const typescriptServiceTemplate = compile(
   typescriptServiceFile,
   {
-    filename: './templates/service.ejs'
+    filename: path.join(__dirname, 'templates', 'express.ejs'),
   }
 );
 

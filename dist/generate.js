@@ -5,6 +5,7 @@ const typeidea = require("./typeidea");
 const ejs_1 = require("ejs");
 const fs = require("fs");
 const prettier = require("prettier");
+const path = require("path");
 class BaseField {
     constructor(name, changeLog, description, optional) {
         this.name = name;
@@ -385,21 +386,21 @@ function generateDefinitions(log) {
     return [Array.from(types.values()), Array.from(services.values())];
 }
 exports.generateDefinitions = generateDefinitions;
-const typescriptTypeFile = fs.readFileSync('./templates/typescript.ejs', {
+const typescriptTypeFile = fs.readFileSync(path.join(__dirname, 'templates', 'typescript.ejs'), {
     encoding: "utf8",
 });
 const typescriptTypeTemplate = ejs_1.compile(typescriptTypeFile, {
-    filename: './templates/typescript.ejs'
+    filename: path.join(__dirname, 'templates', 'typescript.ejs'),
 });
 function generateTypescript(types) {
     return (prettier.format(typescriptTypeTemplate({ types: types }), { parser: 'typescript' }));
 }
 exports.generateTypescript = generateTypescript;
-const typescriptServiceFile = fs.readFileSync('./templates/express.ejs', {
+const typescriptServiceFile = fs.readFileSync(path.join(__dirname, 'templates', 'express.ejs'), {
     encoding: "utf8",
 });
 const typescriptServiceTemplate = ejs_1.compile(typescriptServiceFile, {
-    filename: './templates/service.ejs'
+    filename: path.join(__dirname, 'templates', 'express.ejs'),
 });
 function generateTypescriptServices(services) {
     return (prettier.format(typescriptServiceTemplate({ services: services }), { parser: 'typescript' }));

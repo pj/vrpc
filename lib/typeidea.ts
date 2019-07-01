@@ -4,19 +4,6 @@ import * as fs from 'fs';
 import * as prettier from 'prettier';
 import * as action from './action';
 
-const typescriptTypeFile = fs.readFileSync(
-  './templates/typescript.ejs',
-  {
-    encoding: "utf8",
-  }
-);
-const typescriptTypeTemplate = compile(
-  typescriptTypeFile,
-  {
-    filename: './templates/typescript.ejs'
-  }
-);
-
 type Hash = string | null;
 
 export function hashAction(

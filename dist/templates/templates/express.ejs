@@ -1,0 +1,52 @@
+/**
+* **GENERATED CODE DO NOT EDIT!**
+*/
+import {Request, Response} from "express";
+<% services.forEach(function (service) { -%>
+/*
+* <%= service.name %>
+*
+* <%= service.description %>
+*
+* # Change Log:
+<% service.changeLog.forEach(function (log, index) { -%>
+* <%= index + 1 %>. <%= log %>
+<%_ }) -%>
+*/
+  import {
+    <%= service.inputType %>,
+    <%= service.outputType %>,
+    <%= service.inputVersions.map(function (inputVersion) {
+      return service.inputType + "_V" + inputVersion.version;
+    } ).join(',\n') %>
+  } from './types';
+  import {
+    <%= service.outputVersions.map(function (outputVersion) {
+      return service.outputType + "_V" + outputVersion.version;
+    } ).join(',\n') %>
+  } from './types';
+
+  const serviceName = "<%= service.name %>";
+  function <%= service.name %>(
+  app: any,
+  func: (
+    <%= service.inputVersions.map(function (inputVersion) {
+      return "input: " + service.inputType + "_V" + inputVersion.version;
+    } ).join(' | ') %>
+  )
+  =>
+  <%=
+    service.outputVersions.map(function (outputVersion) {
+      return service.outputType + "_V" + outputVersion.version;
+    } ).join(' | ');
+  %>
+  ): void {
+    app.post('/<%= service.name %>', (req: Request, res: Response) => {
+      const inputMessage = <%= service.inputType %>.deserialize(req.body);
+      const response = func(inputMessage);
+      const outputMessage = <%= service.outputType %>.serialize(response);
+      res.json(outputMessage);
+    });
+  }
+  export {<%= service.name %>, <%= service.name %> as service, serviceName};
+<% }) %>

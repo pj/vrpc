@@ -1,14 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const crypto = require("crypto");
-const ejs_1 = require("ejs");
-const fs = require("fs");
-const typescriptTypeFile = fs.readFileSync('./templates/typescript.ejs', {
-    encoding: "utf8",
-});
-const typescriptTypeTemplate = ejs_1.compile(typescriptTypeFile, {
-    filename: './templates/typescript.ejs'
-});
 function hashAction(action, previous) {
     const hash = crypto.createHash('sha256');
     if (previous !== null) {
