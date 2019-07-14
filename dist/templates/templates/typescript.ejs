@@ -59,8 +59,6 @@
         case "<%= type.name %>_H<%= version.hash %>":
           return (
             new <%= type.name %>_H<%= version.hash %>(
-              <%= index %>,
-              "<%= version.hash %>",
               <%=
                 Object.keys(version.fields).map(function (key) {
                   const field = version.fields[key];

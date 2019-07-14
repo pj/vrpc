@@ -31,9 +31,10 @@ class TestInputType_H716a611faeb9d2ddaa02e37a5d187183ff4d388f47c740bb2202109b3e3
 
   readonly a_field: string;
 
-  constructor(version: number, hash: string, a_field: string) {
-    this.version = version;
-    this.hash = hash;
+  constructor(a_field: string) {
+    this.version = 0;
+    this.hash =
+      \\"716a611faeb9d2ddaa02e37a5d187183ff4d388f47c740bb2202109b3e3c8fc0\\";
 
     this.a_field = a_field;
   }
@@ -55,8 +56,6 @@ export class TestInputType {
       case \\"TestInputType_V0\\":
       case \\"TestInputType_H716a611faeb9d2ddaa02e37a5d187183ff4d388f47c740bb2202109b3e3c8fc0\\":
         return new TestInputType_H716a611faeb9d2ddaa02e37a5d187183ff4d388f47c740bb2202109b3e3c8fc0(
-          0,
-          \\"716a611faeb9d2ddaa02e37a5d187183ff4d388f47c740bb2202109b3e3c8fc0\\",
           message.a_field
         );
 
@@ -89,9 +88,10 @@ class TestOutputType_Hc503f8a6a87dcd268e82e6cffa2e58db72866839a676faa2df84f470f8
 
   readonly a_field: string;
 
-  constructor(version: number, hash: string, a_field: string) {
-    this.version = version;
-    this.hash = hash;
+  constructor(a_field: string) {
+    this.version = 0;
+    this.hash =
+      \\"c503f8a6a87dcd268e82e6cffa2e58db72866839a676faa2df84f470f889ae80\\";
 
     this.a_field = a_field;
   }
@@ -113,8 +113,6 @@ export class TestOutputType {
       case \\"TestOutputType_V0\\":
       case \\"TestOutputType_Hc503f8a6a87dcd268e82e6cffa2e58db72866839a676faa2df84f470f889ae80\\":
         return new TestOutputType_Hc503f8a6a87dcd268e82e6cffa2e58db72866839a676faa2df84f470f889ae80(
-          0,
-          \\"c503f8a6a87dcd268e82e6cffa2e58db72866839a676faa2df84f470f889ae80\\",
           message.a_field
         );
 
@@ -169,4 +167,4 @@ export { AwesomeService, AwesomeService as service, serviceName };
 "
 `;
 
-exports[`simple_service 3`] = `"\\"{\\\\\\"version\\\\\\":0,\\\\\\"hash\\\\\\":\\\\\\"716a611faeb9d2ddaa02e37a5d187183ff4d388f47c740bb2202109b3e3c8fc0\\\\\\",\\\\\\"a_field\\\\\\":\\\\\\"hello world\\\\\\"}\\""`;
+exports[`simple_service 3`] = `"\\"{\\\\\\"version\\\\\\":0,\\\\\\"hash\\\\\\":\\\\\\"c503f8a6a87dcd268e82e6cffa2e58db72866839a676faa2df84f470f889ae80\\\\\\",\\\\\\"a_field\\\\\\":\\\\\\"hello world\\\\\\"}\\""`;

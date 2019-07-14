@@ -4,7 +4,6 @@ import * as request from 'supertest';
 import * as express from 'express';
 
 import * as typeidea from '../lib/typeidea';
-import * as service from '../lib/service';
 import * as action from '../lib/action';
 import * as generate from '../lib/generate';
 
@@ -18,8 +17,8 @@ for (const dir of test_dirs) {
 
   it(dir, async () => {
     fs.mkdirSync(path.join('./runtest', dir), {recursive: true});
-    const testData = require('../tests/' + path.join('test_data', 'services', dir, 'ServiceImpl.ts'));
-    const actions = action.loadActionLogFromList(testData.actionLog);
+    const actionLog = require('../tests/' + path.join('test_data', 'services', dir, 'actions.json'));
+    const actions = action.loadActionLogFromList(actionLog);
     const hashes = typeidea.hashActions(actions, false);
     const hashedActions = typeidea.addHashes(actions, hashes, null);
 
@@ -43,6 +42,7 @@ for (const dir of test_dirs) {
     const typesImport = require('../' + path.join('runtest', dir, 'types.ts'));
     const servicesImport = require('../' + path.join('runtest', dir, 'services.ts'));
 
+    const testData = require('../tests/' + path.join('test_data', 'services', dir, 'ServiceImpl.ts'));
     // run express tests
     for (const implementation of testData.implementations) {
       const app = express();
