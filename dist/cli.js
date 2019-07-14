@@ -18,7 +18,7 @@ const argv = yargs
         type: 'string'
     });
 }, (argv) => {
-    const testData = require(argv.source);
+    const testData = require(path.resolve(process.cwd(), argv.source));
     const actions = action.loadActionLogFromList(testData);
     typeidea.hashActions(actions, true);
     const [types, services] = generate.generateDefinitions(actions);

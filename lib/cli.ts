@@ -4,7 +4,6 @@ import * as path from 'path';
 import * as yargs from 'yargs';
 
 import * as typeidea from './typeidea';
-import * as service from './service';
 import * as action from './action';
 import * as generate from './generate';
 
@@ -23,7 +22,7 @@ const argv = yargs
       });
     },
     (argv: any) => {
-      const testData = require(argv.source);
+      const testData = require(path.resolve(process.cwd(), argv.source));
       const actions = action.loadActionLogFromList(testData);
       typeidea.hashActions(actions, true);
   
