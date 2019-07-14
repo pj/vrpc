@@ -25,13 +25,13 @@ const argv = yargs
       const testData = require(path.resolve(process.cwd(), argv.source));
       const actions = action.loadActionLogFromList(testData);
       typeidea.hashActions(actions, true);
-  
+
       const [types, services] = generate.generateDefinitions(actions);
       const [generatedTypes, generatedServices] = generate.generateTypescriptBoth(
         types,
         services
       );
-  
+
       fs.mkdirSync(argv.dest, {recursive: true});
       fs.writeFileSync(path.join(argv.dest, 'types.ts'), generatedTypes);
       fs.writeFileSync(path.join(argv.dest, 'services.ts'), generatedServices);
