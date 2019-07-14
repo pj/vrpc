@@ -20,7 +20,7 @@ for (const dir of test_dirs) {
     fs.mkdirSync(path.join('./runtest', dir), {recursive: true});
     const testData = require('../tests/' + path.join('test_data', 'services', dir, 'ServiceImpl.ts'));
     const actions = action.loadActionLogFromList(testData.actionLog);
-    const hashes = typeidea.hashActions(actions);
+    const hashes = typeidea.hashActions(actions, false);
     const hashedActions = typeidea.addHashes(actions, hashes, null);
 
     const [types, services] = generate.generateDefinitions(hashedActions);

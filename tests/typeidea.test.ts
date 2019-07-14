@@ -37,7 +37,7 @@ it('hashActions generates hashes for types', () => {
       null
     )
   ];
-  const hashes = typeidea.hashActions(addField);
+  const hashes = typeidea.hashActions(addField, false);
   expect(hashes).toHaveLength(4);
 
   const hashedAddField = typeidea.addHashes(addField, hashes, null);
@@ -68,11 +68,11 @@ it('Changing an action makes hashing invalid', () => {
     )
   ];
 
-  const hashes = typeidea.hashActions(addField);
+  const hashes = typeidea.hashActions(addField, false);
   const hashedAddField = typeidea.addHashes(addField, hashes, null);
   hashedAddField[0].changeLog = "Don't do this!";
   expect(() => {
-    typeidea.hashActions(hashedAddField);
+    typeidea.hashActions(hashedAddField, true);
   }).toThrow(/Invalid hash at item \d+ .*/);
 });
 
@@ -98,12 +98,12 @@ it('Changing a hash makes hashing invalid', () => {
 
   const hashedAddField = typeidea.addHashes(
     addField,
-    typeidea.hashActions(addField),
+    typeidea.hashActions(addField, false),
     null
   );
   hashedAddField[0].hash = "Don't do this!";
   expect(() => {
-    typeidea.hashActions(hashedAddField);
+    typeidea.hashActions(hashedAddField, true);
   }).toThrow(/Invalid hash at item \d+ .*/);
 });
 
@@ -144,13 +144,13 @@ it('Multiple types with type reference', () => {
     )
   ];
 
-  let hashes = typeidea.hashActions(addField);
+  let hashes = typeidea.hashActions(addField, false);
   let hashedAddField = typeidea.addHashes(addField, hashes, 2);
 
   addField[3].referenceHash = hashedAddField[1].hash;
 
   // Now that we have the correct hash, generate all
-  hashes = typeidea.hashActions(addField);
+  hashes = typeidea.hashActions(addField, false);
   hashedAddField = typeidea.addHashes(addField, hashes, null);
 
   const [generatedTypes, generatedServices] = generate.generateDefinitions(
@@ -186,7 +186,7 @@ for (const [name, path, hashTo] of json_snapshot_tests) {
   it(name, () => {
     const addField = action.loadActionLog(path);
 
-    const hashes = typeidea.hashActions(addField);
+    const hashes = typeidea.hashActions(addField, false);
     const hashedAddField = typeidea.addHashes(addField, hashes, hashTo);
 
     const [generatedTypes, generatedServices] = generate.generateDefinitions(
