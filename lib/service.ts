@@ -1,4 +1,15 @@
 import * as typeidea from './typeidea';
+import {
+  Action,
+  AddInputVersionAction,
+  RemoveInputVersionAction,
+  DeprecateInputVersionAction,
+  AddOutputVersionAction,
+  NewServiceAction,
+  DeprecateOutputVersionAction,
+  RemoveOutputVersionAction,
+  UpdateDescriptionAction
+} from './action';
 import {compile} from 'ejs';
 import * as fs from 'fs';
 import * as prettier from 'prettier';
@@ -16,172 +27,172 @@ const typescriptServiceTemplate = compile(
   }
 );
 
-export class ServiceAction {
-  changeLog: string;
-  hash: string | null;
-
-  constructor(changeLog: string, hash: string | null) {
-    this.changeLog = changeLog;
-    this.hash = hash;
-  }
-
-  fieldsToHash(): string {
-    throw new Error('NotImplemented');
-  };
-}
-
-export class NewServiceAction extends ServiceAction {
-  name: string;
-  description: string;
-  inputType: string;
-  outputType: string;
-  inputVersion: string;
-  outputVersion: string;
-
-  constructor(
-    changeLog: string,
-    hash: string | null,
-    name: string,
-    description: string,
-    inputType: string,
-    outputType: string,
-    inputVersion: string,
-    outputVersion: string,
-  ) {
-    super(changeLog, hash);
-    this.name = name;
-    this.description = description;
-    this.inputType = inputType;
-    this.outputType = outputType;
-    this.inputVersion = inputVersion;
-    this.outputVersion = outputVersion;
-  }
-
-  fieldsToHash(): string {
-    return `${this.changeLog}_${this.name}_${this.description}_${this.inputType}_${this.outputType}_${this.inputVersion}_${this.outputVersion}`;
-  };
-}
-
-export class UpdateDescriptionAction extends ServiceAction {
-  description: string;
-
-  constructor(
-    changeLog: string,
-    hash: string | null,
-    description: string,
-  ) {
-    super(changeLog, hash);
-    this.description = description;
-  }
-
-  fieldsToHash(): string {
-    return `${this.changeLog}_${this.description}`;
-  };
-}
-
-export class AddInputVersionAction extends ServiceAction {
-  version: string;
-
-  constructor(
-    changeLog: string,
-    hash: string | null,
-    version: string,
-  ) {
-    super(changeLog, hash);
-    this.version = version;
-  }
-
-  fieldsToHash(): string {
-    return `${this.changeLog}_${this.version}`;
-  };
-}
-
-export class RemoveInputVersionAction extends ServiceAction {
-  version: string;
-
-  constructor(
-    changeLog: string,
-    hash: string | null,
-    version: string,
-  ) {
-    super(changeLog, hash);
-    this.version = version;
-  }
-
-  fieldsToHash(): string {
-    return `${this.changeLog}_${this.version}`;
-  };
-}
-
-export class DeprecateInputVersionAction extends ServiceAction {
-  version: string;
-
-  constructor(
-    changeLog: string,
-    hash: string | null,
-    version: string,
-  ) {
-    super(changeLog, hash);
-    this.version = version;
-  }
-
-  fieldsToHash(): string {
-    return `${this.changeLog}_${this.version}`;
-  };
-}
-
-export class AddOutputVersionAction extends ServiceAction {
-  version: string;
-
-  constructor(
-    changeLog: string,
-    hash: string | null,
-    version: string,
-  ) {
-    super(changeLog, hash);
-    this.version = version;
-  }
-
-  fieldsToHash(): string {
-    return `${this.changeLog}_${this.version}`;
-  };
-}
-
-export class RemoveOutputVersionAction extends ServiceAction {
-  version: string;
-
-  constructor(
-    changeLog: string,
-    hash: string | null,
-    version: string,
-  ) {
-    super(changeLog, hash);
-    this.version = version;
-  }
-
-  fieldsToHash(): string {
-    return `${this.changeLog}_${this.version}`;
-  };
-}
-
-export class DeprecateOutputVersionAction extends ServiceAction {
-  _type: string;
-  version: string;
-
-  constructor(
-    changeLog: string,
-    hash: string | null,
-    version: string,
-  ) {
-    super(changeLog, hash);
-    this.version = version;
-  }
-
-  fieldsToHash(): string {
-    return `${this.changeLog}_${this.version}`;
-  };
-}
-
+//export class ServiceAction {
+//  changeLog: string;
+//  hash: string | null;
+//
+//  constructor(changeLog: string, hash: string | null) {
+//    this.changeLog = changeLog;
+//    this.hash = hash;
+//  }
+//
+//  fieldsToHash(): string {
+//    throw new Error('NotImplemented');
+//  };
+//}
+//
+//export class NewServiceAction extends ServiceAction {
+//  name: string;
+//  description: string;
+//  inputType: string;
+//  outputType: string;
+//  inputVersion: string;
+//  outputVersion: string;
+//
+//  constructor(
+//    changeLog: string,
+//    hash: string | null,
+//    name: string,
+//    description: string,
+//    inputType: string,
+//    outputType: string,
+//    inputVersion: string,
+//    outputVersion: string,
+//  ) {
+//    super(changeLog, hash);
+//    this.name = name;
+//    this.description = description;
+//    this.inputType = inputType;
+//    this.outputType = outputType;
+//    this.inputVersion = inputVersion;
+//    this.outputVersion = outputVersion;
+//  }
+//
+//  fieldsToHash(): string {
+//    return `${this.changeLog}_${this.name}_${this.description}_${this.inputType}_${this.outputType}_${this.inputVersion}_${this.outputVersion}`;
+//  };
+//}
+//
+//export class UpdateDescriptionAction extends ServiceAction {
+//  description: string;
+//
+//  constructor(
+//    changeLog: string,
+//    hash: string | null,
+//    description: string,
+//  ) {
+//    super(changeLog, hash);
+//    this.description = description;
+//  }
+//
+//  fieldsToHash(): string {
+//    return `${this.changeLog}_${this.description}`;
+//  };
+//}
+//
+//export class AddInputVersionAction extends ServiceAction {
+//  version: string;
+//
+//  constructor(
+//    changeLog: string,
+//    hash: string | null,
+//    version: string,
+//  ) {
+//    super(changeLog, hash);
+//    this.version = version;
+//  }
+//
+//  fieldsToHash(): string {
+//    return `${this.changeLog}_${this.version}`;
+//  };
+//}
+//
+//export class RemoveInputVersionAction extends ServiceAction {
+//  version: string;
+//
+//  constructor(
+//    changeLog: string,
+//    hash: string | null,
+//    version: string,
+//  ) {
+//    super(changeLog, hash);
+//    this.version = version;
+//  }
+//
+//  fieldsToHash(): string {
+//    return `${this.changeLog}_${this.version}`;
+//  };
+//}
+//
+//export class DeprecateInputVersionAction extends ServiceAction {
+//  version: string;
+//
+//  constructor(
+//    changeLog: string,
+//    hash: string | null,
+//    version: string,
+//  ) {
+//    super(changeLog, hash);
+//    this.version = version;
+//  }
+//
+//  fieldsToHash(): string {
+//    return `${this.changeLog}_${this.version}`;
+//  };
+//}
+//
+//export class AddOutputVersionAction extends ServiceAction {
+//  version: string;
+//
+//  constructor(
+//    changeLog: string,
+//    hash: string | null,
+//    version: string,
+//  ) {
+//    super(changeLog, hash);
+//    this.version = version;
+//  }
+//
+//  fieldsToHash(): string {
+//    return `${this.changeLog}_${this.version}`;
+//  };
+//}
+//
+//export class RemoveOutputVersionAction extends ServiceAction {
+//  version: string;
+//
+//  constructor(
+//    changeLog: string,
+//    hash: string | null,
+//    version: string,
+//  ) {
+//    super(changeLog, hash);
+//    this.version = version;
+//  }
+//
+//  fieldsToHash(): string {
+//    return `${this.changeLog}_${this.version}`;
+//  };
+//}
+//
+//export class DeprecateOutputVersionAction extends ServiceAction {
+//  _type: string;
+//  version: string;
+//
+//  constructor(
+//    changeLog: string,
+//    hash: string | null,
+//    version: string,
+//  ) {
+//    super(changeLog, hash);
+//    this.version = version;
+//  }
+//
+//  fieldsToHash(): string {
+//    return `${this.changeLog}_${this.version}`;
+//  };
+//}
+//
 type ServiceState = 'active' | 'deprecated' | 'removed';
 
 export class ServiceVersion {
@@ -222,7 +233,7 @@ export class Service {
   }
 }
 
-export function generateServices(services: Array<Array<ServiceAction>>): Service[] {
+export function generateServices(services: Array<Array<Action>>): Service[] {
   const generatedServices = [];
   for (const service of services) {
     let previousHash = null;
@@ -323,7 +334,7 @@ export function generateTypescript(services: Service[]) {
   }
   );
 }
-function createActions(actions: any[]): ServiceAction[] {
+function createActions(actions: any[]): Action[] {
   const log = [];
 
   for (const action of actions) {
@@ -396,7 +407,7 @@ function createActions(actions: any[]): ServiceAction[] {
   return log;
 }
 
-export function loadActions(path: string): Array<Array<ServiceAction>> {
+export function loadActions(path: string): Array<Array<Action>> {
   const types = require(path);
   const outputTypes = [];
 

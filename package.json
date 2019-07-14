@@ -35,6 +35,7 @@
   "scripts": {
     "test": "jest",
     "test:watch": "chokidar \"templates/**/*.ejs\" \"lib/**/*.ts\" \"tests/**/*.ts\" -c \"yarn run test\" --ignore runtest --ignore tests/snapshots",
-    "build": "tsc --outDir dist --rootDir lib && cp -r lib/templates dist/templates"
+    "build": "tsc --outDir dist --rootDir lib && cp -r lib/templates dist/templates",
+    "build:watch": "chokidar \"templates/**/*.ejs\" \"lib/**/*.ts\" \"tests/**/*.ts\" -c \"tsc --outDir dist --rootDir lib && cp -r lib/templates dist/templates\" --ignore runtest --ignore tests/snapshots"
   }
 }

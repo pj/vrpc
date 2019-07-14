@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const typeidea = require("./typeidea");
+const action_1 = require("./action");
 const ejs_1 = require("ejs");
 const fs = require("fs");
 const prettier = require("prettier");
@@ -10,110 +11,6 @@ const typescriptServiceFile = fs.readFileSync('./templates/service.ejs', {
 const typescriptServiceTemplate = ejs_1.compile(typescriptServiceFile, {
     filename: './templates/service.ejs'
 });
-class ServiceAction {
-    constructor(changeLog, hash) {
-        this.changeLog = changeLog;
-        this.hash = hash;
-    }
-    fieldsToHash() {
-        throw new Error('NotImplemented');
-    }
-    ;
-}
-exports.ServiceAction = ServiceAction;
-class NewServiceAction extends ServiceAction {
-    constructor(changeLog, hash, name, description, inputType, outputType, inputVersion, outputVersion) {
-        super(changeLog, hash);
-        this.name = name;
-        this.description = description;
-        this.inputType = inputType;
-        this.outputType = outputType;
-        this.inputVersion = inputVersion;
-        this.outputVersion = outputVersion;
-    }
-    fieldsToHash() {
-        return `${this.changeLog}_${this.name}_${this.description}_${this.inputType}_${this.outputType}_${this.inputVersion}_${this.outputVersion}`;
-    }
-    ;
-}
-exports.NewServiceAction = NewServiceAction;
-class UpdateDescriptionAction extends ServiceAction {
-    constructor(changeLog, hash, description) {
-        super(changeLog, hash);
-        this.description = description;
-    }
-    fieldsToHash() {
-        return `${this.changeLog}_${this.description}`;
-    }
-    ;
-}
-exports.UpdateDescriptionAction = UpdateDescriptionAction;
-class AddInputVersionAction extends ServiceAction {
-    constructor(changeLog, hash, version) {
-        super(changeLog, hash);
-        this.version = version;
-    }
-    fieldsToHash() {
-        return `${this.changeLog}_${this.version}`;
-    }
-    ;
-}
-exports.AddInputVersionAction = AddInputVersionAction;
-class RemoveInputVersionAction extends ServiceAction {
-    constructor(changeLog, hash, version) {
-        super(changeLog, hash);
-        this.version = version;
-    }
-    fieldsToHash() {
-        return `${this.changeLog}_${this.version}`;
-    }
-    ;
-}
-exports.RemoveInputVersionAction = RemoveInputVersionAction;
-class DeprecateInputVersionAction extends ServiceAction {
-    constructor(changeLog, hash, version) {
-        super(changeLog, hash);
-        this.version = version;
-    }
-    fieldsToHash() {
-        return `${this.changeLog}_${this.version}`;
-    }
-    ;
-}
-exports.DeprecateInputVersionAction = DeprecateInputVersionAction;
-class AddOutputVersionAction extends ServiceAction {
-    constructor(changeLog, hash, version) {
-        super(changeLog, hash);
-        this.version = version;
-    }
-    fieldsToHash() {
-        return `${this.changeLog}_${this.version}`;
-    }
-    ;
-}
-exports.AddOutputVersionAction = AddOutputVersionAction;
-class RemoveOutputVersionAction extends ServiceAction {
-    constructor(changeLog, hash, version) {
-        super(changeLog, hash);
-        this.version = version;
-    }
-    fieldsToHash() {
-        return `${this.changeLog}_${this.version}`;
-    }
-    ;
-}
-exports.RemoveOutputVersionAction = RemoveOutputVersionAction;
-class DeprecateOutputVersionAction extends ServiceAction {
-    constructor(changeLog, hash, version) {
-        super(changeLog, hash);
-        this.version = version;
-    }
-    fieldsToHash() {
-        return `${this.changeLog}_${this.version}`;
-    }
-    ;
-}
-exports.DeprecateOutputVersionAction = DeprecateOutputVersionAction;
 class ServiceVersion {
     constructor(version, state) {
         this.version = version;
@@ -163,16 +60,16 @@ function generateServices(services) {
         newService.outputVersions.push(new ServiceVersion(newAction.outputVersion, 'active'));
         for (let n = 1; n < service.length; n++) {
             let action = service[n];
-            if (action instanceof NewServiceAction) {
+            if (action instanceof action_1.NewServiceAction) {
                 throw new Error(`New Service action not at start!`);
             }
-            else if (action instanceof UpdateDescriptionAction) {
+            else if (action instanceof action_1.UpdateDescriptionAction) {
                 newService.description = action.description;
             }
-            else if (action instanceof AddInputVersionAction) {
+            else if (action instanceof action_1.AddInputVersionAction) {
                 newService.inputVersions.push(new ServiceVersion(action.version, 'active'));
             }
-            else if (action instanceof RemoveInputVersionAction) {
+            else if (action instanceof action_1.RemoveInputVersionAction) {
                 newService.inputVersions = newService.inputVersions.map(serviceVersion => {
                     if (serviceVersion.version === action.version) {
                         return new ServiceVersion(action.version, 'removed');
@@ -180,7 +77,7 @@ function generateServices(services) {
                     return serviceVersion;
                 });
             }
-            else if (action instanceof DeprecateInputVersionAction) {
+            else if (action instanceof action_1.DeprecateInputVersionAction) {
                 newService.inputVersions = newService.inputVersions.map(serviceVersion => {
                     if (serviceVersion.version === action.version) {
                         return new ServiceVersion(action.version, 'deprecated');
@@ -188,10 +85,10 @@ function generateServices(services) {
                     return serviceVersion;
                 });
             }
-            else if (action instanceof AddOutputVersionAction) {
+            else if (action instanceof action_1.AddOutputVersionAction) {
                 newService.outputVersions.push(new ServiceVersion(action.version, 'active'));
             }
-            else if (action instanceof RemoveOutputVersionAction) {
+            else if (action instanceof action_1.RemoveOutputVersionAction) {
                 newService.outputVersions = newService.outputVersions.map(serviceVersion => {
                     if (serviceVersion.version === action.version) {
                         return new ServiceVersion(action.version, 'removed');
@@ -199,7 +96,7 @@ function generateServices(services) {
                     return serviceVersion;
                 });
             }
-            else if (action instanceof DeprecateOutputVersionAction) {
+            else if (action instanceof action_1.DeprecateOutputVersionAction) {
                 newService.outputVersions = newService.outputVersions.map(serviceVersion => {
                     if (serviceVersion.version === action.version) {
                         return new ServiceVersion(action.version, 'deprecated');
@@ -230,28 +127,28 @@ function createActions(actions) {
     for (const action of actions) {
         switch (action._action_type) {
             case 'NewServiceAction':
-                log.push(new NewServiceAction(action.changeLog, action.hash, action.name, action.description, action.inputType, action.outputType, action.inputVersion, action.outputVersion));
+                log.push(new action_1.NewServiceAction(action.changeLog, action.hash, action.name, action.description, action.inputType, action.outputType, action.inputVersion, action.outputVersion));
                 break;
             case 'UpdateDescriptionAction':
-                log.push(new UpdateDescriptionAction(action.changeLog, action.hash, action.description));
+                log.push(new action_1.UpdateDescriptionAction(action.changeLog, action.hash, action.description));
                 break;
             case 'AddInputVersionAction':
-                log.push(new AddInputVersionAction(action.changeLog, action.hash, action.version));
+                log.push(new action_1.AddInputVersionAction(action.changeLog, action.hash, action.version));
                 break;
             case 'RemoveInputVersionAction':
-                log.push(new RemoveInputVersionAction(action.changeLog, action.hash, action.version));
+                log.push(new action_1.RemoveInputVersionAction(action.changeLog, action.hash, action.version));
                 break;
             case 'DeprecateInputVersionAction':
-                log.push(new DeprecateInputVersionAction(action.changeLog, action.hash, action.version));
+                log.push(new action_1.DeprecateInputVersionAction(action.changeLog, action.hash, action.version));
                 break;
             case 'AddOutputVersionAction':
-                log.push(new AddOutputVersionAction(action.changeLog, action.hash, action.version));
+                log.push(new action_1.AddOutputVersionAction(action.changeLog, action.hash, action.version));
                 break;
             case 'RemoveOutputVersionAction':
-                log.push(new RemoveOutputVersionAction(action.changeLog, action.hash, action.version));
+                log.push(new action_1.RemoveOutputVersionAction(action.changeLog, action.hash, action.version));
                 break;
             case 'DeprecateOutputVersionAction':
-                log.push(new DeprecateOutputVersionAction(action.changeLog, action.hash, action.version));
+                log.push(new action_1.DeprecateOutputVersionAction(action.changeLog, action.hash, action.version));
                 break;
         }
     }

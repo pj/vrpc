@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 class Action {
     constructor(changeLog, hash) {
+        this._action_type = this.constructor.name;
         this.changeLog = changeLog;
         this.hash = hash;
     }

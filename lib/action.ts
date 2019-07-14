@@ -5,10 +5,12 @@ export type FieldTypes = 'string' | 'boolean' | 'number';
 export type FieldDefaults = string | boolean | number;
 
 export class Action {
+  _action_type: string;
   changeLog: string;
   hash: string | null;
 
   constructor(changeLog: string, hash: string | null) {
+    this._action_type = this.constructor.name;
     this.changeLog = changeLog;
     this.hash = hash;
   }
