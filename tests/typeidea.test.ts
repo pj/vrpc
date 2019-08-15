@@ -174,7 +174,7 @@ const json_snapshot_tests = ([
   ['Make a field optional', '../tests/test_data/optional_field.json', null],
   ['Delete a field', '../tests/test_data/delete_field.json', null],
   ['Type with latest', '../tests/test_data/type_with_latest.json', 3],
-  ['Type with GroupAction', '../tests/test_data/type_with_group.json', null],
+  //['Type with GroupAction', '../tests/test_data/type_with_group.json', null],
   [
     'Type with deprecated and dont generate',
     '../tests/test_data/deprecated_and_dont_generated.json',

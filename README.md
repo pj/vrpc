@@ -1,5 +1,13 @@
 # TODO
+- generate types using code.
+- generate client for testing.
+- update log files with version numbers as well as hashes.
+- allow both hash and version numbers to be specified in log files.
+- standardize formatting and use of hashes and versions.
+- test groups properly.
+- test latest properly.
 - cli tools
+-- manipulate latest to create group
 - Define type options as part of file, e.g. hashed attributes.
 - Latest for service definitions.
 - proto bufs support? json schema support?

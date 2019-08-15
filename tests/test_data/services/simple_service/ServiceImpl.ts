@@ -1,7 +1,7 @@
 import {Express} from "express";
 import {
-  TestInputType_V0,
-  TestOutputType_V0
+  TestInputType_V1,
+  TestOutputType_V1
 } from "../../../../runtest/simple_service/types";
 
 const implementations = [
@@ -10,8 +10,8 @@ const implementations = [
     function (app: Express) {
       const service = require("../../../../runtest/simple_service/services");
 
-      service.service(app, function (input: TestInputType_V0): TestOutputType_V0 {
-        return new TestOutputType_V0("hello " + input.a_field);
+      service.AwesomeService(app, function (input: TestInputType_V1): TestOutputType_V1 {
+        return new TestOutputType_V1("hello " + input.a_field);
       });
     }
   ]

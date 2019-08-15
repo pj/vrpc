@@ -8,6 +8,7 @@ export class Action {
   _action_type: string;
   changeLog: string;
   hash: string | null;
+  version: number | null;
 
   constructor(changeLog: string, hash: string | null) {
     this._action_type = this.constructor.name;
@@ -385,149 +386,182 @@ export class UpdateDescriptionServiceAction extends Action {
   }
 }
 
-export class AddInputVersionServiceAction extends Action {
+export class AddVersionServiceAction extends Action {
   serviceName: string;
-  version: string;
+  inputType: string;
+  outputType: string;
+  inputVersion: string;
+  outputVersion: string;
 
   constructor(
     changeLog: string,
     hash: string | null,
     serviceName: string,
-    version: string,
+    inputType: string,
+    outputType: string,
+    inputVersion: string,
+    outputVersion: string,
   ) {
     super(changeLog, hash);
     this.serviceName = serviceName;
-    this.version = version;
+    this.inputType = inputType;
+    this.outputType = outputType;
+    this.inputVersion = inputVersion;
+    this.outputVersion = outputVersion;
   }
 
   fieldsToHash(): string {
-    return `${super.fieldsToHash()}_${this.serviceName}_${this.version}`;
+    return `${super.fieldsToHash()}_${this.serviceName}_${this.inputType}_${this.outputType}_${this.inputVersion}_${this.outputVersion}`;
   };
 
   toString(): string {
-    return `AddInputVersionServiceAction(${this.changeLog}, ${this.hash}, ${this.serviceName}, ${this.version})`;
+    return `AddVersionServiceAction(${this.changeLog}, ${this.hash}, ${this.serviceName}, ${this.inputType}, ${this.outputType}, ${this.inputVersion}, ${this.outputVersion})`;
   }
 }
 
-export class RemoveInputVersionServiceAction extends Action {
-  serviceName: string;
-  version: string;
-
-  constructor(
-    changeLog: string,
-    hash: string | null,
-    serviceName: string,
-    version: string,
-  ) {
-    super(changeLog, hash);
-    this.serviceName = serviceName;
-    this.version = version;
-  }
-
-  fieldsToHash(): string {
-    return `${super.fieldsToHash()}_${this.serviceName}_${this.version}`;
-  };
-
-  toString(): string {
-    return `RemoveInputVersionServiceAction(${this.changeLog}, ${this.hash}, ${this.serviceName}, ${this.version})`;
-  }
-}
-
-export class DeprecateInputVersionServiceAction extends Action {
-  serviceName: string;
-  version: string;
-
-  constructor(
-    changeLog: string,
-    hash: string | null,
-    serviceName: string,
-    version: string,
-  ) {
-    super(changeLog, hash);
-    this.serviceName = serviceName;
-    this.version = version;
-  }
-
-  fieldsToHash(): string {
-    return `${super.fieldsToHash()}_${this.serviceName}_${this.version}`;
-  };
-
-  toString(): string {
-    return `DeprecateInputVersionServiceAction(${this.changeLog}, ${this.hash}, ${this.serviceName}, ${this.version})`;
-  }
-}
-
-export class AddOutputVersionServiceAction extends Action {
-  serviceName: string;
-  version: string;
-
-  constructor(
-    changeLog: string,
-    hash: string | null,
-    serviceName: string,
-    version: string,
-  ) {
-    super(changeLog, hash);
-    this.serviceName = serviceName;
-    this.version = version;
-  }
-
-  fieldsToHash(): string {
-    return `${super.fieldsToHash()}_${this.serviceName}_${this.version}`;
-  };
-
-  toString(): string {
-    return `AddOutputVersionServiceAction(${this.changeLog}, ${this.hash}, ${this.serviceName}, ${this.version})`;
-  }
-}
-
-export class RemoveOutputVersionServiceAction extends Action {
-  serviceName: string;
-  version: string;
-
-  constructor(
-    changeLog: string,
-    hash: string | null,
-    serviceName: string,
-    version: string,
-  ) {
-    super(changeLog, hash);
-    this.serviceName = serviceName;
-    this.version = version;
-  }
-
-  fieldsToHash(): string {
-    return `${super.fieldsToHash()}_${this.serviceName}_${this.version}`;
-  };
-
-  toString(): string {
-    return `RemoveOutputVersionServiceAction(${this.changeLog}, ${this.hash}, ${this.serviceName}, ${this.version})`;
-  }
-}
-
-export class DeprecateOutputVersionServiceAction extends Action {
-  serviceName: string;
-  version: string;
-
-  constructor(
-    changeLog: string,
-    hash: string | null,
-    serviceName: string,
-    version: string,
-  ) {
-    super(changeLog, hash);
-    this.serviceName = serviceName;
-    this.version = version;
-  }
-
-  fieldsToHash(): string {
-    return `${super.fieldsToHash()}_${this.serviceName}_${this.version}`;
-  };
-
-  toString(): string {
-    return `DeprecateOutputVersionServiceAction(${this.changeLog}, ${this.hash}, ${this.serviceName}, ${this.version})`;
-  }
-}
+//export class AddInputVersionServiceAction extends Action {
+//  serviceName: string;
+//  version: string;
+//
+//  constructor(
+//    changeLog: string,
+//    hash: string | null,
+//    serviceName: string,
+//    version: string,
+//  ) {
+//    super(changeLog, hash);
+//    this.serviceName = serviceName;
+//    this.version = version;
+//  }
+//
+//  fieldsToHash(): string {
+//    return `${super.fieldsToHash()}_${this.serviceName}_${this.version}`;
+//  };
+//
+//  toString(): string {
+//    return `AddInputVersionServiceAction(${this.changeLog}, ${this.hash}, ${this.serviceName}, ${this.version})`;
+//  }
+//}
+//
+//export class RemoveInputVersionServiceAction extends Action {
+//  serviceName: string;
+//  version: string;
+//
+//  constructor(
+//    changeLog: string,
+//    hash: string | null,
+//    serviceName: string,
+//    version: string,
+//  ) {
+//    super(changeLog, hash);
+//    this.serviceName = serviceName;
+//    this.version = version;
+//  }
+//
+//  fieldsToHash(): string {
+//    return `${super.fieldsToHash()}_${this.serviceName}_${this.version}`;
+//  };
+//
+//  toString(): string {
+//    return `RemoveInputVersionServiceAction(${this.changeLog}, ${this.hash}, ${this.serviceName}, ${this.version})`;
+//  }
+//}
+//
+//export class DeprecateInputVersionServiceAction extends Action {
+//  serviceName: string;
+//  version: string;
+//
+//  constructor(
+//    changeLog: string,
+//    hash: string | null,
+//    serviceName: string,
+//    version: string,
+//  ) {
+//    super(changeLog, hash);
+//    this.serviceName = serviceName;
+//    this.version = version;
+//  }
+//
+//  fieldsToHash(): string {
+//    return `${super.fieldsToHash()}_${this.serviceName}_${this.version}`;
+//  };
+//
+//  toString(): string {
+//    return `DeprecateInputVersionServiceAction(${this.changeLog}, ${this.hash}, ${this.serviceName}, ${this.version})`;
+//  }
+//}
+//
+//export class AddOutputVersionServiceAction extends Action {
+//  serviceName: string;
+//  version: string;
+//
+//  constructor(
+//    changeLog: string,
+//    hash: string | null,
+//    serviceName: string,
+//    version: string,
+//  ) {
+//    super(changeLog, hash);
+//    this.serviceName = serviceName;
+//    this.version = version;
+//  }
+//
+//  fieldsToHash(): string {
+//    return `${super.fieldsToHash()}_${this.serviceName}_${this.version}`;
+//  };
+//
+//  toString(): string {
+//    return `AddOutputVersionServiceAction(${this.changeLog}, ${this.hash}, ${this.serviceName}, ${this.version})`;
+//  }
+//}
+//
+//export class RemoveOutputVersionServiceAction extends Action {
+//  serviceName: string;
+//  version: string;
+//
+//  constructor(
+//    changeLog: string,
+//    hash: string | null,
+//    serviceName: string,
+//    version: string,
+//  ) {
+//    super(changeLog, hash);
+//    this.serviceName = serviceName;
+//    this.version = version;
+//  }
+//
+//  fieldsToHash(): string {
+//    return `${super.fieldsToHash()}_${this.serviceName}_${this.version}`;
+//  };
+//
+//  toString(): string {
+//    return `RemoveOutputVersionServiceAction(${this.changeLog}, ${this.hash}, ${this.serviceName}, ${this.version})`;
+//  }
+//}
+//
+//export class DeprecateOutputVersionServiceAction extends Action {
+//  serviceName: string;
+//  version: string;
+//
+//  constructor(
+//    changeLog: string,
+//    hash: string | null,
+//    serviceName: string,
+//    version: string,
+//  ) {
+//    super(changeLog, hash);
+//    this.serviceName = serviceName;
+//    this.version = version;
+//  }
+//
+//  fieldsToHash(): string {
+//    return `${super.fieldsToHash()}_${this.serviceName}_${this.version}`;
+//  };
+//
+//  toString(): string {
+//    return `DeprecateOutputVersionServiceAction(${this.changeLog}, ${this.hash}, ${this.serviceName}, ${this.version})`;
+//  }
+//}
 
 function loadAction(action: any): Action {
   switch(action._action_type) {
@@ -549,48 +583,58 @@ function loadAction(action: any): Action {
         action.serviceName,
         action.description
       );
-    case 'AddInputVersionServiceAction':
-      return new AddInputVersionServiceAction(
+    case 'AddVersionServiceAction':
+      return new AddVersionServiceAction(
         action.changeLog,
         action.hash,
         action.serviceName,
-        action.version
+        action.inputType,
+        action.outputType,
+        action.inputVersion,
+        action.outputVersion
       );
-    case 'RemoveInputVersionServiceAction':
-      return new RemoveInputVersionServiceAction(
-        action.changeLog,
-        action.hash,
-        action.serviceName,
-        action.version
-      );
-    case 'DeprecateInputVersionServiceAction':
-      return new DeprecateInputVersionServiceAction(
-        action.changeLog,
-        action.hash,
-        action.serviceName,
-        action.version
-      );
-    case 'AddOutputVersionServiceAction':
-      return new AddOutputVersionServiceAction(
-        action.changeLog,
-        action.hash,
-        action.serviceName,
-        action.version
-      );
-    case 'RemoveOutputVersionServiceAction':
-      return new RemoveOutputVersionServiceAction(
-        action.changeLog,
-        action.hash,
-        action.serviceName,
-        action.version
-      );
-    case 'DeprecateOutputVersionServiceAction':
-      return new DeprecateOutputVersionServiceAction(
-        action.changeLog,
-        action.hash,
-        action.serviceName,
-        action.version
-      );
+    //case 'AddInputVersionServiceAction':
+    //  return new AddInputVersionServiceAction(
+    //    action.changeLog,
+    //    action.hash,
+    //    action.serviceName,
+    //    action.version
+    //  );
+    //case 'RemoveInputVersionServiceAction':
+    //  return new RemoveInputVersionServiceAction(
+    //    action.changeLog,
+    //    action.hash,
+    //    action.serviceName,
+    //    action.version
+    //  );
+    //case 'DeprecateInputVersionServiceAction':
+    //  return new DeprecateInputVersionServiceAction(
+    //    action.changeLog,
+    //    action.hash,
+    //    action.serviceName,
+    //    action.version
+    //  );
+    //case 'AddOutputVersionServiceAction':
+    //  return new AddOutputVersionServiceAction(
+    //    action.changeLog,
+    //    action.hash,
+    //    action.serviceName,
+    //    action.version
+    //  );
+    //case 'RemoveOutputVersionServiceAction':
+    //  return new RemoveOutputVersionServiceAction(
+    //    action.changeLog,
+    //    action.hash,
+    //    action.serviceName,
+    //    action.version
+    //  );
+    //case 'DeprecateOutputVersionServiceAction':
+    //  return new DeprecateOutputVersionServiceAction(
+    //    action.changeLog,
+    //    action.hash,
+    //    action.serviceName,
+    //    action.version
+    //  );
     // Types
     case 'RenameFieldTypeAction':
       return new RenameFieldTypeAction(

@@ -4,66 +4,71 @@ exports[`Add a field 1`] = `
 "/**
  * **GENERATED CODE DO NOT EDIT!**
  */
+import { Request, Response } from \\"express\\";
 /*
  * Test
  * Test
  * Change Log:
- * 1. Creating a new type
- * 2. Adding a field
+ * 0. Creating a new type
+ * 1. Adding a field
  */
-
 /**
  * @param test_field A field that helps testing
  *
  * @sealed
- *
  */
-class Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d {
+class Test_V1 {
   readonly version: number;
   readonly hash: string;
-
   readonly test_field: string | null;
 
   constructor(test_field: string | null) {
-    this.version = 0;
+    this.version = 1;
     this.hash =
       \\"56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d\\";
-
     this.test_field = test_field;
+  }
+
+  static deserialize(message: any): Test_V1 {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\\"version not present: \\" + message);
+    }
+    return new Test_V1(message.test_field);
+  }
+
+  static serialize(message: Test_V1): string {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\\"version not present: \\" + message);
+    }
+    return JSON.stringify(message);
   }
 }
 
 export {
-  Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d,
-  Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d as Test_V0
+  Test_V1,
+  Test_V1 as Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d
 };
 
 export class Test {
-  static deserialize(
-    message: any
-  ): Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d {
+  static deserialize(message: any): Test_V1 {
     if (message.version === null || message.version === undefined) {
-      throw new Error(\`version not present: \${message}\`);
+      throw new Error(\\"version not present: \\" + message);
     }
     switch (message.version) {
-      case \\"Test_V0\\":
+      case \\"Test_V1\\":
       case \\"Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d\\":
-        return new Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d(
-          message.test_field
-        );
+        return new Test_V1(message.test_field);
 
       default:
         throw new Error(
-          \`Unknown version error or version not present: \${message}\`
+          \\"Unknown version error or version not present: \\" + message
         );
     }
   }
 
-  static serialize(
-    message: Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d
-  ): string {
+  static serialize(message: Test_V1): string {
     if (message.version === null || message.version === undefined) {
-      throw new Error(\`version not present: \${message}\`);
+      throw new Error(\\"version not present: \\" + message);
     }
     return JSON.stringify(message);
   }
@@ -75,66 +80,71 @@ exports[`Add a field with a default value 1`] = `
 "/**
  * **GENERATED CODE DO NOT EDIT!**
  */
+import { Request, Response } from \\"express\\";
 /*
  * Test
  * Test
  * Change Log:
- * 1. Creating a new type
- * 2. Adding a field
+ * 0. Creating a new type
+ * 1. Adding a field
  */
-
 /**
  * @param test_field A field that helps testing
  *
  * @sealed
- *
  */
-class Test_H036cb58d4009b695ef9c0a35e42cfd356c5ca922f3340d79db2364efd0d0da4c {
+class Test_V1 {
   readonly version: number;
   readonly hash: string;
-
   readonly test_field: string | null;
 
   constructor(test_field: string | null) {
-    this.version = 0;
+    this.version = 1;
     this.hash =
       \\"036cb58d4009b695ef9c0a35e42cfd356c5ca922f3340d79db2364efd0d0da4c\\";
-
     this.test_field = test_field || \\"A value\\";
+  }
+
+  static deserialize(message: any): Test_V1 {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\\"version not present: \\" + message);
+    }
+    return new Test_V1(message.test_field);
+  }
+
+  static serialize(message: Test_V1): string {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\\"version not present: \\" + message);
+    }
+    return JSON.stringify(message);
   }
 }
 
 export {
-  Test_H036cb58d4009b695ef9c0a35e42cfd356c5ca922f3340d79db2364efd0d0da4c,
-  Test_H036cb58d4009b695ef9c0a35e42cfd356c5ca922f3340d79db2364efd0d0da4c as Test_V0
+  Test_V1,
+  Test_V1 as Test_H036cb58d4009b695ef9c0a35e42cfd356c5ca922f3340d79db2364efd0d0da4c
 };
 
 export class Test {
-  static deserialize(
-    message: any
-  ): Test_H036cb58d4009b695ef9c0a35e42cfd356c5ca922f3340d79db2364efd0d0da4c {
+  static deserialize(message: any): Test_V1 {
     if (message.version === null || message.version === undefined) {
-      throw new Error(\`version not present: \${message}\`);
+      throw new Error(\\"version not present: \\" + message);
     }
     switch (message.version) {
-      case \\"Test_V0\\":
+      case \\"Test_V1\\":
       case \\"Test_H036cb58d4009b695ef9c0a35e42cfd356c5ca922f3340d79db2364efd0d0da4c\\":
-        return new Test_H036cb58d4009b695ef9c0a35e42cfd356c5ca922f3340d79db2364efd0d0da4c(
-          message.test_field
-        );
+        return new Test_V1(message.test_field);
 
       default:
         throw new Error(
-          \`Unknown version error or version not present: \${message}\`
+          \\"Unknown version error or version not present: \\" + message
         );
     }
   }
 
-  static serialize(
-    message: Test_H036cb58d4009b695ef9c0a35e42cfd356c5ca922f3340d79db2364efd0d0da4c
-  ): string {
+  static serialize(message: Test_V1): string {
     if (message.version === null || message.version === undefined) {
-      throw new Error(\`version not present: \${message}\`);
+      throw new Error(\\"version not present: \\" + message);
     }
     return JSON.stringify(message);
   }
@@ -146,40 +156,51 @@ exports[`Delete a field 1`] = `
 "/**
  * **GENERATED CODE DO NOT EDIT!**
  */
+import { Request, Response } from \\"express\\";
 /*
  * Test
  * Test
  * Change Log:
- * 1. Creating a new type
- * 2. Adding a field
- * 3. Adding another field
- * 4. didn&#39;t actually need that
+ * 0. Creating a new type
+ * 1. Adding a field
+ * 2. Adding another field
+ * 3. didn't actually need that
  */
-
 /**
  * @param test_field A field that helps testing
  *
  * @sealed
- *
  */
-class Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d {
+class Test_V1 {
   readonly version: number;
   readonly hash: string;
-
   readonly test_field: string | null;
 
   constructor(test_field: string | null) {
-    this.version = 0;
+    this.version = 1;
     this.hash =
       \\"56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d\\";
-
     this.test_field = test_field;
+  }
+
+  static deserialize(message: any): Test_V1 {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\\"version not present: \\" + message);
+    }
+    return new Test_V1(message.test_field);
+  }
+
+  static serialize(message: Test_V1): string {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\\"version not present: \\" + message);
+    }
+    return JSON.stringify(message);
   }
 }
 
 export {
-  Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d,
-  Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d as Test_V0
+  Test_V1,
+  Test_V1 as Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d
 };
 
 /**
@@ -187,103 +208,106 @@ export {
  * @param test_field2 A field that helps testing, again
  *
  * @sealed
- *
  */
-class Test_H4ce3d4cfba96f0cdcce4bf1d2812eea0c5b1cf529ac93763f6f33d0600a652f0 {
+class Test_V2 {
   readonly version: number;
   readonly hash: string;
-
   readonly test_field: string | null;
-
   readonly test_field2: string;
 
   constructor(test_field: string | null, test_field2: string) {
-    this.version = 1;
+    this.version = 2;
     this.hash =
       \\"4ce3d4cfba96f0cdcce4bf1d2812eea0c5b1cf529ac93763f6f33d0600a652f0\\";
-
     this.test_field = test_field;
-
     this.test_field2 = test_field2 || \\"blah\\";
+  }
+
+  static deserialize(message: any): Test_V2 {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\\"version not present: \\" + message);
+    }
+    return new Test_V2(message.test_field, message.test_field2);
+  }
+
+  static serialize(message: Test_V2): string {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\\"version not present: \\" + message);
+    }
+    return JSON.stringify(message);
   }
 }
 
 export {
-  Test_H4ce3d4cfba96f0cdcce4bf1d2812eea0c5b1cf529ac93763f6f33d0600a652f0,
-  Test_H4ce3d4cfba96f0cdcce4bf1d2812eea0c5b1cf529ac93763f6f33d0600a652f0 as Test_V1
+  Test_V2,
+  Test_V2 as Test_H4ce3d4cfba96f0cdcce4bf1d2812eea0c5b1cf529ac93763f6f33d0600a652f0
 };
 
 /**
  * @param test_field A field that helps testing
  *
  * @sealed
- *
  */
-class Test_Hd6cc2965f8ee5ebb6de4a255956c869a8c212bcc4d0bccf1dff40a440c2343f7 {
+class Test_V3 {
   readonly version: number;
   readonly hash: string;
-
   readonly test_field: string | null;
 
   constructor(test_field: string | null) {
-    this.version = 2;
+    this.version = 3;
     this.hash =
       \\"d6cc2965f8ee5ebb6de4a255956c869a8c212bcc4d0bccf1dff40a440c2343f7\\";
-
     this.test_field = test_field;
+  }
+
+  static deserialize(message: any): Test_V3 {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\\"version not present: \\" + message);
+    }
+    return new Test_V3(message.test_field);
+  }
+
+  static serialize(message: Test_V3): string {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\\"version not present: \\" + message);
+    }
+    return JSON.stringify(message);
   }
 }
 
 export {
-  Test_Hd6cc2965f8ee5ebb6de4a255956c869a8c212bcc4d0bccf1dff40a440c2343f7,
-  Test_Hd6cc2965f8ee5ebb6de4a255956c869a8c212bcc4d0bccf1dff40a440c2343f7 as Test_V2
+  Test_V3,
+  Test_V3 as Test_Hd6cc2965f8ee5ebb6de4a255956c869a8c212bcc4d0bccf1dff40a440c2343f7
 };
 
 export class Test {
-  static deserialize(
-    message: any
-  ):
-    | Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d
-    | Test_H4ce3d4cfba96f0cdcce4bf1d2812eea0c5b1cf529ac93763f6f33d0600a652f0
-    | Test_Hd6cc2965f8ee5ebb6de4a255956c869a8c212bcc4d0bccf1dff40a440c2343f7 {
+  static deserialize(message: any): Test_V1 | Test_V2 | Test_V3 {
     if (message.version === null || message.version === undefined) {
-      throw new Error(\`version not present: \${message}\`);
+      throw new Error(\\"version not present: \\" + message);
     }
     switch (message.version) {
-      case \\"Test_V0\\":
-      case \\"Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d\\":
-        return new Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d(
-          message.test_field
-        );
-
       case \\"Test_V1\\":
-      case \\"Test_H4ce3d4cfba96f0cdcce4bf1d2812eea0c5b1cf529ac93763f6f33d0600a652f0\\":
-        return new Test_H4ce3d4cfba96f0cdcce4bf1d2812eea0c5b1cf529ac93763f6f33d0600a652f0(
-          message.test_field,
-          message.test_field2
-        );
+      case \\"Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d\\":
+        return new Test_V1(message.test_field);
 
       case \\"Test_V2\\":
+      case \\"Test_H4ce3d4cfba96f0cdcce4bf1d2812eea0c5b1cf529ac93763f6f33d0600a652f0\\":
+        return new Test_V2(message.test_field, message.test_field2);
+
+      case \\"Test_V3\\":
       case \\"Test_Hd6cc2965f8ee5ebb6de4a255956c869a8c212bcc4d0bccf1dff40a440c2343f7\\":
-        return new Test_Hd6cc2965f8ee5ebb6de4a255956c869a8c212bcc4d0bccf1dff40a440c2343f7(
-          message.test_field
-        );
+        return new Test_V3(message.test_field);
 
       default:
         throw new Error(
-          \`Unknown version error or version not present: \${message}\`
+          \\"Unknown version error or version not present: \\" + message
         );
     }
   }
 
-  static serialize(
-    message:
-      | Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d
-      | Test_H4ce3d4cfba96f0cdcce4bf1d2812eea0c5b1cf529ac93763f6f33d0600a652f0
-      | Test_Hd6cc2965f8ee5ebb6de4a255956c869a8c212bcc4d0bccf1dff40a440c2343f7
-  ): string {
+  static serialize(message: Test_V1 | Test_V2 | Test_V3): string {
     if (message.version === null || message.version === undefined) {
-      throw new Error(\`version not present: \${message}\`);
+      throw new Error(\\"version not present: \\" + message);
     }
     return JSON.stringify(message);
   }
@@ -295,103 +319,113 @@ exports[`Make a field optional 1`] = `
 "/**
  * **GENERATED CODE DO NOT EDIT!**
  */
+import { Request, Response } from \\"express\\";
 /*
  * Test
  * Test
  * Change Log:
- * 1. Creating a new type
- * 2. Adding a field
- * 3. Oops needed to make it optional
+ * 0. Creating a new type
+ * 1. Adding a field
+ * 2. Oops needed to make it optional
  */
-
 /**
  * @param test_field A field that helps testing
  *
  * @sealed
- *
  */
-class Test_H3b9ac56de579e9a69937f2d1d2c27a4cfbedfd0710682f8ab629b18aac4efe14 {
+class Test_V1 {
   readonly version: number;
   readonly hash: string;
-
   readonly test_field: string;
 
   constructor(test_field: string) {
-    this.version = 0;
+    this.version = 1;
     this.hash =
       \\"3b9ac56de579e9a69937f2d1d2c27a4cfbedfd0710682f8ab629b18aac4efe14\\";
-
     this.test_field = test_field;
+  }
+
+  static deserialize(message: any): Test_V1 {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\\"version not present: \\" + message);
+    }
+    return new Test_V1(message.test_field);
+  }
+
+  static serialize(message: Test_V1): string {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\\"version not present: \\" + message);
+    }
+    return JSON.stringify(message);
   }
 }
 
 export {
-  Test_H3b9ac56de579e9a69937f2d1d2c27a4cfbedfd0710682f8ab629b18aac4efe14,
-  Test_H3b9ac56de579e9a69937f2d1d2c27a4cfbedfd0710682f8ab629b18aac4efe14 as Test_V0
+  Test_V1,
+  Test_V1 as Test_H3b9ac56de579e9a69937f2d1d2c27a4cfbedfd0710682f8ab629b18aac4efe14
 };
 
 /**
  * @param test_field A field that helps testing
  *
  * @sealed
- *
  */
-class Test_H818de92c4372ef16f0eba77a342f97cd788f18b24d52b54a2870236d82184a0b {
+class Test_V2 {
   readonly version: number;
   readonly hash: string;
-
   readonly test_field: string | null;
 
   constructor(test_field: string | null) {
-    this.version = 1;
+    this.version = 2;
     this.hash =
       \\"818de92c4372ef16f0eba77a342f97cd788f18b24d52b54a2870236d82184a0b\\";
-
     this.test_field = test_field;
+  }
+
+  static deserialize(message: any): Test_V2 {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\\"version not present: \\" + message);
+    }
+    return new Test_V2(message.test_field);
+  }
+
+  static serialize(message: Test_V2): string {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\\"version not present: \\" + message);
+    }
+    return JSON.stringify(message);
   }
 }
 
 export {
-  Test_H818de92c4372ef16f0eba77a342f97cd788f18b24d52b54a2870236d82184a0b,
-  Test_H818de92c4372ef16f0eba77a342f97cd788f18b24d52b54a2870236d82184a0b as Test_V1
+  Test_V2,
+  Test_V2 as Test_H818de92c4372ef16f0eba77a342f97cd788f18b24d52b54a2870236d82184a0b
 };
 
 export class Test {
-  static deserialize(
-    message: any
-  ):
-    | Test_H3b9ac56de579e9a69937f2d1d2c27a4cfbedfd0710682f8ab629b18aac4efe14
-    | Test_H818de92c4372ef16f0eba77a342f97cd788f18b24d52b54a2870236d82184a0b {
+  static deserialize(message: any): Test_V1 | Test_V2 {
     if (message.version === null || message.version === undefined) {
-      throw new Error(\`version not present: \${message}\`);
+      throw new Error(\\"version not present: \\" + message);
     }
     switch (message.version) {
-      case \\"Test_V0\\":
-      case \\"Test_H3b9ac56de579e9a69937f2d1d2c27a4cfbedfd0710682f8ab629b18aac4efe14\\":
-        return new Test_H3b9ac56de579e9a69937f2d1d2c27a4cfbedfd0710682f8ab629b18aac4efe14(
-          message.test_field
-        );
-
       case \\"Test_V1\\":
+      case \\"Test_H3b9ac56de579e9a69937f2d1d2c27a4cfbedfd0710682f8ab629b18aac4efe14\\":
+        return new Test_V1(message.test_field);
+
+      case \\"Test_V2\\":
       case \\"Test_H818de92c4372ef16f0eba77a342f97cd788f18b24d52b54a2870236d82184a0b\\":
-        return new Test_H818de92c4372ef16f0eba77a342f97cd788f18b24d52b54a2870236d82184a0b(
-          message.test_field
-        );
+        return new Test_V2(message.test_field);
 
       default:
         throw new Error(
-          \`Unknown version error or version not present: \${message}\`
+          \\"Unknown version error or version not present: \\" + message
         );
     }
   }
 
-  static serialize(
-    message:
-      | Test_H3b9ac56de579e9a69937f2d1d2c27a4cfbedfd0710682f8ab629b18aac4efe14
-      | Test_H818de92c4372ef16f0eba77a342f97cd788f18b24d52b54a2870236d82184a0b
-  ): string {
+  static serialize(message: Test_V1 | Test_V2): string {
     if (message.version === null || message.version === undefined) {
-      throw new Error(\`version not present: \${message}\`);
+      throw new Error(\\"version not present: \\" + message);
     }
     return JSON.stringify(message);
   }
@@ -403,134 +437,142 @@ exports[`Multiple types with type reference 1`] = `
 "/**
  * **GENERATED CODE DO NOT EDIT!**
  */
+import { Request, Response } from \\"express\\";
 /*
  * Test
  * A useful type
  * Change Log:
- * 1. Creating a new type
- * 2. Adding a field
+ * 0. Creating a new type
+ * 1. Adding a field
  */
-/*
- * Test2
- * a useful type
- * Change Log:
- * 1. Creating a new type
- * 2. asdf
- */
-
-// import * as Test from './Test';
-
 /**
  * @param test_field A field that helps testing
  *
  * @sealed
- *
  */
-class Test_Hc68b1dfae49d22c7332dcfcb86145926907e4171e3a7bb1f3861e9e3b0c2bdfb {
+class Test_V1 {
   readonly version: number;
   readonly hash: string;
-
   readonly test_field: string | null;
 
   constructor(test_field: string | null) {
-    this.version = 0;
+    this.version = 1;
     this.hash =
       \\"c68b1dfae49d22c7332dcfcb86145926907e4171e3a7bb1f3861e9e3b0c2bdfb\\";
-
     this.test_field = test_field;
   }
-}
 
-export {
-  Test_Hc68b1dfae49d22c7332dcfcb86145926907e4171e3a7bb1f3861e9e3b0c2bdfb,
-  Test_Hc68b1dfae49d22c7332dcfcb86145926907e4171e3a7bb1f3861e9e3b0c2bdfb as Test_V0
-};
-
-export class Test {
-  static deserialize(
-    message: any
-  ): Test_Hc68b1dfae49d22c7332dcfcb86145926907e4171e3a7bb1f3861e9e3b0c2bdfb {
+  static deserialize(message: any): Test_V1 {
     if (message.version === null || message.version === undefined) {
-      throw new Error(\`version not present: \${message}\`);
+      throw new Error(\\"version not present: \\" + message);
     }
-    switch (message.version) {
-      case \\"Test_V0\\":
-      case \\"Test_Hc68b1dfae49d22c7332dcfcb86145926907e4171e3a7bb1f3861e9e3b0c2bdfb\\":
-        return new Test_Hc68b1dfae49d22c7332dcfcb86145926907e4171e3a7bb1f3861e9e3b0c2bdfb(
-          message.test_field
-        );
-
-      default:
-        throw new Error(
-          \`Unknown version error or version not present: \${message}\`
-        );
-    }
+    return new Test_V1(message.test_field);
   }
 
-  static serialize(
-    message: Test_Hc68b1dfae49d22c7332dcfcb86145926907e4171e3a7bb1f3861e9e3b0c2bdfb
-  ): string {
+  static serialize(message: Test_V1): string {
     if (message.version === null || message.version === undefined) {
-      throw new Error(\`version not present: \${message}\`);
+      throw new Error(\\"version not present: \\" + message);
     }
     return JSON.stringify(message);
   }
 }
 
+export {
+  Test_V1,
+  Test_V1 as Test_Hc68b1dfae49d22c7332dcfcb86145926907e4171e3a7bb1f3861e9e3b0c2bdfb
+};
+
+export class Test {
+  static deserialize(message: any): Test_V1 {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\\"version not present: \\" + message);
+    }
+    switch (message.version) {
+      case \\"Test_V1\\":
+      case \\"Test_Hc68b1dfae49d22c7332dcfcb86145926907e4171e3a7bb1f3861e9e3b0c2bdfb\\":
+        return new Test_V1(message.test_field);
+
+      default:
+        throw new Error(
+          \\"Unknown version error or version not present: \\" + message
+        );
+    }
+  }
+
+  static serialize(message: Test_V1): string {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\\"version not present: \\" + message);
+    }
+    return JSON.stringify(message);
+  }
+}
+
+/*
+ * Test2
+ * a useful type
+ * Change Log:
+ * 0. Creating a new type
+ * 1. asdf
+ */
 /**
  * @param test_field2 A reference
  *
  * @sealed
- *
  */
-class Test2_He396d1be414c1504f56969feff04b4bcdf1c52ca1cb653c75f959a3a24d37c49 {
+class Test2_V1 {
   readonly version: number;
   readonly hash: string;
-
   readonly test_field2: Test.h_c68b1dfae49d22c7332dcfcb86145926907e4171e3a7bb1f3861e9e3b0c2bdfb;
 
   constructor(
     test_field2: Test.h_c68b1dfae49d22c7332dcfcb86145926907e4171e3a7bb1f3861e9e3b0c2bdfb
   ) {
-    this.version = 0;
+    this.version = 1;
     this.hash =
       \\"e396d1be414c1504f56969feff04b4bcdf1c52ca1cb653c75f959a3a24d37c49\\";
-
     this.test_field2 = test_field2;
+  }
+
+  static deserialize(message: any): Test2_V1 {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\\"version not present: \\" + message);
+    }
+    return new Test2_V1(message.test_field2);
+  }
+
+  static serialize(message: Test2_V1): string {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\\"version not present: \\" + message);
+    }
+    return JSON.stringify(message);
   }
 }
 
 export {
-  Test2_He396d1be414c1504f56969feff04b4bcdf1c52ca1cb653c75f959a3a24d37c49,
-  Test2_He396d1be414c1504f56969feff04b4bcdf1c52ca1cb653c75f959a3a24d37c49 as Test2_V0
+  Test2_V1,
+  Test2_V1 as Test2_He396d1be414c1504f56969feff04b4bcdf1c52ca1cb653c75f959a3a24d37c49
 };
 
 export class Test2 {
-  static deserialize(
-    message: any
-  ): Test2_He396d1be414c1504f56969feff04b4bcdf1c52ca1cb653c75f959a3a24d37c49 {
+  static deserialize(message: any): Test2_V1 {
     if (message.version === null || message.version === undefined) {
-      throw new Error(\`version not present: \${message}\`);
+      throw new Error(\\"version not present: \\" + message);
     }
     switch (message.version) {
-      case \\"Test2_V0\\":
+      case \\"Test2_V1\\":
       case \\"Test2_He396d1be414c1504f56969feff04b4bcdf1c52ca1cb653c75f959a3a24d37c49\\":
-        return new Test2_He396d1be414c1504f56969feff04b4bcdf1c52ca1cb653c75f959a3a24d37c49(
-          message.test_field2
-        );
+        return new Test2_V1(message.test_field2);
 
       default:
         throw new Error(
-          \`Unknown version error or version not present: \${message}\`
+          \\"Unknown version error or version not present: \\" + message
         );
     }
   }
 
-  static serialize(
-    message: Test2_He396d1be414c1504f56969feff04b4bcdf1c52ca1cb653c75f959a3a24d37c49
-  ): string {
+  static serialize(message: Test2_V1): string {
     if (message.version === null || message.version === undefined) {
-      throw new Error(\`version not present: \${message}\`);
+      throw new Error(\\"version not present: \\" + message);
     }
     return JSON.stringify(message);
   }
@@ -542,228 +584,113 @@ exports[`Rename a field 1`] = `
 "/**
  * **GENERATED CODE DO NOT EDIT!**
  */
+import { Request, Response } from \\"express\\";
 /*
  * Test
  * Test
  * Change Log:
- * 1. Creating a new type
- * 2. Adding a field
- * 3. Renaming a field
+ * 0. Creating a new type
+ * 1. Adding a field
+ * 2. Renaming a field
  */
-
 /**
  * @param test_field A field that helps testing
  *
  * @sealed
- *
  */
-class Test_H036cb58d4009b695ef9c0a35e42cfd356c5ca922f3340d79db2364efd0d0da4c {
+class Test_V1 {
   readonly version: number;
   readonly hash: string;
-
   readonly test_field: string | null;
 
   constructor(test_field: string | null) {
-    this.version = 0;
+    this.version = 1;
     this.hash =
       \\"036cb58d4009b695ef9c0a35e42cfd356c5ca922f3340d79db2364efd0d0da4c\\";
-
     this.test_field = test_field || \\"A value\\";
+  }
+
+  static deserialize(message: any): Test_V1 {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\\"version not present: \\" + message);
+    }
+    return new Test_V1(message.test_field);
+  }
+
+  static serialize(message: Test_V1): string {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\\"version not present: \\" + message);
+    }
+    return JSON.stringify(message);
   }
 }
 
 export {
-  Test_H036cb58d4009b695ef9c0a35e42cfd356c5ca922f3340d79db2364efd0d0da4c,
-  Test_H036cb58d4009b695ef9c0a35e42cfd356c5ca922f3340d79db2364efd0d0da4c as Test_V0
+  Test_V1,
+  Test_V1 as Test_H036cb58d4009b695ef9c0a35e42cfd356c5ca922f3340d79db2364efd0d0da4c
 };
 
 /**
  * @param renamed_field A field that helps testing
  *
  * @sealed
- *
  */
-class Test_He41f7b607671faf485204483dcf344ef15bbd2856a51485d9876e73178fe07bf {
+class Test_V2 {
   readonly version: number;
   readonly hash: string;
-
   readonly renamed_field: string | null;
 
   constructor(renamed_field: string | null) {
-    this.version = 1;
+    this.version = 2;
     this.hash =
       \\"e41f7b607671faf485204483dcf344ef15bbd2856a51485d9876e73178fe07bf\\";
-
     this.renamed_field = renamed_field || \\"A value\\";
   }
-}
 
-export {
-  Test_He41f7b607671faf485204483dcf344ef15bbd2856a51485d9876e73178fe07bf,
-  Test_He41f7b607671faf485204483dcf344ef15bbd2856a51485d9876e73178fe07bf as Test_V1
-};
-
-export class Test {
-  static deserialize(
-    message: any
-  ):
-    | Test_H036cb58d4009b695ef9c0a35e42cfd356c5ca922f3340d79db2364efd0d0da4c
-    | Test_He41f7b607671faf485204483dcf344ef15bbd2856a51485d9876e73178fe07bf {
+  static deserialize(message: any): Test_V2 {
     if (message.version === null || message.version === undefined) {
-      throw new Error(\`version not present: \${message}\`);
+      throw new Error(\\"version not present: \\" + message);
     }
-    switch (message.version) {
-      case \\"Test_V0\\":
-      case \\"Test_H036cb58d4009b695ef9c0a35e42cfd356c5ca922f3340d79db2364efd0d0da4c\\":
-        return new Test_H036cb58d4009b695ef9c0a35e42cfd356c5ca922f3340d79db2364efd0d0da4c(
-          message.test_field
-        );
-
-      case \\"Test_V1\\":
-      case \\"Test_He41f7b607671faf485204483dcf344ef15bbd2856a51485d9876e73178fe07bf\\":
-        return new Test_He41f7b607671faf485204483dcf344ef15bbd2856a51485d9876e73178fe07bf(
-          message.renamed_field
-        );
-
-      default:
-        throw new Error(
-          \`Unknown version error or version not present: \${message}\`
-        );
-    }
+    return new Test_V2(message.renamed_field);
   }
 
-  static serialize(
-    message:
-      | Test_H036cb58d4009b695ef9c0a35e42cfd356c5ca922f3340d79db2364efd0d0da4c
-      | Test_He41f7b607671faf485204483dcf344ef15bbd2856a51485d9876e73178fe07bf
-  ): string {
+  static serialize(message: Test_V2): string {
     if (message.version === null || message.version === undefined) {
-      throw new Error(\`version not present: \${message}\`);
+      throw new Error(\\"version not present: \\" + message);
     }
     return JSON.stringify(message);
   }
 }
-"
-`;
-
-exports[`Type with GroupAction 1`] = `
-"/**
- * **GENERATED CODE DO NOT EDIT!**
- */
-/*
- * Test
- * Test
- * Change Log:
- * 1. Creating a new type
- * 2. Adding a field
- * 3. Adding another field
- * 4. Adding yet another field
- */
-
-/**
- * @param test_field A field that helps testing
- *
- * @sealed
- *
- */
-class Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d {
-  readonly version: number;
-  readonly hash: string;
-
-  readonly test_field: string | null;
-
-  constructor(test_field: string | null) {
-    this.version = 0;
-    this.hash =
-      \\"56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d\\";
-
-    this.test_field = test_field;
-  }
-}
 
 export {
-  Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d,
-  Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d as Test_V0
-};
-
-/**
- * @param test_field A field that helps testing
- * @param test_field2 A field that helps testing, again
- * @param test_field3 Yet another field for testing
- *
- * @sealed
- *
- */
-class Test_Hbb0785e92709010380229df8b379c9f411db9447547b8f285c4647ec91667e7d {
-  readonly version: number;
-  readonly hash: string;
-
-  readonly test_field: string | null;
-
-  readonly test_field2: string;
-
-  readonly test_field3: number;
-
-  constructor(
-    test_field: string | null,
-    test_field2: string,
-    test_field3: number
-  ) {
-    this.version = 1;
-    this.hash =
-      \\"bb0785e92709010380229df8b379c9f411db9447547b8f285c4647ec91667e7d\\";
-
-    this.test_field = test_field;
-
-    this.test_field2 = test_field2 || \\"blah\\";
-
-    this.test_field3 = test_field3;
-  }
-}
-
-export {
-  Test_Hbb0785e92709010380229df8b379c9f411db9447547b8f285c4647ec91667e7d,
-  Test_Hbb0785e92709010380229df8b379c9f411db9447547b8f285c4647ec91667e7d as Test_V1
+  Test_V2,
+  Test_V2 as Test_He41f7b607671faf485204483dcf344ef15bbd2856a51485d9876e73178fe07bf
 };
 
 export class Test {
-  static deserialize(
-    message: any
-  ):
-    | Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d
-    | Test_Hbb0785e92709010380229df8b379c9f411db9447547b8f285c4647ec91667e7d {
+  static deserialize(message: any): Test_V1 | Test_V2 {
     if (message.version === null || message.version === undefined) {
-      throw new Error(\`version not present: \${message}\`);
+      throw new Error(\\"version not present: \\" + message);
     }
     switch (message.version) {
-      case \\"Test_V0\\":
-      case \\"Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d\\":
-        return new Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d(
-          message.test_field
-        );
-
       case \\"Test_V1\\":
-      case \\"Test_Hbb0785e92709010380229df8b379c9f411db9447547b8f285c4647ec91667e7d\\":
-        return new Test_Hbb0785e92709010380229df8b379c9f411db9447547b8f285c4647ec91667e7d(
-          message.test_field,
-          message.test_field2,
-          message.test_field3
-        );
+      case \\"Test_H036cb58d4009b695ef9c0a35e42cfd356c5ca922f3340d79db2364efd0d0da4c\\":
+        return new Test_V1(message.test_field);
+
+      case \\"Test_V2\\":
+      case \\"Test_He41f7b607671faf485204483dcf344ef15bbd2856a51485d9876e73178fe07bf\\":
+        return new Test_V2(message.renamed_field);
 
       default:
         throw new Error(
-          \`Unknown version error or version not present: \${message}\`
+          \\"Unknown version error or version not present: \\" + message
         );
     }
   }
 
-  static serialize(
-    message:
-      | Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d
-      | Test_Hbb0785e92709010380229df8b379c9f411db9447547b8f285c4647ec91667e7d
-  ): string {
+  static serialize(message: Test_V1 | Test_V2): string {
     if (message.version === null || message.version === undefined) {
-      throw new Error(\`version not present: \${message}\`);
+      throw new Error(\\"version not present: \\" + message);
     }
     return JSON.stringify(message);
   }
@@ -775,40 +702,51 @@ exports[`Type with deprecated and dont generate 1`] = `
 "/**
  * **GENERATED CODE DO NOT EDIT!**
  */
+import { Request, Response } from \\"express\\";
 /*
  * Test
  * Test
  * Change Log:
- * 1. Creating a new type
- * 2. Adding a field
- * 3. Adding another field
- * 4. Adding yet another field
+ * 0. Creating a new type
+ * 1. Adding a field
+ * 2. Adding another field
+ * 3. Adding yet another field
  */
-
 /**
  * @param test_field A field that helps testing
  *
  * @sealed
- *
  */
-class Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d {
+class Test_V1 {
   readonly version: number;
   readonly hash: string;
-
   readonly test_field: string | null;
 
   constructor(test_field: string | null) {
-    this.version = 0;
+    this.version = 1;
     this.hash =
       \\"56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d\\";
-
     this.test_field = test_field;
+  }
+
+  static deserialize(message: any): Test_V1 {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\\"version not present: \\" + message);
+    }
+    return new Test_V1(message.test_field);
+  }
+
+  static serialize(message: Test_V1): string {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\\"version not present: \\" + message);
+    }
+    return JSON.stringify(message);
   }
 }
 
 export {
-  Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d,
-  Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d as Test_V0
+  Test_V1,
+  Test_V1 as Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d
 };
 
 /**
@@ -816,30 +754,39 @@ export {
  * @param test_field2 A field that helps testing, again
  *
  * @sealed
- *
  */
-class Test_H4ce3d4cfba96f0cdcce4bf1d2812eea0c5b1cf529ac93763f6f33d0600a652f0 {
+class Test_V2 {
   readonly version: number;
   readonly hash: string;
-
   readonly test_field: string | null;
-
   readonly test_field2: string;
 
   constructor(test_field: string | null, test_field2: string) {
-    this.version = 1;
+    this.version = 2;
     this.hash =
       \\"4ce3d4cfba96f0cdcce4bf1d2812eea0c5b1cf529ac93763f6f33d0600a652f0\\";
-
     this.test_field = test_field;
-
     this.test_field2 = test_field2 || \\"blah\\";
+  }
+
+  static deserialize(message: any): Test_V2 {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\\"version not present: \\" + message);
+    }
+    return new Test_V2(message.test_field, message.test_field2);
+  }
+
+  static serialize(message: Test_V2): string {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\\"version not present: \\" + message);
+    }
+    return JSON.stringify(message);
   }
 }
 
 export {
-  Test_H4ce3d4cfba96f0cdcce4bf1d2812eea0c5b1cf529ac93763f6f33d0600a652f0,
-  Test_H4ce3d4cfba96f0cdcce4bf1d2812eea0c5b1cf529ac93763f6f33d0600a652f0 as Test_V1
+  Test_V2,
+  Test_V2 as Test_H4ce3d4cfba96f0cdcce4bf1d2812eea0c5b1cf529ac93763f6f33d0600a652f0
 };
 
 /**
@@ -848,16 +795,12 @@ export {
  * @param test_field3 Yet another field for testing
  *
  * @sealed
- *
  */
-class Test_Habb52b859471c90b51d0b3103f4ce61cd35664c4e579b49597721df71fd6c655 {
+class Test_V3 {
   readonly version: number;
   readonly hash: string;
-
   readonly test_field: string | null;
-
   readonly test_field2: string;
-
   readonly test_field3: number;
 
   constructor(
@@ -865,50 +808,55 @@ class Test_Habb52b859471c90b51d0b3103f4ce61cd35664c4e579b49597721df71fd6c655 {
     test_field2: string,
     test_field3: number
   ) {
-    this.version = 2;
+    this.version = 3;
     this.hash =
       \\"abb52b859471c90b51d0b3103f4ce61cd35664c4e579b49597721df71fd6c655\\";
-
     this.test_field = test_field;
-
     this.test_field2 = test_field2 || \\"blah\\";
-
     this.test_field3 = test_field3;
+  }
+
+  static deserialize(message: any): Test_V3 {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\\"version not present: \\" + message);
+    }
+    return new Test_V3(
+      message.test_field,
+      message.test_field2,
+      message.test_field3
+    );
+  }
+
+  static serialize(message: Test_V3): string {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\\"version not present: \\" + message);
+    }
+    return JSON.stringify(message);
   }
 }
 
 export {
-  Test_Habb52b859471c90b51d0b3103f4ce61cd35664c4e579b49597721df71fd6c655,
-  Test_Habb52b859471c90b51d0b3103f4ce61cd35664c4e579b49597721df71fd6c655 as Test_V2
+  Test_V3,
+  Test_V3 as Test_Habb52b859471c90b51d0b3103f4ce61cd35664c4e579b49597721df71fd6c655
 };
 
 export class Test {
-  static deserialize(
-    message: any
-  ):
-    | Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d
-    | Test_H4ce3d4cfba96f0cdcce4bf1d2812eea0c5b1cf529ac93763f6f33d0600a652f0
-    | Test_Habb52b859471c90b51d0b3103f4ce61cd35664c4e579b49597721df71fd6c655 {
+  static deserialize(message: any): Test_V1 | Test_V2 | Test_V3 {
     if (message.version === null || message.version === undefined) {
-      throw new Error(\`version not present: \${message}\`);
+      throw new Error(\\"version not present: \\" + message);
     }
     switch (message.version) {
-      case \\"Test_V0\\":
-      case \\"Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d\\":
-        return new Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d(
-          message.test_field
-        );
-
       case \\"Test_V1\\":
-      case \\"Test_H4ce3d4cfba96f0cdcce4bf1d2812eea0c5b1cf529ac93763f6f33d0600a652f0\\":
-        return new Test_H4ce3d4cfba96f0cdcce4bf1d2812eea0c5b1cf529ac93763f6f33d0600a652f0(
-          message.test_field,
-          message.test_field2
-        );
+      case \\"Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d\\":
+        return new Test_V1(message.test_field);
 
       case \\"Test_V2\\":
+      case \\"Test_H4ce3d4cfba96f0cdcce4bf1d2812eea0c5b1cf529ac93763f6f33d0600a652f0\\":
+        return new Test_V2(message.test_field, message.test_field2);
+
+      case \\"Test_V3\\":
       case \\"Test_Habb52b859471c90b51d0b3103f4ce61cd35664c4e579b49597721df71fd6c655\\":
-        return new Test_Habb52b859471c90b51d0b3103f4ce61cd35664c4e579b49597721df71fd6c655(
+        return new Test_V3(
           message.test_field,
           message.test_field2,
           message.test_field3
@@ -916,19 +864,14 @@ export class Test {
 
       default:
         throw new Error(
-          \`Unknown version error or version not present: \${message}\`
+          \\"Unknown version error or version not present: \\" + message
         );
     }
   }
 
-  static serialize(
-    message:
-      | Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d
-      | Test_H4ce3d4cfba96f0cdcce4bf1d2812eea0c5b1cf529ac93763f6f33d0600a652f0
-      | Test_Habb52b859471c90b51d0b3103f4ce61cd35664c4e579b49597721df71fd6c655
-  ): string {
+  static serialize(message: Test_V1 | Test_V2 | Test_V3): string {
     if (message.version === null || message.version === undefined) {
-      throw new Error(\`version not present: \${message}\`);
+      throw new Error(\\"version not present: \\" + message);
     }
     return JSON.stringify(message);
   }
@@ -940,36 +883,51 @@ exports[`Type with latest 1`] = `
 "/**
  * **GENERATED CODE DO NOT EDIT!**
  */
+import { Request, Response } from \\"express\\";
 /*
  * Test
  * Test
  * Change Log:
- * 1. Creating a new type
- * 2. Adding a field
- * 3. Adding another field
- * 4. Adding yet another field
+ * 0. Creating a new type
+ * 1. Adding a field
+ * 2. Adding another field
+ * 3. Adding yet another field
  */
-
 /**
  * @param test_field A field that helps testing
  *
  * @sealed
- *
  */
-class Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d {
+class Test_V1 {
   readonly version: number;
   readonly hash: string;
-
   readonly test_field: string | null;
 
   constructor(test_field: string | null) {
+    this.version = 1;
+    this.hash =
+      \\"56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d\\";
     this.test_field = test_field;
+  }
+
+  static deserialize(message: any): Test_V1 {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\\"version not present: \\" + message);
+    }
+    return new Test_V1(message.test_field);
+  }
+
+  static serialize(message: Test_V1): string {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\\"version not present: \\" + message);
+    }
+    return JSON.stringify(message);
   }
 }
 
 export {
-  Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d,
-  Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d as Test_V0
+  Test_V1,
+  Test_V1 as Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d
 };
 
 /**
@@ -977,98 +935,65 @@ export {
  * @param test_field2 A field that helps testing, again
  *
  * @sealed
- *
  */
-class Test_H4ce3d4cfba96f0cdcce4bf1d2812eea0c5b1cf529ac93763f6f33d0600a652f0 {
+class Test_V2 {
   readonly version: number;
   readonly hash: string;
-
   readonly test_field: string | null;
-
   readonly test_field2: string;
 
   constructor(test_field: string | null, test_field2: string) {
+    this.version = 2;
+    this.hash =
+      \\"4ce3d4cfba96f0cdcce4bf1d2812eea0c5b1cf529ac93763f6f33d0600a652f0\\";
     this.test_field = test_field;
-
     this.test_field2 = test_field2 || \\"blah\\";
+  }
+
+  static deserialize(message: any): Test_V2 {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\\"version not present: \\" + message);
+    }
+    return new Test_V2(message.test_field, message.test_field2);
+  }
+
+  static serialize(message: Test_V2): string {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\\"version not present: \\" + message);
+    }
+    return JSON.stringify(message);
   }
 }
 
 export {
-  Test_H4ce3d4cfba96f0cdcce4bf1d2812eea0c5b1cf529ac93763f6f33d0600a652f0,
-  Test_H4ce3d4cfba96f0cdcce4bf1d2812eea0c5b1cf529ac93763f6f33d0600a652f0 as Test_V1
+  Test_V2,
+  Test_V2 as Test_H4ce3d4cfba96f0cdcce4bf1d2812eea0c5b1cf529ac93763f6f33d0600a652f0
 };
 
-/**
- * @param test_field A field that helps testing
- * @param test_field2 A field that helps testing, again
- * @param test_field3 Yet another field for testing
- *
- * @sealed
- *
- */
-class Latest {
-  readonly version: number;
-  readonly hash: string;
-
-  readonly test_field: string | null;
-
-  readonly test_field2: string;
-
-  readonly test_field3: number;
-
-  constructor(
-    test_field: string | null,
-    test_field2: string,
-    test_field3: number
-  ) {
-    this.test_field = test_field;
-
-    this.test_field2 = test_field2 || \\"blah\\";
-
-    this.test_field3 = test_field3;
-  }
-}
-
-export { Latest };
-
 export class Test {
-  static deserialize(
-    message: any
-  ):
-    | Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d
-    | Test_H4ce3d4cfba96f0cdcce4bf1d2812eea0c5b1cf529ac93763f6f33d0600a652f0 {
+  static deserialize(message: any): Test_V1 | Test_V2 {
     if (message.version === null || message.version === undefined) {
-      throw new Error(\`version not present: \${message}\`);
+      throw new Error(\\"version not present: \\" + message);
     }
     switch (message.version) {
-      case \\"Test_V0\\":
-      case \\"Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d\\":
-        return new Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d(
-          message.test_field
-        );
-
       case \\"Test_V1\\":
+      case \\"Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d\\":
+        return new Test_V1(message.test_field);
+
+      case \\"Test_V2\\":
       case \\"Test_H4ce3d4cfba96f0cdcce4bf1d2812eea0c5b1cf529ac93763f6f33d0600a652f0\\":
-        return new Test_H4ce3d4cfba96f0cdcce4bf1d2812eea0c5b1cf529ac93763f6f33d0600a652f0(
-          message.test_field,
-          message.test_field2
-        );
+        return new Test_V2(message.test_field, message.test_field2);
 
       default:
         throw new Error(
-          \`Unknown version error or version not present: \${message}\`
+          \\"Unknown version error or version not present: \\" + message
         );
     }
   }
 
-  static serialize(
-    message:
-      | Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d
-      | Test_H4ce3d4cfba96f0cdcce4bf1d2812eea0c5b1cf529ac93763f6f33d0600a652f0
-  ): string {
+  static serialize(message: Test_V1 | Test_V2): string {
     if (message.version === null || message.version === undefined) {
-      throw new Error(\`version not present: \${message}\`);
+      throw new Error(\\"version not present: \\" + message);
     }
     return JSON.stringify(message);
   }

@@ -4,130 +4,140 @@ exports[`simple_service 1`] = `
 "/**
  * **GENERATED CODE DO NOT EDIT!**
  */
+import { Request, Response } from \\"express\\";
 /*
  * TestInputType
  * An awesome input type
  * Change Log:
- * 1. Needs this for testing new type
- * 2. Need this for testing add field input
+ * 0. Needs this for testing new type
+ * 1. Need this for testing add field input
  */
-/*
- * TestOutputType
- * An awesome output type
- * Change Log:
- * 1. Needs this for testing new output type
- * 2. Need this field for testing new output type
- */
-
 /**
  * @param a_field An awesome field on the input type
  *
  * @sealed
- *
  */
-class TestInputType_H716a611faeb9d2ddaa02e37a5d187183ff4d388f47c740bb2202109b3e3c8fc0 {
+class TestInputType_V1 {
   readonly version: number;
   readonly hash: string;
-
   readonly a_field: string;
 
   constructor(a_field: string) {
-    this.version = 0;
+    this.version = 1;
     this.hash =
       \\"716a611faeb9d2ddaa02e37a5d187183ff4d388f47c740bb2202109b3e3c8fc0\\";
-
     this.a_field = a_field;
   }
-}
 
-export {
-  TestInputType_H716a611faeb9d2ddaa02e37a5d187183ff4d388f47c740bb2202109b3e3c8fc0,
-  TestInputType_H716a611faeb9d2ddaa02e37a5d187183ff4d388f47c740bb2202109b3e3c8fc0 as TestInputType_V0
-};
-
-export class TestInputType {
-  static deserialize(
-    message: any
-  ): TestInputType_H716a611faeb9d2ddaa02e37a5d187183ff4d388f47c740bb2202109b3e3c8fc0 {
+  static deserialize(message: any): TestInputType_V1 {
     if (message.version === null || message.version === undefined) {
-      throw new Error(\`version not present: \${message}\`);
+      throw new Error(\\"version not present: \\" + message);
     }
-    switch (message.version) {
-      case \\"TestInputType_V0\\":
-      case \\"TestInputType_H716a611faeb9d2ddaa02e37a5d187183ff4d388f47c740bb2202109b3e3c8fc0\\":
-        return new TestInputType_H716a611faeb9d2ddaa02e37a5d187183ff4d388f47c740bb2202109b3e3c8fc0(
-          message.a_field
-        );
-
-      default:
-        throw new Error(
-          \`Unknown version error or version not present: \${message}\`
-        );
-    }
+    return new TestInputType_V1(message.a_field);
   }
 
-  static serialize(
-    message: TestInputType_H716a611faeb9d2ddaa02e37a5d187183ff4d388f47c740bb2202109b3e3c8fc0
-  ): string {
+  static serialize(message: TestInputType_V1): string {
     if (message.version === null || message.version === undefined) {
-      throw new Error(\`version not present: \${message}\`);
+      throw new Error(\\"version not present: \\" + message);
     }
     return JSON.stringify(message);
   }
 }
 
+export {
+  TestInputType_V1,
+  TestInputType_V1 as TestInputType_H716a611faeb9d2ddaa02e37a5d187183ff4d388f47c740bb2202109b3e3c8fc0
+};
+
+export class TestInputType {
+  static deserialize(message: any): TestInputType_V1 {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\\"version not present: \\" + message);
+    }
+    switch (message.version) {
+      case \\"TestInputType_V1\\":
+      case \\"TestInputType_H716a611faeb9d2ddaa02e37a5d187183ff4d388f47c740bb2202109b3e3c8fc0\\":
+        return new TestInputType_V1(message.a_field);
+
+      default:
+        throw new Error(
+          \\"Unknown version error or version not present: \\" + message
+        );
+    }
+  }
+
+  static serialize(message: TestInputType_V1): string {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\\"version not present: \\" + message);
+    }
+    return JSON.stringify(message);
+  }
+}
+
+/*
+ * TestOutputType
+ * An awesome output type
+ * Change Log:
+ * 0. Needs this for testing new output type
+ * 1. Need this field for testing new output type
+ */
 /**
  * @param a_field An awesome field on the output type
  *
  * @sealed
- *
  */
-class TestOutputType_Hc503f8a6a87dcd268e82e6cffa2e58db72866839a676faa2df84f470f889ae80 {
+class TestOutputType_V1 {
   readonly version: number;
   readonly hash: string;
-
   readonly a_field: string;
 
   constructor(a_field: string) {
-    this.version = 0;
+    this.version = 1;
     this.hash =
       \\"c503f8a6a87dcd268e82e6cffa2e58db72866839a676faa2df84f470f889ae80\\";
-
     this.a_field = a_field;
+  }
+
+  static deserialize(message: any): TestOutputType_V1 {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\\"version not present: \\" + message);
+    }
+    return new TestOutputType_V1(message.a_field);
+  }
+
+  static serialize(message: TestOutputType_V1): string {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\\"version not present: \\" + message);
+    }
+    return JSON.stringify(message);
   }
 }
 
 export {
-  TestOutputType_Hc503f8a6a87dcd268e82e6cffa2e58db72866839a676faa2df84f470f889ae80,
-  TestOutputType_Hc503f8a6a87dcd268e82e6cffa2e58db72866839a676faa2df84f470f889ae80 as TestOutputType_V0
+  TestOutputType_V1,
+  TestOutputType_V1 as TestOutputType_Hc503f8a6a87dcd268e82e6cffa2e58db72866839a676faa2df84f470f889ae80
 };
 
 export class TestOutputType {
-  static deserialize(
-    message: any
-  ): TestOutputType_Hc503f8a6a87dcd268e82e6cffa2e58db72866839a676faa2df84f470f889ae80 {
+  static deserialize(message: any): TestOutputType_V1 {
     if (message.version === null || message.version === undefined) {
-      throw new Error(\`version not present: \${message}\`);
+      throw new Error(\\"version not present: \\" + message);
     }
     switch (message.version) {
-      case \\"TestOutputType_V0\\":
+      case \\"TestOutputType_V1\\":
       case \\"TestOutputType_Hc503f8a6a87dcd268e82e6cffa2e58db72866839a676faa2df84f470f889ae80\\":
-        return new TestOutputType_Hc503f8a6a87dcd268e82e6cffa2e58db72866839a676faa2df84f470f889ae80(
-          message.a_field
-        );
+        return new TestOutputType_V1(message.a_field);
 
       default:
         throw new Error(
-          \`Unknown version error or version not present: \${message}\`
+          \\"Unknown version error or version not present: \\" + message
         );
     }
   }
 
-  static serialize(
-    message: TestOutputType_Hc503f8a6a87dcd268e82e6cffa2e58db72866839a676faa2df84f470f889ae80
-  ): string {
+  static serialize(message: TestOutputType_V1): string {
     if (message.version === null || message.version === undefined) {
-      throw new Error(\`version not present: \${message}\`);
+      throw new Error(\\"version not present: \\" + message);
     }
     return JSON.stringify(message);
   }
@@ -140,31 +150,43 @@ exports[`simple_service 2`] = `
  * **GENERATED CODE DO NOT EDIT!**
  */
 import { Request, Response } from \\"express\\";
+
 /*
  * AwesomeService
  *
  * An awesome service
- *
- * # Change Log:
- * 1. Services are good
  */
-import { TestInputType, TestOutputType, TestInputType_V0 } from \\"./types\\";
-import { TestOutputType_V0 } from \\"./types\\";
-
-const serviceName = \\"AwesomeService\\";
+import {
+  TestOutputType_V1,
+  TestOutputType,
+  TestInputType_V1,
+  TestInputType
+} from \\"./types\\";
 function AwesomeService(
   app: any,
-  func: (input: TestInputType_V0) => TestOutputType_V0
+  func_TestOutputType_V1: (input: TestInputType_V1) => TestOutputType_V1
 ): void {
   app.post(\\"/AwesomeService\\", (req: Request, res: Response) => {
-    const inputMessage = TestInputType.deserialize(req.body);
-    const response = func(inputMessage);
-    const outputMessage = TestOutputType.serialize(response);
-    res.json(outputMessage);
+    const body = req.body;
+    switch (body[\\"type\\"] + \\"_\\" + body[\\"version\\"]) {
+      case \\"TestInputType_V1\\":
+        const inputMessage = TestInputType_V1.deserialize(body);
+        const response = func_TestOutputType_V1(inputMessage);
+        const outputMessage = TestOutputType.serialize(response);
+        res.json(outputMessage);
+        return;
+      default:
+        throw new Error(\\"Unknown input type: \\" + body);
+    }
   });
 }
-export { AwesomeService, AwesomeService as service, serviceName };
+
+export {
+  AwesomeService
+  // <%= service.name %> as service,
+  // serviceName
+};
 "
 `;
 
-exports[`simple_service 3`] = `"\\"{\\\\\\"version\\\\\\":0,\\\\\\"hash\\\\\\":\\\\\\"c503f8a6a87dcd268e82e6cffa2e58db72866839a676faa2df84f470f889ae80\\\\\\",\\\\\\"a_field\\\\\\":\\\\\\"hello world\\\\\\"}\\""`;
+exports[`simple_service 3`] = `"\\"{\\\\\\"version\\\\\\":1,\\\\\\"hash\\\\\\":\\\\\\"c503f8a6a87dcd268e82e6cffa2e58db72866839a676faa2df84f470f889ae80\\\\\\",\\\\\\"a_field\\\\\\":\\\\\\"hello world\\\\\\"}\\""`;

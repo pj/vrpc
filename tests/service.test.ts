@@ -23,16 +23,18 @@ for (const dir of test_dirs) {
     const hashedActions = typeidea.addHashes(actions, hashes, null);
 
     const [types, services] = generate.generateDefinitions(hashedActions);
-    const [generatedTypes, generatedServices] = generate.generateTypescriptBoth(
-      types,
-      services
-    );
+    const generatedTypes = generate.generateTypescript(types);
     expect(generatedTypes).toMatchSnapshot();
-    expect(generatedServices).toMatchSnapshot();
     const typesFile = fs.writeFileSync(
       path.join('runtest', dir, 'types.ts'),
       generatedTypes,
     );
+    //const [generatedTypes, generatedServices] = generate.generateTypescriptBoth(
+    //  types,
+    //  services
+    //);
+    const generatedServices = generate.generateTypescriptServices(services);
+    expect(generatedServices).toMatchSnapshot();
     const servicesFile = fs.writeFileSync(
       path.join('runtest', dir, 'services.ts'),
       generatedServices,
@@ -52,13 +54,16 @@ for (const dir of test_dirs) {
         .post('/' + implementation[0])
         .send({
           'a_field': 'world',
-          'version': "TestInputType_V0",
+          'type': "TestInputType",
+          'version': "V1",
           'hash': "716a611faeb9d2ddaa02e37a5d187183ff4d388f47c740bb2202109b3e3c8fc0"
         })
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
         .expect(200)
-        .then((response) => expect(response.text).toMatchSnapshot());
+        .then((response) => {
+          expect(response.text).toMatchSnapshot();
+        });
     }
   });
 }

@@ -1,5 +1,6 @@
 import * as action from './action';
 import * as typeidea from './typeidea';
+import * as generate_typescript from './generate_typescript';
 import {compile} from 'ejs';
 import * as fs from 'fs';
 import * as prettier from 'prettier';
@@ -30,6 +31,10 @@ export class BaseField {
   }
 
   copy(): BaseField {
+    throw new Error("Not implemented");
+  }
+
+  formattedDefault(): string {
     throw new Error("Not implemented");
   }
 }
@@ -114,16 +119,22 @@ export class ReferenceField extends BaseField {
   }
 }
 
-type FieldObject = {
+export type FieldObject = {
   [key: string]: BaseField;
 };
 
 export class Version {
+  version: number | null;
   hash: string | null;
   fields: FieldObject;
 
-  constructor(hash: string | null, fields: FieldObject) {
+  constructor(
+    hash: string | null,
+    version: number | null,
+    fields: FieldObject,
+  ) {
     this.hash = hash;
+    this.version = version;
     this.fields = fields;
   }
 }
@@ -144,46 +155,19 @@ export class Type {
   }
 }
 
-//export function generateTypescript(types: Type[]) {
-//  return types.map((_type) => {
-//    // load imports.
-//    const imports = new Set();
-//    for (const version of _type.versions) {
-//      for (const field of Object.values(version.fields)) {
-//        if (field instanceof ReferenceField) {
-//          imports.add(field.referenceType);
-//        }
-//      }
-//    }
-//    return [
-//      _type,
-//      prettier.format(
-//        typescriptTypeTemplate(
-//          {
-//            versions: _type.versions,
-//            imports: imports,
-//            latest: _type.latest,
-//            changeLog: _type.changeLog,
-//            description: _type.description
-//          }
-//        ),
-//        {parser: 'typescript'},
-//      )
-//    ];
-//  }
-//  );
-//}
-
-export class ServiceVersion {
-  version: string;
-  state: VersionState;
+export class VersionType {
+  _type: string;
+  version: number | null;
+  hash: string;
 
   constructor(
-    version: string,
-    state: VersionState,
+    _type: string,
+    hash: string,
+    version: number | null,
   ) {
+    this._type = _type;
+    this.hash = hash;
     this.version = version;
-    this.state = state;
   }
 }
 
@@ -191,26 +175,54 @@ export class Service {
   name: string;
   changeLog: string[];
   description: string;
-  inputType: string;
-  outputType: string;
-  inputVersions: ServiceVersion[];
-  outputVersions: ServiceVersion[];
-  latest: ServiceVersion[] | null;
+  versions: Map<string, [VersionType, VersionType[]]>;
+  seenInputVersions: Set<string>;
+  //inputType: string;
+  //outputType: string;
+  //inputVersions: ServiceVersion[];
+  //outputVersions: ServiceVersion[];
+  //latest: ServiceVersion[] | null;
 
   constructor(
     name: string,
     description: string,
-    inputType: string,
-    outputType: string,
+    //inputType: string,
+    //outputType: string,
   ) {
     this.name = name;
     this.description = description;
     this.changeLog = [];
-    this.inputType = inputType;
-    this.outputType = outputType;
-    this.inputVersions = [];
-    this.outputVersions = [];
-    this.latest = [];
+    this.versions = new Map();
+    this.seenInputVersions = new Set();
+    //this.inputType = inputType;
+    //this.outputType = outputType;
+    //this.inputVersions = [];
+    //this.outputVersions = [];
+    //this.latest = [];
+  }
+
+  addVersion(logAction: action.AddVersionServiceAction) {
+    const inputVersion = `${logAction.inputType}_${logAction.inputVersion}`;
+    const outputVersion = `${logAction.outputType}_${logAction.outputVersion}`;
+
+    if (this.seenInputVersions.has(inputVersion)) {
+      throw new Error(`Input version ${inputVersion} used elsewhere`);
+    }
+    this.seenInputVersions.add(inputVersion);
+    const existingVersion = this.versions.get(outputVersion);
+    if (existingVersion) {
+      existingVersion[1].push(
+        new VersionType(logAction.inputType, logAction.inputVersion, logAction.version),
+      );
+    } else {
+      this.versions.set(
+        outputVersion,
+        [
+          new VersionType(logAction.outputType, logAction.outputVersion, logAction.version),
+          [new VersionType(logAction.inputType, logAction.inputVersion, logAction.version)],
+        ],
+      );
+    }
   }
 }
 
@@ -316,7 +328,7 @@ function updateTypeFields(
   let newVersion;
   if (isLatest) {
     if (_type.latest === null) {
-      newVersion = new Version(logAction.hash, {});
+      newVersion = new Version(logAction.hash, logAction.version, {});
       if (_type.versions.length > 0) {
         newVersion.fields = {..._type.versions[_type.versions.length-1].fields};
       }
@@ -325,14 +337,14 @@ function updateTypeFields(
       newVersion = _type.latest;
     }
   } else if (groupingVersions === null) {
-    newVersion = new Version(logAction.hash, {});
+    newVersion = new Version(logAction.hash, logAction.version, {});
     if (_type.versions.length > 0) {
       newVersion.fields = {..._type.versions[_type.versions.length-1].fields};
     }
   } else {
     newVersion = groupingVersions.get(_type.name);
     if (newVersion === undefined) {
-      newVersion = new Version(logAction.hash, {});
+      newVersion = new Version(logAction.hash, logAction.version, {});
       if (_type.versions.length > 0) {
         newVersion.fields = {..._type.versions[_type.versions.length-1].fields};
       }
@@ -359,12 +371,13 @@ function updateServices(
 ) {
   if (!(
     logAction instanceof action.UpdateDescriptionServiceAction ||
-    logAction instanceof action.AddInputVersionServiceAction ||
-    logAction instanceof action.RemoveInputVersionServiceAction ||
-    logAction instanceof action.DeprecateInputVersionServiceAction ||
-    logAction instanceof action.AddOutputVersionServiceAction ||
-    logAction instanceof action.RemoveOutputVersionServiceAction ||
-    logAction instanceof action.DeprecateOutputVersionServiceAction)
+    logAction instanceof action.AddVersionServiceAction)
+    //logAction instanceof action.AddInputVersionServiceAction ||
+    //logAction instanceof action.RemoveInputVersionServiceAction ||
+    //logAction instanceof action.DeprecateInputVersionServiceAction ||
+    //logAction instanceof action.AddOutputVersionServiceAction ||
+    //logAction instanceof action.RemoveOutputVersionServiceAction ||
+    //logAction instanceof action.DeprecateOutputVersionServiceAction)
   ) {
     return;
   }
@@ -379,44 +392,62 @@ function updateServices(
   }
 
   if (logAction instanceof action.UpdateDescriptionServiceAction) {
-      newService.description = logAction.description;
-  } else if (logAction instanceof action.AddInputVersionServiceAction) {
-      newService.inputVersions.push(
-        new ServiceVersion(logAction.version, 'active')
-      );
-  } else if (logAction instanceof action.RemoveInputVersionServiceAction) {
-    newService.inputVersions = newService.inputVersions.map(serviceVersion => {
-      if (serviceVersion.version === (logAction as any).version) {
-        return new ServiceVersion((logAction as any).version, 'removed');
-      }
-      return serviceVersion;
-    });
-  } else if (logAction instanceof action.DeprecateInputVersionServiceAction) {
-    newService.inputVersions = newService.inputVersions.map(serviceVersion => {
-      if (serviceVersion.version === (logAction as any).version) {
-        return new ServiceVersion((logAction as any).version, 'deprecated');
-      }
-      return serviceVersion;
-    });
-  } else if (logAction instanceof action.AddOutputVersionServiceAction) {
-    newService.outputVersions.push(
-      new ServiceVersion(logAction.version, 'active')
-    );
-  } else if (logAction instanceof action.RemoveOutputVersionServiceAction) {
-    newService.outputVersions = newService.outputVersions.map(serviceVersion => {
-      if (serviceVersion.version === (logAction as any).version) {
-        return new ServiceVersion((logAction as any).version, 'removed');
-      }
-      return serviceVersion;
-    });
-  } else if (logAction instanceof action.DeprecateOutputVersionServiceAction) {
-    newService.outputVersions = newService.outputVersions.map(serviceVersion => {
-      if (serviceVersion.version === (logAction as any).version) {
-        return new ServiceVersion((logAction as any).version, 'deprecated');
-      }
-      return serviceVersion;
-    });
+    newService.description = logAction.description;
+  } else if (logAction instanceof action.AddVersionServiceAction) {
+
+    const outputVersion = `${logAction.outputType}_${logAction.outputVersion}`;
+    newService.addVersion(logAction);
+    //const currentType = newService.versions.get(outputVersion);
+    //if (currentType) {
+    //  const currentVersions = currentType[1];
+    //  currentVersions.push(new VersionType(logAction.inputType, logAction.inputVersion));
+    //} else {
+    //  newService.versions.set(
+    //    outputVersion,
+    //    [
+    //      new VersionType(logAction.outputType, logAction.outputVersion),
+    //      [new VersionType(logAction.inputType, logAction.inputVersion)],
+    //    ],
+    //  );
+    //}
   }
+  //} else if (logAction instanceof action.AddInputVersionServiceAction) {
+  //    newService.inputVersions.push(
+  //      new ServiceVersion(logAction.version, 'active')
+  //    );
+  //} else if (logAction instanceof action.RemoveInputVersionServiceAction) {
+  //  newService.inputVersions = newService.inputVersions.map(serviceVersion => {
+  //    if (serviceVersion.version === (logAction as any).version) {
+  //      return new ServiceVersion((logAction as any).version, 'removed');
+  //    }
+  //    return serviceVersion;
+  //  });
+  //} else if (logAction instanceof action.DeprecateInputVersionServiceAction) {
+  //  newService.inputVersions = newService.inputVersions.map(serviceVersion => {
+  //    if (serviceVersion.version === (logAction as any).version) {
+  //      return new ServiceVersion((logAction as any).version, 'deprecated');
+  //    }
+  //    return serviceVersion;
+  //  });
+  //} else if (logAction instanceof action.AddOutputVersionServiceAction) {
+  //  newService.outputVersions.push(
+  //    new ServiceVersion(logAction.version, 'active')
+  //  );
+  //} else if (logAction instanceof action.RemoveOutputVersionServiceAction) {
+  //  newService.outputVersions = newService.outputVersions.map(serviceVersion => {
+  //    if (serviceVersion.version === (logAction as any).version) {
+  //      return new ServiceVersion((logAction as any).version, 'removed');
+  //    }
+  //    return serviceVersion;
+  //  });
+  //} else if (logAction instanceof action.DeprecateOutputVersionServiceAction) {
+  //  newService.outputVersions = newService.outputVersions.map(serviceVersion => {
+  //    if (serviceVersion.version === (logAction as any).version) {
+  //      return new ServiceVersion((logAction as any).version, 'deprecated');
+  //    }
+  //    return serviceVersion;
+  //  });
+  //}
 }
 
 function updateTypesAndServices(
@@ -460,8 +491,6 @@ function updateTypesAndServices(
     const newService = new Service(
       logAction.serviceName,
       logAction.description,
-      logAction.inputType,
-      logAction.outputType,
     );
     newService.changeLog.push(logAction.changeLog);
     services.set(newService.name, newService);
@@ -499,6 +528,44 @@ export function generateDefinitions(log: action.Action[]): [Type[], Service[]] {
     }
   }
 
+  const versionNumbers = new Map<string, number>();
+  for (let logAction of log) {
+    if (logAction.hash === null) {
+      break;
+    }
+    if (
+      logAction instanceof action.RenameFieldTypeAction ||
+      logAction instanceof action.RequiredFieldTypeAction ||
+      logAction instanceof action.OptionalFieldTypeAction ||
+      logAction instanceof action.DeleteFieldTypeAction ||
+      logAction instanceof action.SetDefaultFieldTypeAction ||
+      logAction instanceof action.RemoveDefaultFieldTypeAction ||
+      logAction instanceof action.AddFieldTypeAction ||
+      logAction instanceof action.UpdateDescriptionTypeAction ||
+      logAction instanceof action.ReferenceFieldTypeAction
+    ) {
+      let currentVersion = versionNumbers.get(logAction.typeName) || 0;
+      logAction.version = currentVersion;
+      versionNumbers.set(logAction.typeName, currentVersion + 1);
+    } else if (logAction instanceof action.NewTypeAction) {
+      let currentVersion = versionNumbers.get(logAction.name) || 0;
+      logAction.version = currentVersion;
+      versionNumbers.set(logAction.name, currentVersion + 1);
+    } else if (logAction instanceof action.GroupAction) {
+      //throw new Error(`Not implemented yet :-(`);
+    } else if (
+      logAction instanceof action.NewServiceAction ||
+      logAction instanceof action.UpdateDescriptionServiceAction ||
+      logAction instanceof action.AddVersionServiceAction
+    ) {
+      let currentVersion = versionNumbers.get(logAction.serviceName) || 0;
+      logAction.version = currentVersion;
+      versionNumbers.set(logAction.serviceName, currentVersion + 1);
+    } else {
+      throw new Error(`Unknown log action ${logAction}`);
+    }
+  }
+
   const types = new Map();
   const services = new Map();
   for (let n = 0; n < hashed.length; n++) {
@@ -514,49 +581,50 @@ export function generateDefinitions(log: action.Action[]): [Type[], Service[]] {
   return [Array.from(types.values()), Array.from(services.values())];
 }
 
-const typescriptTypeFile = fs.readFileSync(
-  path.join(__dirname, 'templates', 'typescript.ejs'),
-  {
-    encoding: "utf8",
-  }
-);
-
-const typescriptTypeTemplate = compile(
-  typescriptTypeFile,
-  {
-    filename: path.join(__dirname, 'templates', 'typescript.ejs'),
-  }
-);
+//const typescriptTypeFile = fs.readFileSync(
+//  path.join(__dirname, 'templates', 'typescript.ejs'),
+//  {
+//    encoding: "utf8",
+//  }
+//);
+//
+//const typescriptTypeTemplate = compile(
+//  typescriptTypeFile,
+//  {
+//    filename: path.join(__dirname, 'templates', 'typescript.ejs'),
+//  }
+//);
 
 export function generateTypescript(types: Type[]): string {
   return (
     prettier.format(
-      typescriptTypeTemplate({types: types}),
+      generate_typescript.generateTypes(types),
       {parser: 'typescript'},
     )
   );
 }
 
-const typescriptServiceFile = fs.readFileSync(
-  path.join(__dirname, 'templates', 'express.ejs'),
-  {
-    encoding: "utf8",
-  }
-);
-
-const typescriptServiceTemplate = compile(
-  typescriptServiceFile,
-  {
-    filename: path.join(__dirname, 'templates', 'express.ejs'),
-  }
-);
+//const typescriptServiceFile = fs.readFileSync(
+//  path.join(__dirname, 'templates', 'express.ejs'),
+//  {
+//    encoding: "utf8",
+//  }
+//);
+//
+//const typescriptServiceTemplate = compile(
+//  typescriptServiceFile,
+//  {
+//    filename: path.join(__dirname, 'templates', 'express.ejs'),
+//  }
+//);
 
 export function generateTypescriptServices(
   services: Service[],
 ): string {
   return (
     prettier.format(
-      typescriptServiceTemplate({services: services}),
+      // typescriptServiceTemplate({services: services}),
+      generate_typescript.generateExpress(services),
       {parser: 'typescript'},
     )
   );
