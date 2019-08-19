@@ -458,11 +458,11 @@ function updateTypesAndServices(
   isLatest: boolean,
 ) {
   if (logAction instanceof action.NewTypeAction) {
-    if (types.has(logAction.name)) {
-      throw new Error(`Type ${logAction.name} defined twice!`);
+    if (types.has(logAction.typeName)) {
+      throw new Error(`Type ${logAction.typeName} defined twice!`);
     }
     const newType = new Type(
-      logAction.name,
+      logAction.typeName,
       logAction.description,
     );
     newType.changeLog.push(logAction.changeLog);
@@ -528,44 +528,6 @@ export function generateDefinitions(log: action.Action[]): [Type[], Service[]] {
     }
   }
 
-  const versionNumbers = new Map<string, number>();
-  for (let logAction of log) {
-    if (logAction.hash === null) {
-      break;
-    }
-    if (
-      logAction instanceof action.RenameFieldTypeAction ||
-      logAction instanceof action.RequiredFieldTypeAction ||
-      logAction instanceof action.OptionalFieldTypeAction ||
-      logAction instanceof action.DeleteFieldTypeAction ||
-      logAction instanceof action.SetDefaultFieldTypeAction ||
-      logAction instanceof action.RemoveDefaultFieldTypeAction ||
-      logAction instanceof action.AddFieldTypeAction ||
-      logAction instanceof action.UpdateDescriptionTypeAction ||
-      logAction instanceof action.ReferenceFieldTypeAction
-    ) {
-      let currentVersion = versionNumbers.get(logAction.typeName) || 0;
-      logAction.version = currentVersion;
-      versionNumbers.set(logAction.typeName, currentVersion + 1);
-    } else if (logAction instanceof action.NewTypeAction) {
-      let currentVersion = versionNumbers.get(logAction.name) || 0;
-      logAction.version = currentVersion;
-      versionNumbers.set(logAction.name, currentVersion + 1);
-    } else if (logAction instanceof action.GroupAction) {
-      //throw new Error(`Not implemented yet :-(`);
-    } else if (
-      logAction instanceof action.NewServiceAction ||
-      logAction instanceof action.UpdateDescriptionServiceAction ||
-      logAction instanceof action.AddVersionServiceAction
-    ) {
-      let currentVersion = versionNumbers.get(logAction.serviceName) || 0;
-      logAction.version = currentVersion;
-      versionNumbers.set(logAction.serviceName, currentVersion + 1);
-    } else {
-      throw new Error(`Unknown log action ${logAction}`);
-    }
-  }
-
   const types = new Map();
   const services = new Map();
   for (let n = 0; n < hashed.length; n++) {
@@ -581,20 +543,6 @@ export function generateDefinitions(log: action.Action[]): [Type[], Service[]] {
   return [Array.from(types.values()), Array.from(services.values())];
 }
 
-//const typescriptTypeFile = fs.readFileSync(
-//  path.join(__dirname, 'templates', 'typescript.ejs'),
-//  {
-//    encoding: "utf8",
-//  }
-//);
-//
-//const typescriptTypeTemplate = compile(
-//  typescriptTypeFile,
-//  {
-//    filename: path.join(__dirname, 'templates', 'typescript.ejs'),
-//  }
-//);
-
 export function generateTypescript(types: Type[]): string {
   return (
     prettier.format(
@@ -604,26 +552,11 @@ export function generateTypescript(types: Type[]): string {
   );
 }
 
-//const typescriptServiceFile = fs.readFileSync(
-//  path.join(__dirname, 'templates', 'express.ejs'),
-//  {
-//    encoding: "utf8",
-//  }
-//);
-//
-//const typescriptServiceTemplate = compile(
-//  typescriptServiceFile,
-//  {
-//    filename: path.join(__dirname, 'templates', 'express.ejs'),
-//  }
-//);
-
 export function generateTypescriptServices(
   services: Service[],
 ): string {
   return (
     prettier.format(
-      // typescriptServiceTemplate({services: services}),
       generate_typescript.generateExpress(services),
       {parser: 'typescript'},
     )

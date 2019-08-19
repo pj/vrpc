@@ -7,11 +7,13 @@ it('hashActions generates hashes for types', () => {
     new action.NewTypeAction(
       'Creating a new type',
       null,
+      null,
       'Test',
       'A useful type'
     ),
     new action.AddFieldTypeAction(
       'Adding a field',
+      null,
       null,
       'Test',
       'test_field',
@@ -23,11 +25,13 @@ it('hashActions generates hashes for types', () => {
     new action.NewTypeAction(
       'Creating a new type',
       null,
+      null,
       'Test2',
       'Another useful type'
     ),
     new action.AddFieldTypeAction(
       'asdf',
+      null,
       null,
       'Test2',
       'test_field2',
@@ -53,11 +57,13 @@ it('Changing an action makes hashing invalid', () => {
     new action.NewTypeAction(
       'Creating a new type',
       null,
+      null,
       'Test',
       'a useful type'
     ),
     new action.AddFieldTypeAction(
       'Adding a field',
+      null,
       null,
       'Test',
       'test_field',
@@ -81,11 +87,13 @@ it('Changing a hash makes hashing invalid', () => {
     new action.NewTypeAction(
       'Creating a new type',
       null,
+      null,
       'Test',
       'a useful type'
     ),
     new action.AddFieldTypeAction(
       'Adding a field',
+      null,
       null,
       'Test',
       'test_field',
@@ -112,11 +120,13 @@ it('Multiple types with type reference', () => {
     new action.NewTypeAction(
       'Creating a new type',
       null,
+      null,
       'Test',
       'A useful type'
     ),
     new action.AddFieldTypeAction(
       'Adding a field',
+      null,
       null,
       'Test',
       'test_field',
@@ -128,11 +138,13 @@ it('Multiple types with type reference', () => {
     new action.NewTypeAction(
       'Creating a new type',
       null,
+      null,
       'Test2',
       'a useful type'
     ),
     new action.ReferenceFieldTypeAction(
       'asdf',
+      null,
       null,
       'Test2',
       'test_field2',
