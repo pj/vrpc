@@ -1,5 +1,4 @@
 # TODO
-- allow both hash and version numbers to be specified in log files.
 - standardize formatting and use of hashes and versions.
 - test groups properly.
 - test latest properly.
@@ -9,3 +8,5 @@
 - Define type options as part of file, e.g. hashed attributes.
 - Latest for service definitions.
 - proto bufs support? json schema support?
+- more data types.
+- generate other languages.

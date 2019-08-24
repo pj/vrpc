@@ -78,6 +78,12 @@ class Version {
             return `${this._type}_H${this.hash}`;
         }
     }
+    formatVersion() {
+        return `${this._type}_V${this.version}`;
+    }
+    formatHash() {
+        return `${this._type}_H${this.hash}`;
+    }
 }
 exports.Version = Version;
 class Type {

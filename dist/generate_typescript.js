@@ -162,10 +162,10 @@ export {
 }
 function generateDeserializeVersion(_type, version) {
     return `
-    case "${_type.name}_V${version.version}":
-    case "${_type.name}_H${version.hash}":
+    case "${version.formatVersion()}":
+    case "${version.formatHash()}":
       return (
-        new ${_type.name}_V${version.version}(
+        new ${version.formatVersion()}(
         ${generateFieldDeserialize(version.fields)}
         )
       );

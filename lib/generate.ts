@@ -152,6 +152,14 @@ export class Version {
       return `${this._type}_H${this.hash}`;
     }
   }
+
+  formatVersion(): string {
+    return `${this._type}_V${this.version}`;
+  }
+
+  formatHash(): string {
+    return `${this._type}_H${this.hash}`;
+  }
 }
 
 export class Type {
