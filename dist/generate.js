@@ -46,13 +46,14 @@ class Field extends BaseField {
 }
 exports.Field = Field;
 class ReferenceField extends BaseField {
-    constructor(name, changeLog, description, optional, referenceType, referenceHash) {
+    constructor(name, changeLog, description, optional, referenceType, referenceHash, referenceVersion) {
         super(name, changeLog, description, optional);
         this.referenceType = referenceType;
         this.referenceHash = referenceHash;
+        this.referenceVersion = referenceVersion;
     }
     copy() {
-        return new ReferenceField(this.name, this.changeLog, this.description, this.optional, this.referenceType, this.referenceHash);
+        return new ReferenceField(this.name, this.changeLog, this.description, this.optional, this.referenceType, this.referenceHash, this.referenceVersion);
     }
     fieldType() {
         return `${this.referenceType}.h_${this.referenceHash}`;
@@ -63,10 +64,19 @@ class ReferenceField extends BaseField {
 }
 exports.ReferenceField = ReferenceField;
 class Version {
-    constructor(hash, version, fields) {
+    constructor(_type, hash, version, fields) {
+        this._type = _type;
         this.hash = hash;
         this.version = version;
         this.fields = fields;
+    }
+    toString() {
+        if (this.version) {
+            return `${this._type}_V${this.version}`;
+        }
+        else {
+            return `${this._type}_H${this.hash}`;
+        }
     }
 }
 exports.Version = Version;
@@ -85,6 +95,14 @@ class VersionType {
         this._type = _type;
         this.hash = hash;
         this.version = version;
+    }
+    toString() {
+        if (this.version) {
+            return `${this._type}_V${this.version}`;
+        }
+        else {
+            return `${this._type}_H${this.hash}`;
+        }
     }
 }
 exports.VersionType = VersionType;
@@ -115,12 +133,12 @@ class Service {
         this.seenInputVersions.add(inputVersion);
         const existingVersion = this.versions.get(outputVersion);
         if (existingVersion) {
-            existingVersion[1].push(new VersionType(logAction.inputType, logAction.inputVersion, logAction.version));
+            existingVersion[1].push(new VersionType(logAction.inputType, logAction.inputHash, logAction.inputVersion));
         }
         else {
             this.versions.set(outputVersion, [
-                new VersionType(logAction.outputType, logAction.outputVersion, logAction.version),
-                [new VersionType(logAction.inputType, logAction.inputVersion, logAction.version)],
+                new VersionType(logAction.outputType, logAction.outputHash, logAction.outputVersion),
+                [new VersionType(logAction.inputType, logAction.inputHash, logAction.inputVersion)],
             ]);
         }
     }
@@ -186,7 +204,7 @@ function updateVersion(newVersion, logAction) {
     }
     else if (logAction instanceof action.ReferenceFieldTypeAction) {
         const currentField = newVersion.fields[logAction.name];
-        const newField = new ReferenceField(logAction.name, logAction.changeLog, logAction.description, logAction.optional, logAction.referenceType, logAction.referenceHash);
+        const newField = new ReferenceField(logAction.name, logAction.changeLog, logAction.description, logAction.optional, logAction.referenceType, logAction.referenceHash, logAction.referenceVersion);
         newVersion.fields[newField.name] = newField;
     }
 }
@@ -212,7 +230,7 @@ function updateTypeFields(logAction, types, groupingVersions, isLatest) {
     let newVersion;
     if (isLatest) {
         if (_type.latest === null) {
-            newVersion = new Version(logAction.hash, logAction.version, {});
+            newVersion = new Version(_type.name, logAction.hash, logAction.version, {});
             if (_type.versions.length > 0) {
                 newVersion.fields = Object.assign({}, _type.versions[_type.versions.length - 1].fields);
             }
@@ -223,7 +241,7 @@ function updateTypeFields(logAction, types, groupingVersions, isLatest) {
         }
     }
     else if (groupingVersions === null) {
-        newVersion = new Version(logAction.hash, logAction.version, {});
+        newVersion = new Version(_type.name, logAction.hash, logAction.version, {});
         if (_type.versions.length > 0) {
             newVersion.fields = Object.assign({}, _type.versions[_type.versions.length - 1].fields);
         }
@@ -231,7 +249,7 @@ function updateTypeFields(logAction, types, groupingVersions, isLatest) {
     else {
         newVersion = groupingVersions.get(_type.name);
         if (newVersion === undefined) {
-            newVersion = new Version(logAction.hash, logAction.version, {});
+            newVersion = new Version(_type.name, logAction.hash, logAction.version, {});
             if (_type.versions.length > 0) {
                 newVersion.fields = Object.assign({}, _type.versions[_type.versions.length - 1].fields);
             }

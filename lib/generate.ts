@@ -84,7 +84,8 @@ export class Field extends BaseField {
 
 export class ReferenceField extends BaseField {
   referenceType: string;
-  referenceHash: string;
+  referenceHash: string | null;
+  referenceVersion: number | null;
 
   constructor(
     name: string,
@@ -92,11 +93,13 @@ export class ReferenceField extends BaseField {
     description: string,
     optional: boolean,
     referenceType: string,
-    referenceHash: string
+    referenceHash: string | null,
+    referenceVersion: number | null
   ) {
     super(name, changeLog, description, optional);
     this.referenceType = referenceType;
     this.referenceHash = referenceHash;
+    this.referenceVersion = referenceVersion;
   }
 
   copy() {
@@ -106,7 +109,8 @@ export class ReferenceField extends BaseField {
       this.description,
       this.optional,
       this.referenceType,
-      this.referenceHash
+      this.referenceHash,
+      this.referenceVersion
     );
   }
 
@@ -124,18 +128,29 @@ export type FieldObject = {
 };
 
 export class Version {
+  _type: string;
   version: number | null;
   hash: string | null;
   fields: FieldObject;
 
   constructor(
+    _type: string,
     hash: string | null,
     version: number | null,
     fields: FieldObject,
   ) {
+    this._type = _type;
     this.hash = hash;
     this.version = version;
     this.fields = fields;
+  }
+
+  toString(): string {
+    if (this.version) {
+      return `${this._type}_V${this.version}`;
+    } else {
+      return `${this._type}_H${this.hash}`;
+    }
   }
 }
 
@@ -158,16 +173,24 @@ export class Type {
 export class VersionType {
   _type: string;
   version: number | null;
-  hash: string;
+  hash: string | null;
 
   constructor(
     _type: string,
-    hash: string,
+    hash: string | null,
     version: number | null,
   ) {
     this._type = _type;
     this.hash = hash;
     this.version = version;
+  }
+
+  toString(): string {
+    if (this.version) {
+      return `${this._type}_V${this.version}`;
+    } else {
+      return `${this._type}_H${this.hash}`;
+    }
   }
 }
 
@@ -212,14 +235,14 @@ export class Service {
     const existingVersion = this.versions.get(outputVersion);
     if (existingVersion) {
       existingVersion[1].push(
-        new VersionType(logAction.inputType, logAction.inputVersion, logAction.version),
+        new VersionType(logAction.inputType, logAction.inputHash, logAction.inputVersion),
       );
     } else {
       this.versions.set(
         outputVersion,
         [
-          new VersionType(logAction.outputType, logAction.outputVersion, logAction.version),
-          [new VersionType(logAction.inputType, logAction.inputVersion, logAction.version)],
+          new VersionType(logAction.outputType, logAction.outputHash, logAction.outputVersion),
+          [new VersionType(logAction.inputType, logAction.inputHash, logAction.inputVersion)],
         ],
       );
     }
@@ -291,7 +314,8 @@ function updateVersion(newVersion: Version, logAction: action.Action) {
       logAction.description,
       logAction.optional,
       logAction.referenceType,
-      logAction.referenceHash
+      logAction.referenceHash,
+      logAction.referenceVersion
     );
     newVersion.fields[newField.name] = newField;
   }
@@ -328,7 +352,7 @@ function updateTypeFields(
   let newVersion;
   if (isLatest) {
     if (_type.latest === null) {
-      newVersion = new Version(logAction.hash, logAction.version, {});
+      newVersion = new Version(_type.name, logAction.hash, logAction.version, {});
       if (_type.versions.length > 0) {
         newVersion.fields = {..._type.versions[_type.versions.length-1].fields};
       }
@@ -337,14 +361,14 @@ function updateTypeFields(
       newVersion = _type.latest;
     }
   } else if (groupingVersions === null) {
-    newVersion = new Version(logAction.hash, logAction.version, {});
+    newVersion = new Version(_type.name, logAction.hash, logAction.version, {});
     if (_type.versions.length > 0) {
       newVersion.fields = {..._type.versions[_type.versions.length-1].fields};
     }
   } else {
     newVersion = groupingVersions.get(_type.name);
     if (newVersion === undefined) {
-      newVersion = new Version(logAction.hash, logAction.version, {});
+      newVersion = new Version(_type.name, logAction.hash, logAction.version, {});
       if (_type.versions.length > 0) {
         newVersion.fields = {..._type.versions[_type.versions.length-1].fields};
       }

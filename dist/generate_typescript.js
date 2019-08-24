@@ -11,16 +11,15 @@ const serviceHeader = (service) => `/*
 * ${service.description}
 */`;
 const changeLog = (changeLog) => changeLog.map((log, index) => `* ${index}. ${log}`).join('\n');
-const formatVT = (versionType) => `${versionType._type}_V${versionType.version}`;
 function imports(versions) {
     let allImports = [];
     for (let version of versions.values()) {
         const [outputVersion, inputVersions] = version;
         let versionImports = [];
-        versionImports.push(formatVT(outputVersion));
+        versionImports.push(outputVersion);
         versionImports.push(outputVersion._type);
         for (let inputVersion of inputVersions) {
-            versionImports.push(formatVT(inputVersion));
+            versionImports.push(inputVersion);
             versionImports.push(inputVersion._type);
         }
         allImports.push(versionImports.join(',\n'));
@@ -34,12 +33,12 @@ function serviceBody(service) {
     const allResponses = [];
     for (let version of service.versions.values()) {
         const [outputVersion, inputVersions] = version;
-        const allInputs = inputVersions.map((version) => formatVT(version)).join(' | ');
-        allVersions.push(`func_${formatVT(outputVersion)}: (input: ${allInputs}) => ${formatVT(outputVersion)}`);
+        const allInputs = inputVersions.join(' | ');
+        allVersions.push(`func_${outputVersion}: (input: ${allInputs}) => ${outputVersion}`);
         for (let inputVersion of inputVersions) {
-            allResponses.push(`case '${formatVT(inputVersion)}':
-  const inputMessage = ${formatVT(inputVersion)}.deserialize(body);
-  const response = func_${formatVT(outputVersion)}(inputMessage);
+            allResponses.push(`case '${inputVersion}':
+  const inputMessage = ${inputVersion}.deserialize(body);
+  const response = func_${outputVersion}(inputMessage);
   const outputMessage = ${outputVersion._type}.serialize(response);
   res.json(outputMessage);
   return;`);

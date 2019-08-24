@@ -151,15 +151,16 @@ it('Multiple types with type reference', () => {
       'A reference',
       true,
       'Test',
-      // @ts-ignore
-      null
+      null,
+      -1,
     )
   ];
+  (addField[3] as action.ReferenceFieldTypeAction).referenceVersion = null;
 
   let hashes = typeidea.hashActions(addField, false);
   let hashedAddField = typeidea.addHashes(addField, hashes, 2);
 
-  addField[3].referenceHash = hashedAddField[1].hash;
+  (addField[3] as action.ReferenceFieldTypeAction).referenceHash = hashedAddField[1].hash;
 
   // Now that we have the correct hash, generate all
   hashes = typeidea.hashActions(addField, false);

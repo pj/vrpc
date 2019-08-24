@@ -157,7 +157,7 @@ class UpdateDescriptionTypeAction extends Action {
 }
 exports.UpdateDescriptionTypeAction = UpdateDescriptionTypeAction;
 class ReferenceFieldTypeAction extends Action {
-    constructor(changeLog, hash, version, typeName, name, description, optional, referenceType, referenceHash) {
+    constructor(changeLog, hash, version, typeName, name, description, optional, referenceType, referenceHash, referenceVersion) {
         super(changeLog, hash, version);
         this.typeName = typeName;
         this.name = name;
@@ -165,13 +165,18 @@ class ReferenceFieldTypeAction extends Action {
         this.optional = optional;
         this.referenceType = referenceType;
         this.referenceHash = referenceHash;
+        this.referenceVersion = referenceVersion;
+        if ((referenceHash === null || referenceHash === undefined)
+            && (referenceVersion === null || referenceVersion === undefined)) {
+            throw new Error("Must specify either a hash or version for referenced type");
+        }
     }
     fieldsToHash() {
-        return `${super.fieldsToHash()}_${this.typeName}_${this.name}_${this.description}_${this.optional}_${this.referenceType}_${this.referenceHash}`;
+        return `${super.fieldsToHash()}_${this.typeName}_${this.name}_${this.description}_${this.optional}_${this.referenceType}_${this.referenceHash}_${this.referenceVersion}`;
     }
     ;
     toString() {
-        return `ReferenceFieldTypeAction(${this.changeLog}, ${this.hash}, ${this.version}, ${this.typeName}, ${this.name}, ${this.description}, ${this.optional}, ${this.referenceType}, ${this.referenceHash})`;
+        return `ReferenceFieldTypeAction(${this.changeLog}, ${this.hash}, ${this.version}, ${this.typeName}, ${this.name}, ${this.description}, ${this.optional}, ${this.referenceType}, ${this.referenceHash}, ${this.referenceVersion})`;
     }
 }
 exports.ReferenceFieldTypeAction = ReferenceFieldTypeAction;
@@ -197,21 +202,27 @@ class GroupAction extends Action {
 exports.GroupAction = GroupAction;
 // Service Definitions
 class NewServiceAction extends Action {
-    constructor(changeLog, hash, version, serviceName, description, inputType, outputType, inputVersion, outputVersion) {
+    //inputType: string;
+    //outputType: string;
+    //inputVersion: string;
+    //outputVersion: string;
+    constructor(changeLog, hash, version, serviceName, description) {
         super(changeLog, hash, version);
         this.serviceName = serviceName;
         this.description = description;
-        this.inputType = inputType;
-        this.outputType = outputType;
-        this.inputVersion = inputVersion;
-        this.outputVersion = outputVersion;
+        //this.inputType = inputType;
+        //this.outputType = outputType;
+        //this.inputVersion = inputVersion;
+        //this.outputVersion = outputVersion;
     }
     fieldsToHash() {
-        return `${super.fieldsToHash()}_${this.serviceName}_${this.description}_${this.inputType}_${this.outputType}_${this.inputVersion}_${this.outputVersion}`;
+        //return `${super.fieldsToHash()}_${this.serviceName}_${this.description}_${this.inputType}_${this.outputType}_${this.inputVersion}_${this.outputVersion}`;
+        return `${super.fieldsToHash()}_${this.serviceName}_${this.description}`;
     }
     ;
     toString() {
-        return `NewServiceAction(${this.changeLog}, ${this.hash}, ${this.version}, ${this.serviceName}, ${this.description}, ${this.inputType}, ${this.outputType}, ${this.inputVersion}, ${this.outputVersion})`;
+        //return `NewServiceAction(${this.changeLog}, ${this.hash}, ${this.version}, ${this.serviceName}, ${this.description})`;, ${this.inputType}, ${this.outputType}, ${this.inputVersion}, ${this.outputVersion})`;
+        return `NewServiceAction(${this.changeLog}, ${this.hash}, ${this.version}, ${this.serviceName}, ${this.description})`;
     }
 }
 exports.NewServiceAction = NewServiceAction;
@@ -231,13 +242,23 @@ class UpdateDescriptionServiceAction extends Action {
 }
 exports.UpdateDescriptionServiceAction = UpdateDescriptionServiceAction;
 class AddVersionServiceAction extends Action {
-    constructor(changeLog, hash, version, serviceName, inputType, outputType, inputVersion, outputVersion) {
+    constructor(changeLog, hash, version, serviceName, inputType, outputType, inputVersion, inputHash, outputVersion, outputHash) {
         super(changeLog, hash, version);
         this.serviceName = serviceName;
         this.inputType = inputType;
         this.outputType = outputType;
         this.inputVersion = inputVersion;
+        this.inputHash = inputHash;
         this.outputVersion = outputVersion;
+        this.outputHash = outputHash;
+        if ((inputHash === null || inputHash === undefined)
+            && (inputVersion === null || inputVersion === undefined)) {
+            throw new Error("Must specify either a hash or version for input version.");
+        }
+        if ((outputHash === null || outputHash === undefined)
+            && (outputVersion === null || outputVersion === undefined)) {
+            throw new Error("Must specify either a hash or version for output version.");
+        }
     }
     fieldsToHash() {
         return `${super.fieldsToHash()}_${this.serviceName}_${this.inputType}_${this.outputType}_${this.inputVersion}_${this.outputVersion}`;
@@ -248,200 +269,15 @@ class AddVersionServiceAction extends Action {
     }
 }
 exports.AddVersionServiceAction = AddVersionServiceAction;
-//export class AddInputVersionServiceAction extends Action {
-//  serviceName: string;
-//  version: string;
-//
-//  constructor(
-//    changeLog: string,
-//    hash: string | null,
-//    serviceName: string,
-//    version: string,
-//  ) {
-//    super(changeLog, hash);
-//    this.serviceName = serviceName;
-//    this.version = version;
-//  }
-//
-//  fieldsToHash(): string {
-//    return `${super.fieldsToHash()}_${this.serviceName}_${this.version}`;
-//  };
-//
-//  toString(): string {
-//    return `AddInputVersionServiceAction(${this.changeLog}, ${this.hash}, ${this.version}, ${this.serviceName}, ${this.version})`;
-//  }
-//}
-//
-//export class RemoveInputVersionServiceAction extends Action {
-//  serviceName: string;
-//  version: string;
-//
-//  constructor(
-//    changeLog: string,
-//    hash: string | null,
-//    serviceName: string,
-//    version: string,
-//  ) {
-//    super(changeLog, hash);
-//    this.serviceName = serviceName;
-//    this.version = version;
-//  }
-//
-//  fieldsToHash(): string {
-//    return `${super.fieldsToHash()}_${this.serviceName}_${this.version}`;
-//  };
-//
-//  toString(): string {
-//    return `RemoveInputVersionServiceAction(${this.changeLog}, ${this.hash}, ${this.version}, ${this.serviceName}, ${this.version})`;
-//  }
-//}
-//
-//export class DeprecateInputVersionServiceAction extends Action {
-//  serviceName: string;
-//  version: string;
-//
-//  constructor(
-//    changeLog: string,
-//    hash: string | null,
-//    serviceName: string,
-//    version: string,
-//  ) {
-//    super(changeLog, hash);
-//    this.serviceName = serviceName;
-//    this.version = version;
-//  }
-//
-//  fieldsToHash(): string {
-//    return `${super.fieldsToHash()}_${this.serviceName}_${this.version}`;
-//  };
-//
-//  toString(): string {
-//    return `DeprecateInputVersionServiceAction(${this.changeLog}, ${this.hash}, ${this.version}, ${this.serviceName}, ${this.version})`;
-//  }
-//}
-//
-//export class AddOutputVersionServiceAction extends Action {
-//  serviceName: string;
-//  version: string;
-//
-//  constructor(
-//    changeLog: string,
-//    hash: string | null,
-//    serviceName: string,
-//    version: string,
-//  ) {
-//    super(changeLog, hash);
-//    this.serviceName = serviceName;
-//    this.version = version;
-//  }
-//
-//  fieldsToHash(): string {
-//    return `${super.fieldsToHash()}_${this.serviceName}_${this.version}`;
-//  };
-//
-//  toString(): string {
-//    return `AddOutputVersionServiceAction(${this.changeLog}, ${this.hash}, ${this.version}, ${this.serviceName}, ${this.version})`;
-//  }
-//}
-//
-//export class RemoveOutputVersionServiceAction extends Action {
-//  serviceName: string;
-//  version: string;
-//
-//  constructor(
-//    changeLog: string,
-//    hash: string | null,
-//    serviceName: string,
-//    version: string,
-//  ) {
-//    super(changeLog, hash);
-//    this.serviceName = serviceName;
-//    this.version = version;
-//  }
-//
-//  fieldsToHash(): string {
-//    return `${super.fieldsToHash()}_${this.serviceName}_${this.version}`;
-//  };
-//
-//  toString(): string {
-//    return `RemoveOutputVersionServiceAction(${this.changeLog}, ${this.hash}, ${this.version}, ${this.serviceName}, ${this.version})`;
-//  }
-//}
-//
-//export class DeprecateOutputVersionServiceAction extends Action {
-//  serviceName: string;
-//  version: string;
-//
-//  constructor(
-//    changeLog: string,
-//    hash: string | null,
-//    serviceName: string,
-//    version: string,
-//  ) {
-//    super(changeLog, hash);
-//    this.serviceName = serviceName;
-//    this.version = version;
-//  }
-//
-//  fieldsToHash(): string {
-//    return `${super.fieldsToHash()}_${this.serviceName}_${this.version}`;
-//  };
-//
-//  toString(): string {
-//    return `DeprecateOutputVersionServiceAction(${this.changeLog}, ${this.hash}, ${this.version}, ${this.serviceName}, ${this.version})`;
-//  }
-//}
 function loadAction(action) {
     switch (action._action_type) {
         // Services
         case 'NewServiceAction':
-            return new NewServiceAction(action.changeLog, action.hash, action.version, action.serviceName, action.description, action.inputType, action.outputType, action.inputVersion, action.outputVersion);
+            return new NewServiceAction(action.changeLog, action.hash, action.version, action.serviceName, action.description);
         case 'UpdateDescriptionServiceAction':
             return new UpdateDescriptionServiceAction(action.changeLog, action.hash, action.version, action.serviceName, action.description);
         case 'AddVersionServiceAction':
-            return new AddVersionServiceAction(action.changeLog, action.hash, action.version, action.serviceName, action.inputType, action.outputType, action.inputVersion, action.outputVersion);
-        //case 'AddInputVersionServiceAction':
-        //  return new AddInputVersionServiceAction(
-        //    action.changeLog,
-        //    action.hash,
-        //    action.serviceName,
-        //    action.version
-        //  );
-        //case 'RemoveInputVersionServiceAction':
-        //  return new RemoveInputVersionServiceAction(
-        //    action.changeLog,
-        //    action.hash,
-        //    action.serviceName,
-        //    action.version
-        //  );
-        //case 'DeprecateInputVersionServiceAction':
-        //  return new DeprecateInputVersionServiceAction(
-        //    action.changeLog,
-        //    action.hash,
-        //    action.serviceName,
-        //    action.version
-        //  );
-        //case 'AddOutputVersionServiceAction':
-        //  return new AddOutputVersionServiceAction(
-        //    action.changeLog,
-        //    action.hash,
-        //    action.serviceName,
-        //    action.version
-        //  );
-        //case 'RemoveOutputVersionServiceAction':
-        //  return new RemoveOutputVersionServiceAction(
-        //    action.changeLog,
-        //    action.hash,
-        //    action.serviceName,
-        //    action.version
-        //  );
-        //case 'DeprecateOutputVersionServiceAction':
-        //  return new DeprecateOutputVersionServiceAction(
-        //    action.changeLog,
-        //    action.hash,
-        //    action.serviceName,
-        //    action.version
-        //  );
+            return new AddVersionServiceAction(action.changeLog, action.hash, action.version, action.serviceName, action.inputType, action.outputType, action.inputVersion, action.inputHash, action.outputVersion, action.outputHash);
         // Types
         case 'RenameFieldTypeAction':
             return new RenameFieldTypeAction(action.changeLog, action.hash, action.version, action.typeName, action._from, action.to);
@@ -460,7 +296,7 @@ function loadAction(action) {
         case 'UpdateDescriptionTypeAction':
             return new UpdateDescriptionTypeAction(action.changeLog, action.hash, action.version, action.typeName, action.name, action.description);
         case 'ReferenceFieldTypeAction':
-            return new ReferenceFieldTypeAction(action.changeLog, action.hash, action.version, action.typeName, action.name, action.description, action.optional, action.referenceType, action.referenceHash);
+            return new ReferenceFieldTypeAction(action.changeLog, action.hash, action.version, action.typeName, action.name, action.description, action.optional, action.referenceType, action.referenceHash, action.referenceVersion);
         case 'NewTypeAction':
             return new NewTypeAction(action.changeLog, action.hash, action.version, action.name, action.description);
         case 'GroupAction':

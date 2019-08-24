@@ -529,7 +529,7 @@ class Test2_V1 {
   ) {
     this.version = 1;
     this.hash =
-      \\"e396d1be414c1504f56969feff04b4bcdf1c52ca1cb653c75f959a3a24d37c49\\";
+      \\"d91d0ff7ca6ca8fafe09cc36bf88bf85d5fd3767f68717869c948825843d4aa1\\";
     this.test_field2 = test_field2;
   }
 
@@ -550,7 +550,7 @@ class Test2_V1 {
 
 export {
   Test2_V1,
-  Test2_V1 as Test2_He396d1be414c1504f56969feff04b4bcdf1c52ca1cb653c75f959a3a24d37c49
+  Test2_V1 as Test2_Hd91d0ff7ca6ca8fafe09cc36bf88bf85d5fd3767f68717869c948825843d4aa1
 };
 
 export class Test2 {
@@ -560,7 +560,7 @@ export class Test2 {
     }
     switch (message.version) {
       case \\"Test2_V1\\":
-      case \\"Test2_He396d1be414c1504f56969feff04b4bcdf1c52ca1cb653c75f959a3a24d37c49\\":
+      case \\"Test2_Hd91d0ff7ca6ca8fafe09cc36bf88bf85d5fd3767f68717869c948825843d4aa1\\":
         return new Test2_V1(message.test_field2);
 
       default:
