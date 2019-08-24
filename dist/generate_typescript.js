@@ -116,7 +116,7 @@ function generateFieldDeserialize(fields) {
     return mapFields(fields, (field) => `message.${field.name},`);
 }
 function generateVersion(version, _type) {
-    const className = `${_type.name}_V${version.version}`;
+    const className = version.formatVersion();
     return `/**
 ${generateFieldDescription(version.fields)}
 *
@@ -156,7 +156,7 @@ class ${className} {
 
 export {
   ${className},
-  ${className} as ${_type.name}_H${version.hash},
+  ${className} as ${version.formatHash()},
 }
 `;
 }
@@ -178,7 +178,7 @@ function generateSerialization(_type) {
     }
     const allTypes = [];
     for (let version of _type.versions) {
-        allTypes.push(`${_type.name}_V${version.version}`);
+        allTypes.push(version.formatVersion());
     }
     return `
 export class ${_type.name} {

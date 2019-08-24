@@ -1,5 +1,4 @@
 # TODO
-- standardize formatting and use of hashes and versions.
 - test groups properly.
 - test latest properly.
 - cli tools
