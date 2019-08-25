@@ -13,10 +13,28 @@
     "hash": null,
     "state": "active",
     "name": "test_field",
-    "typeName": "Test",
     "type": "string",
     "description": "A field that helps testing",
     "optional": true,
+    "_default": null
+  },
+  {
+    "_action_type": "NewTypeAction",
+    "name": "AnotherTest",
+    "changeLog": "Creating a another new type",
+    "hash": null,
+    "description": "AnotherTest"
+  },
+  {
+    "_action_type": "AddFieldTypeAction",
+    "typeName": "AnotherTest",
+    "changeLog": "Adding a field",
+    "hash": null,
+    "state": "active",
+    "name": "another_field",
+    "type": "number",
+    "description": "Another field that helps testing",
+    "optional": false,
     "_default": null
   },
   {
@@ -29,8 +47,18 @@
         "typeName": "Test",
         "changeLog": "Adding another field",
         "hash": null,
-        "typeName": "Test",
         "name": "test_field2",
+        "type": "string",
+        "description": "A field that helps testing, again",
+        "optional": false,
+        "_default": "blah"
+      },
+      {
+        "_action_type": "AddFieldTypeAction",
+        "typeName": "AnotherTest",
+        "changeLog": "Adding another field",
+        "hash": null,
+        "name": "another_test_field2",
         "type": "string",
         "description": "A field that helps testing, again",
         "optional": false,
@@ -41,8 +69,17 @@
         "typeName": "Test",
         "changeLog": "Adding yet another field",
         "hash": null,
-        "typeName": "Test",
         "name": "test_field3",
+        "type": "number",
+        "description": "Yet another field for testing",
+        "optional": false
+      },
+      {
+        "_action_type": "AddFieldTypeAction",
+        "typeName": "AnotherTest",
+        "changeLog": "Adding yet another field",
+        "hash": null,
+        "name": "another_test_field3",
         "type": "number",
         "description": "Yet another field for testing",
         "optional": false

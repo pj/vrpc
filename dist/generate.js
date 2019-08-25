@@ -297,57 +297,7 @@ function updateServices(logAction, services, isLatest) {
     else if (logAction instanceof action.AddVersionServiceAction) {
         const outputVersion = `${logAction.outputType}_${logAction.outputVersion}`;
         newService.addVersion(logAction);
-        //const currentType = newService.versions.get(outputVersion);
-        //if (currentType) {
-        //  const currentVersions = currentType[1];
-        //  currentVersions.push(new VersionType(logAction.inputType, logAction.inputVersion));
-        //} else {
-        //  newService.versions.set(
-        //    outputVersion,
-        //    [
-        //      new VersionType(logAction.outputType, logAction.outputVersion),
-        //      [new VersionType(logAction.inputType, logAction.inputVersion)],
-        //    ],
-        //  );
-        //}
     }
-    //} else if (logAction instanceof action.AddInputVersionServiceAction) {
-    //    newService.inputVersions.push(
-    //      new ServiceVersion(logAction.version, 'active')
-    //    );
-    //} else if (logAction instanceof action.RemoveInputVersionServiceAction) {
-    //  newService.inputVersions = newService.inputVersions.map(serviceVersion => {
-    //    if (serviceVersion.version === (logAction as any).version) {
-    //      return new ServiceVersion((logAction as any).version, 'removed');
-    //    }
-    //    return serviceVersion;
-    //  });
-    //} else if (logAction instanceof action.DeprecateInputVersionServiceAction) {
-    //  newService.inputVersions = newService.inputVersions.map(serviceVersion => {
-    //    if (serviceVersion.version === (logAction as any).version) {
-    //      return new ServiceVersion((logAction as any).version, 'deprecated');
-    //    }
-    //    return serviceVersion;
-    //  });
-    //} else if (logAction instanceof action.AddOutputVersionServiceAction) {
-    //  newService.outputVersions.push(
-    //    new ServiceVersion(logAction.version, 'active')
-    //  );
-    //} else if (logAction instanceof action.RemoveOutputVersionServiceAction) {
-    //  newService.outputVersions = newService.outputVersions.map(serviceVersion => {
-    //    if (serviceVersion.version === (logAction as any).version) {
-    //      return new ServiceVersion((logAction as any).version, 'removed');
-    //    }
-    //    return serviceVersion;
-    //  });
-    //} else if (logAction instanceof action.DeprecateOutputVersionServiceAction) {
-    //  newService.outputVersions = newService.outputVersions.map(serviceVersion => {
-    //    if (serviceVersion.version === (logAction as any).version) {
-    //      return new ServiceVersion((logAction as any).version, 'deprecated');
-    //    }
-    //    return serviceVersion;
-    //  });
-    //}
 }
 function updateTypesAndServices(logAction, types, services, groupingVersions, isLatest) {
     if (logAction instanceof action.NewTypeAction) {
@@ -394,24 +344,37 @@ function generateDefinitions(log) {
     const latest = [];
     let notHashed = false;
     for (let n = 0; n < log.length; n++) {
-        const action = log[n];
+        const logAction = log[n];
         if (notHashed) {
-            if (action.hash !== null) {
-                throw new Error(`Hashed action after unhashed action at ${n} ${action}`);
+            if (logAction.hash !== null) {
+                throw new Error(`Hashed action after unhashed action at ${n} ${logAction}`);
             }
-            latest.push(action);
+            latest.push(logAction);
         }
-        else if (action.hash === null) {
+        else if (logAction.hash === null) {
             notHashed = true;
-            latest.push(action);
+            latest.push(logAction);
         }
         else {
-            const expectedHash = typeidea.hashAction(action, previousHash);
-            if (expectedHash !== action.hash) {
-                throw new Error(`Invalid hash at item ${n} ${action}, did you change something?`);
+            if (logAction instanceof action.GroupAction) {
+                let expectedHash = previousHash;
+                for (let subHashable of logAction.actions) {
+                    expectedHash = typeidea.hashAction(subHashable, expectedHash);
+                }
+                if (expectedHash !== logAction.hash) {
+                    throw new Error(`Invalid hash at item ${n} expected ${expectedHash} got ${logAction.hash} object: ${logAction}`);
+                }
+                hashed.push(logAction);
+                previousHash = logAction.hash;
             }
-            hashed.push(action);
-            previousHash = expectedHash;
+            else {
+                const expectedHash = typeidea.hashAction(logAction, previousHash);
+                if (expectedHash !== logAction.hash) {
+                    throw new Error(`Invalid hash at item ${n} ${logAction}, did you change something?`);
+                }
+                hashed.push(logAction);
+                previousHash = expectedHash;
+            }
         }
     }
     const types = new Map();

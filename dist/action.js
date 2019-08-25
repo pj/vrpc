@@ -181,10 +181,11 @@ class ReferenceFieldTypeAction extends Action {
 }
 exports.ReferenceFieldTypeAction = ReferenceFieldTypeAction;
 class GroupAction extends Action {
-    constructor(changeLog, hash, version, typeOrServiceName, actions) {
-        super(changeLog, hash, version);
+    constructor(changeLog, hash, typeOrServiceName, actions, versions) {
+        super(changeLog, hash, null);
         this.typeOrServiceName = typeOrServiceName;
         this.actions = actions;
+        this.versions = versions;
     }
     fieldsToHash() {
         const subHashes = [this.typeOrServiceName];
@@ -196,32 +197,22 @@ class GroupAction extends Action {
     ;
     toString() {
         const formattedActions = this.actions.map(action => action.toString());
-        return `GroupAction(${this.changeLog}, ${this.hash}, ${this.version}, ${this.typeOrServiceName}, ${formattedActions})`;
+        return `GroupAction(${this.changeLog}, ${this.hash}, ${this.typeOrServiceName}, ${formattedActions}, ${this.versions})`;
     }
 }
 exports.GroupAction = GroupAction;
 // Service Definitions
 class NewServiceAction extends Action {
-    //inputType: string;
-    //outputType: string;
-    //inputVersion: string;
-    //outputVersion: string;
     constructor(changeLog, hash, version, serviceName, description) {
         super(changeLog, hash, version);
         this.serviceName = serviceName;
         this.description = description;
-        //this.inputType = inputType;
-        //this.outputType = outputType;
-        //this.inputVersion = inputVersion;
-        //this.outputVersion = outputVersion;
     }
     fieldsToHash() {
-        //return `${super.fieldsToHash()}_${this.serviceName}_${this.description}_${this.inputType}_${this.outputType}_${this.inputVersion}_${this.outputVersion}`;
         return `${super.fieldsToHash()}_${this.serviceName}_${this.description}`;
     }
     ;
     toString() {
-        //return `NewServiceAction(${this.changeLog}, ${this.hash}, ${this.version}, ${this.serviceName}, ${this.description})`;, ${this.inputType}, ${this.outputType}, ${this.inputVersion}, ${this.outputVersion})`;
         return `NewServiceAction(${this.changeLog}, ${this.hash}, ${this.version}, ${this.serviceName}, ${this.description})`;
     }
 }
@@ -304,7 +295,7 @@ function loadAction(action) {
             for (const subAction of action.actions) {
                 groupedActions.push(loadAction(subAction));
             }
-            return new GroupAction(action.changeLog, action.hash, action.version, action.name, groupedActions);
+            return new GroupAction(action.changeLog, action.hash, action.name, groupedActions, action.versions);
         default:
             throw new Error(`Unknown Action: ${action}`);
     }

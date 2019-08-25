@@ -698,6 +698,273 @@ export class Test {
 "
 `;
 
+exports[`Type with GroupAction 1`] = `
+"/**
+ * **GENERATED CODE DO NOT EDIT!**
+ */
+import { Request, Response } from \\"express\\";
+/*
+ * Test
+ * Test
+ * Change Log:
+ * 0. Creating a new type
+ * 1. Adding a field
+ * 2. Adding another field
+ * 3. Adding yet another field
+ */
+/**
+ * @param test_field A field that helps testing
+ *
+ * @sealed
+ */
+class Test_V1 {
+  readonly version: number;
+  readonly hash: string;
+  readonly test_field: string | null;
+
+  constructor(test_field: string | null) {
+    this.version = 1;
+    this.hash =
+      \\"56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d\\";
+    this.test_field = test_field;
+  }
+
+  static deserialize(message: any): Test_V1 {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\\"version not present: \\" + message);
+    }
+    return new Test_V1(message.test_field);
+  }
+
+  static serialize(message: Test_V1): string {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\\"version not present: \\" + message);
+    }
+    return JSON.stringify(message);
+  }
+}
+
+export {
+  Test_V1,
+  Test_V1 as Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d
+};
+
+/**
+ * @param test_field A field that helps testing
+ * @param test_field2 A field that helps testing, again
+ * @param test_field3 Yet another field for testing
+ *
+ * @sealed
+ */
+class Test_Vundefined {
+  readonly version: number;
+  readonly hash: string;
+  readonly test_field: string | null;
+  readonly test_field2: string;
+  readonly test_field3: number;
+
+  constructor(
+    test_field: string | null,
+    test_field2: string,
+    test_field3: number
+  ) {
+    this.version = undefined;
+    this.hash =
+      \\"e3bf60af0d85b87388ad398312c4f921dfdb689c424f67781391f34418e3404e\\";
+    this.test_field = test_field;
+    this.test_field2 = test_field2 || \\"blah\\";
+    this.test_field3 = test_field3;
+  }
+
+  static deserialize(message: any): Test_Vundefined {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\\"version not present: \\" + message);
+    }
+    return new Test_Vundefined(
+      message.test_field,
+      message.test_field2,
+      message.test_field3
+    );
+  }
+
+  static serialize(message: Test_Vundefined): string {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\\"version not present: \\" + message);
+    }
+    return JSON.stringify(message);
+  }
+}
+
+export {
+  Test_Vundefined,
+  Test_Vundefined as Test_He3bf60af0d85b87388ad398312c4f921dfdb689c424f67781391f34418e3404e
+};
+
+export class Test {
+  static deserialize(message: any): Test_V1 | Test_Vundefined {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\\"version not present: \\" + message);
+    }
+    switch (message.version) {
+      case \\"Test_V1\\":
+      case \\"Test_H56fe5eaa9656364c83c84208b60dd08e81bc05eb37816cc21eb93618af57150d\\":
+        return new Test_V1(message.test_field);
+
+      case \\"Test_Vundefined\\":
+      case \\"Test_He3bf60af0d85b87388ad398312c4f921dfdb689c424f67781391f34418e3404e\\":
+        return new Test_Vundefined(
+          message.test_field,
+          message.test_field2,
+          message.test_field3
+        );
+
+      default:
+        throw new Error(
+          \\"Unknown version error or version not present: \\" + message
+        );
+    }
+  }
+
+  static serialize(message: Test_V1 | Test_Vundefined): string {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\\"version not present: \\" + message);
+    }
+    return JSON.stringify(message);
+  }
+}
+
+/*
+ * AnotherTest
+ * AnotherTest
+ * Change Log:
+ * 0. Creating a another new type
+ * 1. Adding a field
+ * 2. Adding another field
+ * 3. Adding yet another field
+ */
+/**
+ * @param another_field Another field that helps testing
+ *
+ * @sealed
+ */
+class AnotherTest_V1 {
+  readonly version: number;
+  readonly hash: string;
+  readonly another_field: number;
+
+  constructor(another_field: number) {
+    this.version = 1;
+    this.hash =
+      \\"3060f8e1cfb84e4e955f33ec9c69b214dac76a61ad03e0dc3b8de8faab336469\\";
+    this.another_field = another_field;
+  }
+
+  static deserialize(message: any): AnotherTest_V1 {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\\"version not present: \\" + message);
+    }
+    return new AnotherTest_V1(message.another_field);
+  }
+
+  static serialize(message: AnotherTest_V1): string {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\\"version not present: \\" + message);
+    }
+    return JSON.stringify(message);
+  }
+}
+
+export {
+  AnotherTest_V1,
+  AnotherTest_V1 as AnotherTest_H3060f8e1cfb84e4e955f33ec9c69b214dac76a61ad03e0dc3b8de8faab336469
+};
+
+/**
+ * @param another_field Another field that helps testing
+ * @param another_test_field2 A field that helps testing, again
+ * @param another_test_field3 Yet another field for testing
+ *
+ * @sealed
+ */
+class AnotherTest_Vundefined {
+  readonly version: number;
+  readonly hash: string;
+  readonly another_field: number;
+  readonly another_test_field2: string;
+  readonly another_test_field3: number;
+
+  constructor(
+    another_field: number,
+    another_test_field2: string,
+    another_test_field3: number
+  ) {
+    this.version = undefined;
+    this.hash =
+      \\"e3bf60af0d85b87388ad398312c4f921dfdb689c424f67781391f34418e3404e\\";
+    this.another_field = another_field;
+    this.another_test_field2 = another_test_field2 || \\"blah\\";
+    this.another_test_field3 = another_test_field3;
+  }
+
+  static deserialize(message: any): AnotherTest_Vundefined {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\\"version not present: \\" + message);
+    }
+    return new AnotherTest_Vundefined(
+      message.another_field,
+      message.another_test_field2,
+      message.another_test_field3
+    );
+  }
+
+  static serialize(message: AnotherTest_Vundefined): string {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\\"version not present: \\" + message);
+    }
+    return JSON.stringify(message);
+  }
+}
+
+export {
+  AnotherTest_Vundefined,
+  AnotherTest_Vundefined as AnotherTest_He3bf60af0d85b87388ad398312c4f921dfdb689c424f67781391f34418e3404e
+};
+
+export class AnotherTest {
+  static deserialize(message: any): AnotherTest_V1 | AnotherTest_Vundefined {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\\"version not present: \\" + message);
+    }
+    switch (message.version) {
+      case \\"AnotherTest_V1\\":
+      case \\"AnotherTest_H3060f8e1cfb84e4e955f33ec9c69b214dac76a61ad03e0dc3b8de8faab336469\\":
+        return new AnotherTest_V1(message.another_field);
+
+      case \\"AnotherTest_Vundefined\\":
+      case \\"AnotherTest_He3bf60af0d85b87388ad398312c4f921dfdb689c424f67781391f34418e3404e\\":
+        return new AnotherTest_Vundefined(
+          message.another_field,
+          message.another_test_field2,
+          message.another_test_field3
+        );
+
+      default:
+        throw new Error(
+          \\"Unknown version error or version not present: \\" + message
+        );
+    }
+  }
+
+  static serialize(message: AnotherTest_V1 | AnotherTest_Vundefined): string {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\\"version not present: \\" + message);
+    }
+    return JSON.stringify(message);
+  }
+}
+"
+`;
+
 exports[`Type with deprecated and dont generate 1`] = `
 "/**
  * **GENERATED CODE DO NOT EDIT!**
