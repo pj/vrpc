@@ -20,7 +20,8 @@ const argv = yargs
 }, (argv) => {
     const testData = require(path.resolve(process.cwd(), argv.source));
     const actions = action.loadActionLogFromList(testData);
-    typeidea.hashActions(actions, true);
+    typeidea.validateActions(actions, true);
+    typeidea.hashActions(actions);
     const [types, services] = generate.generateDefinitions(actions);
     const [generatedTypes, generatedServices] = generate.generateTypescriptBoth(types, services);
     fs.mkdirSync(argv.dest, { recursive: true });
@@ -41,7 +42,7 @@ const argv = yargs
 }, (argv) => {
     const testData = require(path.join(process.cwd(), argv.name));
     const actions = action.loadActionLogFromList(testData);
-    const hashes = typeidea.hashActions(actions, false);
+    const hashes = typeidea.hashActions(actions);
     const updatedLog = typeidea.addHashes(actions, hashes, null);
     if (argv.update) {
         fs.writeFileSync(argv.name, JSON.stringify(updatedLog, null, 2));

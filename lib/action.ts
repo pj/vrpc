@@ -21,6 +21,17 @@ export class Action {
     return `${this.changeLog}`;
   };
 
+  hasHashAndVersion(): boolean{
+    return (this.hasHash() && this.hasVersion());
+  }
+
+  hasVersion(): boolean{
+    return (this.version !== null && this.version !== undefined);
+  }
+
+  hasHash(): boolean {
+    return (this.hash !== null && this.hash !== undefined);
+  }
 }
 
 // Type Actions
@@ -349,6 +360,14 @@ export class GroupAction extends Action {
   toString(): string {
     const formattedActions = this.actions.map(action => action.toString());
     return `GroupAction(${this.changeLog}, ${this.hash}, ${this.typeOrServiceName}, ${formattedActions}, ${this.versions})`;
+  }
+
+  hasVersion(): boolean {
+    return (
+      this.versions !== null
+      && this.versions !== undefined
+      && Object.getOwnPropertyNames(this.versions).length !== 0
+    );
   }
 }
 

@@ -2,12 +2,18 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const crypto = require("crypto");
 const action = require("./action");
-function hashAction(action, previous) {
+function hashAction(logAction, previous) {
+    if (logAction instanceof action.GroupAction) {
+        for (let subHashable of logAction.actions) {
+            previous = hashAction(subHashable, previous);
+        }
+        return previous;
+    }
     const hash = crypto.createHash('sha256');
     if (previous !== null) {
         hash.update(previous);
     }
-    const fieldsToHash = action.fieldsToHash();
+    const fieldsToHash = logAction.fieldsToHash();
     hash.update(fieldsToHash);
     return hash.digest('hex');
 }
@@ -33,10 +39,98 @@ function getActionType(logAction) {
     throw new Error(`Unknown log action ${logAction}`);
 }
 exports.getActionType = getActionType;
+function validateActions(hashables, complete) {
+    const versionNumbers = new Map();
+    let previousHash = null;
+    let afterHashed = false;
+    let latestStart = 0;
+    for (let n = 0; n < hashables.length; n++) {
+        let hashable = hashables[n];
+        if (afterHashed) {
+            if (hashable.hasVersion() || hashable.hasHash()) {
+                throw new Error(`Hash or version present when there were previous items without hashes index: ${n} action: ${hashable}`);
+            }
+        }
+        else if (!hashable.hasHashAndVersion()) {
+            if (hashable.hasVersion() || hashable.hasHash()) {
+                throw new Error(`Hash or version present when neither should be: ${n} action: ${hashable}`);
+            }
+            if (complete) {
+                throw new Error(`Hash blank: ${n} action: ${hashable}`);
+            }
+            latestStart = n;
+            afterHashed = true;
+        }
+        else {
+            const expectedHash = hashAction(hashable, previousHash);
+            if (expectedHash !== hashable.hash) {
+                throw new Error(`Invalid hash at item ${n} expected ${expectedHash} got ${hashable.hash} object: ${hashable}`);
+            }
+            previousHash = hashable.hash;
+            if (hashable instanceof action.GroupAction) {
+                const foundTypes = new Set();
+                for (let subHashable of hashable.actions) {
+                    const actionName = getActionType(subHashable);
+                    foundTypes.add(actionName);
+                }
+                for (let foundType of foundTypes) {
+                    const currentVersion = versionNumbers.get(foundType) || 0;
+                    const hashableVersion = hashable.versions[foundType];
+                    if (hashableVersion !== currentVersion) {
+                        throw new Error(`Group Version doesn't match at item ${n} expected ${currentVersion} got ${hashableVersion} for type ${foundType} object: ${hashable}`);
+                    }
+                    versionNumbers.set(foundType, currentVersion + 1);
+                }
+            }
+            else {
+                const actionName = getActionType(hashable);
+                const currentVersion = versionNumbers.get(actionName) || 0;
+                if (hashable.version !== currentVersion) {
+                    throw new Error(`Versions don't match at item ${n} expected ${currentVersion} got ${hashable.version} object: ${hashable}`);
+                }
+                versionNumbers.set(actionName, currentVersion + 1);
+            }
+        }
+    }
+    return latestStart;
+}
+exports.validateActions = validateActions;
+function createHashAndVersion(logAction, index, previousHash, newHashes, versionNumbers) {
+    if (logAction instanceof action.GroupAction) {
+        const foundTypes = new Set();
+        for (let subHashable of logAction.actions) {
+            const actionName = getActionType(subHashable);
+            foundTypes.add(actionName);
+            previousHash = hashAction(subHashable, previousHash);
+        }
+        const foundVersions = {};
+        for (let foundType of foundTypes) {
+            const currentVersion = versionNumbers.get(foundType) || 0;
+            versionNumbers.set(foundType, currentVersion + 1);
+            foundVersions[foundType] = currentVersion;
+        }
+        if (previousHash === null) {
+            throw new Error(`GroupAction must have actions ${index} action: ${logAction}`);
+        }
+        newHashes.push([index, previousHash, foundVersions]);
+    }
+    else {
+        const actionName = getActionType(logAction);
+        const currentVersion = versionNumbers.get(actionName) || 0;
+        previousHash = hashAction(logAction, previousHash);
+        if (previousHash === null) {
+            throw new Error(`Make typescript happy`);
+        }
+        newHashes.push([index, previousHash, currentVersion]);
+        versionNumbers.set(actionName, currentVersion + 1);
+    }
+    return previousHash;
+}
 /**
 * Take a list of types and verify the types and generate any empty types.
 */
-function hashActions(hashables, requireHashes) {
+function hashActions(hashables) {
+    validateActions(hashables, false);
     const newHashes = [];
     const versionNumbers = new Map();
     let previousHash = null;
@@ -44,97 +138,19 @@ function hashActions(hashables, requireHashes) {
     for (let n = 0; n < hashables.length; n++) {
         let hashable = hashables[n];
         if (createHashes) {
-            if (hashable.hash !== null && hashable.hash !== undefined) {
-                throw new Error(`Hash entered when there were previous items without hashes index: ${n} action: ${hashable}`);
-            }
-            if (hashable instanceof action.GroupAction) {
-                if (hashable.versions !== null
-                    && hashable.versions !== undefined
-                    && Object.getOwnPropertyNames(hashable.versions).length !== 0) {
-                    throw new Error(`GroupAction has versions, but there were previous items without hashes ${n} action: ${hashable}`);
-                }
-                const foundTypes = new Set();
-                for (let subHashable of hashable.actions) {
-                    const actionName = getActionType(subHashable);
-                    foundTypes.add(actionName);
-                    previousHash = hashAction(subHashable, previousHash);
-                }
-                const foundVersions = {};
-                for (let foundType of foundTypes) {
-                    const currentVersion = versionNumbers.get(foundType) || 0;
-                    versionNumbers.set(foundType, currentVersion + 1);
-                    foundVersions[foundType] = currentVersion;
-                }
-                if (previousHash === null) {
-                    throw new Error(`GroupAction must have actions ${n} action: ${hashable}`);
-                }
-                newHashes.push([n, previousHash, foundVersions]);
-            }
-            else {
-                if (hashable.version !== null && hashable.version !== undefined) {
-                    throw new Error(`Version entered when there were previous items without hashes index: ${n} action: ${hashable}`);
-                }
-                const actionName = getActionType(hashable);
-                const currentVersion = versionNumbers.get(actionName) || 0;
-                previousHash = hashAction(hashable, previousHash);
-                newHashes.push([n, previousHash, currentVersion]);
-                versionNumbers.set(actionName, currentVersion + 1);
-            }
+            previousHash = createHashAndVersion(hashable, n, previousHash, newHashes, versionNumbers);
         }
         else {
             if (hashable.hash === null || hashable.hash === undefined) {
-                if (requireHashes) {
-                    throw new Error(`Unhashed action found at item ${n} action: ${hashable}`);
-                }
-                if (hashable instanceof action.GroupAction) {
-                    if (hashable.versions !== null
-                        && hashable.versions !== undefined
-                        && Object.getOwnPropertyNames(hashable.versions).length !== 0) {
-                        throw new Error(`GroupAction hash not set, but has versions at item ${n} action: ${hashable}`);
-                    }
-                    const foundTypes = new Set();
-                    for (let subHashable of hashable.actions) {
-                        const actionName = getActionType(subHashable);
-                        foundTypes.add(actionName);
-                        previousHash = hashAction(subHashable, previousHash);
-                    }
-                    const foundVersions = {};
-                    for (let foundType of foundTypes) {
-                        const currentVersion = versionNumbers.get(foundType) || 0;
-                        versionNumbers.set(foundType, currentVersion + 1);
-                        foundVersions[foundType] = currentVersion;
-                    }
-                    if (previousHash === null) {
-                        throw new Error(`GroupAction must have actions ${n} action: ${hashable}`);
-                    }
-                    newHashes.push([n, previousHash, foundVersions]);
-                }
-                else {
-                    if (hashable.version !== null && hashable.version !== undefined) {
-                        throw new Error(`Action hash not set, but has version at item ${n} action: ${hashable}`);
-                    }
-                    const actionName = getActionType(hashable);
-                    const currentVersion = versionNumbers.get(actionName) || 0;
-                    previousHash = hashAction(hashable, previousHash);
-                    newHashes.push([n, previousHash, currentVersion]);
-                    versionNumbers.set(actionName, currentVersion + 1);
-                    createHashes = true;
-                }
+                previousHash = createHashAndVersion(hashable, n, previousHash, newHashes, versionNumbers);
+                createHashes = true;
             }
             else {
-                if (hashable.version === null || hashable.version === undefined) {
-                    throw new Error(`Action has hash but not version at item ${n} action: ${hashable}`);
-                }
                 if (hashable instanceof action.GroupAction) {
                     const foundTypes = new Set();
-                    let expectedHash = previousHash;
                     for (let subHashable of hashable.actions) {
                         const actionName = getActionType(subHashable);
                         foundTypes.add(actionName);
-                        expectedHash = hashAction(subHashable, expectedHash);
-                    }
-                    if (expectedHash !== hashable.hash) {
-                        throw new Error(`Invalid hash at item ${n} expected ${expectedHash} got ${hashable.hash} object: ${hashable}`);
                     }
                     for (let foundType of foundTypes) {
                         const currentVersion = versionNumbers.get(foundType) || 0;
@@ -143,15 +159,8 @@ function hashActions(hashables, requireHashes) {
                     previousHash = hashable.hash;
                 }
                 else {
-                    const expectedHash = hashAction(hashable, previousHash);
-                    if (expectedHash !== hashable.hash) {
-                        throw new Error(`Invalid hash at item ${n} expected ${expectedHash} got ${hashable.hash} object: ${hashable}`);
-                    }
                     const actionName = getActionType(hashable);
                     const currentVersion = versionNumbers.get(actionName) || 0;
-                    if (hashable.version !== currentVersion) {
-                        throw new Error(`Versions don't match at item ${n} expected ${currentVersion} got ${hashable.version} object: ${hashable}`);
-                    }
                     versionNumbers.set(actionName, currentVersion + 1);
                     previousHash = hashable.hash;
                 }
