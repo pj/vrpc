@@ -13,6 +13,41 @@ import { Request, Response } from \\"express\\";
  * 1. Need this for testing add field input
  */
 /**
+
+*
+* @sealed
+*/
+class TestInputType_V0 {
+  readonly version: number;
+  readonly hash: string;
+
+  constructor() {
+    this.version = 0;
+    this.hash =
+      \\"a3ad8a8a6d0df732ef4eece7241c0f253b59ffe694f654f8def25b08d868d74a\\";
+  }
+
+  static deserialize(message: any): TestInputType_V0 {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\\"version not present: \\" + message);
+    }
+    return new TestInputType_V0();
+  }
+
+  static serialize(message: TestInputType_V0): string {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\\"version not present: \\" + message);
+    }
+    return JSON.stringify(message);
+  }
+}
+
+export {
+  TestInputType_V0,
+  TestInputType_V0 as TestInputType_Ha3ad8a8a6d0df732ef4eece7241c0f253b59ffe694f654f8def25b08d868d74a
+};
+
+/**
  * @param a_field An awesome field on the input type
  *
  * @sealed
@@ -50,11 +85,15 @@ export {
 };
 
 export class TestInputType {
-  static deserialize(message: any): TestInputType_V1 {
+  static deserialize(message: any): TestInputType_V0 | TestInputType_V1 {
     if (message.version === null || message.version === undefined) {
       throw new Error(\\"version not present: \\" + message);
     }
     switch (message.version) {
+      case \\"TestInputType_V0\\":
+      case \\"TestInputType_Ha3ad8a8a6d0df732ef4eece7241c0f253b59ffe694f654f8def25b08d868d74a\\":
+        return new TestInputType_V0();
+
       case \\"TestInputType_V1\\":
       case \\"TestInputType_H716a611faeb9d2ddaa02e37a5d187183ff4d388f47c740bb2202109b3e3c8fc0\\":
         return new TestInputType_V1(message.a_field);
@@ -66,7 +105,7 @@ export class TestInputType {
     }
   }
 
-  static serialize(message: TestInputType_V1): string {
+  static serialize(message: TestInputType_V0 | TestInputType_V1): string {
     if (message.version === null || message.version === undefined) {
       throw new Error(\\"version not present: \\" + message);
     }
@@ -81,6 +120,41 @@ export class TestInputType {
  * 0. Needs this for testing new output type
  * 1. Need this field for testing new output type
  */
+/**
+
+*
+* @sealed
+*/
+class TestOutputType_V0 {
+  readonly version: number;
+  readonly hash: string;
+
+  constructor() {
+    this.version = 0;
+    this.hash =
+      \\"2eeed3cda6513d2557733ee19f52c10ab5114385b733468a9aff6c53ea6bf727\\";
+  }
+
+  static deserialize(message: any): TestOutputType_V0 {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\\"version not present: \\" + message);
+    }
+    return new TestOutputType_V0();
+  }
+
+  static serialize(message: TestOutputType_V0): string {
+    if (message.version === null || message.version === undefined) {
+      throw new Error(\\"version not present: \\" + message);
+    }
+    return JSON.stringify(message);
+  }
+}
+
+export {
+  TestOutputType_V0,
+  TestOutputType_V0 as TestOutputType_H2eeed3cda6513d2557733ee19f52c10ab5114385b733468a9aff6c53ea6bf727
+};
+
 /**
  * @param a_field An awesome field on the output type
  *
@@ -119,11 +193,15 @@ export {
 };
 
 export class TestOutputType {
-  static deserialize(message: any): TestOutputType_V1 {
+  static deserialize(message: any): TestOutputType_V0 | TestOutputType_V1 {
     if (message.version === null || message.version === undefined) {
       throw new Error(\\"version not present: \\" + message);
     }
     switch (message.version) {
+      case \\"TestOutputType_V0\\":
+      case \\"TestOutputType_H2eeed3cda6513d2557733ee19f52c10ab5114385b733468a9aff6c53ea6bf727\\":
+        return new TestOutputType_V0();
+
       case \\"TestOutputType_V1\\":
       case \\"TestOutputType_Hc503f8a6a87dcd268e82e6cffa2e58db72866839a676faa2df84f470f889ae80\\":
         return new TestOutputType_V1(message.a_field);
@@ -135,7 +213,7 @@ export class TestOutputType {
     }
   }
 
-  static serialize(message: TestOutputType_V1): string {
+  static serialize(message: TestOutputType_V0 | TestOutputType_V1): string {
     if (message.version === null || message.version === undefined) {
       throw new Error(\\"version not present: \\" + message);
     }

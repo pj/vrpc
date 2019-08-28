@@ -1,7 +1,6 @@
 # TODO
-- refactor hashing and validation code.
-- test latest properly.
 - generate client for testing.
+- update vrpc\_test
 - cli tools
 -- manipulate latest to create group
 - Define type options as part of file, e.g. hashed attributes.

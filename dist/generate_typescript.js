@@ -117,6 +117,10 @@ function generateFieldDeserialize(fields) {
 }
 function generateVersion(version, _type) {
     const className = version.formatVersion();
+    let hashAlias = `, ${className} as ${version.formatHash()}`;
+    if (version.version === null || version.version === undefined) {
+        hashAlias = '';
+    }
     return `/**
 ${generateFieldDescription(version.fields)}
 *
@@ -155,15 +159,19 @@ class ${className} {
 }
 
 export {
-  ${className},
-  ${className} as ${version.formatHash()},
+  ${className}
+  ${hashAlias}
 }
 `;
 }
 function generateDeserializeVersion(_type, version) {
+    let hashCase = `case "${version.formatHash()}":`;
+    if (_type.latest !== null && _type.latest !== undefined) {
+        hashCase = "";
+    }
     return `
     case "${version.formatVersion()}":
-    case "${version.formatHash()}":
+    ${hashCase}
       return (
         new ${version.formatVersion()}(
         ${generateFieldDeserialize(version.fields)}
@@ -179,6 +187,10 @@ function generateSerialization(_type) {
     const allTypes = [];
     for (let version of _type.versions) {
         allTypes.push(version.formatVersion());
+    }
+    if (_type.latest !== null && _type.latest !== undefined) {
+        allVersions.push(generateDeserializeVersion(_type, _type.latest));
+        allTypes.push(_type.latest.formatVersion());
     }
     return `
 export class ${_type.name} {
@@ -207,6 +219,9 @@ function generateType(_type) {
     const allVersions = [];
     for (let version of _type.versions) {
         allVersions.push(generateVersion(version, _type));
+    }
+    if (_type.latest !== null && _type.latest !== undefined) {
+        allVersions.push(generateVersion(_type.latest, _type));
     }
     return `${typeHeader(_type)}
 ${allVersions.join('\n')}
