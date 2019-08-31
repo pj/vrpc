@@ -28,14 +28,16 @@ const argv = yargs
       typeidea.hashActions(actions);
 
       const [types, services] = generate.generateDefinitions(actions);
-      const [generatedTypes, generatedServices] = generate.generateTypescriptBoth(
-        types,
-        services
-      );
+      const [
+        generatedTypes,
+        generatedServices,
+        generatedClient,
+      ] = generate.generateTypescriptBoth(types, services);
 
       fs.mkdirSync(argv.dest, {recursive: true});
       fs.writeFileSync(path.join(argv.dest, 'types.ts'), generatedTypes);
       fs.writeFileSync(path.join(argv.dest, 'services.ts'), generatedServices);
+      fs.writeFileSync(path.join(argv.dest, 'client.ts'), generatedClient);
     }
   )
   .command(

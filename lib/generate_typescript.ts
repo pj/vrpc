@@ -305,5 +305,76 @@ ${allTypes.join('\n')}
 `;
 }
 
-
 // Generate Client
+function generateClientVersion(
+  service: Service,
+  version: [VersionType, VersionType[]]
+): string {
+  const [outputVersion, inputVersions] = version;
+
+  return `
+async ${service.name}(
+  input: ${inputVersions.join(" | ")}
+): ${outputVersion} {
+  return await request.post(
+  {
+    url: this.host + "/${service.name}",
+    json: true,
+    body: input,
+  }
+  );
+}`;
+}
+
+function generateServiceClient(service: Service): string {
+  const allVersions = [];
+
+  for (let [_, versions] of service.versions) {
+    allVersions.push(generateServiceClient(service));
+  }
+
+  return `
+  ${allVersions.join('\n')}
+}`;
+}
+
+function generateClientImports(types: Type[]): string {
+
+  const allTypes = [];
+  for (let _type of types) {
+    for (let version of _type.versions) {
+      allTypes.push(version.formatVersion());
+    }
+
+    if (_type.latest !== null && _type.latest !== undefined) {
+      allTypes.push(_type.latest.formatVersion());
+    }
+  }
+
+  return `import {
+  ${allTypes.join(',\n')}
+} from './types'`;
+}
+
+export function generateClient(types: Type[], services: Service[]): string {
+  const allClients = [];
+
+  for (let service of services) {
+    allClients.push(generateServiceClient(service));
+  }
+
+  return `${header}
+import * as request from 'request-promise-native';
+
+${generateClientImports(types)}
+
+export class Client {
+  host: string;
+  constructor(host: string) {
+    this.host = host;
+  }
+
+${allClients.join('\n')}
+}
+`;
+}

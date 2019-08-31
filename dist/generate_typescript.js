@@ -240,3 +240,62 @@ ${allTypes.join('\n')}
 }
 exports.generateTypes = generateTypes;
 // Generate Client
+function generateClientVersion(service, version) {
+    const [outputVersion, inputVersions] = version;
+    return `
+async ${service.name}(
+  input: ${inputVersions.join(" | ")}
+): ${outputVersion} {
+  return await request.post(
+  {
+    url: this.host + "/${service.name}",
+    json: true,
+    body: input,
+  }
+  );
+}`;
+}
+function generateServiceClient(service) {
+    const allVersions = [];
+    for (let [_, versions] of service.versions) {
+        allVersions.push(generateServiceClient(service));
+    }
+    return `
+  ${allVersions.join('\n')}
+}`;
+}
+function generateClientImports(types) {
+    const allTypes = [];
+    for (let _type of types) {
+        for (let version of _type.versions) {
+            allTypes.push(version.formatVersion());
+        }
+        if (_type.latest !== null && _type.latest !== undefined) {
+            allTypes.push(_type.latest.formatVersion());
+        }
+    }
+    return `import {
+  ${allTypes.join(',\n')}
+} from './types'`;
+}
+function generateClient(types, services) {
+    const allClients = [];
+    for (let service of services) {
+        allClients.push(generateServiceClient(service));
+    }
+    return `${header}
+import * as request from 'request-promise-native';
+
+${generateClientImports(types)}
+
+export class Client {
+  host: string;
+  constructor(host: string) {
+    this.host = host;
+  }
+
+${allClients.join('\n')}
+}
+`;
+}
+exports.generateClient = generateClient;

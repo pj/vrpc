@@ -523,12 +523,25 @@ export function generateTypescriptServices(
   );
 }
 
+export function generateTypescriptClient(
+  types: Type[],
+  services: Service[]
+): string {
+  return (
+    prettier.format(
+      generate_typescript.generateClient(types, services),
+      {parser: 'typescript'},
+    )
+  );
+}
+
 export function generateTypescriptBoth(
   types: Type[],
   services: Service[],
-): [string, string] {
+): [string, string, string] {
   const generatedTypes = generateTypescript(types);
   const generatedServices = generateTypescriptServices(services);
+  const generatedClient = generateTypescriptClient(types, services);
 
-  return [generatedTypes, generatedServices];
+  return [generatedTypes, generatedServices, generatedClient];
 }
