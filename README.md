@@ -8,3 +8,4 @@
 - proto bufs support? json schema support?
 - more data types.
 - generate other languages.
+- Online test environment.

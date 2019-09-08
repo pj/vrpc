@@ -224,7 +224,7 @@ export function addHashes(
   }
   for (let i = 0; i < hashTo; i++) {
     const logAction = hashed[i];
-    if (logAction.hash === null) {
+    if (logAction.hash === null || logAction.hash === undefined) {
       for (let [idx, hash, version] of hashes) {
         if (idx === i) {
           const newAction = Object.assign(

@@ -303,7 +303,7 @@ function loadAction(action) {
         case 'ReferenceFieldTypeAction':
             return new ReferenceFieldTypeAction(action.changeLog, action.hash, action.version, action.typeName, action.name, action.description, action.optional, action.referenceType, action.referenceHash, action.referenceVersion);
         case 'NewTypeAction':
-            return new NewTypeAction(action.changeLog, action.hash, action.version, action.name, action.description);
+            return new NewTypeAction(action.changeLog, action.hash, action.version, action.typeName, action.description);
         case 'GroupAction':
             const groupedActions = [];
             for (const subAction of action.actions) {

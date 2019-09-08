@@ -316,12 +316,14 @@ function generateClientVersion(
 async ${service.name}(
   input: ${inputVersions.join(" | ")}
 ): ${outputVersion} {
-  return await request.post(
-  {
-    url: this.host + "/${service.name}",
-    json: true,
-    body: input,
-  }
+  return await ${outputVersion._type}.deserialize(
+    request.post(
+      {
+        url: this.host + "/${service.name}",
+        json: true,
+        body: input,
+      }
+    )
   );
 }`;
 }
@@ -330,12 +332,12 @@ function generateServiceClient(service: Service): string {
   const allVersions = [];
 
   for (let [_, versions] of service.versions) {
-    allVersions.push(generateServiceClient(service));
+    allVersions.push(generateClientVersion(service, versions));
   }
 
   return `
   ${allVersions.join('\n')}
-}`;
+`;
 }
 
 function generateClientImports(types: Type[]): string {
@@ -344,6 +346,7 @@ function generateClientImports(types: Type[]): string {
   for (let _type of types) {
     for (let version of _type.versions) {
       allTypes.push(version.formatVersion());
+      allTypes.push(version._type);
     }
 
     if (_type.latest !== null && _type.latest !== undefined) {
@@ -353,7 +356,7 @@ function generateClientImports(types: Type[]): string {
 
   return `import {
   ${allTypes.join(',\n')}
-} from './types'`;
+} from './types';`;
 }
 
 export function generateClient(types: Type[], services: Service[]): string {

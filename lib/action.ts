@@ -596,7 +596,7 @@ function loadAction(action: any): Action {
         action.changeLog,
         action.hash,
         action.version,
-        action.name,
+        action.typeName,
         action.description
       );
     case 'GroupAction':

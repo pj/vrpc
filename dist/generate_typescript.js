@@ -246,29 +246,32 @@ function generateClientVersion(service, version) {
 async ${service.name}(
   input: ${inputVersions.join(" | ")}
 ): ${outputVersion} {
-  return await request.post(
-  {
-    url: this.host + "/${service.name}",
-    json: true,
-    body: input,
-  }
+  return await ${outputVersion._type}.deserialize(
+    request.post(
+      {
+        url: this.host + "/${service.name}",
+        json: true,
+        body: input,
+      }
+    )
   );
 }`;
 }
 function generateServiceClient(service) {
     const allVersions = [];
     for (let [_, versions] of service.versions) {
-        allVersions.push(generateServiceClient(service));
+        allVersions.push(generateClientVersion(service, versions));
     }
     return `
   ${allVersions.join('\n')}
-}`;
+`;
 }
 function generateClientImports(types) {
     const allTypes = [];
     for (let _type of types) {
         for (let version of _type.versions) {
             allTypes.push(version.formatVersion());
+            allTypes.push(version._type);
         }
         if (_type.latest !== null && _type.latest !== undefined) {
             allTypes.push(_type.latest.formatVersion());
@@ -276,7 +279,7 @@ function generateClientImports(types) {
     }
     return `import {
   ${allTypes.join(',\n')}
-} from './types'`;
+} from './types';`;
 }
 function generateClient(types, services) {
     const allClients = [];
