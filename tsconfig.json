@@ -5,7 +5,11 @@
     "strictNullChecks": true,
     "target": "ES2017",
     "rootDir": "lib",
-    "outDir": "dist"
+    "outDir": "dist",
+    "jsx": "react",
+    "paths": {
+      "~*": ["./*"]
+    }
   },
   "include": [
     "lib"
