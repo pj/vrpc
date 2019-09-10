@@ -1,0 +1,8 @@
+import {Action} from './action';
+import {Type, Service} from './generate';
+
+export interface Backend {
+  getLog(): Promise<Action[]>;
+  getCurrentServices(): Promise<Service[]>;
+  getCurrentTypes(): Promise<Type[]>;
+};

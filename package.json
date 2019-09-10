@@ -23,6 +23,7 @@
     "enzyme": "^3.9.0",
     "express": "^4.17.1",
     "graphql": "^14.5.4",
+    "graphql-import": "^0.7.1",
     "parcel": "^1.12.3",
     "prettier": "^1.15.3",
     "react": "^16.9.0",
@@ -33,22 +34,25 @@
     "yargs": "^13.2.4"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "^1.7.0",
     "@types/jest": "^23.3.10",
     "chokidar-cli": "^1.2.2",
     "jest": "^23.6.0",
     "supertest": "^4.0.2",
     "ts-jest": "^23.10.5",
     "ts-node": "^8.2.0",
-    "ts-node-dev": "^1.0.0-pre.42"
+    "ts-node-dev": "^1.0.0-pre.42",
+    "@graphql-codegen/typescript": "1.7.0",
+    "@graphql-codegen/typescript-operations": "1.7.0",
+    "@graphql-codegen/introspection": "1.7.0"
   },
   "scripts": {
     "test": "jest",
     "test:watch": "chokidar \"lib/**/*.ejs\" \"lib/**/*.ts\" \"tests/**/*.ts\" \"tests/**/*.json\" -c \"yarn run test\" --ignore runtest --ignore tests/snapshots",
     "build": "tsc --outDir dist --rootDir lib",
-    "build:watch": "chokidar \"lib/**/*.ejs\" \"lib/**/*.ts\" \"tests/**/*.ts\" -c \"tsc --outDir dist --rootDir lib\" --ignore runtest --ignore tests/snapshots",
-    "start:client:dev": "parcel -d build_temp client/index.html",
-    "start:server:dev": "ts-node-dev server/index.ts",
-    "build:server": "tsc --outDir dist_server --rootDir server",
-    "build:server:watch": "tsc --watch --outDir dist_server --rootDir server"
+    "build:watch": "chokidar \"lib/**/*.ejs\" \"lib/**/*.ts\" \"tests/**/*.ts\" \"server/**/*.ts\" -c \"tsc --outDir dist --rootDir lib\" --ignore runtest --ignore tests/snapshots",
+    "start:client:dev": "parcel -d build_temp lib/client/index.html",
+    "start:server:dev": "ts-node-dev lib/server/index.ts",
+    "server:generate_types": "graphql-codegen --config codegen.yml"
   }
 }

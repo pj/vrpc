@@ -1,16 +1,9 @@
 "use strict";
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const action = __importStar(require("./action"));
-const typeidea = __importStar(require("./typeidea"));
-const generate_typescript = __importStar(require("./generate_typescript"));
-const prettier = __importStar(require("prettier"));
+const action = require("./action");
+const typeidea = require("./typeidea");
+const generate_typescript = require("./generate_typescript");
+const prettier = require("prettier");
 class BaseField {
     constructor(name, changeLog, description, optional) {
         this.name = name;

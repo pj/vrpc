@@ -1,0 +1,221 @@
+type StringField {
+  value: String
+}
+
+type IntField {
+  value: Int
+}
+
+type FloatField {
+  value: Float
+}
+
+type BooleanField {
+  value: Boolean
+}
+
+union FieldData = StringField | IntField | FloatField | BooleanField
+
+interface Action {
+  changeLog: String,
+  hash: String,
+  version: Int
+}
+
+type NewServiceAction implements Action {
+  changeLog: String,
+  hash: String,
+  version: Int
+  serviceName: String,
+  description: String
+}
+
+type UpdateDescriptionServiceAction implements Action {
+  changeLog: String,
+  hash: String,
+  version: Int
+  serviceName: String,
+  description: String
+}
+
+type AddVersionServiceAction implements Action {
+  changeLog: String,
+  hash: String,
+  version: Int
+  serviceName: String,
+  inputType: String,
+  outputType: String,
+  inputVersion: Int,
+  inputHash: String,
+  outputVersion: Int,
+  outputHash: String
+}
+
+type RenameFieldTypeAction implements Action {
+  changeLog: String,
+  hash: String,
+  version: Int
+  typeName: String,
+  _from: String,
+  to: String
+}
+
+type RequiredFieldTypeAction implements Action {
+  changeLog: String,
+  hash: String,
+  version: Int
+  typeName: String,
+  name: String
+}
+
+type OptionalFieldTypeAction implements Action {
+  changeLog: String,
+  hash: String,
+  version: Int
+  typeName: String,
+  name: String
+}
+
+type DeleteFieldTypeAction implements Action {
+  changeLog: String,
+  hash: String,
+  version: Int
+  typeName: String,
+  name: String
+}
+
+type SetDefaultFieldTypeAction implements Action {
+  changeLog: String,
+  hash: String,
+  version: Int
+  typeName: String,
+  name: String,
+  _default: FieldData
+}
+
+type RemoveDefaultFieldTypeAction implements Action {
+  changeLog: String,
+  hash: String,
+  version: Int
+  typeName: String,
+  name: String
+}
+
+type AddFieldTypeAction implements Action {
+  changeLog: String,
+  hash: String,
+  version: Int
+  typeName: String,
+  name: String,
+  type: String,
+  description: String,
+  optional: Boolean,
+  _default: FieldData
+}
+
+type UpdateDescriptionTypeAction implements Action {
+  changeLog: String,
+  hash: String,
+  version: Int
+  typeName: String,
+  name: String,
+  description: String
+}
+
+type ReferenceFieldTypeAction implements Action {
+  changeLog: String,
+  hash: String,
+  version: Int
+  typeName: String,
+  name: String,
+  description: String,
+  optional: Boolean,
+  referenceType: String,
+  referenceHash: String,
+  referenceVersion: Int
+}
+
+type NewTypeAction implements Action {
+  changeLog: String,
+  hash: String,
+  version: Int
+  typeName: String,
+  description: String
+}
+
+type GroupVersion {
+  typeName: String,
+  version: Int
+}
+
+type GroupAction implements Action {
+  changeLog: String,
+  hash: String,
+  version: Int
+  groupedActions: [Action],
+  versions: [GroupVersion]
+}
+
+type VersionType {
+  _type: String,
+  version: Int,
+  hash: String
+}
+
+type Service {
+  name: String,
+  changeLog: [String],
+  description: String,
+  versions: [VersionType]
+}
+
+interface BaseField {
+  name: String,
+  changeLog: String,
+  description: String,
+  optional: Boolean
+}
+
+type Field implements BaseField {
+  name: String,
+  changeLog: String,
+  description: String,
+  optional: Boolean
+  _default: FieldData
+}
+
+type ReferenceField implements BaseField {
+  name: String,
+  changeLog: String,
+  description: String,
+  optional: Boolean
+  referenceType: String,
+  referenceHash: String,
+  referenceVersion: Int
+}
+
+type FieldObject {
+  key: String,
+  field: BaseField
+}
+
+type Version {
+  _type: String,
+  version: Int,
+  hash: String,
+  fields: [FieldObject]
+}
+
+type Type {
+  name: String,
+  versions: [Version],
+  latest: Version,
+  changeLog: [String],
+  description: String
+}
+
+type Query {
+  log: [Action]
+  services: [Service]
+  types: [Type]
+}

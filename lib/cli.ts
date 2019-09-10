@@ -6,6 +6,8 @@ import * as yargs from 'yargs';
 import * as typeidea from './typeidea';
 import * as action from './action';
 import * as generate from './generate';
+import {startServer} from './server/index';
+import {FileBackend} from './file_backend';
 
 const args = yargs
   .command(
@@ -67,6 +69,33 @@ const args = yargs
       } else {
         console.log(JSON.stringify(updatedLog, null, 2));
       }
+    }
+  )
+  .command(
+    'serve <backend_type>',
+    'start graphql server for type interface',
+    (yargs: any): any => {
+      yargs.positional('backend_type', {
+        describe: 'backend_type to serve',
+        type: 'string'
+      })
+      .option('l',
+        {
+            alias: 'log-file',
+            type: 'string',
+            describe: 'filename for file backend'
+        }
+      );
+    },
+    (argv: any) => {
+      let backend = null;
+      console.log(argv);
+      if (argv.backend_type === 'file') {
+        backend = new FileBackend(argv.logFile);
+      } else {
+        throw new Error('Only file backends are valid at the moment.');
+      }
+      startServer(backend);
     }
   )
   .argv;

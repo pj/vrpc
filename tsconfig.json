@@ -3,10 +3,13 @@
     "module": "commonjs",
     "noImplicitAny": true,
     "strictNullChecks": true,
+    "lib": ["ES2017", "ESNext.AsyncIterable", "dom"],
     "target": "ES2017",
     "rootDir": "lib",
     "outDir": "dist",
     "jsx": "react",
+    "esModuleInterop": true,
+    "baseUrl": "./lib",
     "paths": {
       "~*": ["./*"]
     }
@@ -15,6 +18,7 @@
     "lib"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "lib/client"
   ]
 }

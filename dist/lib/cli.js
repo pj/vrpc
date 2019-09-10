@@ -1,20 +1,13 @@
 #!/usr/bin/env node
 "use strict";
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const fs = __importStar(require("fs"));
-const path = __importStar(require("path"));
-const yargs = __importStar(require("yargs"));
-const typeidea = __importStar(require("./typeidea"));
-const action = __importStar(require("./action"));
-const generate = __importStar(require("./generate"));
-const index_1 = require("./server/index");
+const fs = require("fs");
+const path = require("path");
+const yargs = require("yargs");
+const typeidea = require("./typeidea");
+const action = require("./action");
+const generate = require("./generate");
+const index_1 = require("../server/index");
 const file_backend_1 = require("./file_backend");
 const args = yargs
     .command('generate <source> <dest>', 'generate type and service definitions', (yargs) => {
@@ -61,21 +54,20 @@ const args = yargs
         console.log(JSON.stringify(updatedLog, null, 2));
     }
 })
-    .command('serve <backend_type>', 'start graphql server for type interface', (yargs) => {
+    .command('server <backend_type>', 'add hashes to a log file', (yargs) => {
     yargs.positional('backend_type', {
         describe: 'backend_type to serve',
         type: 'string'
     })
         .option('l', {
-        alias: 'log-file',
+        alias: 'log_file',
         type: 'string',
         describe: 'filename for file backend'
     });
 }, (argv) => {
     let backend = null;
-    console.log(argv);
     if (argv.backend_type === 'file') {
-        backend = new file_backend_1.FileBackend(argv.logFile);
+        backend = new file_backend_1.FileBackend(argv.log_file);
     }
     else {
         throw new Error('Only file backends are valid at the moment.');

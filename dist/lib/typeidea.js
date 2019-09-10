@@ -1,14 +1,7 @@
 "use strict";
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const crypto = __importStar(require("crypto"));
-const action = __importStar(require("./action"));
+const crypto = require("crypto");
+const action = require("./action");
 function hashAction(logAction, previous) {
     if (logAction instanceof action.GroupAction) {
         for (let subHashable of logAction.actions) {
