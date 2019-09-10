@@ -35,16 +35,16 @@
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^1.7.0",
+    "@graphql-codegen/introspection": "1.7.0",
+    "@graphql-codegen/typescript": "1.7.0",
+    "@graphql-codegen/typescript-operations": "^1.7.0",
     "@types/jest": "^23.3.10",
     "chokidar-cli": "^1.2.2",
     "jest": "^23.6.0",
     "supertest": "^4.0.2",
     "ts-jest": "^23.10.5",
     "ts-node": "^8.2.0",
-    "ts-node-dev": "^1.0.0-pre.42",
-    "@graphql-codegen/typescript": "1.7.0",
-    "@graphql-codegen/typescript-operations": "1.7.0",
-    "@graphql-codegen/introspection": "1.7.0"
+    "ts-node-dev": "^1.0.0-pre.42"
   },
   "scripts": {
     "test": "jest",
