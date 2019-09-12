@@ -8,13 +8,13 @@ export type Scalars = {
   Float: number,
 };
 
-export type Action = {
+export type GQLAction = {
   changeLog?: Maybe<Scalars['String']>,
   hash?: Maybe<Scalars['String']>,
   version?: Maybe<Scalars['Int']>,
 };
 
-export type AddFieldTypeAction = Action & {
+export type GQLAddFieldTypeAction = GQLAction & {
    __typename?: 'AddFieldTypeAction',
   changeLog?: Maybe<Scalars['String']>,
   hash?: Maybe<Scalars['String']>,
@@ -24,10 +24,10 @@ export type AddFieldTypeAction = Action & {
   type?: Maybe<Scalars['String']>,
   description?: Maybe<Scalars['String']>,
   optional?: Maybe<Scalars['Boolean']>,
-  _default?: Maybe<FieldData>,
+  _default?: Maybe<GQLFieldData>,
 };
 
-export type AddVersionServiceAction = Action & {
+export type GQLAddVersionServiceAction = GQLAction & {
    __typename?: 'AddVersionServiceAction',
   changeLog?: Maybe<Scalars['String']>,
   hash?: Maybe<Scalars['String']>,
@@ -41,19 +41,19 @@ export type AddVersionServiceAction = Action & {
   outputHash?: Maybe<Scalars['String']>,
 };
 
-export type BaseField = {
+export type GQLBaseField = {
   name?: Maybe<Scalars['String']>,
   changeLog?: Maybe<Scalars['String']>,
   description?: Maybe<Scalars['String']>,
   optional?: Maybe<Scalars['Boolean']>,
 };
 
-export type BooleanField = {
+export type GQLBooleanField = {
    __typename?: 'BooleanField',
   value?: Maybe<Scalars['Boolean']>,
 };
 
-export type DeleteFieldTypeAction = Action & {
+export type GQLDeleteFieldTypeAction = GQLAction & {
    __typename?: 'DeleteFieldTypeAction',
   changeLog?: Maybe<Scalars['String']>,
   hash?: Maybe<Scalars['String']>,
@@ -62,49 +62,49 @@ export type DeleteFieldTypeAction = Action & {
   name?: Maybe<Scalars['String']>,
 };
 
-export type Field = BaseField & {
+export type GQLField = GQLBaseField & {
    __typename?: 'Field',
   name?: Maybe<Scalars['String']>,
   changeLog?: Maybe<Scalars['String']>,
   description?: Maybe<Scalars['String']>,
   optional?: Maybe<Scalars['Boolean']>,
-  _default?: Maybe<FieldData>,
+  _default?: Maybe<GQLFieldData>,
 };
 
-export type FieldData = StringField | IntField | FloatField | BooleanField;
+export type GQLFieldData = GQLStringField | GQLIntField | GQLFloatField | GQLBooleanField;
 
-export type FieldObject = {
+export type GQLFieldObject = {
    __typename?: 'FieldObject',
   key?: Maybe<Scalars['String']>,
-  field?: Maybe<BaseField>,
+  field?: Maybe<GQLBaseField>,
 };
 
-export type FloatField = {
+export type GQLFloatField = {
    __typename?: 'FloatField',
   value?: Maybe<Scalars['Float']>,
 };
 
-export type GroupAction = Action & {
+export type GQLGroupAction = GQLAction & {
    __typename?: 'GroupAction',
   changeLog?: Maybe<Scalars['String']>,
   hash?: Maybe<Scalars['String']>,
   version?: Maybe<Scalars['Int']>,
-  groupedActions?: Maybe<Array<Maybe<Action>>>,
-  versions?: Maybe<Array<Maybe<GroupVersion>>>,
+  groupedActions?: Maybe<Array<Maybe<GQLAction>>>,
+  versions?: Maybe<Array<Maybe<GQLGroupVersion>>>,
 };
 
-export type GroupVersion = {
+export type GQLGroupVersion = {
    __typename?: 'GroupVersion',
   typeName?: Maybe<Scalars['String']>,
   version?: Maybe<Scalars['Int']>,
 };
 
-export type IntField = {
+export type GQLIntField = {
    __typename?: 'IntField',
   value?: Maybe<Scalars['Int']>,
 };
 
-export type NewServiceAction = Action & {
+export type GQLNewServiceAction = GQLAction & {
    __typename?: 'NewServiceAction',
   changeLog?: Maybe<Scalars['String']>,
   hash?: Maybe<Scalars['String']>,
@@ -113,7 +113,7 @@ export type NewServiceAction = Action & {
   description?: Maybe<Scalars['String']>,
 };
 
-export type NewTypeAction = Action & {
+export type GQLNewTypeAction = GQLAction & {
    __typename?: 'NewTypeAction',
   changeLog?: Maybe<Scalars['String']>,
   hash?: Maybe<Scalars['String']>,
@@ -122,7 +122,7 @@ export type NewTypeAction = Action & {
   description?: Maybe<Scalars['String']>,
 };
 
-export type OptionalFieldTypeAction = Action & {
+export type GQLOptionalFieldTypeAction = GQLAction & {
    __typename?: 'OptionalFieldTypeAction',
   changeLog?: Maybe<Scalars['String']>,
   hash?: Maybe<Scalars['String']>,
@@ -131,14 +131,14 @@ export type OptionalFieldTypeAction = Action & {
   name?: Maybe<Scalars['String']>,
 };
 
-export type Query = {
+export type GQLQuery = {
    __typename?: 'Query',
-  log?: Maybe<Array<Maybe<Action>>>,
-  services?: Maybe<Array<Maybe<Service>>>,
-  types?: Maybe<Array<Maybe<Type>>>,
+  log?: Maybe<Array<Maybe<GQLAction>>>,
+  services?: Maybe<Array<Maybe<GQLService>>>,
+  types?: Maybe<Array<Maybe<GQLType>>>,
 };
 
-export type ReferenceField = BaseField & {
+export type GQLReferenceField = GQLBaseField & {
    __typename?: 'ReferenceField',
   name?: Maybe<Scalars['String']>,
   changeLog?: Maybe<Scalars['String']>,
@@ -149,7 +149,7 @@ export type ReferenceField = BaseField & {
   referenceVersion?: Maybe<Scalars['Int']>,
 };
 
-export type ReferenceFieldTypeAction = Action & {
+export type GQLReferenceFieldTypeAction = GQLAction & {
    __typename?: 'ReferenceFieldTypeAction',
   changeLog?: Maybe<Scalars['String']>,
   hash?: Maybe<Scalars['String']>,
@@ -163,7 +163,7 @@ export type ReferenceFieldTypeAction = Action & {
   referenceVersion?: Maybe<Scalars['Int']>,
 };
 
-export type RemoveDefaultFieldTypeAction = Action & {
+export type GQLRemoveDefaultFieldTypeAction = GQLAction & {
    __typename?: 'RemoveDefaultFieldTypeAction',
   changeLog?: Maybe<Scalars['String']>,
   hash?: Maybe<Scalars['String']>,
@@ -172,7 +172,7 @@ export type RemoveDefaultFieldTypeAction = Action & {
   name?: Maybe<Scalars['String']>,
 };
 
-export type RenameFieldTypeAction = Action & {
+export type GQLRenameFieldTypeAction = GQLAction & {
    __typename?: 'RenameFieldTypeAction',
   changeLog?: Maybe<Scalars['String']>,
   hash?: Maybe<Scalars['String']>,
@@ -182,7 +182,7 @@ export type RenameFieldTypeAction = Action & {
   to?: Maybe<Scalars['String']>,
 };
 
-export type RequiredFieldTypeAction = Action & {
+export type GQLRequiredFieldTypeAction = GQLAction & {
    __typename?: 'RequiredFieldTypeAction',
   changeLog?: Maybe<Scalars['String']>,
   hash?: Maybe<Scalars['String']>,
@@ -191,39 +191,39 @@ export type RequiredFieldTypeAction = Action & {
   name?: Maybe<Scalars['String']>,
 };
 
-export type Service = {
+export type GQLService = {
    __typename?: 'Service',
   name?: Maybe<Scalars['String']>,
   changeLog?: Maybe<Array<Maybe<Scalars['String']>>>,
   description?: Maybe<Scalars['String']>,
-  versions?: Maybe<Array<Maybe<VersionType>>>,
+  versions?: Maybe<Array<Maybe<GQLVersionType>>>,
 };
 
-export type SetDefaultFieldTypeAction = Action & {
+export type GQLSetDefaultFieldTypeAction = GQLAction & {
    __typename?: 'SetDefaultFieldTypeAction',
   changeLog?: Maybe<Scalars['String']>,
   hash?: Maybe<Scalars['String']>,
   version?: Maybe<Scalars['Int']>,
   typeName?: Maybe<Scalars['String']>,
   name?: Maybe<Scalars['String']>,
-  _default?: Maybe<FieldData>,
+  _default?: Maybe<GQLFieldData>,
 };
 
-export type StringField = {
+export type GQLStringField = {
    __typename?: 'StringField',
   value?: Maybe<Scalars['String']>,
 };
 
-export type Type = {
+export type GQLType = {
    __typename?: 'Type',
   name?: Maybe<Scalars['String']>,
-  versions?: Maybe<Array<Maybe<Version>>>,
-  latest?: Maybe<Version>,
+  versions?: Maybe<Array<Maybe<GQLVersion>>>,
+  latest?: Maybe<GQLVersion>,
   changeLog?: Maybe<Array<Maybe<Scalars['String']>>>,
   description?: Maybe<Scalars['String']>,
 };
 
-export type UpdateDescriptionServiceAction = Action & {
+export type GQLUpdateDescriptionServiceAction = GQLAction & {
    __typename?: 'UpdateDescriptionServiceAction',
   changeLog?: Maybe<Scalars['String']>,
   hash?: Maybe<Scalars['String']>,
@@ -232,7 +232,7 @@ export type UpdateDescriptionServiceAction = Action & {
   description?: Maybe<Scalars['String']>,
 };
 
-export type UpdateDescriptionTypeAction = Action & {
+export type GQLUpdateDescriptionTypeAction = GQLAction & {
    __typename?: 'UpdateDescriptionTypeAction',
   changeLog?: Maybe<Scalars['String']>,
   hash?: Maybe<Scalars['String']>,
@@ -242,15 +242,15 @@ export type UpdateDescriptionTypeAction = Action & {
   description?: Maybe<Scalars['String']>,
 };
 
-export type Version = {
+export type GQLVersion = {
    __typename?: 'Version',
   _type?: Maybe<Scalars['String']>,
   version?: Maybe<Scalars['Int']>,
   hash?: Maybe<Scalars['String']>,
-  fields?: Maybe<Array<Maybe<FieldObject>>>,
+  fields?: Maybe<Array<Maybe<GQLFieldObject>>>,
 };
 
-export type VersionType = {
+export type GQLVersionType = {
    __typename?: 'VersionType',
   _type?: Maybe<Scalars['String']>,
   version?: Maybe<Scalars['Int']>,

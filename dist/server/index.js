@@ -7,11 +7,13 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const path = __importStar(require("path"));
 const apollo_server_1 = require("apollo-server");
 const action = __importStar(require("../action"));
 const generate_1 = require("../generate");
 const graphql_import_1 = require("graphql-import");
-const typeDefs = graphql_import_1.importSchema('schema.graphql');
+const types = __importStar(require("./types"));
+const typeDefs = graphql_import_1.importSchema(path.join(__dirname, 'schema.graphql'));
 function startServer(backend) {
     const resolvers = {
         BaseField: {
@@ -74,10 +76,20 @@ function startServer(backend) {
         },
         Query: {
             log: async () => await backend.getLog(),
-            services: async () => await backend.getCurrentServices(),
+            services: async () => {
+                const currentServices = await backend.getCurrentServices();
+                let output = [];
+                for (let currentService of currentServices) {
+                    output.push(types.GQLService.fromGenerateService(currentService));
+                }
+                return output;
+            },
             types: async () => {
                 const currentTypes = await backend.getCurrentTypes();
                 let output = [];
+                for (let currentType of currentTypes) {
+                    output.push(types.GQLType.fromGenerateType(currentType));
+                }
                 return output;
             }
         }

@@ -1,10 +1,12 @@
+import * as path from 'path';
 import { ApolloServer, gql } from 'apollo-server';
 import { Backend } from '../backend';
 import * as action from '../action';
 import {BaseField, Field, ReferenceField} from '../generate';
 import {importSchema} from 'graphql-import';
+import * as types from './types';
 
-const typeDefs = importSchema('schema.graphql');
+const typeDefs = importSchema(path.join(__dirname, 'schema.graphql'));
 
 export function startServer(backend: Backend) {
   const resolvers = {
@@ -62,12 +64,24 @@ export function startServer(backend: Backend) {
     },
     Query: {
       log: async () => await backend.getLog(),
-      services: async () => await backend.getCurrentServices(),
-      types: async () => {
+      services: async (): Promise<types.GQLService[]> => {
+        const currentServices = await backend.getCurrentServices();
+        let output = [];
+        for (let currentService of currentServices) {
+          output.push(
+            types.GQLService.fromGenerateService(currentService)
+          );
+        }
+        return output;
+      },
+      types: async (): Promise<types.GQLType[]> => {
         const currentTypes = await backend.getCurrentTypes();
         let output = [];
-
-
+        for (let currentType of currentTypes) {
+          output.push(
+            types.GQLType.fromGenerateType(currentType)
+          );
+        }
         return output;
       }
     }
