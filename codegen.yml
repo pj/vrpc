@@ -1,8 +1,12 @@
 schema: ./lib/server/schema.graphql
+#generates:
+#  ./lib/server/schema.ts:
+#    plugins:
+#      - typescript
+#      - typescript-operations
+#    config:
+#      typesPrefix: 'GQL'
 generates:
-  ./lib/server/schema.ts:
+  ./lib/server/introspection_result.ts:
     plugins:
-      - typescript
-      - typescript-operations
-    config:
-      typesPrefix: 'GQL'
+      - fragment-matcher

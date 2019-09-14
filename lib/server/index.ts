@@ -24,7 +24,7 @@ export function startServer(backend: Backend) {
         return null;
       }
     },
-    Action: {
+    LogAction: {
       __resolveType(
         obj: action.Action,
         context: any,

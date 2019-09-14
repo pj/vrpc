@@ -27,7 +27,7 @@ function startServer(backend) {
                 return null;
             }
         },
-        Action: {
+        LogAction: {
             __resolveType(obj, context, info) {
                 if (obj instanceof action.NewServiceAction) {
                     return 'NewServiceAction';

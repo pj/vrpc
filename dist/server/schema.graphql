@@ -156,6 +156,8 @@ type GroupAction implements Action {
   versions: [GroupVersion]
 }
 
+union LogAction = NewServiceAction | UpdateDescriptionServiceAction | AddVersionServiceAction | RenameFieldTypeAction | RequiredFieldTypeAction | OptionalFieldTypeAction | DeleteFieldTypeAction | SetDefaultFieldTypeAction | RemoveDefaultFieldTypeAction | AddFieldTypeAction | UpdateDescriptionTypeAction | ReferenceFieldTypeAction | NewTypeAction | GroupAction
+
 type VersionType {
   _type: String,
   version: Int,
@@ -220,7 +222,7 @@ type Type {
 }
 
 type Query {
-  log: [Action]
+  log: [LogAction]
   services: [Service]
   types: [Type]
 }

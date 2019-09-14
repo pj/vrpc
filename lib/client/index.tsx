@@ -1,26 +1,26 @@
 import ApolloClient from 'apollo-boost';
 import App from './App';
 import React from 'react';
-import ReactDOM from 'react-dom';
+import * as ReactDOM from 'react-dom';
+import { ApolloProvider } from '@apollo/react-hooks';
+import { InMemoryCache } from 'apollo-cache-inmemory';
+import { IntrospectionFragmentMatcher } from 'apollo-cache-inmemory';
+import introspectionQueryResultData from '../server/introspection_result';
+
+const fragmentMatcher = new IntrospectionFragmentMatcher({
+  introspectionQueryResultData
+});
+
+const cache = new InMemoryCache({ fragmentMatcher });
 
 const client = new ApolloClient({
+  cache,
   uri: 'http://localhost:4000',
 });
 
-
-import { gql } from "apollo-boost";
-client
-  .query({
-    query: gql`
-    {
-      courses {
-        title
-      }
-    }`
-  })
-  .then(result => console.log(result));
-
 ReactDOM.render(
-  <App />,
+  <ApolloProvider client={client}>
+    <App />
+  </ApolloProvider>,
   document.getElementById('root')
 );
