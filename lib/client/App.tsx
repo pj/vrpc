@@ -14,21 +14,154 @@ import InboxIcon from '@material-ui/icons/MoveToInbox';
 import MailIcon from '@material-ui/icons/Mail';
 import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
+import ActionList from './ActionList';
+import ActionCreator from './ActionCreator';
+
+const ACTIONS_FRAGMENT = gql`
+fragment DataFragment on FieldData {
+  ... on StringField {
+    __typename
+    stringValue: value
+  }
+
+  ... on IntField {
+    __typename
+    intValue: value
+  }
+
+  ... on FloatField {
+    __typename
+    floatValue: value
+  }
+
+  ... on BooleanField {
+    __typename
+    booleanValue: value
+  }
+}
+
+fragment ActionsFragment on Action {
+  __typename
+  changeLog
+  hash
+  version
+
+  ... on NewServiceAction {
+    serviceName
+    description
+  }
+
+  ... on UpdateDescriptionServiceAction {
+    serviceName
+    description
+  }
+
+  ... on AddVersionServiceAction {
+    serviceName
+    inputType
+    outputType
+    inputVersion
+    inputHash
+    outputVersion
+    outputHash
+  }
+
+  ... on RenameFieldTypeAction {
+    typeName
+    _from
+    to
+  }
+
+  ... on RequiredFieldTypeAction {
+    typeName
+    name
+  }
+
+  ... on OptionalFieldTypeAction {
+    typeName
+    name
+  }
+
+  ... on DeleteFieldTypeAction {
+    typeName
+    name
+  }
+
+  ... on SetDefaultFieldTypeAction {
+    typeName
+    name
+    _default {
+      ...DataFragment
+    }
+  }
+
+  ... on RemoveDefaultFieldTypeAction {
+    typeName
+    name
+  }
+
+  ... on AddFieldTypeAction {
+    typeName
+    name
+    type
+    description
+    optional
+    _default {
+      ...DataFragment
+    }
+  }
+
+  ... on UpdateDescriptionTypeAction {
+    typeName
+    name
+    description
+  }
+
+  ... on ReferenceFieldTypeAction {
+    typeName
+    name
+    description
+    optional
+    referenceType
+    referenceHash
+    referenceVersion
+  }
+
+  ... on NewTypeAction {
+    typeName
+    description
+  }
+}
+`;
 
 const GET_LOG = gql`
-  {
-    log {
+{
+  log {
+    ...ActionsFragment
+    ... on GroupAction {
       __typename
-      ... on Action {
-        changeLog
-        hash
-        version
+      changeLog
+      groupedActions {
+         ...ActionsFragment
       }
-      ... on NewServiceAction {
-        serviceName
+      versions {
+        typeName,
+        version
       }
     }
   }
+
+  types {
+    name
+    versions {
+      version
+      fields {
+        key
+      }
+    }
+  }
+}
+${ACTIONS_FRAGMENT}
 `;
 
 const drawerWidth = 240;
@@ -60,7 +193,6 @@ const App = () => {
   if (loading) {
     return null;
   }
-  console.log(data);
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -73,18 +205,8 @@ const App = () => {
       </AppBar>
       <main className={classes.content}>
         <div className={classes.toolbar} />
-        <Typography paragraph>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
-          ut labore et dolore magna aliqua. Rhoncus dolor purus non enim praesent elementum
-          facilisis leo vel. Risus at ultrices mi tempus imperdiet. Semper risus in hendrerit
-          gravida rutrum quisque non tellus. Convallis convallis tellus id interdum velit laoreet id
-          donec ultrices. Odio morbi quis commodo odio aenean sed adipiscing. Amet nisl suscipit
-          adipiscing bibendum est ultricies integer quis. Cursus euismod quis viverra nibh cras.
-          Metus vulputate eu scelerisque felis imperdiet proin fermentum leo. Mauris commodo quis
-          imperdiet massa tincidunt. Cras tincidunt lobortis feugiat vivamus at augue. At augue eget
-          arcu dictum varius duis at consectetur lorem. Velit sed ullamcorper morbi tincidunt. Lorem
-          donec massa sapien faucibus et molestie ac.
-        </Typography>
+        <ActionCreator types={data.types}/>
+        <ActionList actions={data.log} />
       </main>
     </div>
   );

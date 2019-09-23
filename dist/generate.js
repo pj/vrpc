@@ -238,6 +238,7 @@ function typeOrServiceName(logAction) {
     }
     throw new Error('Satisfying typescript');
 }
+exports.typeOrServiceName = typeOrServiceName;
 function groupByTypeAndService(log) {
     const types = new Map();
     const services = new Map();

@@ -330,7 +330,7 @@ function updateVersion(newVersion: Version, logAction: action.Action) {
   }
 }
 
-function typeOrServiceName(
+export function typeOrServiceName(
   logAction: action.Action
 ): [string | null, string | null] {
   if (
