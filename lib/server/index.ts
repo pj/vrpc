@@ -8,6 +8,136 @@ import * as types from './types';
 
 const typeDefs = importSchema(path.join(__dirname, 'schema.graphql'));
 
+export function actionFromInput(input: any): action.Action {
+  switch(input.logType) {
+    // Services
+    case 'NewServiceAction':
+      return new action.NewServiceAction(
+        input.changeLog,
+        null,
+        null,
+        input.serviceName,
+        input.description,
+      );
+    case 'UpdateDescriptionServiceAction':
+      return new action.UpdateDescriptionServiceAction(
+        input.changeLog,
+        null,
+        null,
+        input.serviceName,
+        input.description
+      );
+    case 'AddVersionServiceAction':
+      return new action.AddVersionServiceAction(
+        input.changeLog,
+        null,
+        null,
+        input.serviceName,
+        input.inputType,
+        input.outputType,
+        parseInt(input.inputVersion, 10),
+        input.inputHash,
+        parseInt(input.outputVersion, 10),
+        input.outputHash,
+      );
+    // Types
+    case 'RenameFieldTypeAction':
+      return new action.RenameFieldTypeAction(
+        input.changeLog,
+        null,
+        null,
+        input.typeName,
+        input.fieldName,
+        input.newFieldName
+      );
+    case 'RequiredFieldTypeAction':
+      return new action.RequiredFieldTypeAction(
+        input.changeLog,
+        null,
+        null,
+        input.typeName,
+        input.fieldName
+      );
+    case 'OptionalFieldTypeAction':
+      return new action.OptionalFieldTypeAction(
+        input.changeLog,
+        null,
+        null,
+        input.typeName,
+        input.fieldName
+      );
+    case 'DeleteFieldTypeAction':
+      return new action.DeleteFieldTypeAction(
+        input.changeLog,
+        null,
+        null,
+        input.typeName,
+        input.fieldName
+      );
+    case 'SetDefaultFieldTypeAction':
+      return new action.SetDefaultFieldTypeAction(
+        input.changeLog,
+        null,
+        null,
+        input.typeName,
+        input.fieldName,
+        input.defaultValue
+      );
+    case 'RemoveDefaultFieldTypeAction':
+      return new action.RemoveDefaultFieldTypeAction(
+        input.changeLog,
+        null,
+        null,
+        input.typeName,
+        input.fieldName
+      );
+    case 'AddFieldTypeAction':
+      return new action.AddFieldTypeAction(
+        input.changeLog,
+        null,
+        null,
+        input.typeName,
+        input.fieldName,
+        input.defaultType,
+        input.description,
+        input.optional,
+        input.defaultValue
+      );
+    case 'UpdateDescriptionTypeAction':
+      return new action.UpdateDescriptionTypeAction(
+        input.changeLog,
+        null,
+        null,
+        input.typeName,
+        input.fieldName,
+        input.description
+      );
+    case 'ReferenceFieldTypeAction':
+      return new action.ReferenceFieldTypeAction(
+        input.changeLog,
+        null,
+        null,
+        input.typeName,
+        input.fieldName,
+        input.description,
+        input.optional,
+        input.referenceType,
+        input.referenceHash,
+        input.referenceVersion
+      );
+    case 'NewTypeAction':
+      return new action.NewTypeAction(
+        input.changeLog,
+        null,
+        null,
+        input.typeName,
+        input.description
+      );
+    default:
+      throw new Error(`Unknown input action ${input}`)
+  }
+}
+
 export function startServer(backend: Backend) {
   const resolvers = {
     BaseField: {
@@ -62,6 +192,31 @@ export function startServer(backend: Backend) {
         return null;
       }
     },
+    FieldData: {
+      __resolveType(
+        obj: any,
+        context: any,
+        info: any
+      ): string | null {
+        if (obj instanceof types.StringField) {
+          return 'StringField';
+        }
+
+        if (obj instanceof types.IntField) {
+          return 'IntField';
+        }
+
+        if (obj instanceof types.FloatField) {
+          return 'FloatField';
+        }
+
+        if (obj instanceof types.BooleanField) {
+          return 'BooleanField';
+        }
+
+        return null;
+      }
+    },
     Query: {
       log: async () => await backend.getLog(),
       services: async (): Promise<types.GQLService[]> => {
@@ -84,6 +239,76 @@ export function startServer(backend: Backend) {
         }
         return output;
       }
+    },
+    Mutation: {
+      async addToLog(root: any, input: any, context: any) {
+        console.log(input);
+        const action = actionFromInput(input.input);
+        await backend.addToLog(action);
+        const log = await backend.getLog();
+
+        const currentTypes = await backend.getCurrentTypes();
+        let outputTypes = [];
+        for (let currentType of currentTypes) {
+          outputTypes.push(
+            types.GQLType.fromGenerateType(currentType)
+          );
+        }
+
+        const currentServices = await backend.getCurrentServices();
+        let outputServices = [];
+        for (let currentService of currentServices) {
+          outputServices.push(
+            types.GQLService.fromGenerateService(currentService)
+          );
+        }
+
+        return ({log, types: outputTypes, services: outputServices});
+      },
+      async truncateTo(root: any, input: any, context: any) {
+        await backend.truncateTo(input.to);
+        const log = await backend.getLog();
+
+        const currentTypes = await backend.getCurrentTypes();
+        let outputTypes = [];
+        for (let currentType of currentTypes) {
+          outputTypes.push(
+            types.GQLType.fromGenerateType(currentType)
+          );
+        }
+
+        const currentServices = await backend.getCurrentServices();
+        let outputServices = [];
+        for (let currentService of currentServices) {
+          outputServices.push(
+            types.GQLService.fromGenerateService(currentService)
+          );
+        }
+
+        return ({log, types: outputTypes, services: outputServices});
+      },
+      async hashTo(root: any, input: any, context: any) {
+        await backend.hashTo(input.to);
+        const log = await backend.getLog();
+
+        const currentTypes = await backend.getCurrentTypes();
+        let outputTypes = [];
+        for (let currentType of currentTypes) {
+          outputTypes.push(
+            types.GQLType.fromGenerateType(currentType)
+          );
+        }
+
+        const currentServices = await backend.getCurrentServices();
+        let outputServices = [];
+        for (let currentService of currentServices) {
+          outputServices.push(
+            types.GQLService.fromGenerateService(currentService)
+          );
+        }
+
+        return ({log, types: outputTypes, services: outputServices});
+      }
     }
   };
 
@@ -91,5 +316,5 @@ export function startServer(backend: Backend) {
 
   server.listen().then(({ url }: {url: any}) => {
     console.log(`Server ready at ${url}`);
-  });`)})`
+  });
 }

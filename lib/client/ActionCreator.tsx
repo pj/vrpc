@@ -2,9 +2,13 @@ import React from 'react';
 import {useState} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { useQuery } from '@apollo/react-hooks';
+import { useMutation } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import Paper from '@material-ui/core/Paper';
 
+import {ALL_DATA, ACTIONS_FRAGMENT} from './Fragments';
+
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
 
 import InputLabel from '@material-ui/core/InputLabel';
@@ -125,10 +129,75 @@ const DefaultSelector = (props: any) => {
   );
 }
 
+const ServiceSelector = (props: any) => {
+  const serviceNames = props.services.map(s => s.name);
+
+  return (
+    <FormControl>
+      <InputLabel htmlFor="select-service">Service name</InputLabel>
+      <Select
+        value={props.value}
+        onChange={props.handleChange}
+        inputProps={{id: 'select-service'}}
+      >
+      {
+        serviceNames.map(name =>
+          <MenuItem key={name} value={name} >
+            {name}
+          </MenuItem>
+        )
+      }
+      </Select>
+    </FormControl>
+  );
+}
+
+const VersionSelector = (props: any) => {
+  let versions = [];
+  for (let _type of props.types) {
+    if (_type.name === props.typeName) {
+      versions = _type.versions.map(t => t.version);
+      break;
+    }
+  }
+
+  return (
+    <FormControl>
+      <InputLabel htmlFor="select-version">Select Version</InputLabel>
+      <Select
+        value={props.value}
+        onChange={props.handleChange}
+        inputProps={{id: 'select-version'}}
+      >
+      {
+        versions.map(name =>
+          <MenuItem key={name} value={name} >
+            {name}
+          </MenuItem>
+        )
+      }
+      </Select>
+    </FormControl>
+  );
+}
+
+
+console.log(ACTIONS_FRAGMENT);
+const ADD_TO_LOG = gql`
+mutation AddToLog($input: LogActionInput!) {
+  addToLog(input: $input) {
+    ${ALL_DATA}
+  }
+}
+${ACTIONS_FRAGMENT}
+`;
+
+
 const ActionCreator = (props: any) => {
   if (!props.types) {
     return null;
   }
+
   const classes = useStyles();
   const [values, setValues] = useState({
     logType: "",
@@ -141,8 +210,58 @@ const ActionCreator = (props: any) => {
     defaultType: "",
     defaultValue: "",
     fieldDescription: "",
-    optional: true
+    optional: true,
+    outputName: "",
+    inputName: "",
+    inputVersion: "",
+    outputVersion: "",
+    referenceName: "",
+    referenceVersion: "",
   } as any);
+
+  function updateCacheFromAdd(cache: any, mutationResult: any) {
+    setValues({
+      changeLog: "",
+      typeName: "",
+      description: "",
+      serviceName: "",
+      fieldName: "",
+      newFieldName: "",
+      defaultType: "",
+      defaultValue: "",
+      fieldDescription: "",
+      optional: true,
+      outputName: "",
+      inputName: "",
+      inputVersion: "",
+      outputVersion: "",
+      referenceName: "",
+      referenceVersion: "",
+      logType: ""
+    });
+  }
+
+  const [
+   addToLog,
+   { loading: mutationLoading, error: mutationError },
+  ] = useMutation(ADD_TO_LOG, {update: updateCacheFromAdd});
+
+  if (mutationLoading) {
+    return <CircularProgress />;
+  }
+
+  if (mutationError) {
+    return (
+      <div>
+        {mutationError.toString()}
+        {mutationError.extensions.toString()}
+      </div>
+    );
+  }
+
+  function handleAddToLog(event) {
+    addToLog({variables: {input: values}});
+  }
 
   function handleTypeChange(event) {
     setValues({
@@ -156,6 +275,12 @@ const ActionCreator = (props: any) => {
       defaultValue: "",
       fieldDescription: "",
       optional: true,
+      outputName: "",
+      inputName: "",
+      inputVersion: "",
+      outputVersion: "",
+      referenceName: "",
+      referenceVersion: "",
       logType: event.target.value
     });
   }
@@ -163,6 +288,14 @@ const ActionCreator = (props: any) => {
   function handleChange(key) {
     function innerHandleChange(event) {
       setValues({...values, [key]: event.target.value});
+    }
+
+    return innerHandleChange;
+  }
+
+  function handleBooleanChange(key) {
+    function innerHandleChange(event) {
+      setValues({...values, [key]: !values[key]});
     }
 
     return innerHandleChange;
@@ -243,6 +376,7 @@ const ActionCreator = (props: any) => {
       </React.Fragment>
     );
   } else if( values.logType === "AddFieldTypeAction") {
+    editor = (
     <React.Fragment>
       <TypeSelector
         types={props.types}
@@ -268,20 +402,11 @@ const ActionCreator = (props: any) => {
         />
       </FormControl>
       <FormControl>
-        <TextField
-          id="description"
-          label="Field description"
-          value={values.fieldDescription}
-          onChange={handleChange('fieldDescription')}
-          margin="normal"
-        />
-      </FormControl>
-      <FormControl>
         <Checkbox
           id="optional"
           label="Field Optional"
           checked={values.optional}
-          onChange={handleChange('optional')}
+          onChange={handleBooleanChange('optional')}
         />
       </FormControl>
       <DefaultSelector
@@ -291,24 +416,72 @@ const ActionCreator = (props: any) => {
         handleValueChange={handleChange('defaultValue')}
       />
     </React.Fragment>
+    );
   } else if( values.logType === "UpdateDescriptionTypeAction") {
-    <React.Fragment>
-      <TypeSelector
-        types={props.types}
-        handleChange={handleChange('typeName')}
-        value={values.typeName}
-      />
-      <FormControl>
-        <TextField
-          id="description"
-          label="Type Description"
-          value={values.description}
-          onChange={handleChange('description')}
-          margin="normal"
+    editor = (
+      <React.Fragment>
+        <TypeSelector
+          types={props.types}
+          handleChange={handleChange('typeName')}
+          value={values.typeName}
         />
-      </FormControl>
-    </React.Fragment>
+        <FormControl>
+          <TextField
+            id="description"
+            label="Type Description"
+            value={values.description}
+            onChange={handleChange('description')}
+            margin="normal"
+          />
+        </FormControl>
+      </React.Fragment>
+    );
   } else if( values.logType === "ReferenceFieldTypeAction") {
+    editor = (
+      <React.Fragment>
+        <TypeSelector
+          types={props.types}
+          handleChange={handleChange('typeName')}
+          value={values.typeName}
+        />
+        <FormControl>
+          <TextField
+            id="fieldName"
+            label="New field name"
+            value={values.fieldName}
+            onChange={handleChange('fieldName')}
+            margin="normal"
+          />
+        </FormControl>
+        <FormControl>
+          <TextField
+            id="description"
+            label="Field description"
+            value={values.fieldDescription}
+            onChange={handleChange('fieldDescription')}
+            margin="normal"
+          />
+        </FormControl>
+        <FormControl>
+          <Checkbox
+            id="optional"
+            label="Field Optional"
+            checked={values.optional}
+            onChange={handleBooleanChange('optional')}
+          />
+        </FormControl>
+        <TypeSelector
+          types={props.types}
+          handleChange={handleChange('referenceName')}
+          value={values.referenceName}
+        />
+        <VersionSelector
+          types={props.types}
+          handleChange={handleChange('referenceVersion')}
+          value={values.referenceVersion}
+        />
+      </React.Fragment>
+    );
 
   } else if( values.logType === "NewTypeAction") {
     editor = (
@@ -336,6 +509,11 @@ const ActionCreator = (props: any) => {
   } else if( values.logType === "UpdateDescriptionServiceAction") {
     editor = (
       <FormControl>
+      <ServiceSelector
+        types={props.services}
+        handleChange={handleChange('serviceName')}
+        value={values.serviceName}
+      />
       <TextField
         id="description"
         label="Description of service"
@@ -346,6 +524,30 @@ const ActionCreator = (props: any) => {
       </FormControl>
     );
   } else if( values.logType === "AddVersionServiceAction") {
+    editor = (
+      <React.Fragment>
+      <TypeSelector
+        types={props.types}
+        handleChange={handleChange('inputName')}
+        value={values.inputName}
+      />
+      <VersionSelector
+        types={props.types}
+        handleChange={handleChange('inputName')}
+        value={values.inputVersion}
+      />
+      <TypeSelector
+        types={props.types}
+        handleChange={handleChange('outputName')}
+        value={values.outputName}
+      />
+      <VersionSelector
+        types={props.types}
+        handleChange={handleChange('outputVersion')}
+        value={values.outputVersion}
+      />
+      </React.Fragment>
+    );
 
   } else if( values.logType === "NewServiceAction") {
     editor = (
@@ -372,7 +574,7 @@ const ActionCreator = (props: any) => {
     );
 
   }
-  
+
   return (
     <Paper className={classes.root}>
       <FormControl>
@@ -409,7 +611,7 @@ const ActionCreator = (props: any) => {
       </FormControl>
       }
       <FormControl>
-        <Button variant="contained" color="primary">
+        <Button variant="contained" color="primary" onClick={handleAddToLog}>
           Add To Log
         </Button>
       </FormControl>

@@ -1,7 +1,9 @@
+import * as fs from 'fs';
 import * as path from 'path';
 import { Backend } from './backend';
 import {Action, loadActionLog} from './action';
 import {generateDefinitions, Type, Service} from './generate';
+import {hashActions, addHashes} from './typeidea';
 
 export class FileBackend implements Backend {
   fileName: string;
@@ -23,5 +25,27 @@ export class FileBackend implements Backend {
     const log = loadActionLog(path.join(process.cwd(), this.fileName));
     const [types, _] = generateDefinitions(log);
     return types;
+  }
+
+  async addToLog(action: Action): Promise<void> {
+    const log = loadActionLog(path.join(process.cwd(), this.fileName));
+    log.push(action);
+    console.log(log);
+    //await fs.promises.writeFile(this.fileName, JSON.stringify(log, null, 2));
+  }
+
+  async truncateTo(to: number): Promise<void> {
+    let log = loadActionLog(path.join(process.cwd(), this.fileName));
+    log = log.slice(0, to);
+    console.log(log);
+    //await fs.promises.writeFile(this.fileName, JSON.stringify(log, null, 2));
+  }
+
+  async hashTo(to: number): Promise<void> {
+    let log = loadActionLog(path.join(process.cwd(), this.fileName));
+    const hashes = hashActions(log);
+    log = addHashes(log, hashes, to);
+    console.log(log);
+    //await fs.promises.writeFile(this.fileName, JSON.stringify(log, null, 2));
   }
 }

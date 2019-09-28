@@ -226,3 +226,43 @@ type Query {
   services: [Service]
   types: [Type]
 }
+
+type NewLog {
+  log: [LogAction]
+  services: [Service]
+  types: [Type]
+}
+
+input LogActionInput {
+  changeLog: String
+  typeName: String
+  description: String
+  serviceName: String
+  fieldName: String
+  newFieldName: String
+  defaultType: String
+  defaultValue: String
+  fieldDescription: String
+  optional: Boolean
+  outputName: String
+  inputName: String
+  inputVersion: String
+  outputVersion: String
+  referenceName: String
+  referenceVersion: String
+  logType: String
+}
+
+input TruncationInput {
+  to: Int
+}
+
+input HashInput {
+  to: Int
+}
+
+type Mutation {
+  addToLog(input: LogActionInput!): NewLog
+  truncateTo(input: TruncationInput!): NewLog
+  hashTo(input: HashInput!): NewLog
+}

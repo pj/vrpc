@@ -1,8 +1,12 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { useQuery } from '@apollo/react-hooks';
+import { useMutation } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 
+import { ACTIONS_FRAGMENT, ALL_DATA } from './App';
+
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -28,6 +32,8 @@ const useStyles = makeStyles(theme => ({
 
 const ActionList = (props: any) => {
   const classes = useStyles();
+
+
   const tableRows = [];
   for (let logAction of props.actions) {
     let isService = false;
@@ -77,7 +83,7 @@ const ActionList = (props: any) => {
 
     tableRows.push(
       <TableRow key={logAction.hash}>
-      <TableCell className={classes.tableCell}>
+        <TableCell className={classes.tableCell}>
           {isService ? "Service" : "Type"}
         </TableCell>
         <TableCell className={classes.tableCell}>{name}</TableCell>
@@ -90,6 +96,11 @@ const ActionList = (props: any) => {
           </Tooltip>
         </TableCell>
         <TableCell className={classes.tableCell}>{logAction.changeLog}</TableCell>
+        <TableCell className={classes.tableCell}>
+          <List dense={true}>
+            {options}
+          </List>
+        </TableCell>
         <TableCell className={classes.tableCell}>
           <List dense={true}>
             {options}
