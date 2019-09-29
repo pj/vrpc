@@ -4,8 +4,9 @@ import { useQuery } from '@apollo/react-hooks';
 import { useMutation } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 
-import { ACTIONS_FRAGMENT, ALL_DATA } from './App';
+import { ACTIONS_FRAGMENT, ALL_DATA } from './Fragments';
 
+import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
@@ -27,15 +28,126 @@ const useStyles = makeStyles(theme => ({
   },
   tableCell: {
     verticalAlign: 'top'
+  },
+  actionButtons: {
+    display: 'flex'
   }
 }));
+
+const TRUNCATE_TO = gql`
+mutation TruncateTo($input: TruncationInput!) {
+  truncateTo(input: $input) {
+    ${ALL_DATA}
+  }
+}
+${ACTIONS_FRAGMENT}
+`;
+
+const DELETE = gql`
+mutation Delete($input: DeleteInput!) {
+  _delete(input: $input) {
+    ${ALL_DATA}
+  }
+}
+${ACTIONS_FRAGMENT}
+`;
+
+const HASH_TO = gql`
+mutation HashTo($input: HashInput!) {
+  hashTo(input: $input) {
+    ${ALL_DATA}
+  }
+}
+${ACTIONS_FRAGMENT}
+`;
+
+const GROUP_AND_HASH = gql`
+mutation GroupAndHash($input: GroupAndHashInput!) {
+  groupAndHash(input: $input) {
+    ${ALL_DATA}
+  }
+}
+${ACTIONS_FRAGMENT}
+`;
 
 const ActionList = (props: any) => {
   const classes = useStyles();
 
+  function updateCacheFromMutation(cache: any, mutationResult: any) {
+    console.log(mutationResult);
+  }
+
+  const [
+   truncateTo,
+   { loading: truncateMutationLoading, error: truncateError },
+  ] = useMutation(TRUNCATE_TO, {update: updateCacheFromMutation});
+
+  const [
+   _delete,
+   { loading: deleteMutationLoading, error: deleteError },
+  ] = useMutation(DELETE, {update: updateCacheFromMutation});
+
+  const [
+   hashTo,
+   { loading: hashMutationLoading, error: hashError },
+  ] = useMutation(HASH_TO, {update: updateCacheFromMutation});
+
+  const [
+   groupAndHash,
+   { loading: groupMutationLoading, error: groupError },
+  ] = useMutation(GROUP_AND_HASH, {update: updateCacheFromMutation});
+
+  if (
+    truncateMutationLoading
+    || deleteMutationLoading
+    || hashMutationLoading
+    || groupMutationLoading
+  ) {
+    return <CircularProgress />;
+  }
+
+  if (truncateError || deleteError || hashError || groupError) {
+    return (
+      <div>
+        {truncateError && truncateError.toString()}
+        {deleteError && deleteError.toString()}
+        {hashError && hashError.toString()}
+        {groupError && groupError.toString()}
+      </div>
+    );
+  }
+
+  function handleTruncateTo(idx) {
+    function innerTruncate(event) {
+      truncateTo({variables: {input: {to: idx}}});
+    }
+
+    return innerTruncate;
+  }
+  function handleDelete(idx) {
+    function innerDelete(event) {
+      _delete({variables: {input: {to: idx}}});
+    }
+
+    return innerDelete;
+  }
+  function handleHashTo(idx) {
+    function innerHashTo(event) {
+      hashTo({variables: {input: {to: idx}}});
+    }
+
+    return innerHashTo;
+  }
+  function handleGroupAndHash(idx) {
+    function innerGroupAndHash(event) {
+      groupAndHash({variables: {input: {to: idx}}});
+    }
+
+    return innerGroupAndHash;
+  }
 
   const tableRows = [];
-  for (let logAction of props.actions) {
+  for (let [idx, logAction] of props.actions.entries()) {
     let isService = false;
     let name = 'Group';
     if (
@@ -102,9 +214,25 @@ const ActionList = (props: any) => {
           </List>
         </TableCell>
         <TableCell className={classes.tableCell}>
-          <List dense={true}>
-            {options}
-          </List>
+          {
+            !(logAction.hash || logAction.version) &&
+            <React.Fragment>
+              <Button 
+                variant="contained" color="primary" 
+                onClick={handleDelete(idx)}>
+                Delete
+              </Button>
+              <Button variant="contained" color="primary" onClick={handleTruncateTo(idx)}>
+                Truncate
+              </Button>
+              <Button variant="contained" color="primary" onClick={handleHashTo(idx)}>
+                Hash To Entry
+              </Button>
+              <Button variant="contained" color="primary" onClick={handleGroupAndHash(idx)}>
+                Group and Hash
+              </Button>
+            </React.Fragment>
+          }
         </TableCell>
       </TableRow>
     );
@@ -122,6 +250,7 @@ const ActionList = (props: any) => {
             <TableCell>Version</TableCell>
             <TableCell>Change</TableCell>
             <TableCell>Options</TableCell>
+            <TableCell>Actions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>

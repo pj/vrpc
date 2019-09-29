@@ -1,4 +1,4 @@
-import * as fs from 'fs';
+import {promises as fs} from 'fs';
 import * as path from 'path';
 import { Backend } from './backend';
 import {Action, loadActionLog} from './action';
@@ -31,21 +31,35 @@ export class FileBackend implements Backend {
     const log = loadActionLog(path.join(process.cwd(), this.fileName));
     log.push(action);
     console.log(log);
-    //await fs.promises.writeFile(this.fileName, JSON.stringify(log, null, 2));
+    await fs.writeFile(this.fileName, JSON.stringify(log, null, 2));
   }
 
   async truncateTo(to: number): Promise<void> {
     let log = loadActionLog(path.join(process.cwd(), this.fileName));
     log = log.slice(0, to);
-    console.log(log);
-    //await fs.promises.writeFile(this.fileName, JSON.stringify(log, null, 2));
+    await fs.writeFile(this.fileName, JSON.stringify(log, null, 2));
   }
 
   async hashTo(to: number): Promise<void> {
     let log = loadActionLog(path.join(process.cwd(), this.fileName));
     const hashes = hashActions(log);
-    log = addHashes(log, hashes, to);
-    console.log(log);
-    //await fs.promises.writeFile(this.fileName, JSON.stringify(log, null, 2));
+    console.log(hashes);
+    log = addHashes(log, hashes, to+1);
+    await fs.writeFile(this.fileName, JSON.stringify(log, null, 2));
+  }
+
+  async _delete(to: number): Promise<void> {
+    let log = loadActionLog(path.join(process.cwd(), this.fileName));
+    log = log.splice(to, 1);
+    await fs.writeFile(this.fileName, JSON.stringify(log, null, 2));
+  }
+
+  async groupAndHash(to: number): Promise<void> {
+    console.log(to);
+    //let log = loadActionLog(path.join(process.cwd(), this.fileName));
+    //const hashes = hashActions(log);
+    //log = addHashes(log, hashes, to);
+    //console.log(log);
+    //await fs.writeFile(this.fileName, JSON.stringify(log, null, 2));
   }
 }

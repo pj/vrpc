@@ -261,8 +261,18 @@ input HashInput {
   to: Int
 }
 
+input DeleteInput {
+  to: Int
+}
+
+input GroupAndHashInput {
+  to: Int
+}
+
 type Mutation {
   addToLog(input: LogActionInput!): NewLog
   truncateTo(input: TruncationInput!): NewLog
   hashTo(input: HashInput!): NewLog
+  _delete(input: DeleteInput!): NewLog
+  groupAndHash(input: GroupAndHashInput!): NewLog
 }

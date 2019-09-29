@@ -8,4 +8,6 @@ export interface Backend {
   addToLog(action: Action): Promise<void>;
   truncateTo(to: number): Promise<void>;
   hashTo(to: number): Promise<void>;
+  _delete(to: number): Promise<void>;
+  groupAndHash(to: number): Promise<void>;
 };

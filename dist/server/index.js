@@ -14,6 +14,20 @@ const generate_1 = require("../generate");
 const graphql_import_1 = require("graphql-import");
 const types = __importStar(require("./types"));
 const typeDefs = graphql_import_1.importSchema(path.join(__dirname, 'schema.graphql'));
+async function resultsFromMutation(backend) {
+    const log = await backend.getLog();
+    const currentTypes = await backend.getCurrentTypes();
+    let outputTypes = [];
+    for (let currentType of currentTypes) {
+        outputTypes.push(types.GQLType.fromGenerateType(currentType));
+    }
+    const currentServices = await backend.getCurrentServices();
+    let outputServices = [];
+    for (let currentService of currentServices) {
+        outputServices.push(types.GQLService.fromGenerateService(currentService));
+    }
+    return ({ log, types: outputTypes, services: outputServices });
+}
 function actionFromInput(input) {
     switch (input.logType) {
         // Services
@@ -147,51 +161,26 @@ function startServer(backend) {
         },
         Mutation: {
             async addToLog(root, input, context) {
-                console.log(input);
                 const action = actionFromInput(input.input);
                 await backend.addToLog(action);
-                const log = await backend.getLog();
-                const currentTypes = await backend.getCurrentTypes();
-                let outputTypes = [];
-                for (let currentType of currentTypes) {
-                    outputTypes.push(types.GQLType.fromGenerateType(currentType));
-                }
-                const currentServices = await backend.getCurrentServices();
-                let outputServices = [];
-                for (let currentService of currentServices) {
-                    outputServices.push(types.GQLService.fromGenerateService(currentService));
-                }
-                return ({ log, types: outputTypes, services: outputServices });
+                return (await resultsFromMutation(backend));
             },
             async truncateTo(root, input, context) {
-                await backend.truncateTo(input.to);
-                const log = await backend.getLog();
-                const currentTypes = await backend.getCurrentTypes();
-                let outputTypes = [];
-                for (let currentType of currentTypes) {
-                    outputTypes.push(types.GQLType.fromGenerateType(currentType));
-                }
-                const currentServices = await backend.getCurrentServices();
-                let outputServices = [];
-                for (let currentService of currentServices) {
-                    outputServices.push(types.GQLService.fromGenerateService(currentService));
-                }
-                return ({ log, types: outputTypes, services: outputServices });
+                await backend.truncateTo(input.input.to);
+                return (await resultsFromMutation(backend));
             },
             async hashTo(root, input, context) {
-                await backend.hashTo(input.to);
-                const log = await backend.getLog();
-                const currentTypes = await backend.getCurrentTypes();
-                let outputTypes = [];
-                for (let currentType of currentTypes) {
-                    outputTypes.push(types.GQLType.fromGenerateType(currentType));
-                }
-                const currentServices = await backend.getCurrentServices();
-                let outputServices = [];
-                for (let currentService of currentServices) {
-                    outputServices.push(types.GQLService.fromGenerateService(currentService));
-                }
-                return ({ log, types: outputTypes, services: outputServices });
+                await backend.hashTo(input.input.to);
+                return (await resultsFromMutation(backend));
+            },
+            async _delete(root, input, context) {
+                console.log(input);
+                await backend._delete(input.input.to);
+                return (await resultsFromMutation(backend));
+            },
+            async groupAndHash(root, input, context) {
+                await backend.groupAndHash(input.input.to);
+                return (await resultsFromMutation(backend));
             }
         }
     };

@@ -8,6 +8,28 @@ import * as types from './types';
 
 const typeDefs = importSchema(path.join(__dirname, 'schema.graphql'));
 
+async function resultsFromMutation(backend: Backend): Promise<any> {
+  const log = await backend.getLog();
+
+  const currentTypes = await backend.getCurrentTypes();
+  let outputTypes = [];
+  for (let currentType of currentTypes) {
+    outputTypes.push(
+      types.GQLType.fromGenerateType(currentType)
+    );
+  }
+
+  const currentServices = await backend.getCurrentServices();
+  let outputServices = [];
+  for (let currentService of currentServices) {
+    outputServices.push(
+      types.GQLService.fromGenerateService(currentService)
+    );
+  }
+
+  return ({log, types: outputTypes, services: outputServices});
+}
+
 export function actionFromInput(input: any): action.Action {
   switch(input.logType) {
     // Services
@@ -242,72 +264,27 @@ export function startServer(backend: Backend) {
     },
     Mutation: {
       async addToLog(root: any, input: any, context: any) {
-        console.log(input);
         const action = actionFromInput(input.input);
         await backend.addToLog(action);
-        const log = await backend.getLog();
 
-        const currentTypes = await backend.getCurrentTypes();
-        let outputTypes = [];
-        for (let currentType of currentTypes) {
-          outputTypes.push(
-            types.GQLType.fromGenerateType(currentType)
-          );
-        }
-
-        const currentServices = await backend.getCurrentServices();
-        let outputServices = [];
-        for (let currentService of currentServices) {
-          outputServices.push(
-            types.GQLService.fromGenerateService(currentService)
-          );
-        }
-
-        return ({log, types: outputTypes, services: outputServices});
+        return (await resultsFromMutation(backend));
       },
       async truncateTo(root: any, input: any, context: any) {
-        await backend.truncateTo(input.to);
-        const log = await backend.getLog();
-
-        const currentTypes = await backend.getCurrentTypes();
-        let outputTypes = [];
-        for (let currentType of currentTypes) {
-          outputTypes.push(
-            types.GQLType.fromGenerateType(currentType)
-          );
-        }
-
-        const currentServices = await backend.getCurrentServices();
-        let outputServices = [];
-        for (let currentService of currentServices) {
-          outputServices.push(
-            types.GQLService.fromGenerateService(currentService)
-          );
-        }
-
-        return ({log, types: outputTypes, services: outputServices});
+        await backend.truncateTo(input.input.to);
+        return (await resultsFromMutation(backend));
       },
       async hashTo(root: any, input: any, context: any) {
-        await backend.hashTo(input.to);
-        const log = await backend.getLog();
-
-        const currentTypes = await backend.getCurrentTypes();
-        let outputTypes = [];
-        for (let currentType of currentTypes) {
-          outputTypes.push(
-            types.GQLType.fromGenerateType(currentType)
-          );
-        }
-
-        const currentServices = await backend.getCurrentServices();
-        let outputServices = [];
-        for (let currentService of currentServices) {
-          outputServices.push(
-            types.GQLService.fromGenerateService(currentService)
-          );
-        }
-
-        return ({log, types: outputTypes, services: outputServices});
+        await backend.hashTo(input.input.to);
+        return (await resultsFromMutation(backend));
+      },
+      async _delete(root: any, input: any, context: any) {
+        console.log(input);
+        await backend._delete(input.input.to);
+        return (await resultsFromMutation(backend));
+      },
+      async groupAndHash(root: any, input: any, context: any) {
+        await backend.groupAndHash(input.input.to);
+        return (await resultsFromMutation(backend));
       }
     }
   };

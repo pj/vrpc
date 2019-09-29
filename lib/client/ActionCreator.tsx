@@ -182,7 +182,6 @@ const VersionSelector = (props: any) => {
 }
 
 
-console.log(ACTIONS_FRAGMENT);
 const ADD_TO_LOG = gql`
 mutation AddToLog($input: LogActionInput!) {
   addToLog(input: $input) {
@@ -248,15 +247,6 @@ const ActionCreator = (props: any) => {
 
   if (mutationLoading) {
     return <CircularProgress />;
-  }
-
-  if (mutationError) {
-    return (
-      <div>
-        {mutationError.toString()}
-        {mutationError.extensions.toString()}
-      </div>
-    );
   }
 
   function handleAddToLog(event) {
@@ -575,8 +565,17 @@ const ActionCreator = (props: any) => {
 
   }
 
+  console.log(mutationError);
+
   return (
     <Paper className={classes.root}>
+      {
+        mutationError && (
+          <div>
+            {mutationError.toString()}
+          </div>
+        )
+      }
       <FormControl>
         <InputLabel htmlFor="action-type">Action Type</InputLabel>
         <Select
