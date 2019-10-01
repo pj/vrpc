@@ -1,4 +1,4 @@
-import * as fs from 'fs';
+import {promises as fs} from 'fs';
 
 export type FieldTypes = 'string' | 'boolean' | 'number';
 
@@ -618,6 +618,19 @@ function loadAction(action: any): Action {
 
 export function loadActionLog(path: string): Array<Action> {
   const actions = require(path);
+  const outputActions = [];
+
+  for (const action of actions) {
+    const log = loadAction(action);
+    outputActions.push(log);
+  }
+
+  return outputActions;
+}
+
+export async function loadActionAsync(path: string): Promise<Array<Action>> {
+  const data = await fs.readFile(path, 'utf-8');
+  const actions = JSON.parse(data.toString());
   const outputActions = [];
 
   for (const action of actions) {

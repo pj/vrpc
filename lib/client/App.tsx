@@ -16,15 +16,7 @@ import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import ActionList from './ActionList';
 import ActionCreator from './ActionCreator';
-import {ALL_DATA, ACTIONS_FRAGMENT} from './Fragments';
-
-console.log(ACTIONS_FRAGMENT);
-const GET_LOG = gql`
-{
-  ${ALL_DATA}
-}
-${ACTIONS_FRAGMENT}
-`;
+import {ALL_DATA, ACTIONS_FRAGMENT, GET_LOG} from './Fragments';
 
 const drawerWidth = 240;
 

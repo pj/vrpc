@@ -58,6 +58,7 @@ fragment ActionsFragment on Action {
   __typename
   changeLog
   hash
+  _id: hash
   version
 
   ... on NewServiceAction {
@@ -146,5 +147,12 @@ fragment ActionsFragment on Action {
     description
   }
 }
+`;
+
+export const GET_LOG = gql`
+query GetLog {
+  ${ALL_DATA}
+}
+${ACTIONS_FRAGMENT}
 `;
 

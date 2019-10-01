@@ -17,44 +17,42 @@ class FileBackend {
         this.fileName = fileName;
     }
     async getLog() {
-        return action_1.loadActionLog(path.join(process.cwd(), this.fileName));
+        return (await action_1.loadActionAsync(path.join(process.cwd(), this.fileName)));
     }
     async getCurrentServices() {
-        const log = action_1.loadActionLog(path.join(process.cwd(), this.fileName));
+        const log = await action_1.loadActionAsync(path.join(process.cwd(), this.fileName));
         const [_, services] = generate_1.generateDefinitions(log);
         return services;
     }
     async getCurrentTypes() {
-        const log = action_1.loadActionLog(path.join(process.cwd(), this.fileName));
+        const log = await action_1.loadActionAsync(path.join(process.cwd(), this.fileName));
         const [types, _] = generate_1.generateDefinitions(log);
         return types;
     }
     async addToLog(action) {
-        const log = action_1.loadActionLog(path.join(process.cwd(), this.fileName));
+        const log = await action_1.loadActionAsync(path.join(process.cwd(), this.fileName));
         log.push(action);
-        console.log(log);
         await fs_1.promises.writeFile(this.fileName, JSON.stringify(log, null, 2));
     }
     async truncateTo(to) {
-        let log = action_1.loadActionLog(path.join(process.cwd(), this.fileName));
+        let log = await action_1.loadActionAsync(path.join(process.cwd(), this.fileName));
         log = log.slice(0, to);
         await fs_1.promises.writeFile(this.fileName, JSON.stringify(log, null, 2));
     }
     async hashTo(to) {
-        let log = action_1.loadActionLog(path.join(process.cwd(), this.fileName));
+        let log = await action_1.loadActionAsync(path.join(process.cwd(), this.fileName));
         const hashes = typeidea_1.hashActions(log);
-        console.log(hashes);
         log = typeidea_1.addHashes(log, hashes, to + 1);
         await fs_1.promises.writeFile(this.fileName, JSON.stringify(log, null, 2));
     }
     async _delete(to) {
-        let log = action_1.loadActionLog(path.join(process.cwd(), this.fileName));
+        let log = await action_1.loadActionAsync(path.join(process.cwd(), this.fileName));
         log = log.splice(to, 1);
         await fs_1.promises.writeFile(this.fileName, JSON.stringify(log, null, 2));
     }
     async groupAndHash(to) {
         console.log(to);
-        //let log = loadActionLog(path.join(process.cwd(), this.fileName));
+        //let log = loadActionAsync(path.join(process.cwd(), this.fileName));
         //const hashes = hashActions(log);
         //log = addHashes(log, hashes, to);
         //console.log(log);

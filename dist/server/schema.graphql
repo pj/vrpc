@@ -17,12 +17,14 @@ type BooleanField {
 union FieldData = StringField | IntField | FloatField | BooleanField
 
 interface Action {
+  id: String,
   changeLog: String,
   hash: String,
   version: Int
 }
 
 type NewServiceAction implements Action {
+  id: String,
   changeLog: String,
   hash: String,
   version: Int
@@ -31,6 +33,7 @@ type NewServiceAction implements Action {
 }
 
 type UpdateDescriptionServiceAction implements Action {
+  id: String,
   changeLog: String,
   hash: String,
   version: Int
@@ -39,6 +42,7 @@ type UpdateDescriptionServiceAction implements Action {
 }
 
 type AddVersionServiceAction implements Action {
+  id: String,
   changeLog: String,
   hash: String,
   version: Int
@@ -52,6 +56,7 @@ type AddVersionServiceAction implements Action {
 }
 
 type RenameFieldTypeAction implements Action {
+  id: String,
   changeLog: String,
   hash: String,
   version: Int
@@ -61,6 +66,7 @@ type RenameFieldTypeAction implements Action {
 }
 
 type RequiredFieldTypeAction implements Action {
+  id: String,
   changeLog: String,
   hash: String,
   version: Int
@@ -69,6 +75,7 @@ type RequiredFieldTypeAction implements Action {
 }
 
 type OptionalFieldTypeAction implements Action {
+  id: String,
   changeLog: String,
   hash: String,
   version: Int
@@ -77,6 +84,7 @@ type OptionalFieldTypeAction implements Action {
 }
 
 type DeleteFieldTypeAction implements Action {
+  id: String,
   changeLog: String,
   hash: String,
   version: Int
@@ -85,6 +93,7 @@ type DeleteFieldTypeAction implements Action {
 }
 
 type SetDefaultFieldTypeAction implements Action {
+  id: String,
   changeLog: String,
   hash: String,
   version: Int
@@ -94,6 +103,7 @@ type SetDefaultFieldTypeAction implements Action {
 }
 
 type RemoveDefaultFieldTypeAction implements Action {
+  id: String,
   changeLog: String,
   hash: String,
   version: Int
@@ -102,6 +112,7 @@ type RemoveDefaultFieldTypeAction implements Action {
 }
 
 type AddFieldTypeAction implements Action {
+  id: String,
   changeLog: String,
   hash: String,
   version: Int
@@ -114,6 +125,7 @@ type AddFieldTypeAction implements Action {
 }
 
 type UpdateDescriptionTypeAction implements Action {
+  id: String,
   changeLog: String,
   hash: String,
   version: Int
@@ -123,6 +135,7 @@ type UpdateDescriptionTypeAction implements Action {
 }
 
 type ReferenceFieldTypeAction implements Action {
+  id: String,
   changeLog: String,
   hash: String,
   version: Int
@@ -136,6 +149,7 @@ type ReferenceFieldTypeAction implements Action {
 }
 
 type NewTypeAction implements Action {
+  id: String,
   changeLog: String,
   hash: String,
   version: Int
@@ -149,6 +163,7 @@ type GroupVersion {
 }
 
 type GroupAction implements Action {
+  id: String,
   changeLog: String,
   hash: String,
   version: Int

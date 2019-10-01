@@ -6,7 +6,7 @@ import { useMutation } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import Paper from '@material-ui/core/Paper';
 
-import {ALL_DATA, ACTIONS_FRAGMENT} from './Fragments';
+import {ALL_DATA, ACTIONS_FRAGMENT, GET_LOG} from './Fragments';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
@@ -219,6 +219,19 @@ const ActionCreator = (props: any) => {
   } as any);
 
   function updateCacheFromAdd(cache: any, mutationResult: any) {
+    try {
+      console.log(mutationResult);
+      const data = cache.readQuery({ query: GET_LOG });
+      data.log = mutationResult.data.addToLog.log;
+      data.types = mutationResult.data.addToLog.types;
+      data.services = mutationResult.data.addToLog.services;
+      cache.writeQuery({query: GET_LOG, data});
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  function completeUpdate() {
     setValues({
       changeLog: "",
       typeName: "",
@@ -243,7 +256,14 @@ const ActionCreator = (props: any) => {
   const [
    addToLog,
    { loading: mutationLoading, error: mutationError },
-  ] = useMutation(ADD_TO_LOG, {update: updateCacheFromAdd});
+  ] = useMutation(
+    ADD_TO_LOG,
+    {
+      //update: updateCacheFromAdd,
+      refetchQueries: ['GetLog'],
+      onCompleted: completeUpdate,
+    }
+  );
 
   if (mutationLoading) {
     return <CircularProgress />;
@@ -564,8 +584,6 @@ const ActionCreator = (props: any) => {
     );
 
   }
-
-  console.log(mutationError);
 
   return (
     <Paper className={classes.root}>

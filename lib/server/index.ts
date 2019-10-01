@@ -5,11 +5,17 @@ import * as action from '../action';
 import {BaseField, Field, ReferenceField} from '../generate';
 import {importSchema} from 'graphql-import';
 import * as types from './types';
+import {hashActions, addHashes} from '../typeidea';
 
 const typeDefs = importSchema(path.join(__dirname, 'schema.graphql'));
 
 async function resultsFromMutation(backend: Backend): Promise<any> {
-  const log = await backend.getLog();
+  let log = await backend.getLog();
+  const hashes = hashActions(log);
+  log = addHashes(log, hashes, null);
+  console.log('-------');
+  console.log('mutation output');
+  console.log(log);
 
   const currentTypes = await backend.getCurrentTypes();
   let outputTypes = [];
@@ -240,7 +246,15 @@ export function startServer(backend: Backend) {
       }
     },
     Query: {
-      log: async () => await backend.getLog(),
+      log: async (): Promise<any> => {
+        let actions = await backend.getLog()
+        const hashes = hashActions(actions);
+        actions = addHashes(actions, hashes, null);
+        console.log('---------------');
+        console.log('querying')
+        console.log(actions);
+        return actions;
+      },
       services: async (): Promise<types.GQLService[]> => {
         const currentServices = await backend.getCurrentServices();
         let output = [];
@@ -265,6 +279,9 @@ export function startServer(backend: Backend) {
     Mutation: {
       async addToLog(root: any, input: any, context: any) {
         const action = actionFromInput(input.input);
+        console.log('----------------');
+        console.log("adding");
+        console.log(action);
         await backend.addToLog(action);
 
         return (await resultsFromMutation(backend));
@@ -278,7 +295,6 @@ export function startServer(backend: Backend) {
         return (await resultsFromMutation(backend));
       },
       async _delete(root: any, input: any, context: any) {
-        console.log(input);
         await backend._delete(input.input.to);
         return (await resultsFromMutation(backend));
       },

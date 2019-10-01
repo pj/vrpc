@@ -223,14 +223,9 @@ export function addHashes(
     hashTo = unhashedType.length;
   }
   for (let i = 0; i < hashTo; i++) {
-    console.log('----------------------');
-    console.log(i);
     const logAction = hashed[i];
-    console.log(logAction);
     if (logAction.hash === null || logAction.hash === undefined) {
-      console.log('here')
       for (let [idx, hash, version] of hashes) {
-        console.log('here')
         if (idx === i) {
           const newAction = Object.assign(
             Object.create(Object.getPrototypeOf(logAction)),
@@ -247,7 +242,6 @@ export function addHashes(
       }
     }
   }
-  console.log(hashed);
 
   return hashed;
 }

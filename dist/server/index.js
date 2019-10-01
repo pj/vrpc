@@ -13,9 +13,15 @@ const action = __importStar(require("../action"));
 const generate_1 = require("../generate");
 const graphql_import_1 = require("graphql-import");
 const types = __importStar(require("./types"));
+const typeidea_1 = require("../typeidea");
 const typeDefs = graphql_import_1.importSchema(path.join(__dirname, 'schema.graphql'));
 async function resultsFromMutation(backend) {
-    const log = await backend.getLog();
+    let log = await backend.getLog();
+    const hashes = typeidea_1.hashActions(log);
+    log = typeidea_1.addHashes(log, hashes, null);
+    console.log('-------');
+    console.log('mutation output');
+    console.log(log);
     const currentTypes = await backend.getCurrentTypes();
     let outputTypes = [];
     for (let currentType of currentTypes) {
@@ -141,7 +147,15 @@ function startServer(backend) {
             }
         },
         Query: {
-            log: async () => await backend.getLog(),
+            log: async () => {
+                let actions = await backend.getLog();
+                const hashes = typeidea_1.hashActions(actions);
+                actions = typeidea_1.addHashes(actions, hashes, null);
+                console.log('---------------');
+                console.log('querying');
+                console.log(actions);
+                return actions;
+            },
             services: async () => {
                 const currentServices = await backend.getCurrentServices();
                 let output = [];
@@ -162,6 +176,9 @@ function startServer(backend) {
         Mutation: {
             async addToLog(root, input, context) {
                 const action = actionFromInput(input.input);
+                console.log('----------------');
+                console.log("adding");
+                console.log(action);
                 await backend.addToLog(action);
                 return (await resultsFromMutation(backend));
             },
@@ -174,7 +191,6 @@ function startServer(backend) {
                 return (await resultsFromMutation(backend));
             },
             async _delete(root, input, context) {
-                console.log(input);
                 await backend._delete(input.input.to);
                 return (await resultsFromMutation(backend));
             },

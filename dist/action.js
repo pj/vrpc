@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const fs_1 = require("fs");
 class Action {
     constructor(changeLog, hash, version) {
         this._action_type = this.constructor.name;
@@ -324,6 +325,17 @@ function loadActionLog(path) {
     return outputActions;
 }
 exports.loadActionLog = loadActionLog;
+async function loadActionAsync(path) {
+    const data = await fs_1.promises.readFile(path, 'utf-8');
+    const actions = JSON.parse(data.toString());
+    const outputActions = [];
+    for (const action of actions) {
+        const log = loadAction(action);
+        outputActions.push(log);
+    }
+    return outputActions;
+}
+exports.loadActionAsync = loadActionAsync;
 function loadActionLogFromList(actions) {
     const outputActions = [];
     for (const action of actions) {
