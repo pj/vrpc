@@ -58,6 +58,7 @@ fragment ActionsFragment on Action {
   __typename
   changeLog
   hash
+  unhashed
   _id: hash
   version
 

@@ -19,9 +19,13 @@ async function resultsFromMutation(backend) {
     let log = await backend.getLog();
     const hashes = typeidea_1.hashActions(log);
     log = typeidea_1.addHashes(log, hashes, null);
-    console.log('-------');
-    console.log('mutation output');
-    console.log(log);
+    for (let i = 0; i < log.length; i++) {
+        log[i].unhashed = false;
+    }
+    for (let [idx, hash, version] of hashes) {
+        console.log(idx);
+        log[idx].unhashed = true;
+    }
     const currentTypes = await backend.getCurrentTypes();
     let outputTypes = [];
     for (let currentType of currentTypes) {
@@ -148,13 +152,7 @@ function startServer(backend) {
         },
         Query: {
             log: async () => {
-                let actions = await backend.getLog();
-                const hashes = typeidea_1.hashActions(actions);
-                actions = typeidea_1.addHashes(actions, hashes, null);
-                console.log('---------------');
-                console.log('querying');
-                console.log(actions);
-                return actions;
+                return (await resultsFromMutation(backend)).log;
             },
             services: async () => {
                 const currentServices = await backend.getCurrentServices();

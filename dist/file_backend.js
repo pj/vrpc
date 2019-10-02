@@ -47,7 +47,7 @@ class FileBackend {
     }
     async _delete(to) {
         let log = await action_1.loadActionAsync(path.join(process.cwd(), this.fileName));
-        log = log.splice(to, 1);
+        log.splice(to, 1);
         await fs_1.promises.writeFile(this.fileName, JSON.stringify(log, null, 2));
     }
     async groupAndHash(to) {

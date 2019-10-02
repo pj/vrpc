@@ -3,8 +3,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useQuery } from '@apollo/react-hooks';
 import { useMutation } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
+import classNames from 'classnames';
 
-import { ACTIONS_FRAGMENT, ALL_DATA } from './Fragments';
+import { ACTIONS_FRAGMENT, ALL_DATA, GET_LOG } from './Fragments';
 
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -31,6 +32,9 @@ const useStyles = makeStyles(theme => ({
   },
   actionButtons: {
     display: 'flex'
+  },
+  unhashed: {
+    backgroundColor: "#F48FB1"
   }
 }));
 
@@ -69,33 +73,56 @@ mutation GroupAndHash($input: GroupAndHashInput!) {
 }
 ${ACTIONS_FRAGMENT}
 `;
-
 const ActionList = (props: any) => {
   const classes = useStyles();
 
-  function updateCacheFromMutation(cache: any, mutationResult: any) {
-    console.log(mutationResult);
+  function updateCacheFromMutation(key: any) {
+    function innerUpdate(cache: any, mutationResult: any) {
+      try {
+        console.log(mutationResult);
+        const data = cache.readQuery({ query: GET_LOG });
+        data.log = mutationResult.data[key].log;
+        data.types = mutationResult.data[key].types;
+        data.services = mutationResult.data[key].services;
+        cache.writeQuery({query: GET_LOG, data});
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    return innerUpdate;
   }
 
   const [
    truncateTo,
    { loading: truncateMutationLoading, error: truncateError },
-  ] = useMutation(TRUNCATE_TO, {update: updateCacheFromMutation});
+  ] = useMutation(TRUNCATE_TO, {
+    refetchQueries: ['GetLog'],
+    //update: updateCacheFromMutation('truncateTo')
+  });
 
   const [
    _delete,
    { loading: deleteMutationLoading, error: deleteError },
-  ] = useMutation(DELETE, {update: updateCacheFromMutation});
+  ] = useMutation(DELETE, {
+    refetchQueries: ['GetLog'],
+    //update: updateCacheFromMutation('_delete')
+  });
 
   const [
    hashTo,
    { loading: hashMutationLoading, error: hashError },
-  ] = useMutation(HASH_TO, {update: updateCacheFromMutation});
+  ] = useMutation(HASH_TO, {
+    refetchQueries: ['GetLog'],
+    //update: updateCacheFromMutation('hashTo')
+  });
 
   const [
    groupAndHash,
    { loading: groupMutationLoading, error: groupError },
-  ] = useMutation(GROUP_AND_HASH, {update: updateCacheFromMutation});
+  ] = useMutation(GROUP_AND_HASH, {
+    refetchQueries: ['GetLog'],
+    //update: updateCacheFromMutation('groupAndHash')
+  });
 
   if (
     truncateMutationLoading
@@ -181,7 +208,9 @@ const ActionList = (props: any) => {
           'changeLog',
           'hash',
           'typeName',
-          'serviceName'
+          'serviceName',
+          '_id',
+          'unhashed'
         ].indexOf(key) === -1
       ) {
         options.push(
@@ -193,32 +222,36 @@ const ActionList = (props: any) => {
       }
     }
 
+    const tableClasses = classNames({
+      [`${classes.tableCell}`]: true,
+      [`${classes.unhashed}`]: logAction.unhashed
+    });
     tableRows.push(
       <TableRow key={logAction.hash}>
-        <TableCell className={classes.tableCell}>
+        <TableCell className={tableClasses}>
           {isService ? "Service" : "Type"}
         </TableCell>
-        <TableCell className={classes.tableCell}>{name}</TableCell>
-        <TableCell className={classes.tableCell}>{logAction.__typename}</TableCell>
-        <TableCell className={classes.tableCell}>
+        <TableCell className={tableClasses}>{name}</TableCell>
+        <TableCell className={tableClasses}>{logAction.__typename}</TableCell>
+        <TableCell className={tableClasses}>
           <Tooltip title={`hash: ${logAction.hash}`} placement="top">
             <span>
               {logAction.version}
             </span>
           </Tooltip>
         </TableCell>
-        <TableCell className={classes.tableCell}>{logAction.changeLog}</TableCell>
-        <TableCell className={classes.tableCell}>
+        <TableCell className={tableClasses}>{logAction.changeLog}</TableCell>
+        <TableCell className={tableClasses}>
           <List dense={true}>
             {options}
           </List>
         </TableCell>
-        <TableCell className={classes.tableCell}>
+        <TableCell className={tableClasses}>
           {
-            !(logAction.hash || logAction.version) &&
+            logAction.unhashed &&
             <React.Fragment>
-              <Button 
-                variant="contained" color="primary" 
+              <Button
+                variant="contained" color="primary"
                 onClick={handleDelete(idx)}>
                 Delete
               </Button>
@@ -254,7 +287,7 @@ const ActionList = (props: any) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {tableRows}
+          {tableRows.reverse()}
         </TableBody>
       </Table>
     </Paper>

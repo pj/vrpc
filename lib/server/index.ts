@@ -13,9 +13,13 @@ async function resultsFromMutation(backend: Backend): Promise<any> {
   let log = await backend.getLog();
   const hashes = hashActions(log);
   log = addHashes(log, hashes, null);
-  console.log('-------');
-  console.log('mutation output');
-  console.log(log);
+  for (let i = 0; i < log.length; i++) {
+    (log[i] as any).unhashed = false;
+  }
+  for (let [idx, hash, version] of hashes) {
+    console.log(idx);
+    (log[idx] as any).unhashed = true;
+  }
 
   const currentTypes = await backend.getCurrentTypes();
   let outputTypes = [];
@@ -247,13 +251,7 @@ export function startServer(backend: Backend) {
     },
     Query: {
       log: async (): Promise<any> => {
-        let actions = await backend.getLog()
-        const hashes = hashActions(actions);
-        actions = addHashes(actions, hashes, null);
-        console.log('---------------');
-        console.log('querying')
-        console.log(actions);
-        return actions;
+        return (await resultsFromMutation(backend)).log;
       },
       services: async (): Promise<types.GQLService[]> => {
         const currentServices = await backend.getCurrentServices();

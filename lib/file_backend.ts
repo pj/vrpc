@@ -48,7 +48,7 @@ export class FileBackend implements Backend {
 
   async _delete(to: number): Promise<void> {
     let log = await loadActionAsync(path.join(process.cwd(), this.fileName));
-    log = log.splice(to, 1);
+    log.splice(to, 1);
     await fs.writeFile(this.fileName, JSON.stringify(log, null, 2));
   }
 
