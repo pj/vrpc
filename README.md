@@ -1,5 +1,12 @@
 # TODO
+
+- update format for defining services.
 - update vrpc\_test
+- test scripts.
+- more fixes for front end.
+- blog article
+
+----- 
 - cli tools
 -- manipulate latest to create group
 - Web editor for types

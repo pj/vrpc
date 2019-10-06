@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as request from 'supertest';
-import * as express from 'express';
+import request from 'supertest';
+import express from 'express';
 
 import * as typeidea from '../lib/typeidea';
 import * as action from '../lib/action';
@@ -19,7 +19,7 @@ for (const dir of test_dirs) {
     fs.mkdirSync(path.join('./runtest', dir), {recursive: true});
     const actionLog = require('../tests/' + path.join('test_data', 'services', dir, 'actions.json'));
     const actions = action.loadActionLogFromList(actionLog);
-    const hashes = typeidea.hashActions(actions, false);
+    const hashes = typeidea.hashActions(actions);
     const hashedActions = typeidea.addHashes(actions, hashes, null);
 
     const [types, services] = generate.generateDefinitions(hashedActions);

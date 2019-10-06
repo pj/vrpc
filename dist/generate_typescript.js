@@ -28,17 +28,27 @@ function imports(versions) {
   ${allImports.join(',\n')}
 } from './types';`;
 }
+function serviceVersion(service, inputs, output) {
+    const allInputs = inputVersions.join(' | ');
+    return `
+function ${service.name}(
+  app: any,
+  func: (${allInputs}) => ${output}
+): void {
+  
+}`;
+}
 function serviceBody(service) {
     const allVersions = [];
     const allResponses = [];
     for (let version of service.versions.values()) {
         const [outputVersion, inputVersions] = version;
-        const allInputs = inputVersions.join(' | ');
-        allVersions.push(`func_${outputVersion}: (input: ${allInputs}) => ${outputVersion}`);
+        //const allInputs = inputVersions.join(' | ');
+        //allVersions.push(`func_${outputVersion}: (input: ${allInputs}) => ${outputVersion}`);
         for (let inputVersion of inputVersions) {
             allResponses.push(`case '${inputVersion}':
   const inputMessage = ${inputVersion}.deserialize(body);
-  const response = func_${outputVersion}(inputMessage);
+  const response = (inputMessage);
   const outputMessage = ${outputVersion._type}.serialize(response);
   res.json(outputMessage);
   return;`);
@@ -48,9 +58,11 @@ function serviceBody(service) {
     return `
 ${serviceHeader(service)}
 ${imports(service.versions)}
-function ${service.name}(
-  app: any,
-  ${allVersions.join(',\n')}
+
+const ${service.name}Definitions = new Map();
+
+function ${service.name}Express(
+  app: any
 ): void {
   app.post('/${service.name}', (req: Request, res: Response) => {
     const body = req.body;
