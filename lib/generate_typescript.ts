@@ -54,13 +54,12 @@ function serviceVersion(
   const allDefines = [];
 
   for (let input of inputs) {
-    allDefines.push(`${service.name}.set("${input}", func);`);
+    allDefines.push(`${service.name}Definitions.set("${input}", func);`);
   }
 
   return `
 function ${service.name}(
-  app: any,
-  func: (${allInputs}) => ${output}
+  func: (input: ${allInputs}) => ${output}
 ): void {
   ${allDefines.join('n')}
 }

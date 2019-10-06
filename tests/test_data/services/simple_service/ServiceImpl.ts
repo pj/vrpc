@@ -10,9 +10,11 @@ const implementations = [
     function (app: Express) {
       const service = require("../../../../runtest/simple_service/services");
 
-      service.AwesomeService(app, function (input: TestInputType_V1): TestOutputType_V1 {
+      service.AwesomeService(function (input: TestInputType_V1): TestOutputType_V1 {
         return new TestOutputType_V1("hello " + input.a_field);
       });
+
+      service.AwesomeServiceExpress(app);
     }
   ]
 ];

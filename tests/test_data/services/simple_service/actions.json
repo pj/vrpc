@@ -1,7 +1,7 @@
 [
   {
     "_action_type": "NewTypeAction",
-    "name": "TestInputType",
+    "typeName": "TestInputType",
     "description": "An awesome input type",
     "changeLog": "Needs this for testing new type",
     "hash": "a3ad8a8a6d0df732ef4eece7241c0f253b59ffe694f654f8def25b08d868d74a",
@@ -20,7 +20,7 @@
   },
   {
     "_action_type": "NewTypeAction",
-    "name": "TestOutputType",
+    "typeName": "TestOutputType",
     "description": "An awesome output type",
     "changeLog": "Needs this for testing new output type",
     "hash": "2eeed3cda6513d2557733ee19f52c10ab5114385b733468a9aff6c53ea6bf727",

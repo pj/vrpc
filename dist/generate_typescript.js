@@ -29,41 +29,57 @@ function imports(versions) {
 } from './types';`;
 }
 function serviceVersion(service, inputs, output) {
-    const allInputs = inputVersions.join(' | ');
+    const allInputs = inputs.join(' | ');
+    const allDefines = [];
+    for (let input of inputs) {
+        allDefines.push(`${service.name}Definitions.set("${input}", func);`);
+    }
     return `
 function ${service.name}(
-  app: any,
-  func: (${allInputs}) => ${output}
+  func: (input: ${allInputs}) => ${output}
 ): void {
-  
-}`;
+  ${allDefines.join('n')}
+}
+`;
 }
 function serviceBody(service) {
     const allVersions = [];
     const allResponses = [];
+    const allDefines = [];
     for (let version of service.versions.values()) {
         const [outputVersion, inputVersions] = version;
         //const allInputs = inputVersions.join(' | ');
-        //allVersions.push(`func_${outputVersion}: (input: ${allInputs}) => ${outputVersion}`);
+        allDefines.push(serviceVersion(service, inputVersions, outputVersion));
         for (let inputVersion of inputVersions) {
             allResponses.push(`case '${inputVersion}':
   const inputMessage = ${inputVersion}.deserialize(body);
-  const response = (inputMessage);
+  const func = ${service.name}Definitions.get("${inputVersion}");
+  const response = func(inputMessage);
   const outputMessage = ${outputVersion._type}.serialize(response);
   res.json(outputMessage);
   return;`);
+            allVersions.push(`"${inputVersion}"`);
         }
     }
-    //const serviceName = "<%= service.name %>";
     return `
 ${serviceHeader(service)}
 ${imports(service.versions)}
 
 const ${service.name}Definitions = new Map();
 
+${allDefines.join('\n')}
+
 function ${service.name}Express(
   app: any
 ): void {
+  for (let inputVersion of [${allVersions.join(', ')}]) {
+    if (!${service.name}Definitions.has(inputVersion)) {
+      throw new Error(
+        "Service definition required for input version: " + inputVersion
+      );
+    }
+  }
+
   app.post('/${service.name}', (req: Request, res: Response) => {
     const body = req.body;
     switch (body['type'] + '_' + body['version']) {
@@ -76,6 +92,7 @@ function ${service.name}Express(
 
 export {
   ${service.name},
+  ${service.name}Express,
   // <%= service.name %> as service,
   // serviceName
 };`;
