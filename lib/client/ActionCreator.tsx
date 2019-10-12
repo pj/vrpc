@@ -28,7 +28,8 @@ const useStyles = makeStyles(theme => ({
     display: "flex",
     flexDirection: "column",
     padding: "20px",
-    maxWidth: "400px"
+    margin: "20px",
+    width: "20%"
   },
   table: {
   },

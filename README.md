@@ -1,9 +1,8 @@
 # TODO
 
-- update format for defining services.
 - update vrpc\_test
 - test scripts.
-- more fixes for front end.
+- Implement data type viewer.
 - blog article
 
 ----- 

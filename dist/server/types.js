@@ -40,13 +40,19 @@ class GQLBaseField {
         this.description = description;
         this.optional = optional;
     }
+    get __typename() {
+        return "BaseField";
+    }
 }
 exports.GQLBaseField = GQLBaseField;
 class GQLField extends GQLBaseField {
-    constructor(name, changeLog, description, optional, type, _default) {
+    constructor(name, changeLog, description, optional, _type, _default) {
         super(name, changeLog, description, optional);
-        this.type = type;
+        this._type = _type;
         this._default = _default;
+    }
+    get __typename() {
+        return "Field";
     }
 }
 exports.GQLField = GQLField;
@@ -56,6 +62,9 @@ class GQLReferenceField extends GQLBaseField {
         this.referenceType = referenceType;
         this.referenceHash = referenceHash;
         this.referenceVersion = referenceVersion;
+    }
+    get __typename() {
+        return "ReferenceField";
     }
 }
 exports.GQLReferenceField = GQLReferenceField;
@@ -88,7 +97,8 @@ class GQLVersion {
                 else if (_.isString(field._default)) {
                     gqlDefault = new StringField(field._default);
                 }
-                gqlField = new GQLField(field.name, field.changeLog, field.description, field.optional, field.type, gqlDefault);
+                gqlField = new GQLField(field.name, field.changeLog, field.description, field.optional, field.type === 'string' ? 'stringType' :
+                    (field.type === 'boolean' ? 'booleanType' : 'numberType'), gqlDefault);
             }
             else if (field instanceof generate.ReferenceField) {
                 gqlField = new GQLReferenceField(field.name, field.changeLog, field.description, field.optional, field.referenceType, field.referenceHash, field.referenceVersion);
@@ -96,7 +106,7 @@ class GQLVersion {
             else {
                 throw new Error('Should never happen (famous last words).');
             }
-            fields.push(new GQLFieldObject(key, field));
+            fields.push(new GQLFieldObject(key, gqlField));
         }
         return new GQLVersion(generateVersion._type, generateVersion.hash, generateVersion.version, fields);
     }

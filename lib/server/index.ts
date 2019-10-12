@@ -17,7 +17,6 @@ async function resultsFromMutation(backend: Backend): Promise<any> {
     (log[i] as any).unhashed = false;
   }
   for (let [idx, hash, version] of hashes) {
-    console.log(idx);
     (log[idx] as any).unhashed = true;
   }
 
@@ -172,20 +171,6 @@ export function actionFromInput(input: any): action.Action {
 
 export function startServer(backend: Backend) {
   const resolvers = {
-    BaseField: {
-      __resolveType(
-        obj: action.Action,
-        context: any,
-        info: any
-      ): string | null {
-        if (obj instanceof Field) {
-          return 'Field';
-        } else if (obj instanceof ReferenceField) {
-          return 'ReferenceField';
-        }
-        return null;
-      }
-    },
     LogAction: {
       __resolveType(
         obj: action.Action,

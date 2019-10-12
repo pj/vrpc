@@ -16,6 +16,12 @@ type BooleanField {
 
 union FieldData = StringField | IntField | FloatField | BooleanField
 
+enum FieldTypes {
+  stringType,
+  booleanType,
+  numberType
+}
+
 interface Action {
   changeLog: String,
   hash: String,
@@ -203,8 +209,9 @@ type Field implements BaseField {
   name: String,
   changeLog: String,
   description: String,
-  optional: Boolean
-  _default: FieldData
+  optional: Boolean,
+  _default: FieldData,
+  _type: FieldTypes
 }
 
 type ReferenceField implements BaseField {

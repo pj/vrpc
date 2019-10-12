@@ -16,35 +16,41 @@ import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import ActionList from './ActionList';
 import ActionCreator from './ActionCreator';
+import TypeViewer from './TypeViewer';
 import {ALL_DATA, ACTIONS_FRAGMENT, GET_LOG} from './Fragments';
 
 const drawerWidth = 240;
 
 const useStyles = makeStyles(theme => ({
   root: {
-      display: 'flex',
-    },
+    display: 'flex',
+  },
   appBar: {
-      zIndex: theme.zIndex.drawer + 1,
-    },
+    zIndex: theme.zIndex.drawer + 1,
+  },
   drawer: {
-      width: drawerWidth,
-      flexShrink: 0,
-    },
+    width: drawerWidth,
+    flexShrink: 0,
+  },
   drawerPaper: {
-      width: drawerWidth,
-    },
+    width: drawerWidth,
+  },
   content: {
-      flexGrow: 1,
-      padding: theme.spacing(3),
-    },
+    flexGrow: 1,
+    padding: theme.spacing(3),
+  },
+  topSection: {
+    display: 'flex',
+    flexDirection: 'row',
+    width: "100%"
+  },
   toolbar: theme.mixins.toolbar,
 }));
 
 const App = () => {
   const classes = useStyles();
   const { loading, data } = useQuery(GET_LOG);
-  if (loading) {
+  if (loading || !data) {
     return null;
   }
   return (
@@ -59,7 +65,10 @@ const App = () => {
       </AppBar>
       <main className={classes.content}>
         <div className={classes.toolbar} />
-        <ActionCreator types={data.types} services={data.services}/>
+        <div className={classes.topSection}>
+          <ActionCreator types={data.types} services={data.services}/>
+          <TypeViewer types={data.types} services={data.services} />
+        </div>
         <ActionList actions={data.log} />
       </main>
     </div>

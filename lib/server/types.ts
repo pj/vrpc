@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import * as action from '../action';
 import * as generate from '../generate';
 
-export type GQLFieldTypes = 'string' | 'boolean' | 'number';
+export type GQLFieldTypes = 'stringType' | 'booleanType' | 'numberType';
 
 export type GQLFieldDefaults = string | boolean | number;
 
@@ -54,10 +54,14 @@ export class GQLBaseField {
     this.description = description;
     this.optional = optional;
   }
+
+  get __typename(): string {
+    return "BaseField";
+  }
 }
 
 export class GQLField extends GQLBaseField {
-  type: GQLFieldTypes;
+  _type: GQLFieldTypes;
   _default: GQLFieldData | null;
 
   constructor(
@@ -65,12 +69,16 @@ export class GQLField extends GQLBaseField {
     changeLog: string,
     description: string,
     optional: boolean,
-    type: GQLFieldTypes,
+    _type: GQLFieldTypes,
     _default: GQLFieldData | null
   ) {
     super(name, changeLog, description, optional);
-    this.type = type;
+    this._type = _type;
     this._default = _default;
+  }
+
+  get __typename(): string {
+    return "Field";
   }
 }
 
@@ -92,6 +100,10 @@ export class GQLReferenceField extends GQLBaseField {
     this.referenceType = referenceType;
     this.referenceHash = referenceHash;
     this.referenceVersion = referenceVersion;
+  }
+
+  get __typename(): string {
+    return "ReferenceField";
   }
 }
 
@@ -144,7 +156,8 @@ export class GQLVersion {
           field.changeLog,
           field.description,
           field.optional,
-          field.type,
+          field.type === 'string' ? 'stringType' :
+            (field.type === 'boolean' ? 'booleanType' : 'numberType'),
           gqlDefault
         );
       } else if (field instanceof generate.ReferenceField) {
@@ -161,7 +174,7 @@ export class GQLVersion {
         throw new Error('Should never happen (famous last words).');
       }
       fields.push(
-        new GQLFieldObject(key, field)
+        new GQLFieldObject(key, gqlField)
       );
     }
     return new GQLVersion(

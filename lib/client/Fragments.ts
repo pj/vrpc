@@ -18,16 +18,41 @@ export const ALL_DATA = `
 
   types {
     name
+    description
     versions {
       version
+      _type
       fields {
         key
+        field {
+          name
+          description
+          changeLog
+          ... on Field {
+            name
+            optional
+            _type
+          }
+        }
       }
     }
   }
 
   services {
     name
+    description
+    changeLog
+    versions {
+      inputs {
+        version
+        _type
+      }
+
+      output {
+        version
+        _type
+      }
+    }
   }
 `;
 

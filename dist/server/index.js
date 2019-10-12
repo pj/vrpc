@@ -10,7 +10,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const path = __importStar(require("path"));
 const apollo_server_1 = require("apollo-server");
 const action = __importStar(require("../action"));
-const generate_1 = require("../generate");
 const graphql_import_1 = require("graphql-import");
 const types = __importStar(require("./types"));
 const typeidea_1 = require("../typeidea");
@@ -23,7 +22,6 @@ async function resultsFromMutation(backend) {
         log[i].unhashed = false;
     }
     for (let [idx, hash, version] of hashes) {
-        console.log(idx);
         log[idx].unhashed = true;
     }
     const currentTypes = await backend.getCurrentTypes();
@@ -75,17 +73,6 @@ function actionFromInput(input) {
 exports.actionFromInput = actionFromInput;
 function startServer(backend) {
     const resolvers = {
-        BaseField: {
-            __resolveType(obj, context, info) {
-                if (obj instanceof generate_1.Field) {
-                    return 'Field';
-                }
-                else if (obj instanceof generate_1.ReferenceField) {
-                    return 'ReferenceField';
-                }
-                return null;
-            }
-        },
         LogAction: {
             __resolveType(obj, context, info) {
                 if (obj instanceof action.NewServiceAction) {
