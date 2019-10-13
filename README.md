@@ -16,7 +16,7 @@
 -- floats and ints
 - generate other languages.
 - database backend.
-- proper concurrency
+- proper concurrency and latest.
 - improve validation.
 - metalog.
 

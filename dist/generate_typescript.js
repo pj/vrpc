@@ -82,7 +82,7 @@ function ${service.name}Express(
 
   app.post('/${service.name}', (req: Request, res: Response) => {
     const body = req.body;
-    switch (body['type'] + '_' + body['version']) {
+    switch (body['_type'] + '_V' + body['version']) {
     ${allResponses.join('\n')}
     default:
       throw new Error("Unknown input type: " + body);
@@ -156,6 +156,7 @@ ${generateFieldDescription(version.fields)}
 * @sealed
 */
 class ${className} {
+  readonly _type: string;
   readonly version: number;
   readonly hash: string;
   ${generateFieldTypes(version.fields)}
@@ -163,6 +164,7 @@ class ${className} {
   constructor(
     ${generateFieldArgs(version.fields)}
   ){
+    this._type = "${version._type}";
     this.version = ${version.version};
     this.hash = "${version.hash}";
     ${generateFieldSetters(version.fields)}
@@ -274,16 +276,18 @@ function generateClientVersion(service, version) {
     return `
 async ${service.name}(
   input: ${inputVersions.join(" | ")}
-): ${outputVersion} {
-  return await ${outputVersion._type}.deserialize(
-    request.post(
-      {
-        url: this.host + "/${service.name}",
-        json: true,
-        body: input,
-      }
-    )
+): Promise<${outputVersion}> {
+  const response = await request.post(
+    {
+      url: this.host + "/${service.name}",
+      json: true,
+      body: input,
+    }
   );
+
+  const body = JSON.parse(response);
+
+  return ${outputVersion}.deserialize(body);
 }`;
 }
 function generateServiceClient(service) {
@@ -298,9 +302,9 @@ function generateServiceClient(service) {
 function generateClientImports(types) {
     const allTypes = [];
     for (let _type of types) {
+        allTypes.push(_type.name);
         for (let version of _type.versions) {
             allTypes.push(version.formatVersion());
-            allTypes.push(version._type);
         }
         if (_type.latest !== null && _type.latest !== undefined) {
             allTypes.push(_type.latest.formatVersion());
