@@ -29,7 +29,7 @@
     "express": "^4.17.1",
     "graphql": "^14.5.4",
     "graphql-import": "^0.7.1",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.13",
     "parcel": "^1.12.3",
     "prettier": "^1.15.3",
     "react": "^16.8.0",
