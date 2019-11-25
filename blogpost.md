@@ -1,12 +1,12 @@
-vrpc is an idea that I've been playing around with for awhile. It's goal is to make it easy to build http services and clients that are simple to make backwards and forwards compatible as servers and clients evolve. The glass half full way of thinking about is a system to force developers to handle discrepancies in client/server versions properly.
+vrpc (versioned rpc) is an idea that I've been working on for awhile, It's goal is to make it easy to build http services and clients that are simple to make backwards and forwards compatible as servers and clients evolve. 
 
 It combines two related ideas, the first is to structure type and service configuration as a log of changes rather than as a static file, kind of like a version control system. The second is to use the config log to generate a series of types and service stubs that are versioned. This makes it easy to handle backwards compatibility on the server and forward compatibility on the client.
 
-Right now this is something I'm still working on, so the code isn't really very functional, but you can see it at: https://github.com/pj/vrpc.
+Right now this is something I'm still working on, so the code isn't very functional, but you can see it at: https://github.com/pj/vrpc.
 
 As an example, rather than a static definition of a type like:
 
-````typescript
+```typescript
 type Order {
     order_id: number;
     date_created: Date;
@@ -16,11 +16,11 @@ type Order {
 type OrderEntry {
     item_name: string;
 }
-````
+```
 
-The type would be defined as a log of actions:
+The types would be defined as a log of actions:
 
-````json
+```json
 [
     {
         "action": "Newtype", 
@@ -56,11 +56,11 @@ The type would be defined as a log of actions:
         "dataType": "Date"
     }
 ]
-````
+```
 
 Which would be used to generate a series of versioned types like:
 
-````typescript
+```typescript
 class Order_V1 {
     order_id: number;
 }
@@ -79,11 +79,11 @@ class Order_V3 {
     entries: OrderEntry[];
     date_created: Date;
 }
-````
+```
 
 Since generating a new version for every small change leads to excessive new types, there's also a system to group actions: 
 
-````json
+```json
 [
     {
         "action": "Group",
@@ -124,11 +124,11 @@ Since generating a new version for every small change leads to excessive new typ
         ]
     }
 ]
-````
+```
 
 Generating: 
 
-````typescript
+```typescript
 class OrderEntry_V1 {
     item_name: string
 }
@@ -138,7 +138,7 @@ class Order_V1 {
     entries: OrderEntry_V1[];
     date_created: Date;
 }
-````
+```
 
 This helps to enforce the versioning at the type level making it easy to understand how your interface is changing.
 
@@ -150,7 +150,7 @@ The log can also be used to define services, which are basically a name and a se
 
 For example:
 
-````json
+```json
 [
   {
     "action": "NewTypeAction",
@@ -183,16 +183,31 @@ For example:
     "inputVersion": 1,
     "outputType": "OrderResponse",
     "outputVersion": 1
+  },
+  {
+    "action": "AddFieldTypeAction",
+    "type": "Order",
+    "name": "title",
+    "dataType": "string",
+  },
+  {
+    "action": "AddVersionServiceAction",
+    "name": "OrderService",
+    "inputType": "Order",
+    "inputVersion": 2,
+    "outputType": "OrderResponse",
+    "outputVersion": 1
   }
 ]
-````
+```
 
 This would let you define services using generated stubs like so:
 
-````typescript
+```typescript
 import {Express, express} from "express";
 import {
   Order_V1,
+  Order_V2,
   OrderResponse_V1
 } from "./vrpc/types";
 import {
@@ -200,12 +215,16 @@ import {
 } from "./vrpc/services";
 const app = express();
 
-OrderService(app, function (input: Order_V1): OrderResponse_V1 {
-  return new OrderResponse_V1("hello " + input.name);
+OrderService(app, function (input: Order_V1 | Order_V2): OrderResponse_V1 {
+    if (input instanceof Order_V1) {
+        return new OrderResponse_V1(`hello ${input.name}`);
+    } else {
+        return new OrderResponse_V1(`hello ${input.title} ${input.name}`);
+    }
 });
 
 app.listen(3000, () => console.log(`Example app listening on port 3000!`)
-````
+```
 
 # Why not just use git?
 

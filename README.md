@@ -1,22 +1,4 @@
-# TODO
+vrpc (version rpc), is a tool for defining versioned types, service stubs and clients to make it easier to handle
+forwards and backwards compatible. Right now this is very much a work in progress and may not even be a good idea. 
 
-- update vrpc\_test
-- test scripts.
-- blog article
-
------ 
-
-- cli tools
--- manipulate latest to create group
-- Define type options as part of file, e.g. hashed attributes.
-- proto bufs support? json schema support?
-- more data types.
--- intersections and unions
--- arrays
--- floats and ints
-- generate other languages.
-- database backend.
-- proper concurrency and latest.
-- improve validation.
-- metalog.
-
+See: https://dev.to/pj/vrpc-types-services-and-clients-for-forwards-and-backwards-compatibility-1f51 for more information.
