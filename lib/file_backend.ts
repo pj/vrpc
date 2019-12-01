@@ -1,9 +1,18 @@
 import {promises as fs} from 'fs';
-import * as path from 'path';
 import { Backend } from './backend';
-import {Action, loadActionAsync} from './action';
+import {Action, ChangeSet, loadActionAsync, loadActionLog} from './action';
 import {generateDefinitions, Type, Service} from './generate';
-import {hashActions, addHashes} from './typeidea';
+import {validateWithChangeSet, commitChangeSet, validate} from './typeidea';
+import * as lockfile from 'proper-lockfile';
+import {JsonProperty, ObjectMapper} from 'json-object-mapper';
+import {MapDeserializer} from './utils';
+
+class StoredData {
+  @JsonProperty({type: Map})
+  changeSets: Map<string, Map<string, ChangeSet>>;
+  @JsonProperty({type: Action})
+  log: Action[];
+}
 
 export class FileBackend implements Backend {
   fileName: string;
@@ -11,53 +20,181 @@ export class FileBackend implements Backend {
     this.fileName = fileName;
   }
 
+  private async doWithLock<A>(func: (data: StoredData) => Promise<A>): Promise<A> {
+    const release = await lockfile.lock(this.fileName);
+    const rawData = await fs.readFile(this.fileName, {encoding: 'utf8'});
+    const storedData = ObjectMapper.deserialize(StoredData, JSON.parse(rawData));
+    const result = await func(storedData);
+    await release();
+    return result;
+  }
+
   async getLog(): Promise<Action[]> {
-    return (await loadActionAsync(path.join(process.cwd(), this.fileName)));
+    return this.doWithLock(
+      async (data: StoredData) => {
+        return data.log;
+      }
+    );
+  }
+
+  async validateLog(): Promise<string | null> {
+    return this.doWithLock(
+      async (data: StoredData) => {
+        return validate(data.log);
+      }
+    )
   }
 
   async getCurrentServices(): Promise<Service[]> {
-    const log = await loadActionAsync(path.join(process.cwd(), this.fileName));
-    const [_, services] = generateDefinitions(log);
-    return services;
+    return this.doWithLock(
+      async (data: StoredData) => {
+        const [_, services] = generateDefinitions(data.log);
+        return services;
+      }
+    );
+  }
+
+  async getCurrentServicesWithChangeSet(userId: string, changeSetId: string): Promise<Service[]> {
+    return this.doWithLock(
+      async (data: StoredData) => {
+        const changeSetData = data.changeSets;
+        const userSets = changeSetData.get(userId);
+        if (!userSets) {
+          throw new Error(`No changesets found for user: ${userId}`)
+        }
+
+        const changeSet = userSets.get(changeSetId);
+        if (!changeSet) {
+          throw new Error(`Changeset not found for id: ${changeSet}`)
+        }
+        
+        const newLog = commitChangeSet(data.log, changeSet);
+        
+        const [_, services] = generateDefinitions(newLog);
+        return services;
+      }
+    );
   }
 
   async getCurrentTypes(): Promise<Type[]> {
-    const log = await loadActionAsync(path.join(process.cwd(), this.fileName));
-    const [types, _] = generateDefinitions(log);
-    return types;
+    return this.doWithLock(
+      async (data: StoredData) => {
+        const [types, _] = generateDefinitions(data.log);
+        return types;
+      }
+    );
   }
 
-  async addToLog(action: Action): Promise<void> {
-    const log = await loadActionAsync(path.join(process.cwd(), this.fileName));
-    log.push(action);
-    await fs.writeFile(this.fileName, JSON.stringify(log, null, 2));
+  async getCurrentTypesWithChangeSet(userId: string, changeSetId: string): Promise<Type[]> {
+    return this.doWithLock(
+      async (data: StoredData) => {
+        const changeSetData = data.changeSets;
+        const userSets = changeSetData.get(userId);
+        if (!userSets) {
+          throw new Error(`No changesets found for user: ${userId}`)
+        }
+
+        const changeSet = userSets.get(changeSetId);
+        if (!changeSet) {
+          throw new Error(`Changeset not found for id: ${changeSet}`)
+        }
+        
+        const newLog = commitChangeSet(data.log, changeSet);
+        
+        const [types, _] = generateDefinitions(newLog);
+        return types;
+      }
+    );
   }
 
-  async truncateTo(to: number): Promise<void> {
-    let log = await loadActionAsync(path.join(process.cwd(), this.fileName));
-    log = log.slice(0, to);
-    await fs.writeFile(this.fileName, JSON.stringify(log, null, 2));
+  async getChangeSets(userId: string): Promise<ChangeSet[]> {
+    return this.doWithLock(
+      async (data: StoredData) => {
+        const changeSetData = data.changeSets;
+        const userSets = changeSetData.get(userId);
+        if (!userSets) {
+          throw new Error(`No changesets found for user: ${userId}`)
+        }
+
+        const changeSets = Array.from(userSets.values());
+        return changeSets;
+      }
+    );
   }
 
-  async hashTo(to: number): Promise<void> {
-    let log = await loadActionAsync(path.join(process.cwd(), this.fileName));
-    const hashes = hashActions(log);
-    log = addHashes(log, hashes, to+1);
-    await fs.writeFile(this.fileName, JSON.stringify(log, null, 2));
+  async getChangeSet(userId: string, changeSetId: string): Promise<ChangeSet> {
+    return this.doWithLock(
+      async (data: StoredData) => {
+        const changeSetData = data.changeSets;
+        const userSets = changeSetData.get(userId);
+        if (!userSets) {
+          throw new Error(`No changesets found for user: ${userId}`)
+        }
+
+        const changeSet = userSets.get(changeSetId);
+        if (!changeSet) {
+          throw new Error(`Changeset not found for id: ${changeSet}`)
+        }
+
+        return changeSet;
+      }
+    );
   }
 
-  async _delete(to: number): Promise<void> {
-    let log = await loadActionAsync(path.join(process.cwd(), this.fileName));
-    log.splice(to, 1);
-    await fs.writeFile(this.fileName, JSON.stringify(log, null, 2));
+  async updateChangeSet(userId: string, changeSetId: string, changeSet: ChangeSet): Promise<void> {
+    return this.doWithLock(
+      async (data: StoredData) => {
+        const changeSetData = data.changeSets;
+        let userSets = changeSetData.get(userId);
+        if (!userSets) {
+          userSets = new Map();
+          changeSetData.set(userId, userSets);
+        }
+
+        userSets.set(changeSetId, changeSet);
+      }
+    );
   }
 
-  async groupAndHash(to: number): Promise<void> {
-    console.log(to);
-    //let log = loadActionAsync(path.join(process.cwd(), this.fileName));
-    //const hashes = hashActions(log);
-    //log = addHashes(log, hashes, to);
-    //console.log(log);
-    //await fs.writeFile(this.fileName, JSON.stringify(log, null, 2));
+  async validateChangeSet(userId: string, changeSetId: string): Promise<string | null> {
+    return this.doWithLock(
+      async (data: StoredData) => {
+        const changeSetData = data.changeSets;
+        const userSets = changeSetData.get(userId);
+        if (!userSets) {
+          throw new Error(`No changesets found for user: ${userId}`)
+        }
+
+        const changeSet = userSets.get(changeSetId);
+        if (!changeSet) {
+          throw new Error(`Changeset not found for id: ${changeSet}`)
+        }
+
+        return validateWithChangeSet(data.log, changeSet);
+      }
+    );
+  }
+
+  async commitChangeSet(userId: string, changeSetId: string): Promise<void> {
+    return this.doWithLock(
+      async (data: StoredData) => {
+        const changeSetData = data.changeSets;
+        const userSets = changeSetData.get(userId);
+        if (!userSets) {
+          throw new Error(`No changesets found for user: ${userId}`)
+        }
+
+        const changeSet = userSets.get(changeSetId);
+        if (!changeSet) {
+          throw new Error(`Changeset not found for id: ${changeSet}`)
+        }
+
+        const result = commitChangeSet(data.log, changeSet);
+        data.log = result;
+        userSets.delete(changeSetId);
+        const serialized = ObjectMapper.serialize(data);
+        await fs.writeFile(this.fileName, serialized);
+      }
+    );
   }
 }

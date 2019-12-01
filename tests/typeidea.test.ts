@@ -1,58 +1,62 @@
 import * as typeidea from '../lib/typeidea';
 import * as action from '../lib/action';
 import * as generate from '../lib/generate';
+import {MemoryBackend} from '../lib/memory_backend';
 
-it('hashActions generates hashes for types', () => {
-  const addField = [
-    new action.NewTypeAction(
-      'Creating a new type',
-      null,
-      null,
-      'Test',
-      'A useful type'
-    ),
-    new action.AddFieldTypeAction(
-      'Adding a field',
-      null,
-      null,
-      'Test',
-      'test_field',
-      'string',
-      'A field that helps testing',
-      true,
-      null
-    ),
-    new action.NewTypeAction(
-      'Creating a new type',
-      null,
-      null,
-      'Test2',
-      'Another useful type'
-    ),
-    new action.AddFieldTypeAction(
-      'asdf',
-      null,
-      null,
-      'Test2',
-      'test_field2',
-      'string',
-      'A field that helps testing',
-      true,
-      null
-    )
-  ];
-  const hashes = typeidea.hashActions(addField);
-  expect(hashes).toHaveLength(4);
+// it('hashActions generates hashes for types', () => {
+//   const addField = [
+//     new action.NewTypeAction(
+//       'Creating a new type',
+//       null,
+//       null,
+//       'Test',
+//       'A useful type'
+//     ),
+//     new action.AddFieldTypeAction(
+//       'Adding a field',
+//       null,
+//       null,
+//       'Test',
+//       'test_field',
+//       'string',
+//       'A field that helps testing',
+//       true,
+//       null
+//     ),
+//     new action.NewTypeAction(
+//       'Creating a new type',
+//       null,
+//       null,
+//       'Test2',
+//       'Another useful type'
+//     ),
+//     new action.AddFieldTypeAction(
+//       'asdf',
+//       null,
+//       null,
+//       'Test2',
+//       'test_field2',
+//       'string',
+//       'A field that helps testing',
+//       true,
+//       null
+//     )
+//   ];
+//   const memoryStore = new MemoryBackend();
+//   const changeSet = new action.ChangeSet(addField, null);
+//   memoryStore.updateChangeSet("test", "test", changeSet);
+//   const hashes = typeidea.hashActions(addField);
+//   expect(hashes).toHaveLength(4);
 
-  const hashedAddField = typeidea.addHashes(addField, hashes, null);
-  expect(hashedAddField).toHaveLength(4);
+//   const hashedAddField = typeidea.addHashes(addField, hashes, null);
+//   expect(hashedAddField).toHaveLength(4);
 
-  for (const hashedAction of hashedAddField) {
-    expect(hashedAction.hash).not.toBeNull();
-  }
-});
+//   for (const hashedAction of hashedAddField) {
+//     expect(hashedAction.hash).not.toBeNull();
+//   }
+// });
 
-it('Changing an action makes hashing invalid', () => {
+it('Changing an action makes hashing invalid', async () => {
   const addField = [
     new action.NewTypeAction(
       'Creating a new type',
@@ -73,16 +77,19 @@ it('Changing an action makes hashing invalid', () => {
       null
     )
   ];
+  const memoryStore = new MemoryBackend(null, null);
+  const changeSet = new action.ChangeSet(addField, null);
+  await memoryStore.updateChangeSet("test", "test", changeSet);
+  await memoryStore.commitChangeSet("test", "test")
+  await memoryStore.getLog();
 
-  const hashes = typeidea.hashActions(addField);
-  const hashedAddField = typeidea.addHashes(addField, hashes, null);
-  hashedAddField[0].changeLog = "Don't do this!";
+  memoryStore.log[0].changeLog = "Don't do this!";
   expect(() => {
-    typeidea.validateActions(hashedAddField, true);
+    memoryStore.validateLog();
   }).toThrow(/Invalid hash at item \d+ .*/);
 });
 
-it('Changing a hash makes hashing invalid', () => {
+it('Changing a hash makes hashing invalid', async () => {
   const addField = [
     new action.NewTypeAction(
       'Creating a new type',
@@ -104,14 +111,83 @@ it('Changing a hash makes hashing invalid', () => {
     )
   ];
 
-  const hashedAddField = typeidea.addHashes(
-    addField,
-    typeidea.hashActions(addField),
-    null
-  );
-  hashedAddField[0].hash = "Don't do this!";
+  const memoryStore = new MemoryBackend(null, null);
+  const changeSet = new action.ChangeSet(addField, null);
+  await memoryStore.updateChangeSet("test", "test", changeSet);
+  await memoryStore.commitChangeSet("test", "test")
+  await memoryStore.getLog();
+
+  memoryStore.log[0].hash = "Don't do this!";
   expect(() => {
-    typeidea.validateActions(hashedAddField, true);
+    memoryStore.validateLog();
+  }).toThrow(/Invalid hash at item \d+ .*/);
+});
+
+it('Deleting version causes error', async () => {
+  const addField = [
+    new action.NewTypeAction(
+      'Creating a new type',
+      null,
+      null,
+      'Test',
+      'a useful type'
+    ),
+    new action.AddFieldTypeAction(
+      'Adding a field',
+      null,
+      null,
+      'Test',
+      'test_field',
+      'string',
+      'A field that helps testing',
+      true,
+      null
+    )
+  ];
+
+  const memoryStore = new MemoryBackend(null, null);
+  const changeSet = new action.ChangeSet(addField, null);
+  await memoryStore.updateChangeSet("test", "test", changeSet);
+  await memoryStore.commitChangeSet("test", "test")
+  await memoryStore.getLog();
+
+  memoryStore.log[0].version = null;
+  expect(() => {
+    memoryStore.validateLog();
+  }).toThrow(/Invalid hash at item \d+ .*/);
+});
+
+it('Deleting hash causes error', async () => {
+  const addField = [
+    new action.NewTypeAction(
+      'Creating a new type',
+      null,
+      null,
+      'Test',
+      'a useful type'
+    ),
+    new action.AddFieldTypeAction(
+      'Adding a field',
+      null,
+      null,
+      'Test',
+      'test_field',
+      'string',
+      'A field that helps testing',
+      true,
+      null
+    )
+  ];
+
+  const memoryStore = new MemoryBackend(null, null);
+  const changeSet = new action.ChangeSet(addField, null);
+  await memoryStore.updateChangeSet("test", "test", changeSet);
+  await memoryStore.commitChangeSet("test", "test")
+  await memoryStore.getLog();
+
+  memoryStore.log[0].hash = null;
+  expect(() => {
+    memoryStore.validateLog();
   }).toThrow(/Invalid hash at item \d+ .*/);
 });
 
@@ -196,14 +272,16 @@ const json_snapshot_tests = ([
 ] as Array<[string, string, number | null]>);
 
 for (const [name, path, hashTo] of json_snapshot_tests) {
-  it(name, () => {
+  it(name, async () => {
     const addField = action.loadActionLog(path);
+    const memoryStore = new MemoryBackend(null, null);
+    const changeSet = new action.ChangeSet(addField, null);
+    await memoryStore.updateChangeSet("test", "test", changeSet);
+    await memoryStore.commitChangeSet("test", "test")
+    const newLog = await memoryStore.getLog();
 
-    const hashes = typeidea.hashActions(addField);
-    const hashedAddField = typeidea.addHashes(addField, hashes, hashTo);
-
-    const [generatedTypes, generatedServices] = generate.generateDefinitions(
-      hashedAddField
+    const [generatedTypes, _] = generate.generateDefinitions(
+      newLog
     );
     const typescript = generate.generateTypescript(generatedTypes);
 

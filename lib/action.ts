@@ -474,6 +474,20 @@ export class AddVersionServiceAction extends Action {
   }
 }
 
+// Latest/Changesets
+export class ChangeSet {
+  log: Action[];
+  baseHash: string | null;
+
+  constructor(
+    log: Action[],
+    baseHash: string | null,
+  ) {
+    this.log = log;
+    this.baseHash = baseHash;
+  }
+}
+
 function loadAction(action: any): Action {
   switch(action._action_type) {
     // Services
