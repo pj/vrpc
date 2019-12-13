@@ -23,13 +23,10 @@ const args = yargs
         type: 'string'
       });
     },
-    (argv: any) => {
-      const testData = require(path.resolve(process.cwd(), argv.source));
-      const actions = action.loadActionLogFromList(testData);
-      typeidea.validateActions(actions, true)
-      typeidea.hashActions(actions);
-
-      const [types, services] = generate.generateDefinitions(actions);
+    async (argv: any) => {
+      const backend = new FileBackend(argv.source);
+      const log = await backend.getLog();
+      const [types, services] = generate.generateDefinitions(log);
       const [
         generatedTypes,
         generatedServices,
@@ -43,11 +40,40 @@ const args = yargs
     }
   )
   .command(
-    'hash <name>',
+    'add <name> <changeset>',
+    'Add changeset',
+    (yargs: any): any => {
+      yargs.positional('name', {
+        describe: 'name of file with actions to add',
+        type: 'string'
+      })
+      .option('c',
+        {
+            alias: 'commit',
+            type: 'boolean',
+            default: true,
+            describe: 'commit the changes after adding'
+        }
+      );
+    },
+    (argv: any) => {
+      const testData = require(path.join(process.cwd(), argv.name));
+      const actions = action.loadActionLogFromList(testData);
+      const hashes = typeidea.hashActions(actions);
+      const updatedLog = typeidea.addHashes(actions, hashes, null);
+      if (argv.update) {
+        fs.writeFileSync(argv.name, JSON.stringify(updatedLog, null, 2));
+      } else {
+        console.log(JSON.stringify(updatedLog, null, 2));
+      }
+    }
+  )
+  .command(
+    'commit <name>',
     'add hashes to a log file',
     (yargs: any): any => {
       yargs.positional('name', {
-        describe: 'name of log file',
+        describe: 'name of file with actions to commit',
         type: 'string'
       })
       .option('u',
