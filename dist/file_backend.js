@@ -51,7 +51,7 @@ class FileBackend {
     }
     async getCurrentServices() {
         return this.doWithLock(async (data) => {
-            const [_, services] = generate_1.generateDefinitions(data.log);
+            const [_, services] = generate_1.generateDefinitions(data.log, null, null);
             return services;
         });
     }
@@ -67,13 +67,13 @@ class FileBackend {
                 throw new Error(`Changeset not found for id: ${changeSet}`);
             }
             const newLog = typeidea_1.commitChangeSet(data.log, changeSet);
-            const [_, services] = generate_1.generateDefinitions(newLog);
+            const [_, services] = generate_1.generateDefinitions(newLog, changeSet.log, changeSetId);
             return services;
         });
     }
     async getCurrentTypes() {
         return this.doWithLock(async (data) => {
-            const [types, _] = generate_1.generateDefinitions(data.log);
+            const [types, _] = generate_1.generateDefinitions(data.log, null, null);
             return types;
         });
     }
@@ -89,7 +89,7 @@ class FileBackend {
                 throw new Error(`Changeset not found for id: ${changeSet}`);
             }
             const newLog = typeidea_1.commitChangeSet(data.log, changeSet);
-            const [types, _] = generate_1.generateDefinitions(newLog);
+            const [types, _] = generate_1.generateDefinitions(newLog, changeSet.log, changeSetId);
             return types;
         });
     }

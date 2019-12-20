@@ -1,10 +1,5 @@
 import * as action from './action';
 import * as typeidea from './typeidea';
-import * as generate_typescript from './generate_typescript';
-import {compile} from 'ejs';
-import * as fs from 'fs';
-import * as prettier from 'prettier';
-import * as path from 'path';
 
 type VersionState = 'active' | 'removed' | 'deprecated';
 
@@ -169,6 +164,7 @@ export class Type {
   name: string;
   versions: Version[];
   latest: Version | null;
+  changeSetName: string | null;
   changeLog: string[];
   description: string;
 
@@ -424,7 +420,7 @@ function groupByTypeAndService(log: action.Action[]): [
 }
 
 function getVersionForType(_type: Type, logAction: action.Action): Version {
-  if (logAction.hasHashAndVersion()) {
+  // if (logAction.hasHashAndVersion()) {
     const newVersion = new Version(_type.name, logAction.hash, logAction.version, {});
     if (logAction instanceof action.GroupAction) {
       newVersion.version = logAction.versions[_type.name];
@@ -434,24 +430,26 @@ function getVersionForType(_type: Type, logAction: action.Action): Version {
     }
 
     return newVersion;
-  } else {
-    if (_type.latest === null) {
-      _type.latest = new Version(_type.name, null, null, {});
-      if (_type.versions.length > 0) {
-        _type.latest.fields = {
-          ..._type.versions[_type.versions.length-1].fields
-        };
-      }
-    }
+  // } else {
+  //   if (_type.latest === null) {
+  //     _type.latest = new Version(_type.name, null, null, {});
+  //     if (_type.versions.length > 0) {
+  //       _type.latest.fields = {
+  //         ..._type.versions[_type.versions.length-1].fields
+  //       };
+  //     }
+  //   }
 
-    return _type.latest;
-  }
+  //   return _type.latest;
+  // }
 }
 
 export function generateDefinitions(
-  log: action.Action[]
+  log: action.Action[],
+  changeSet: action.Action[] | null,
+  changeSetName: string | null
 ): [Type[], Service[]] {
-  typeidea.validateActions(log, false);
+  typeidea.validate(log);
 
   const [logTypes, logServices] = groupByTypeAndService(log);
   const types = [];
@@ -501,47 +499,4 @@ export function generateDefinitions(
   }
 
   return [types, services];
-}
-
-export function generateTypescript(types: Type[]): string {
-  return (
-    prettier.format(
-      generate_typescript.generateTypes(types),
-      {parser: 'typescript'},
-    )
-  );
-}
-
-export function generateTypescriptServices(
-  services: Service[],
-): string {
-  return (
-    prettier.format(
-      generate_typescript.generateExpress(services),
-      {parser: 'typescript'},
-    )
-  );
-}
-
-export function generateTypescriptClient(
-  types: Type[],
-  services: Service[]
-): string {
-  return (
-    prettier.format(
-      generate_typescript.generateClient(types, services),
-      {parser: 'typescript'},
-    )
-  );
-}
-
-export function generateTypescriptBoth(
-  types: Type[],
-  services: Service[],
-): [string, string, string] {
-  const generatedTypes = generateTypescript(types);
-  const generatedServices = generateTypescriptServices(services);
-  const generatedClient = generateTypescriptClient(types, services);
-
-  return [generatedTypes, generatedServices, generatedClient];
 }

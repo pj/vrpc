@@ -1,5 +1,13 @@
 "use strict";
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+const prettier = __importStar(require("prettier"));
 // Stuff to generate express js stuff.
 const header = `/**
 * **GENERATED CODE DO NOT EDIT!**
@@ -335,3 +343,22 @@ ${allClients.join('\n')}
 `;
 }
 exports.generateClient = generateClient;
+function generateTypescript(types) {
+    return (prettier.format(generateTypes(types), { parser: 'typescript' }));
+}
+exports.generateTypescript = generateTypescript;
+function generateTypescriptServices(services) {
+    return (prettier.format(generateExpress(services), { parser: 'typescript' }));
+}
+exports.generateTypescriptServices = generateTypescriptServices;
+function generateTypescriptClient(types, services) {
+    return (prettier.format(generateClient(types, services), { parser: 'typescript' }));
+}
+exports.generateTypescriptClient = generateTypescriptClient;
+function generateTypescriptBoth(types, services) {
+    const generatedTypes = generateTypescript(types);
+    const generatedServices = generateTypescriptServices(services);
+    const generatedClient = generateTypescriptClient(types, services);
+    return [generatedTypes, generatedServices, generatedClient];
+}
+exports.generateTypescriptBoth = generateTypescriptBoth;

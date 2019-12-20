@@ -5,7 +5,7 @@ import * as ReactDOM from 'react-dom';
 import { ApolloProvider } from '@apollo/react-hooks';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { IntrospectionFragmentMatcher } from 'apollo-cache-inmemory';
-import introspectionQueryResultData from '../server/introspection_result';
+import introspectionQueryResultData from '../client/introspection_result';
 
 const fragmentMatcher = new IntrospectionFragmentMatcher({
   introspectionQueryResultData

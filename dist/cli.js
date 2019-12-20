@@ -11,8 +11,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
 const yargs = __importStar(require("yargs"));
-const typeidea = __importStar(require("./typeidea"));
-const action = __importStar(require("./action"));
 const generate = __importStar(require("./generate"));
 const index_1 = require("./server/index");
 const file_backend_1 = require("./file_backend");
@@ -26,40 +24,15 @@ const args = yargs
         describe: 'directory to put generated files in',
         type: 'string'
     });
-}, (argv) => {
-    const testData = require(path.resolve(process.cwd(), argv.source));
-    const actions = action.loadActionLogFromList(testData);
-    typeidea.validateActions(actions, true);
-    typeidea.hashActions(actions);
-    const [types, services] = generate.generateDefinitions(actions);
+}, async (argv) => {
+    const backend = new file_backend_1.FileBackend(argv.source);
+    const log = await backend.getLog();
+    const [types, services] = generate.generateDefinitions(log);
     const [generatedTypes, generatedServices, generatedClient,] = generate.generateTypescriptBoth(types, services);
     fs.mkdirSync(argv.dest, { recursive: true });
     fs.writeFileSync(path.join(argv.dest, 'types.ts'), generatedTypes);
     fs.writeFileSync(path.join(argv.dest, 'services.ts'), generatedServices);
     fs.writeFileSync(path.join(argv.dest, 'client.ts'), generatedClient);
-})
-    .command('hash <name>', 'add hashes to a log file', (yargs) => {
-    yargs.positional('name', {
-        describe: 'name of log file',
-        type: 'string'
-    })
-        .option('u', {
-        alias: 'update',
-        type: 'boolean',
-        default: false,
-        describe: 'update log file in place (outputs to stdout otherwise)'
-    });
-}, (argv) => {
-    const testData = require(path.join(process.cwd(), argv.name));
-    const actions = action.loadActionLogFromList(testData);
-    const hashes = typeidea.hashActions(actions);
-    const updatedLog = typeidea.addHashes(actions, hashes, null);
-    if (argv.update) {
-        fs.writeFileSync(argv.name, JSON.stringify(updatedLog, null, 2));
-    }
-    else {
-        console.log(JSON.stringify(updatedLog, null, 2));
-    }
 })
     .command('serve <backend_type>', 'start graphql server for type interface', (yargs) => {
     yargs.positional('backend_type', {

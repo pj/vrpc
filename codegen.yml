@@ -1,12 +1,25 @@
 schema: ./lib/server/schema.graphql
-#generates:
-#  ./lib/server/schema.ts:
-#    plugins:
-#      - typescript
-#      - typescript-operations
-#    config:
-#      typesPrefix: 'GQL'
 generates:
-  ./lib/server/introspection_result.ts:
+  ./lib/server/schema.ts:
+    plugins:
+      - typescript
+      - typescript-resolvers
+    config:
+      typesPrefix: 'GQL'
+      useIndexSignature: true
+  ./lib/client/introspection_result.ts:
     plugins:
       - fragment-matcher
+  ./lib/client/hooks.tsx:
+    documents: ./lib/client/document.graphql
+    plugins:
+      - typescript
+      - typescript-operations
+      - "typescript-react-apollo"
+    config:
+      withHooks: true
+      withHOC: false
+      withComponent: false
+      hooksImportFrom: "@apollo/react-hooks"
+      typesPrefix: 'GQL'
+      useIndexSignature: true

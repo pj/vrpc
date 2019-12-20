@@ -1,0 +1,193 @@
+query allData {
+  log {
+    ...ActionsFragment
+    ... on GroupAction {
+      __typename
+      changeLog
+      groupedActions {
+         ...ActionsFragment
+      }
+      versions {
+        typeName,
+        version
+      }
+    }
+  }
+
+  types {
+    name
+    description
+    versions {
+      version
+      _type
+      fields {
+        key
+        field {
+          name
+          description
+          changeLog
+          ... on Field {
+            name
+            optional
+            _type
+          }
+        }
+      }
+    }
+  }
+
+  services {
+    name
+    description
+    changeLog
+    versions {
+      inputs {
+        version
+        _type
+      }
+
+      output {
+        version
+        _type
+      }
+    }
+  }
+
+  changeSets {
+      baseHash
+      log {
+          ...ActionsFragment
+      }
+  }
+}
+
+fragment DataFragment on FieldData {
+  ... on StringField {
+    __typename
+    stringValue: value
+  }
+
+  ... on IntField {
+    __typename
+    intValue: value
+  }
+
+  ... on FloatField {
+    __typename
+    floatValue: value
+  }
+
+  ... on BooleanField {
+    __typename
+    booleanValue: value
+  }
+}
+
+fragment ActionsFragment on Action {
+  __typename
+  changeLog
+  hash
+  unhashed
+  _id: hash
+  version
+
+  ... on NewServiceAction {
+    serviceName
+    description
+  }
+
+  ... on UpdateDescriptionServiceAction {
+    serviceName
+    description
+  }
+
+  ... on AddVersionServiceAction {
+    serviceName
+    inputType
+    outputType
+    inputVersion
+    inputHash
+    outputVersion
+    outputHash
+  }
+
+  ... on RenameFieldTypeAction {
+    typeName
+    _from
+    to
+  }
+
+  ... on RequiredFieldTypeAction {
+    typeName
+    name
+  }
+
+  ... on OptionalFieldTypeAction {
+    typeName
+    name
+  }
+
+  ... on DeleteFieldTypeAction {
+    typeName
+    name
+  }
+
+  ... on SetDefaultFieldTypeAction {
+    typeName
+    name
+    _default {
+      ...DataFragment
+    }
+  }
+
+  ... on RemoveDefaultFieldTypeAction {
+    typeName
+    name
+  }
+
+  ... on AddFieldTypeAction {
+    typeName
+    name
+    type
+    description
+    optional
+    _default {
+      ...DataFragment
+    }
+  }
+
+  ... on UpdateDescriptionTypeAction {
+    typeName
+    name
+    description
+  }
+
+  ... on ReferenceFieldTypeAction {
+    typeName
+    name
+    description
+    optional
+    referenceType
+    referenceHash
+    referenceVersion
+  }
+
+  ... on NewTypeAction {
+    typeName
+    description
+  }
+}
+
+fragment ChangeSetFragment on ChangeSet {
+  id
+  baseHash
+  log {
+    ...ActionsFragment
+  }
+}
+
+mutation UpdateChangeSet($changeSet: ChangeSetInput!) {
+  updateChangeSet(changeSet: $changeSet) {
+    ...ChangeSetFragment
+  }
+}

@@ -48,7 +48,7 @@ export class FileBackend implements Backend {
   async getCurrentServices(): Promise<Service[]> {
     return this.doWithLock(
       async (data: StoredData) => {
-        const [_, services] = generateDefinitions(data.log);
+        const [_, services] = generateDefinitions(data.log, null, null);
         return services;
       }
     );
@@ -70,7 +70,7 @@ export class FileBackend implements Backend {
         
         const newLog = commitChangeSet(data.log, changeSet);
         
-        const [_, services] = generateDefinitions(newLog);
+        const [_, services] = generateDefinitions(newLog, changeSet.log, changeSetId);
         return services;
       }
     );
@@ -79,7 +79,7 @@ export class FileBackend implements Backend {
   async getCurrentTypes(): Promise<Type[]> {
     return this.doWithLock(
       async (data: StoredData) => {
-        const [types, _] = generateDefinitions(data.log);
+        const [types, _] = generateDefinitions(data.log, null, null);
         return types;
       }
     );
@@ -101,7 +101,7 @@ export class FileBackend implements Backend {
         
         const newLog = commitChangeSet(data.log, changeSet);
         
-        const [types, _] = generateDefinitions(newLog);
+        const [types, _] = generateDefinitions(newLog, changeSet.log, changeSetId);
         return types;
       }
     );
@@ -191,6 +191,27 @@ export class FileBackend implements Backend {
 
         const result = commitChangeSet(data.log, changeSet);
         data.log = result;
+        userSets.delete(changeSetId);
+        const serialized = ObjectMapper.serialize(data);
+        await fs.writeFile(this.fileName, serialized);
+      }
+    );
+  }
+
+  async deleteChangeSet(userId: string, changeSetId: string): Promise<void> {
+    return this.doWithLock(
+      async (data: StoredData) => {
+        const changeSetData = data.changeSets;
+        const userSets = changeSetData.get(userId);
+        if (!userSets) {
+          throw new Error(`No changesets found for user: ${userId}`)
+        }
+
+        const changeSet = userSets.get(changeSetId);
+        if (!changeSet) {
+          throw new Error(`Changeset not found for id: ${changeSet}`)
+        }
+
         userSets.delete(changeSetId);
         const serialized = ObjectMapper.serialize(data);
         await fs.writeFile(this.fileName, serialized);

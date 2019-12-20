@@ -1,3 +1,6 @@
+import * as generate_typescript from './generate_typescript';
+import * as prettier from 'prettier';
+
 import {
   Service,
   VersionType,
@@ -420,4 +423,47 @@ export class Client {
 ${allClients.join('\n')}
 }
 `;
+}
+
+export function generateTypescript(types: Type[]): string {
+  return (
+    prettier.format(
+      generateTypes(types),
+      {parser: 'typescript'},
+    )
+  );
+}
+
+export function generateTypescriptServices(
+  services: Service[],
+): string {
+  return (
+    prettier.format(
+      generateExpress(services),
+      {parser: 'typescript'},
+    )
+  );
+}
+
+export function generateTypescriptClient(
+  types: Type[],
+  services: Service[]
+): string {
+  return (
+    prettier.format(
+      generateClient(types, services),
+      {parser: 'typescript'},
+    )
+  );
+}
+
+export function generateTypescriptBoth(
+  types: Type[],
+  services: Service[],
+): [string, string, string] {
+  const generatedTypes = generateTypescript(types);
+  const generatedServices = generateTypescriptServices(services);
+  const generatedClient = generateTypescriptClient(types, services);
+
+  return [generatedTypes, generatedServices, generatedClient];
 }

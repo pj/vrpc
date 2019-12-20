@@ -476,12 +476,14 @@ export class AddVersionServiceAction extends Action {
 
 // Latest/Changesets
 export class ChangeSet {
+  id: string;
   log: Action[];
-  baseHash: string | null;
+  baseHash: string | null | undefined;
 
   constructor(
+    id: string;
     log: Action[],
-    baseHash: string | null,
+    baseHash: string | null | undefined,
   ) {
     this.log = log;
     this.baseHash = baseHash;

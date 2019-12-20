@@ -10,6 +10,8 @@
   "dependencies": {
     "@apollo/react-hooks": "^3.1.0",
     "@graphql-codegen/fragment-matcher": "^1.7.0",
+    "@graphql-codegen/typescript-react-apollo": "^1.9.1",
+    "@graphql-codegen/typescript-resolvers": "^1.9.1",
     "@material-ui/core": "^4.0.0",
     "@material-ui/icons": "^4.4.1",
     "@types/ejs": "^2.6.1",

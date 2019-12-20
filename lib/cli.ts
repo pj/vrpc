@@ -40,64 +40,6 @@ const args = yargs
     }
   )
   .command(
-    'add <name> <changeset>',
-    'Add changeset',
-    (yargs: any): any => {
-      yargs.positional('name', {
-        describe: 'name of file with actions to add',
-        type: 'string'
-      })
-      .option('c',
-        {
-            alias: 'commit',
-            type: 'boolean',
-            default: true,
-            describe: 'commit the changes after adding'
-        }
-      );
-    },
-    (argv: any) => {
-      const testData = require(path.join(process.cwd(), argv.name));
-      const actions = action.loadActionLogFromList(testData);
-      const hashes = typeidea.hashActions(actions);
-      const updatedLog = typeidea.addHashes(actions, hashes, null);
-      if (argv.update) {
-        fs.writeFileSync(argv.name, JSON.stringify(updatedLog, null, 2));
-      } else {
-        console.log(JSON.stringify(updatedLog, null, 2));
-      }
-    }
-  )
-  .command(
-    'commit <name>',
-    'add hashes to a log file',
-    (yargs: any): any => {
-      yargs.positional('name', {
-        describe: 'name of file with actions to commit',
-        type: 'string'
-      })
-      .option('u',
-        {
-            alias: 'update',
-            type: 'boolean',
-            default: false,
-            describe: 'update log file in place (outputs to stdout otherwise)'
-        }
-      );
-    },
-    (argv: any) => {
-      const testData = require(path.join(process.cwd(), argv.name));
-      const actions = action.loadActionLogFromList(testData);
-      const hashes = typeidea.hashActions(actions);
-      const updatedLog = typeidea.addHashes(actions, hashes, null);
-      if (argv.update) {
-        fs.writeFileSync(argv.name, JSON.stringify(updatedLog, null, 2));
-      } else {
-        console.log(JSON.stringify(updatedLog, null, 2));
-      }
-    }
-  )
-  .command(
     'serve <backend_type>',
     'start graphql server for type interface',
     (yargs: any): any => {

@@ -149,4 +149,18 @@ export class MemoryBackend implements Backend {
     this.log = result;
     userSets.delete(changeSetId);
   }
+
+  async deleteChangeSet(userId: string, changeSetId: string): Promise<void> {
+    const changeSetData = this.changeSets;
+    const userSets = changeSetData.get(userId);
+    if (!userSets) {
+        throw new Error(`No changesets found for user: ${userId}`)
+    }
+
+    const changeSet = userSets.get(changeSetId);
+    if (!changeSet) {
+        throw new Error(`Changeset not found for id: ${changeSet}`)
+    }
+    userSets.delete(changeSetId);
+  }
 }

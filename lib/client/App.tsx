@@ -17,8 +17,8 @@ import gql from 'graphql-tag';
 import ActionList from './ActionList';
 import ActionCreator from './ActionCreator';
 import TypeViewer from './TypeViewer';
-import {ALL_DATA, ACTIONS_FRAGMENT, GET_LOG} from './Fragments';
 
+import { useAllDataQuery } from './hooks';
 const drawerWidth = 240;
 
 const useStyles = makeStyles(theme => ({
@@ -49,7 +49,7 @@ const useStyles = makeStyles(theme => ({
 
 const App = () => {
   const classes = useStyles();
-  const { loading, data } = useQuery(GET_LOG);
+  const { loading, data } = useAllDataQuery();
   if (loading || !data) {
     return null;
   }
@@ -69,6 +69,7 @@ const App = () => {
           <ActionCreator types={data.types} services={data.services}/>
           <TypeViewer types={data.types} services={data.services} />
         </div>
+        <ChangeSetViewer changeSets={data.changeSets} />
         <ActionList actions={data.log} />
       </main>
     </div>

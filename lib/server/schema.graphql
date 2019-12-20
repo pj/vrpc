@@ -244,58 +244,213 @@ type Type {
   description: String
 }
 
-type Query {
+type ChangeSet {
+  id: String!
+  baseHash: String!
   log: [LogAction]
-  services: [Service]
-  types: [Type]
 }
 
 type NewLog {
   log: [LogAction]
   services: [Service]
   types: [Type]
+  changeSets: [ChangeSet]
+}
+
+type Query {
+  log(changeSetId: String): [LogAction]
+  services(changeSetId: String): [Service]
+  types(changeSetId: String): [Type]
+  changeSets: [ChangeSet]
+}
+
+# input LogActionInput {
+#   changeLog: String
+#   typeName: String
+#   description: String
+#   serviceName: String
+#   fieldName: String
+#   newFieldName: String
+#   defaultType: String
+#   defaultValue: String
+#   fieldDescription: String
+#   optional: Boolean
+#   outputName: String
+#   inputName: String
+#   inputVersion: String
+#   outputVersion: String
+#   referenceName: String
+#   referenceVersion: String
+#   logType: String
+# }
+
+input FieldDataInput {
+  booleanValue: Boolean
+  integerValue: Int
+  floatValue: Float
+  stringValue: String
+}
+
+input NewServiceActionInput {
+  changeLog: String,
+  hash: String,
+  version: Int
+  unhashed: Boolean
+  serviceName: String,
+  description: String
+}
+
+input UpdateDescriptionServiceActionInput {
+  changeLog: String,
+  hash: String,
+  version: Int
+  unhashed: Boolean
+  serviceName: String,
+  description: String
+}
+
+input AddVersionServiceActionInput {
+  changeLog: String,
+  hash: String,
+  version: Int
+  unhashed: Boolean
+  serviceName: String,
+  inputType: String,
+  outputType: String,
+  inputVersion: Int,
+  inputHash: String,
+  outputVersion: Int,
+  outputHash: String
+}
+
+input RenameFieldTypeActionInput {
+  changeLog: String,
+  hash: String,
+  version: Int
+  unhashed: Boolean
+  typeName: String,
+  _from: String,
+  to: String
+}
+
+input RequiredFieldTypeActionInput {
+  changeLog: String,
+  hash: String,
+  version: Int
+  unhashed: Boolean
+  typeName: String,
+  name: String
+}
+
+input OptionalFieldTypeActionInput {
+  changeLog: String,
+  hash: String,
+  version: Int
+  unhashed: Boolean
+  typeName: String,
+  name: String
+}
+
+input DeleteFieldTypeActionInput {
+  changeLog: String,
+  hash: String,
+  version: Int
+  unhashed: Boolean
+  typeName: String,
+  name: String
+}
+
+input SetDefaultFieldTypeActionInput {
+  changeLog: String,
+  hash: String,
+  version: Int
+  unhashed: Boolean
+  typeName: String,
+  name: String,
+  _default: FieldDataInput
+}
+
+input RemoveDefaultFieldTypeActionInput {
+  changeLog: String,
+  hash: String,
+  version: Int
+  unhashed: Boolean
+  typeName: String,
+  name: String
+}
+
+input AddFieldTypeActionInput {
+  changeLog: String,
+  hash: String,
+  version: Int
+  unhashed: Boolean
+  typeName: String,
+  name: String,
+  type: String,
+  description: String,
+  optional: Boolean,
+  _default: FieldDataInput
+}
+
+input UpdateDescriptionTypeActionInput {
+  changeLog: String,
+  hash: String,
+  version: Int
+  unhashed: Boolean
+  typeName: String,
+  name: String,
+  description: String
+}
+
+input ReferenceFieldTypeActionInput {
+  changeLog: String,
+  hash: String,
+  version: Int
+  unhashed: Boolean
+  typeName: String,
+  name: String,
+  description: String,
+  optional: Boolean,
+  referenceType: String,
+  referenceHash: String,
+  referenceVersion: Int
+}
+
+input NewTypeActionInput {
+  changeLog: String,
+  hash: String,
+  version: Int
+  unhashed: Boolean
+  typeName: String,
+  description: String
 }
 
 input LogActionInput {
-  changeLog: String
-  typeName: String
-  description: String
-  serviceName: String
-  fieldName: String
-  newFieldName: String
-  defaultType: String
-  defaultValue: String
-  fieldDescription: String
-  optional: Boolean
-  outputName: String
-  inputName: String
-  inputVersion: String
-  outputVersion: String
-  referenceName: String
-  referenceVersion: String
-  logType: String
+  newService: NewServiceActionInput
+  updateServiceDescription: UpdateDescriptionServiceActionInput
+  addVersion: AddVersionServiceActionInput
+  renameField: RenameFieldTypeActionInput
+  requiredField: RequiredFieldTypeActionInput
+  optionalField: OptionalFieldTypeActionInput
+  deleteField: DeleteFieldTypeActionInput
+  setDefault: SetDefaultFieldTypeActionInput
+  removeDefault: RemoveDefaultFieldTypeActionInput
+  addField: AddFieldTypeActionInput
+  updateTypeDescription: UpdateDescriptionTypeActionInput
+  referenceField: ReferenceFieldTypeActionInput
+  newType: NewTypeActionInput
 }
 
-input TruncationInput {
-  to: Int
-}
-
-input HashInput {
-  to: Int
-}
-
-input DeleteInput {
-  to: Int
-}
-
-input GroupAndHashInput {
-  to: Int
+input ChangeSetInput {
+  id: String!
+  baseHash: String!
+  log: [LogActionInput!]!
 }
 
 type Mutation {
-  addToLog(input: LogActionInput!): NewLog
-  truncateTo(input: TruncationInput!): NewLog
-  hashTo(input: HashInput!): NewLog
-  _delete(input: DeleteInput!): NewLog
-  groupAndHash(input: GroupAndHashInput!): NewLog
+  updateChangeSet(
+    changeSet: ChangeSetInput!
+  ): ChangeSet
+  commitChangeSet(changeSetId: String!): NewLog
+  deleteChangeSet(changeSetId: String!): [ChangeSet]
 }

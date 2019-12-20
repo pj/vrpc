@@ -5,8 +5,6 @@ import { useMutation } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import classNames from 'classnames';
 
-import { ACTIONS_FRAGMENT, ALL_DATA, GET_LOG } from './Fragments';
-
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
@@ -21,6 +19,8 @@ import Tooltip from '@material-ui/core/Tooltip';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
+
+import {GQLLogAction} from './hooks';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -38,143 +38,15 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const TRUNCATE_TO = gql`
-mutation TruncateTo($input: TruncationInput!) {
-  truncateTo(input: $input) {
-    ${ALL_DATA}
-  }
-}
-${ACTIONS_FRAGMENT}
-`;
+type ActionListProps = {
+  log: GQLLogAction[]
+};
 
-const DELETE = gql`
-mutation Delete($input: DeleteInput!) {
-  _delete(input: $input) {
-    ${ALL_DATA}
-  }
-}
-${ACTIONS_FRAGMENT}
-`;
-
-const HASH_TO = gql`
-mutation HashTo($input: HashInput!) {
-  hashTo(input: $input) {
-    ${ALL_DATA}
-  }
-}
-${ACTIONS_FRAGMENT}
-`;
-
-const GROUP_AND_HASH = gql`
-mutation GroupAndHash($input: GroupAndHashInput!) {
-  groupAndHash(input: $input) {
-    ${ALL_DATA}
-  }
-}
-${ACTIONS_FRAGMENT}
-`;
-const ActionList = (props: any) => {
-  const classes = useStyles();
-
-  function updateCacheFromMutation(key: any) {
-    function innerUpdate(cache: any, mutationResult: any) {
-      try {
-        console.log(mutationResult);
-        const data = cache.readQuery({ query: GET_LOG });
-        data.log = mutationResult.data[key].log;
-        data.types = mutationResult.data[key].types;
-        data.services = mutationResult.data[key].services;
-        cache.writeQuery({query: GET_LOG, data});
-      } catch (e) {
-        console.error(e);
-      }
-    }
-    return innerUpdate;
-  }
-
-  const [
-   truncateTo,
-   { loading: truncateMutationLoading, error: truncateError },
-  ] = useMutation(TRUNCATE_TO, {
-    refetchQueries: ['GetLog'],
-    //update: updateCacheFromMutation('truncateTo')
-  });
-
-  const [
-   _delete,
-   { loading: deleteMutationLoading, error: deleteError },
-  ] = useMutation(DELETE, {
-    refetchQueries: ['GetLog'],
-    //update: updateCacheFromMutation('_delete')
-  });
-
-  const [
-   hashTo,
-   { loading: hashMutationLoading, error: hashError },
-  ] = useMutation(HASH_TO, {
-    refetchQueries: ['GetLog'],
-    //update: updateCacheFromMutation('hashTo')
-  });
-
-  const [
-   groupAndHash,
-   { loading: groupMutationLoading, error: groupError },
-  ] = useMutation(GROUP_AND_HASH, {
-    refetchQueries: ['GetLog'],
-    //update: updateCacheFromMutation('groupAndHash')
-  });
-
-  if (
-    truncateMutationLoading
-    || deleteMutationLoading
-    || hashMutationLoading
-    || groupMutationLoading
-  ) {
-    return <CircularProgress />;
-  }
-
-  if (truncateError || deleteError || hashError || groupError) {
-    return (
-      <div>
-        {truncateError && truncateError.toString()}
-        {deleteError && deleteError.toString()}
-        {hashError && hashError.toString()}
-        {groupError && groupError.toString()}
-      </div>
-    );
-  }
-
-  function handleTruncateTo(idx) {
-    function innerTruncate(event) {
-      truncateTo({variables: {input: {to: idx}}});
-    }
-
-    return innerTruncate;
-  }
-  function handleDelete(idx) {
-    function innerDelete(event) {
-      _delete({variables: {input: {to: idx}}});
-    }
-
-    return innerDelete;
-  }
-  function handleHashTo(idx) {
-    function innerHashTo(event) {
-      hashTo({variables: {input: {to: idx}}});
-    }
-
-    return innerHashTo;
-  }
-  function handleGroupAndHash(idx) {
-    function innerGroupAndHash(event) {
-      groupAndHash({variables: {input: {to: idx}}});
-    }
-
-    return innerGroupAndHash;
-  }
+const ActionList = (props: ActionListProps) => {
+  const classes = useStyles(props);
 
   const tableRows = [];
-  for (let [idx, logAction] of props.actions.entries()) {
+  for (let [idx, logAction] of props.log.entries()) {
     let isService = false;
     let name = 'Group';
     if (
@@ -246,27 +118,6 @@ const ActionList = (props: any) => {
             {options}
           </List>
         </TableCell>
-        <TableCell className={tableClasses}>
-          {
-            logAction.unhashed &&
-            <React.Fragment>
-              <Button
-                variant="contained" color="primary"
-                onClick={handleDelete(idx)}>
-                Delete
-              </Button>
-              <Button variant="contained" color="primary" onClick={handleTruncateTo(idx)}>
-                Truncate
-              </Button>
-              <Button variant="contained" color="primary" onClick={handleHashTo(idx)}>
-                Hash To Entry
-              </Button>
-              <Button variant="contained" color="primary" onClick={handleGroupAndHash(idx)}>
-                Group and Hash
-              </Button>
-            </React.Fragment>
-          }
-        </TableCell>
       </TableRow>
     );
   }
@@ -283,7 +134,6 @@ const ActionList = (props: any) => {
             <TableCell>Version</TableCell>
             <TableCell>Change</TableCell>
             <TableCell>Options</TableCell>
-            <TableCell>Actions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>

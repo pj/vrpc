@@ -10,16 +10,11 @@ export interface Backend {
   getCurrentTypes(): Promise<Type[]>;
   getCurrentTypesWithChangeSet(userId: string, changeSetId: string): Promise<Type[]>;
 
-  // addToLog(action: Action): Promise<void>;
-  // truncateTo(to: number): Promise<void>;
-  // hashTo(to: number): Promise<void>;
-  // delete(to: number): Promise<void>;
-  // groupAndHash(to: number): Promise<void>;
-
   // Latest and changesets
   getChangeSets(userId: string): Promise<ChangeSet[]>;
   getChangeSet(userId: string, changeSetId: string): Promise<ChangeSet>;
   updateChangeSet(userId: string, changeSetId: string, changeSet: ChangeSet): Promise<void>;
   commitChangeSet(userId: string, changeSetId: string): Promise<void>;
   validateChangeSet(userId: string, changeSetId: string): Promise<string | null>;
+  deleteChangeSet(userId: string, changeSetId: string): Promise<void>;
 };

@@ -9,8 +9,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const action = __importStar(require("./action"));
 const typeidea = __importStar(require("./typeidea"));
-const generate_typescript = __importStar(require("./generate_typescript"));
-const prettier = __importStar(require("prettier"));
 class BaseField {
     constructor(name, changeLog, description, optional) {
         this.name = name;
@@ -291,28 +289,29 @@ function groupByTypeAndService(log) {
     return [types, services];
 }
 function getVersionForType(_type, logAction) {
-    if (logAction.hasHashAndVersion()) {
-        const newVersion = new Version(_type.name, logAction.hash, logAction.version, {});
-        if (logAction instanceof action.GroupAction) {
-            newVersion.version = logAction.versions[_type.name];
-        }
-        if (_type.versions.length > 0) {
-            newVersion.fields = Object.assign({}, _type.versions[_type.versions.length - 1].fields);
-        }
-        return newVersion;
+    // if (logAction.hasHashAndVersion()) {
+    const newVersion = new Version(_type.name, logAction.hash, logAction.version, {});
+    if (logAction instanceof action.GroupAction) {
+        newVersion.version = logAction.versions[_type.name];
     }
-    else {
-        if (_type.latest === null) {
-            _type.latest = new Version(_type.name, null, null, {});
-            if (_type.versions.length > 0) {
-                _type.latest.fields = Object.assign({}, _type.versions[_type.versions.length - 1].fields);
-            }
-        }
-        return _type.latest;
+    if (_type.versions.length > 0) {
+        newVersion.fields = Object.assign({}, _type.versions[_type.versions.length - 1].fields);
     }
+    return newVersion;
+    // } else {
+    //   if (_type.latest === null) {
+    //     _type.latest = new Version(_type.name, null, null, {});
+    //     if (_type.versions.length > 0) {
+    //       _type.latest.fields = {
+    //         ..._type.versions[_type.versions.length-1].fields
+    //       };
+    //     }
+    //   }
+    //   return _type.latest;
+    // }
 }
-function generateDefinitions(log) {
-    typeidea.validateActions(log, false);
+function generateDefinitions(log, changeSet, changeSetName) {
+    typeidea.validate(log);
     const [logTypes, logServices] = groupByTypeAndService(log);
     const types = [];
     const services = [];
@@ -356,22 +355,3 @@ function generateDefinitions(log) {
     return [types, services];
 }
 exports.generateDefinitions = generateDefinitions;
-function generateTypescript(types) {
-    return (prettier.format(generate_typescript.generateTypes(types), { parser: 'typescript' }));
-}
-exports.generateTypescript = generateTypescript;
-function generateTypescriptServices(services) {
-    return (prettier.format(generate_typescript.generateExpress(services), { parser: 'typescript' }));
-}
-exports.generateTypescriptServices = generateTypescriptServices;
-function generateTypescriptClient(types, services) {
-    return (prettier.format(generate_typescript.generateClient(types, services), { parser: 'typescript' }));
-}
-exports.generateTypescriptClient = generateTypescriptClient;
-function generateTypescriptBoth(types, services) {
-    const generatedTypes = generateTypescript(types);
-    const generatedServices = generateTypescriptServices(services);
-    const generatedClient = generateTypescriptClient(types, services);
-    return [generatedTypes, generatedServices, generatedClient];
-}
-exports.generateTypescriptBoth = generateTypescriptBoth;
