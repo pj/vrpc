@@ -1,5 +1,4 @@
-query allData {
-  log {
+fragment LogFields on LogAction {
     ...ActionsFragment
     ... on GroupAction {
       __typename
@@ -12,52 +11,70 @@ query allData {
         version
       }
     }
-  }
+}
 
-  types {
-    name
-    description
-    versions {
-      version
-      _type
-      fields {
-        key
-        field {
+fragment TypeFields on Type {
+  name
+  description
+  versions {
+    version
+    _type
+    fields {
+      key
+      field {
+        name
+        description
+        changeLog
+        ... on Field {
           name
-          description
-          changeLog
-          ... on Field {
-            name
-            optional
-            _type
-          }
+          optional
+          _type
         }
       }
     }
   }
+}
+
+fragment ServiceFields on Service {
+  name
+  description
+  changeLog
+  versions {
+    inputs {
+      version
+      _type
+    }
+
+    output {
+      version
+      _type
+    }
+  }
+}
+
+fragment ChangeSetFields on ChangeSet {
+  id
+  baseHash
+  log {
+      ...ActionsFragment
+  }
+}
+
+query allData {
+  log {
+    ...LogFields
+  }
+
+  types {
+    ...TypeFields
+  }
 
   services {
-    name
-    description
-    changeLog
-    versions {
-      inputs {
-        version
-        _type
-      }
-
-      output {
-        version
-        _type
-      }
-    }
+    ...ServiceFields
   }
 
   changeSets {
-      baseHash
-      log {
-          ...ActionsFragment
-      }
+    ...ChangeSetFields
   }
 }
 
@@ -189,5 +206,25 @@ fragment ChangeSetFragment on ChangeSet {
 mutation UpdateChangeSet($changeSet: ChangeSetInput!) {
   updateChangeSet(changeSet: $changeSet) {
     ...ChangeSetFragment
+  }
+}
+
+mutation CommitChangeSet($changeSetId: String!) {
+  commitChangeSet(changeSetId: $changeSetId) {
+    log {
+      ...LogFields
+    }
+
+    types {
+      ...TypeFields
+    }
+
+    services {
+      ...ServiceFields
+    }
+
+    changeSets {
+      ...ChangeSetFields
+    }
   }
 }

@@ -2,7 +2,7 @@ import React from 'react';
 import { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
-import {GQLChangeSet, useUpdateChangeSetMutation} from './hooks';
+import {GQLChangeSet, useUpdateChangeSetMutation, AllDataDocument} from './hooks';
 import { FormControl, Modal, TextField, Button, CircularProgress } from '@material-ui/core';
 
 const useStyles = makeStyles(theme => ({
@@ -31,7 +31,17 @@ const AddChangeSetModal = (props: AddChangeSetModalProps) => {
     setName("");
   };
 
-  const [updateChangeSet, { loading, error }] = useUpdateChangeSetMutation();
+  const [updateChangeSet, { loading, error }] = useUpdateChangeSetMutation(
+    {
+      update(cache, { data: { updateChangeSet } }) {
+        const { changeSets } = cache.readQuery({ query: AllDataDocument });
+        cache.writeQuery({
+          query: AllDataDocument,
+          data: { changeSets: changeSets.concat([updateChangeSet]) },
+        });
+      }
+    }
+  );
 
   const handleUpdateChangeSet = () => {
     updateChangeSet({variables: {changeSet: {

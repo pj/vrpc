@@ -506,60 +506,76 @@ export type GQLVersionType = {
   version?: Maybe<Scalars['Int']>,
   hash?: Maybe<Scalars['String']>,
 };
+export type GQLLogFieldsFragment = ({ __typename?: 'NewServiceAction' } | { __typename?: 'UpdateDescriptionServiceAction' } | { __typename?: 'AddVersionServiceAction' } | { __typename?: 'RenameFieldTypeAction' } | { __typename?: 'RequiredFieldTypeAction' } | { __typename?: 'OptionalFieldTypeAction' } | { __typename?: 'DeleteFieldTypeAction' } | { __typename?: 'SetDefaultFieldTypeAction' } | { __typename?: 'RemoveDefaultFieldTypeAction' } | { __typename?: 'AddFieldTypeAction' } | { __typename?: 'UpdateDescriptionTypeAction' } | { __typename?: 'ReferenceFieldTypeAction' } | { __typename?: 'NewTypeAction' } | (
+  { __typename: 'GroupAction' }
+  & Pick<GQLGroupAction, 'changeLog'>
+  & { groupedActions: Maybe<Array<Maybe<({ __typename?: 'NewServiceAction' } | { __typename?: 'UpdateDescriptionServiceAction' } | { __typename?: 'AddVersionServiceAction' } | { __typename?: 'RenameFieldTypeAction' } | { __typename?: 'RequiredFieldTypeAction' } | { __typename?: 'OptionalFieldTypeAction' } | { __typename?: 'DeleteFieldTypeAction' } | { __typename?: 'SetDefaultFieldTypeAction' } | { __typename?: 'RemoveDefaultFieldTypeAction' } | { __typename?: 'AddFieldTypeAction' } | { __typename?: 'UpdateDescriptionTypeAction' } | { __typename?: 'ReferenceFieldTypeAction' } | { __typename?: 'NewTypeAction' } | { __typename?: 'GroupAction' })
+    & GQLActionsFragmentFragment
+  >>>, versions: Maybe<Array<Maybe<(
+    { __typename?: 'GroupVersion' }
+    & Pick<GQLGroupVersion, 'typeName' | 'version'>
+  )>>> }
+))
+  & GQLActionsFragmentFragment
+;
+
+export type GQLTypeFieldsFragment = (
+  { __typename?: 'Type' }
+  & Pick<GQLType, 'name' | 'description'>
+  & { versions: Maybe<Array<Maybe<(
+    { __typename?: 'Version' }
+    & Pick<GQLVersion, 'version' | '_type'>
+    & { fields: Maybe<Array<Maybe<(
+      { __typename?: 'FieldObject' }
+      & Pick<GQLFieldObject, 'key'>
+      & { field: Maybe<(
+        { __typename?: 'Field' }
+        & Pick<GQLField, 'name' | 'optional' | '_type' | 'description' | 'changeLog'>
+      ) | (
+        { __typename?: 'ReferenceField' }
+        & Pick<GQLReferenceField, 'name' | 'description' | 'changeLog'>
+      )> }
+    )>>> }
+  )>>> }
+);
+
+export type GQLServiceFieldsFragment = (
+  { __typename?: 'Service' }
+  & Pick<GQLService, 'name' | 'description' | 'changeLog'>
+  & { versions: Maybe<Array<Maybe<(
+    { __typename?: 'ServiceVersion' }
+    & { inputs: Maybe<Array<Maybe<(
+      { __typename?: 'VersionType' }
+      & Pick<GQLVersionType, 'version' | '_type'>
+    )>>>, output: Maybe<(
+      { __typename?: 'VersionType' }
+      & Pick<GQLVersionType, 'version' | '_type'>
+    )> }
+  )>>> }
+);
+
+export type GQLChangeSetFieldsFragment = (
+  { __typename?: 'ChangeSet' }
+  & Pick<GQLChangeSet, 'id' | 'baseHash'>
+  & { log: Maybe<Array<Maybe<({ __typename?: 'NewServiceAction' } | { __typename?: 'UpdateDescriptionServiceAction' } | { __typename?: 'AddVersionServiceAction' } | { __typename?: 'RenameFieldTypeAction' } | { __typename?: 'RequiredFieldTypeAction' } | { __typename?: 'OptionalFieldTypeAction' } | { __typename?: 'DeleteFieldTypeAction' } | { __typename?: 'SetDefaultFieldTypeAction' } | { __typename?: 'RemoveDefaultFieldTypeAction' } | { __typename?: 'AddFieldTypeAction' } | { __typename?: 'UpdateDescriptionTypeAction' } | { __typename?: 'ReferenceFieldTypeAction' } | { __typename?: 'NewTypeAction' } | { __typename?: 'GroupAction' })
+    & GQLActionsFragmentFragment
+  >>> }
+);
+
 export type GQLAllDataQueryVariables = {};
 
 
 export type GQLAllDataQuery = (
   { __typename?: 'Query' }
-  & { log: Maybe<Array<Maybe<({ __typename?: 'NewServiceAction' } | { __typename?: 'UpdateDescriptionServiceAction' } | { __typename?: 'AddVersionServiceAction' } | { __typename?: 'RenameFieldTypeAction' } | { __typename?: 'RequiredFieldTypeAction' } | { __typename?: 'OptionalFieldTypeAction' } | { __typename?: 'DeleteFieldTypeAction' } | { __typename?: 'SetDefaultFieldTypeAction' } | { __typename?: 'RemoveDefaultFieldTypeAction' } | { __typename?: 'AddFieldTypeAction' } | { __typename?: 'UpdateDescriptionTypeAction' } | { __typename?: 'ReferenceFieldTypeAction' } | { __typename?: 'NewTypeAction' } | (
-    { __typename: 'GroupAction' }
-    & Pick<GQLGroupAction, 'changeLog'>
-    & { groupedActions: Maybe<Array<Maybe<({ __typename?: 'NewServiceAction' } | { __typename?: 'UpdateDescriptionServiceAction' } | { __typename?: 'AddVersionServiceAction' } | { __typename?: 'RenameFieldTypeAction' } | { __typename?: 'RequiredFieldTypeAction' } | { __typename?: 'OptionalFieldTypeAction' } | { __typename?: 'DeleteFieldTypeAction' } | { __typename?: 'SetDefaultFieldTypeAction' } | { __typename?: 'RemoveDefaultFieldTypeAction' } | { __typename?: 'AddFieldTypeAction' } | { __typename?: 'UpdateDescriptionTypeAction' } | { __typename?: 'ReferenceFieldTypeAction' } | { __typename?: 'NewTypeAction' } | { __typename?: 'GroupAction' })
-      & GQLActionsFragmentFragment
-    >>>, versions: Maybe<Array<Maybe<(
-      { __typename?: 'GroupVersion' }
-      & Pick<GQLGroupVersion, 'typeName' | 'version'>
-    )>>> }
-  ))
-    & GQLActionsFragmentFragment
-  >>>, types: Maybe<Array<Maybe<(
-    { __typename?: 'Type' }
-    & Pick<GQLType, 'name' | 'description'>
-    & { versions: Maybe<Array<Maybe<(
-      { __typename?: 'Version' }
-      & Pick<GQLVersion, 'version' | '_type'>
-      & { fields: Maybe<Array<Maybe<(
-        { __typename?: 'FieldObject' }
-        & Pick<GQLFieldObject, 'key'>
-        & { field: Maybe<(
-          { __typename?: 'Field' }
-          & Pick<GQLField, 'name' | 'optional' | '_type' | 'description' | 'changeLog'>
-        ) | (
-          { __typename?: 'ReferenceField' }
-          & Pick<GQLReferenceField, 'name' | 'description' | 'changeLog'>
-        )> }
-      )>>> }
-    )>>> }
-  )>>>, services: Maybe<Array<Maybe<(
-    { __typename?: 'Service' }
-    & Pick<GQLService, 'name' | 'description' | 'changeLog'>
-    & { versions: Maybe<Array<Maybe<(
-      { __typename?: 'ServiceVersion' }
-      & { inputs: Maybe<Array<Maybe<(
-        { __typename?: 'VersionType' }
-        & Pick<GQLVersionType, 'version' | '_type'>
-      )>>>, output: Maybe<(
-        { __typename?: 'VersionType' }
-        & Pick<GQLVersionType, 'version' | '_type'>
-      )> }
-    )>>> }
-  )>>>, changeSets: Maybe<Array<Maybe<(
-    { __typename?: 'ChangeSet' }
-    & Pick<GQLChangeSet, 'baseHash'>
-    & { log: Maybe<Array<Maybe<({ __typename?: 'NewServiceAction' } | { __typename?: 'UpdateDescriptionServiceAction' } | { __typename?: 'AddVersionServiceAction' } | { __typename?: 'RenameFieldTypeAction' } | { __typename?: 'RequiredFieldTypeAction' } | { __typename?: 'OptionalFieldTypeAction' } | { __typename?: 'DeleteFieldTypeAction' } | { __typename?: 'SetDefaultFieldTypeAction' } | { __typename?: 'RemoveDefaultFieldTypeAction' } | { __typename?: 'AddFieldTypeAction' } | { __typename?: 'UpdateDescriptionTypeAction' } | { __typename?: 'ReferenceFieldTypeAction' } | { __typename?: 'NewTypeAction' } | { __typename?: 'GroupAction' })
-      & GQLActionsFragmentFragment
-    >>> }
-  )>>> }
+  & { log: Maybe<Array<Maybe<({ __typename?: 'NewServiceAction' } | { __typename?: 'UpdateDescriptionServiceAction' } | { __typename?: 'AddVersionServiceAction' } | { __typename?: 'RenameFieldTypeAction' } | { __typename?: 'RequiredFieldTypeAction' } | { __typename?: 'OptionalFieldTypeAction' } | { __typename?: 'DeleteFieldTypeAction' } | { __typename?: 'SetDefaultFieldTypeAction' } | { __typename?: 'RemoveDefaultFieldTypeAction' } | { __typename?: 'AddFieldTypeAction' } | { __typename?: 'UpdateDescriptionTypeAction' } | { __typename?: 'ReferenceFieldTypeAction' } | { __typename?: 'NewTypeAction' } | { __typename?: 'GroupAction' })
+    & GQLLogFieldsFragment
+  >>>, types: Maybe<Array<Maybe<{ __typename?: 'Type' }
+    & GQLTypeFieldsFragment
+  >>>, services: Maybe<Array<Maybe<{ __typename?: 'Service' }
+    & GQLServiceFieldsFragment
+  >>>, changeSets: Maybe<Array<Maybe<{ __typename?: 'ChangeSet' }
+    & GQLChangeSetFieldsFragment
+  >>> }
 );
 
 export type GQLDataFragmentFragment = (
@@ -658,6 +674,27 @@ export type GQLUpdateChangeSetMutation = (
   & { updateChangeSet: Maybe<{ __typename?: 'ChangeSet' }
     & GQLChangeSetFragmentFragment
   > }
+);
+
+export type GQLCommitChangeSetMutationVariables = {
+  changeSetId: Scalars['String']
+};
+
+
+export type GQLCommitChangeSetMutation = (
+  { __typename?: 'Mutation' }
+  & { commitChangeSet: Maybe<(
+    { __typename?: 'NewLog' }
+    & { log: Maybe<Array<Maybe<({ __typename?: 'NewServiceAction' } | { __typename?: 'UpdateDescriptionServiceAction' } | { __typename?: 'AddVersionServiceAction' } | { __typename?: 'RenameFieldTypeAction' } | { __typename?: 'RequiredFieldTypeAction' } | { __typename?: 'OptionalFieldTypeAction' } | { __typename?: 'DeleteFieldTypeAction' } | { __typename?: 'SetDefaultFieldTypeAction' } | { __typename?: 'RemoveDefaultFieldTypeAction' } | { __typename?: 'AddFieldTypeAction' } | { __typename?: 'UpdateDescriptionTypeAction' } | { __typename?: 'ReferenceFieldTypeAction' } | { __typename?: 'NewTypeAction' } | { __typename?: 'GroupAction' })
+      & GQLLogFieldsFragment
+    >>>, types: Maybe<Array<Maybe<{ __typename?: 'Type' }
+      & GQLTypeFieldsFragment
+    >>>, services: Maybe<Array<Maybe<{ __typename?: 'Service' }
+      & GQLServiceFieldsFragment
+    >>>, changeSets: Maybe<Array<Maybe<{ __typename?: 'ChangeSet' }
+      & GQLChangeSetFieldsFragment
+    >>> }
+  )> }
 );
 export const DataFragmentFragmentDoc = gql`
     fragment DataFragment on FieldData {
@@ -762,6 +799,71 @@ export const ActionsFragmentFragmentDoc = gql`
   }
 }
     ${DataFragmentFragmentDoc}`;
+export const LogFieldsFragmentDoc = gql`
+    fragment LogFields on LogAction {
+  ...ActionsFragment
+  ... on GroupAction {
+    __typename
+    changeLog
+    groupedActions {
+      ...ActionsFragment
+    }
+    versions {
+      typeName
+      version
+    }
+  }
+}
+    ${ActionsFragmentFragmentDoc}`;
+export const TypeFieldsFragmentDoc = gql`
+    fragment TypeFields on Type {
+  name
+  description
+  versions {
+    version
+    _type
+    fields {
+      key
+      field {
+        name
+        description
+        changeLog
+        ... on Field {
+          name
+          optional
+          _type
+        }
+      }
+    }
+  }
+}
+    `;
+export const ServiceFieldsFragmentDoc = gql`
+    fragment ServiceFields on Service {
+  name
+  description
+  changeLog
+  versions {
+    inputs {
+      version
+      _type
+    }
+    output {
+      version
+      _type
+    }
+  }
+}
+    `;
+export const ChangeSetFieldsFragmentDoc = gql`
+    fragment ChangeSetFields on ChangeSet {
+  id
+  baseHash
+  log {
+    ...ActionsFragment
+  }
+}
+    ${ActionsFragmentFragmentDoc}`;
 export const ChangeSetFragmentFragmentDoc = gql`
     fragment ChangeSetFragment on ChangeSet {
   id
@@ -774,63 +876,22 @@ export const ChangeSetFragmentFragmentDoc = gql`
 export const AllDataDocument = gql`
     query allData {
   log {
-    ...ActionsFragment
-    ... on GroupAction {
-      __typename
-      changeLog
-      groupedActions {
-        ...ActionsFragment
-      }
-      versions {
-        typeName
-        version
-      }
-    }
+    ...LogFields
   }
   types {
-    name
-    description
-    versions {
-      version
-      _type
-      fields {
-        key
-        field {
-          name
-          description
-          changeLog
-          ... on Field {
-            name
-            optional
-            _type
-          }
-        }
-      }
-    }
+    ...TypeFields
   }
   services {
-    name
-    description
-    changeLog
-    versions {
-      inputs {
-        version
-        _type
-      }
-      output {
-        version
-        _type
-      }
-    }
+    ...ServiceFields
   }
   changeSets {
-    baseHash
-    log {
-      ...ActionsFragment
-    }
+    ...ChangeSetFields
   }
 }
-    ${ActionsFragmentFragmentDoc}`;
+    ${LogFieldsFragmentDoc}
+${TypeFieldsFragmentDoc}
+${ServiceFieldsFragmentDoc}
+${ChangeSetFieldsFragmentDoc}`;
 
 /**
  * __useAllDataQuery__
@@ -888,3 +949,49 @@ export function useUpdateChangeSetMutation(baseOptions?: ApolloReactHooks.Mutati
 export type UpdateChangeSetMutationHookResult = ReturnType<typeof useUpdateChangeSetMutation>;
 export type UpdateChangeSetMutationResult = ApolloReactCommon.MutationResult<GQLUpdateChangeSetMutation>;
 export type UpdateChangeSetMutationOptions = ApolloReactCommon.BaseMutationOptions<GQLUpdateChangeSetMutation, GQLUpdateChangeSetMutationVariables>;
+export const CommitChangeSetDocument = gql`
+    mutation CommitChangeSet($changeSetId: String!) {
+  commitChangeSet(changeSetId: $changeSetId) {
+    log {
+      ...LogFields
+    }
+    types {
+      ...TypeFields
+    }
+    services {
+      ...ServiceFields
+    }
+    changeSets {
+      ...ChangeSetFields
+    }
+  }
+}
+    ${LogFieldsFragmentDoc}
+${TypeFieldsFragmentDoc}
+${ServiceFieldsFragmentDoc}
+${ChangeSetFieldsFragmentDoc}`;
+export type GQLCommitChangeSetMutationFn = ApolloReactCommon.MutationFunction<GQLCommitChangeSetMutation, GQLCommitChangeSetMutationVariables>;
+
+/**
+ * __useCommitChangeSetMutation__
+ *
+ * To run a mutation, you first call `useCommitChangeSetMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCommitChangeSetMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [commitChangeSetMutation, { data, loading, error }] = useCommitChangeSetMutation({
+ *   variables: {
+ *      changeSetId: // value for 'changeSetId'
+ *   },
+ * });
+ */
+export function useCommitChangeSetMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<GQLCommitChangeSetMutation, GQLCommitChangeSetMutationVariables>) {
+        return ApolloReactHooks.useMutation<GQLCommitChangeSetMutation, GQLCommitChangeSetMutationVariables>(CommitChangeSetDocument, baseOptions);
+      }
+export type CommitChangeSetMutationHookResult = ReturnType<typeof useCommitChangeSetMutation>;
+export type CommitChangeSetMutationResult = ApolloReactCommon.MutationResult<GQLCommitChangeSetMutation>;
+export type CommitChangeSetMutationOptions = ApolloReactCommon.BaseMutationOptions<GQLCommitChangeSetMutation, GQLCommitChangeSetMutationVariables>;

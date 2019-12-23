@@ -5,8 +5,9 @@ import Paper from '@material-ui/core/Paper';
 
 import {GQLChangeSet} from './hooks';
 import ActionList from './ActionList';
-import { FormControl, InputLabel, Select, MenuItem, Modal } from '@material-ui/core';
+import { FormControl, InputLabel, Select, MenuItem, Modal, Button } from '@material-ui/core';
 import AddChangeSetModal from './AddChangeSetModal';
+import ActionCreatorModal from './ActionCreatorModal';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -14,6 +15,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 type ChangeSetViewerProps = {
+  currentBaseHash: string | null,
   changeSets: GQLChangeSet[]
 }
 
@@ -25,14 +27,15 @@ const ChangeSetViewer = (props: ChangeSetViewerProps) => {
     idToChangeSet.set(changeSet.id, changeSet);
   }
 
-  const selectedChangeSet = null;
+  let selectedChangeSet = null;
   if (changeSetId) {
-    const selectedChangeSet = idToChangeSet.get(changeSetId);
+    selectedChangeSet = idToChangeSet.get(changeSetId);
   }
 
   return (
     <Paper>
       <FormControl>
+        <AddChangeSetModal currentBaseHash={props.currentBaseHash} changeSets={props.changeSets}/>
         <InputLabel htmlFor="select-change-set">Select ChangeSet</InputLabel>
         <Select
           value={changeSetId}
@@ -50,7 +53,14 @@ const ChangeSetViewer = (props: ChangeSetViewerProps) => {
         </Select>
       </FormControl>
       {selectedChangeSet && <ActionList log={selectedChangeSet.log} />}
-      <AddChangeSetModal />
+      {selectedChangeSet && <ActionCreatorModal />}
+      {selectedChangeSet && selectedChangeSet.log.length > 0 && 
+        <FormControl>
+          <Button variant="contained" color="primary" onClick={handleUpdateChangeSet}>
+            Commit ChangeSet
+          </Button>
+        </FormControl>
+      }
     </Paper>
   );
 }

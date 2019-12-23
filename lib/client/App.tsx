@@ -15,10 +15,12 @@ import MailIcon from '@material-ui/icons/Mail';
 import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import ActionList from './ActionList';
-import ActionCreator from './ActionCreator';
+import ActionCreator from './ActionCreatorModal';
 import TypeViewer from './TypeViewer';
+import ChangeSetViewer from './ChangeSetViewer'
 
 import { useAllDataQuery } from './hooks';
+
 const drawerWidth = 240;
 
 const useStyles = makeStyles(theme => ({
@@ -65,12 +67,11 @@ const App = () => {
       </AppBar>
       <main className={classes.content}>
         <div className={classes.toolbar} />
-        <div className={classes.topSection}>
-          <ActionCreator types={data.types} services={data.services}/>
-          <TypeViewer types={data.types} services={data.services} />
-        </div>
-        <ChangeSetViewer changeSets={data.changeSets} />
-        <ActionList actions={data.log} />
+        <ChangeSetViewer 
+          changeSets={data.changeSets} 
+          currentBaseHash={data.log.length > 0 ? data.log[0].hash : null}
+        />
+        <ActionList log={data.log} />
       </main>
     </div>
   );
