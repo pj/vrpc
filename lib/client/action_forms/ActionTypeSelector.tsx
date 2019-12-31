@@ -1,22 +1,44 @@
-<FormControl>
-        <InputLabel htmlFor="action-type">Action Type</InputLabel>
-        <Select
-          value={values.logType}
-          onChange={handleTypeChange}
-          inputProps={{id: 'action-type'}}
-        >
-          <MenuItem value={"RenameFieldTypeAction"} >RenameFieldTypeAction</MenuItem>
-          <MenuItem value={"RequiredFieldTypeAction"} >RequiredFieldTypeAction</MenuItem>
-          <MenuItem value={"OptionalFieldTypeAction"} >OptionalFieldTypeAction</MenuItem>
-          <MenuItem value={"DeleteFieldTypeAction"} >DeleteFieldTypeAction</MenuItem>
-          <MenuItem value={"SetDefaultFieldTypeAction"} >SetDefaultFieldTypeAction</MenuItem>
-          <MenuItem value={"RemoveDefaultFieldTypeAction"} >RemoveDefaultFieldTypeAction</MenuItem>
-          <MenuItem value={"AddFieldTypeAction"} >AddFieldTypeAction</MenuItem>
-          <MenuItem value={"UpdateDescriptionTypeAction"} >UpdateDescriptionTypeAction</MenuItem>
-          <MenuItem value={"ReferenceFieldTypeAction"} >ReferenceFieldTypeAction</MenuItem>
-          <MenuItem value={"NewTypeAction"} >NewTypeAction</MenuItem>
-          <MenuItem value={"UpdateDescriptionServiceAction"} >UpdateDescriptionServiceAction</MenuItem>
-          <MenuItem value={"AddVersionServiceAction"} >AddVersionServiceAction</MenuItem>
-          <MenuItem value={"NewServiceAction"} >NewServiceAction</MenuItem>
-        </Select>
-      </FormControl>
+import { useState } from "react";
+import { FormControl, InputLabel, Select, MenuItem } from "@material-ui/core";
+
+const ACTION_NAMES = [
+  "RenameFieldTypeAction",
+  "RequiredFieldTypeAction",
+  "OptionalFieldTypeAction",
+  "DeleteFieldTypeAction",
+  "SetDefaultFieldTypeAction",
+  "RemoveDefaultFieldTypeAction",
+  "AddFieldTypeAction",
+  "UpdateDescriptionTypeAction",
+  "ReferenceFieldTypeAction",
+  "NewTypeAction",
+  "UpdateDescriptionServiceAction",
+  "AddVersionServiceAction",
+  "NewServiceAction"
+]
+
+type ActionTypeSelectorProps = {
+  logType: string,
+  onChange: (string) => void
+}
+
+const ActionTypeSelector = (props: ActionTypeSelectorProps) => {
+  function handleChange(event) {
+    props.onChange(event.target.value);
+  }
+
+  return (
+    <FormControl>
+      <InputLabel htmlFor="action-type">Action Type</InputLabel>
+      <Select
+        value={props.logType}
+        onChange={props.onChange}
+        inputProps={{id: 'action-type'}}
+      >
+        {ACTION_NAMES.map(name => <MenuItem value={name} >{name}</MenuItem>)}
+      </Select>
+    </FormControl>
+  );
+}
+
+export default ActionTypeSelector;

@@ -1,5 +1,13 @@
+import { FormControl, InputLabel, Select, MenuItem } from "@material-ui/core";
+import { GQLService } from "../hooks";
 
-const ServiceSelector = (props: any) => {
+type ServiceSelectorProps<V> = {
+  services: GQLService[]
+  value: V,
+  handleChange: (event: React.SyntheticEvent): void
+};
+
+const ServiceSelector = (props: ServiceSelectorProps) => {
   const serviceNames = props.services.map(s => s.name);
 
   return (
@@ -21,3 +29,5 @@ const ServiceSelector = (props: any) => {
     </FormControl>
   );
 }
+
+export default ServiceSelector;

@@ -4,19 +4,8 @@ import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Toolbar from '@material-ui/core/Toolbar';
-import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
-import Divider from '@material-ui/core/Divider';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import MailIcon from '@material-ui/icons/Mail';
-import { useQuery } from '@apollo/react-hooks';
-import gql from 'graphql-tag';
 import ActionList from './ActionList';
-import ActionCreator from './ActionCreatorModal';
-import TypeViewer from './TypeViewer';
 import ChangeSetViewer from './ChangeSetViewer'
 
 import { useAllDataQuery } from './hooks';
@@ -49,8 +38,8 @@ const useStyles = makeStyles(theme => ({
   toolbar: theme.mixins.toolbar,
 }));
 
-const App = () => {
-  const classes = useStyles();
+const App = (props: any) => {
+  const classes = useStyles(props);
   const { loading, data } = useAllDataQuery();
   if (loading || !data) {
     return null;
@@ -70,6 +59,8 @@ const App = () => {
         <ChangeSetViewer 
           changeSets={data.changeSets} 
           currentBaseHash={data.log.length > 0 ? data.log[0].hash : null}
+          types={data.types}
+          services={data.services}
         />
         <ActionList log={data.log} />
       </main>

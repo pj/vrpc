@@ -14,7 +14,7 @@ type DEFAULT_TYPE_TYPE = "integer" | "float" | "string" | "boolean" | null;
 
 type DefaultSelectorProps = {
   _default: GQLFieldDataInput,
-  onChange: (_default: GQLFieldDataInput) => void
+  handleChange: (_default: GQLFieldDataInput) => void
 };
 
 const DefaultSelector = (props: DefaultSelectorProps) => {
@@ -28,7 +28,7 @@ const DefaultSelector = (props: DefaultSelectorProps) => {
         id="defaultValue"
         label="Value of default"
         value={props._default.stringValue}
-        onChange={(event) => {props.onChange({stringValue: event.target.value})}}
+        onChange={(event) => {props.handleChange({stringValue: event.target.value})}}
         margin="normal"
       />
     )
@@ -39,7 +39,7 @@ const DefaultSelector = (props: DefaultSelectorProps) => {
         decimalScale={0}
         inputRef={(el) => this.inputElem = el} 
         customInput={TextField} 
-        onValueChange={values => {props.onChange({integerValue: values.floatValue})}}
+        onValueChange={values => {props.handleChange({integerValue: values.floatValue})}}
         value={props._default.integerValue}
       />
     )
@@ -49,7 +49,7 @@ const DefaultSelector = (props: DefaultSelectorProps) => {
       <NumberFormat 
         inputRef={(el) => this.inputElem = el} 
         customInput={TextField} 
-        onValueChange={values => {props.onChange({integerValue: values.floatValue})}}
+        onValueChange={values => {props.handleChange({integerValue: values.floatValue})}}
         value={props._default.floatValue}
       />
     )
@@ -58,7 +58,7 @@ const DefaultSelector = (props: DefaultSelectorProps) => {
     valueEditor = (
       <Checkbox
         id="optional"
-        onChange={event => {props.onChange({booleanValue: !event.target.value})}}
+        onChange={event => {props.handleChange({booleanValue: !event.target.value})}}
         checked={props._default.booleanValue}
       />
     )
@@ -66,15 +66,15 @@ const DefaultSelector = (props: DefaultSelectorProps) => {
 
   function changeType(event) {
     if (event.target.value === "string") {
-      props.onChange({stringValue: ""});
+      props.handleChange({stringValue: ""});
     } else if (event.target.value === "integer") {
-      props.onChange({integerValue: 0});
+      props.handleChange({integerValue: 0});
     } else if (event.target.value === "float") {
-      props.onChange({floatValue: 0});
+      props.handleChange({floatValue: 0});
     } else if (event.target.value === "boolean") {
-      props.onChange({booleanValue: true});
+      props.handleChange({booleanValue: true});
     } else {
-      props.onChange({});
+      props.handleChange({});
     }
   }
 

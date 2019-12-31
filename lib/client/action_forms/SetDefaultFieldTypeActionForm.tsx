@@ -1,40 +1,32 @@
-  const [values, setValues] = useState({
-    logType: "",
-    changeLog: "",
-    typeName: "",
-    description: "",
-    serviceName: "",
-    fieldName: "",
-    newFieldName: "",
-    defaultType: "",
-    defaultValue: "",
-    fieldDescription: "",
-    optional: true,
-    outputName: "",
-    inputName: "",
-    inputVersion: "",
-    outputVersion: "",
-    referenceName: "",
-    referenceVersion: "",
-  } as any);
-(
+import { FormComponentProps, ActionFormHOC } from "./ActionForm"
+import React from "react";
+import TypeSelector from "./TypeSelector";
+import DefaultSelector from "./DefaultSelector";
+import FieldSelector from "./FieldSelector";
+import { GQLSetDefaultFieldTypeActionInput } from "../hooks";
+
+const SetDefaultFieldTypeActionForm = ActionFormHOC(
+  function (props: FormComponentProps<GQLSetDefaultFieldTypeActionInput>) {
+    return (
       <React.Fragment>
-      <TypeSelector
-        types={props.types}
-        handleChange={handleRenameSetType}
-        value={values.typeName}
-      />
-      <FieldSelector
-        types={props.types}
-        handleChange={handleChange('fieldName')}
-        value={values.fieldName}
-        selectedType={values.typeName}
-      />
-      <DefaultSelector
-        defaultType={values.defaultType}
-        defaultValue={values.defaultValue}
-        handleTypeChange={handleChange('defaultType')}
-        handleValueChange={handleChange('defaultValue')}
-      />
+        <TypeSelector
+          types={props.types}
+          handleChange={props.handleChange('typeName')}
+          value={props.value.typeName}
+        />
+        <FieldSelector
+          types={props.types}
+          handleChange={props.handleChange('name')}
+          value={props.value.name}
+          selectedType={props.value.typeName}
+        />
+        <DefaultSelector
+          _default={props.value._default}
+          handleChange={props.handleDefaultChange('_default')}
+        />
       </React.Fragment>
-    )
+    );
+  }
+);
+
+export default SetDefaultFieldTypeActionForm;

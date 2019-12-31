@@ -3,11 +3,11 @@ import {useState} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 
-import {GQLChangeSet} from './hooks';
+import {GQLChangeSet, useCommitChangeSetMutation, GQLType, GQLService} from './hooks';
 import ActionList from './ActionList';
-import { FormControl, InputLabel, Select, MenuItem, Modal, Button } from '@material-ui/core';
+import { FormControl, InputLabel, Select, MenuItem, Modal, Button, CircularProgress } from '@material-ui/core';
 import AddChangeSetModal from './AddChangeSetModal';
-import ActionCreatorModal from './ActionCreatorModal';
+import ActionCreatorModal from './action_forms/ActionCreatorModal';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -17,10 +17,21 @@ const useStyles = makeStyles(theme => ({
 type ChangeSetViewerProps = {
   currentBaseHash: string | null,
   changeSets: GQLChangeSet[]
+  types: GQLType[],
+  services: GQLService[]
 }
 
 const ChangeSetViewer = (props: ChangeSetViewerProps) => {
   const [changeSetId, setChangeSetId] = useState(null);
+  const [commitChangeSetMutation, {loading, error}] = useCommitChangeSetMutation();
+
+  if (loading) {
+    return (<Paper><CircularProgress /></Paper>);
+  }
+
+  if (error) {
+    return (<Paper>{error.toString()}</Paper>);
+  }
 
   const idToChangeSet = new Map<string, GQLChangeSet>();
   for (let changeSet of props.changeSets) {
@@ -30,6 +41,12 @@ const ChangeSetViewer = (props: ChangeSetViewerProps) => {
   let selectedChangeSet = null;
   if (changeSetId) {
     selectedChangeSet = idToChangeSet.get(changeSetId);
+  }
+
+  function commitChangeSet() {
+    commitChangeSetMutation(
+      {variables: {changeSetId}}
+    );
   }
 
   return (
@@ -53,10 +70,15 @@ const ChangeSetViewer = (props: ChangeSetViewerProps) => {
         </Select>
       </FormControl>
       {selectedChangeSet && <ActionList log={selectedChangeSet.log} />}
-      {selectedChangeSet && <ActionCreatorModal />}
+      {
+        selectedChangeSet && <ActionCreatorModal 
+          types={props.types} 
+          services={props.services}
+        />
+      }
       {selectedChangeSet && selectedChangeSet.log.length > 0 && 
         <FormControl>
-          <Button variant="contained" color="primary" onClick={handleUpdateChangeSet}>
+          <Button variant="contained" color="primary" onClick={commitChangeSet}>
             Commit ChangeSet
           </Button>
         </FormControl>

@@ -1,5 +1,13 @@
+import { FormControl, InputLabel, Select, MenuItem } from "@material-ui/core";
+import { GQLType } from "../hooks";
 
-const FieldSelector = (props: any) => {
+type FieldSelectorProps<V> = {
+  types: GQLType[]
+  value: V,
+  handleChange: (event: React.SyntheticEvent): void
+};
+
+const FieldSelector = (props: FieldSelectorProps) => {
   const fieldNamesByType = new Map();
   for (let _type of props.types) {
     const lastVersion = _type.versions[_type.versions.length-1];
@@ -28,3 +36,5 @@ const FieldSelector = (props: any) => {
     </FormControl>
   );
 }
+
+export default FieldSelector;

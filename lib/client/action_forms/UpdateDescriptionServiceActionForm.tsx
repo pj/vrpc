@@ -1,36 +1,30 @@
+import { FormComponentProps, ActionFormHOC } from "./ActionForm"
+import ServiceSelector from "./ServiceSelector";
+import { GQLUpdateDescriptionServiceActionInput } from "../hooks";
+import React from "react";
+import { FormControl, TextField } from "@material-ui/core";
 
-  const [values, setValues] = useState({
-    logType: "",
-    changeLog: "",
-    typeName: "",
-    description: "",
-    serviceName: "",
-    fieldName: "",
-    newFieldName: "",
-    defaultType: "",
-    defaultValue: "",
-    fieldDescription: "",
-    optional: true,
-    outputName: "",
-    inputName: "",
-    inputVersion: "",
-    outputVersion: "",
-    referenceName: "",
-    referenceVersion: "",
-  } as any);
-    editor = (
-      <FormControl>
-      <ServiceSelector
-        types={props.services}
-        handleChange={handleChange('serviceName')}
-        value={values.serviceName}
-      />
-      <TextField
-        id="description"
-        label="Description of service"
-        value={values.description}
-        onChange={handleChange('description')}
-        margin="normal"
-      />
-      </FormControl>
+const UpdateDescriptionServiceActionForm = ActionFormHOC(
+  function (props: FormComponentProps<GQLUpdateDescriptionServiceActionInput>) {
+    return (
+      <React.Fragment>
+        <ServiceSelector
+          services={props.services}
+          handleChange={props.handleChange('serviceName')}
+          value={props.value.serviceName}
+        />
+        <FormControl>
+          <TextField
+            id="description"
+            label="Description of service"
+            value={props.value.description}
+            onChange={props.handleChange('description')}
+            margin="normal"
+          />
+        </FormControl>
+      </React.Fragment>
     );
+  }
+);
+
+export default UpdateDescriptionServiceActionForm;

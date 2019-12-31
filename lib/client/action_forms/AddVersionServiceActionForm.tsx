@@ -1,38 +1,39 @@
-import { ActionFormProps } from "./ActionForm";
-import React, { useState } from "react";
-import TypeSelector from "./TypeSelector";
-import { handleChange } from "./utils";
+import { FormComponentProps, ActionFormHOC } from "./ActionForm"
+import React from "react";
 import { GQLAddVersionServiceActionInput } from "../hooks";
+import TypeSelector from "./TypeSelector";
 import VersionSelector from "./VersionSelector";
 
-const AddVersionServiceActionForm = (props: ActionFormProps) => {
-  const [values, setValues] = useState<GQLAddVersionServiceActionInput>({});
-  return (
+const AddVersionServiceActionForm = ActionFormHOC(
+  function (props: FormComponentProps<GQLAddVersionServiceActionInput>) {
+    return (
     <React.Fragment>
       <TypeSelector
         types={props.types}
-        handleChange={handleChange(setValues, 'inputType')}
-        value={values.inputType}
+        handleChange={props.handleChange('inputType')}
+        value={props.value.inputType}
       />
       <VersionSelector
         types={props.types}
-        handleChange={handleChange(setValues, 'inputVersion')}
-        typeName={values.outputType}
-        version={values.inputVersion}
+        handleChange={props.handleChange('inputVersion')}
+        typeName={props.value.outputType}
+        version={props.value.inputVersion}
       />
       <TypeSelector
         types={props.types}
-        handleChange={handleChange(setValues, 'outputType')}
-        value={values.outputType}
+        handleChange={props.handleChange('outputType')}
+        value={props.value.outputType}
       />
       <VersionSelector
         types={props.types}
-        handleChange={handleChange(setValues, 'outputVersion')}
-        typeName={values.outputType}
-        version={values.outputVersion}
+        handleChange={props.handleChange('outputVersion')}
+        typeName={props.value.outputType}
+        version={props.value.outputVersion}
       />
     </React.Fragment>
-  )
-}
+
+    );
+  }
+);
 
 export default AddVersionServiceActionForm;

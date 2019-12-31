@@ -1,39 +1,30 @@
-const 
-  const [values, setValues] = useState({
-    logType: "",
-    changeLog: "",
-    typeName: "",
-    description: "",
-    serviceName: "",
-    fieldName: "",
-    newFieldName: "",
-    defaultType: "",
-    defaultValue: "",
-    fieldDescription: "",
-    optional: true,
-    outputName: "",
-    inputName: "",
-    inputVersion: "",
-    outputVersion: "",
-    referenceName: "",
-    referenceVersion: "",
-  } as any);
+import { FormComponentProps, ActionFormHOC } from "./ActionForm"
+import { GQLUpdateDescriptionTypeActionInput } from "../hooks";
+import TypeSelector from "./TypeSelector";
+import { FormControl, TextField } from "@material-ui/core";
+import React from "react";
 
-(
+const UpdateDescriptionTypeActionForm = ActionFormHOC(
+  function (props: FormComponentProps<GQLUpdateDescriptionTypeActionInput>) {
+    return (
       <React.Fragment>
         <TypeSelector
           types={props.types}
-          handleChange={handleChange('typeName')}
-          value={values.typeName}
+          handleChange={props.handleChange('typeName')}
+          value={props.value.typeName}
         />
         <FormControl>
           <TextField
             id="description"
             label="Type Description"
-            value={values.description}
-            onChange={handleChange('description')}
+            value={props.value.description}
+            onChange={props.handleChange('description')}
             margin="normal"
           />
         </FormControl>
       </React.Fragment>
-    )
+    );
+  }
+);
+
+export default UpdateDescriptionTypeActionForm;

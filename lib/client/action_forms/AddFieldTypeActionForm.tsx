@@ -1,69 +1,61 @@
-import { ActionFormProps } from "./ActionForm";
-import React, { useState } from "react";
+import { FormComponentProps, ActionFormHOC } from "./ActionForm"
+import React from "react";
+import { GQLAddVersionServiceActionInput, GQLAddFieldTypeActionInput } from "../hooks";
 import TypeSelector from "./TypeSelector";
-import { FormControl, TextField, Checkbox } from "@material-ui/core";
-import { GQLAddFieldTypeActionInput } from "../hooks";
-import { handleChange, handleBooleanChange } from "./utils";
+import VersionSelector from "./VersionSelector";
 import DefaultSelector from "./DefaultSelector";
+import { FormControl, TextField, Checkbox } from "@material-ui/core";
 
-const AddFieldTypeActionForm = (props: ActionFormProps) => {
-  const [values, setValues] = useState<GQLAddFieldTypeActionInput>({
-    changeLog: null,
-    typeName: null,
-    description: null,
-    optional: true,
-    _default: null,
-    name: null,
-    type: null
-  });
-
-  return (
-    <React.Fragment>
-      <TypeSelector
-        types={props.types}
-        handleChange={handleChange(setValues, 'typeName')}
-        value={values.typeName}
-      />
-      <FormControl>
-        <TextField
-          id="fieldName"
-          label="New field name"
-          value={values.name}
-          onChange={handleChange(setValues, 'name')}
-          margin="normal"
+const AddFieldTypeActionForm = ActionFormHOC(
+  function (props: FormComponentProps<GQLAddFieldTypeActionInput>) {
+    return (
+      <React.Fragment>
+        <TypeSelector
+          types={props.types}
+          handleChange={props.handleChange('typeName')}
+          value={props.value.typeName}
         />
-      </FormControl>
-      <FormControl>
-        <TextField
-          id="description"
-          label="Field description"
-          value={values.description}
-          onChange={handleChange(setValues, 'description')}
-          margin="normal"
-        />
-      </FormControl>
-      <FormControl>
-        <Checkbox
-          id="optional"
-          checked={values.optional}
-          onChange={handleBooleanChange(setValues, 'optional')}
-        />
-      </FormControl>
-      <DefaultSelector
-        _default={values._default}
-        onChange={handleChange(setValues, '_default')}
-      />
-      <FormControl>
-        <TextField
-            id="standard-name"
-            label="Change Log"
-            value={values.changeLog}
-            onChange={handleChange(setValues, 'changeLog')}
+        <FormControl>
+          <TextField
+            id="fieldName"
+            label="New field name"
+            value={props.value.name}
+            onChange={props.handleChange('name')}
             margin="normal"
+          />
+        </FormControl>
+        <FormControl>
+          <TextField
+            id="description"
+            label="Field description"
+            value={props.value.description}
+            onChange={props.handleChange('description')}
+            margin="normal"
+          />
+        </FormControl>
+        <FormControl>
+          <Checkbox
+            id="optional"
+            checked={props.value.optional}
+            onChange={props.handleBooleanChange('optional')}
+          />
+        </FormControl>
+        <DefaultSelector
+          _default={props.value._default}
+          handleChange={props.handleDefaultChange('_default')}
         />
-      </FormControl>
-    </React.Fragment>
-    )
-}
+        <FormControl>
+          <TextField
+              id="standard-name"
+              label="Change Log"
+              value={props.value.changeLog}
+              onChange={props.handleChange('changeLog')}
+              margin="normal"
+          />
+        </FormControl>
+      </React.Fragment>
+    );
+  }
+);
 
 export default AddFieldTypeActionForm;
