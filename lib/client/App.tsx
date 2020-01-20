@@ -44,6 +44,8 @@ const App = (props: any) => {
   if (loading || !data) {
     return null;
   }
+  // FIXME: fix types: need to restructure so group actions aren't part of 
+  // regular log actions.
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -58,10 +60,11 @@ const App = (props: any) => {
         <div className={classes.toolbar} />
         <ChangeSetViewer 
           changeSets={data.changeSets} 
-          currentBaseHash={data.log.length > 0 ? data.log[0].hash : null}
+          currentBaseHash={data.log[0].hash}
           types={data.types}
           services={data.services}
         />
+        // @ts-ignore 
         <ActionList log={data.log} />
       </main>
     </div>

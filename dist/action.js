@@ -191,8 +191,8 @@ class ReferenceFieldTypeAction extends Action {
 }
 exports.ReferenceFieldTypeAction = ReferenceFieldTypeAction;
 class GroupAction extends Action {
-    constructor(changeLog, hash, typeOrServiceName, actions, versions) {
-        super(changeLog, hash, null);
+    constructor(changeLog, hash, version, typeOrServiceName, actions, versions) {
+        super(changeLog, hash, version);
         this.typeOrServiceName = typeOrServiceName;
         this.actions = actions;
         this.versions = versions;
@@ -277,7 +277,7 @@ class AddVersionServiceAction extends Action {
 exports.AddVersionServiceAction = AddVersionServiceAction;
 // Latest/Changesets
 class ChangeSet {
-    constructor(log, baseHash) {
+    constructor(id, log, baseHash) {
         this.log = log;
         this.baseHash = baseHash;
     }
@@ -318,7 +318,7 @@ function loadAction(action) {
             for (const subAction of action.actions) {
                 groupedActions.push(loadAction(subAction));
             }
-            return new GroupAction(action.changeLog, action.hash, action.name, groupedActions, action.versions);
+            return new GroupAction(action.changeLog, action.hash, action.version, action.name, groupedActions, action.versions);
         default:
             throw new Error(`Unknown Action: ${action}`);
     }

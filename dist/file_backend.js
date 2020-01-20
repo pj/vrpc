@@ -161,5 +161,21 @@ class FileBackend {
             await fs_1.promises.writeFile(this.fileName, serialized);
         });
     }
+    async deleteChangeSet(userId, changeSetId) {
+        return this.doWithLock(async (data) => {
+            const changeSetData = data.changeSets;
+            const userSets = changeSetData.get(userId);
+            if (!userSets) {
+                throw new Error(`No changesets found for user: ${userId}`);
+            }
+            const changeSet = userSets.get(changeSetId);
+            if (!changeSet) {
+                throw new Error(`Changeset not found for id: ${changeSet}`);
+            }
+            userSets.delete(changeSetId);
+            const serialized = json_object_mapper_1.ObjectMapper.serialize(data);
+            await fs_1.promises.writeFile(this.fileName, serialized);
+        });
+    }
 }
 exports.FileBackend = FileBackend;

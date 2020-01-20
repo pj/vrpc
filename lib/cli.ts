@@ -3,9 +3,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as yargs from 'yargs';
 
-import * as typeidea from './typeidea';
-import * as action from './action';
 import * as generate from './generate';
+import * as generate_typescript from './generate_typescript';
 import {startServer} from './server/index';
 import {FileBackend} from './file_backend';
 
@@ -26,12 +25,12 @@ const args = yargs
     async (argv: any) => {
       const backend = new FileBackend(argv.source);
       const log = await backend.getLog();
-      const [types, services] = generate.generateDefinitions(log);
+      const [types, services] = generate.generateDefinitions(log, null, null);
       const [
         generatedTypes,
         generatedServices,
         generatedClient,
-      ] = generate.generateTypescriptBoth(types, services);
+      ] = generate_typescript.generateTypescriptBoth(types, services);
 
       fs.mkdirSync(argv.dest, {recursive: true});
       fs.writeFileSync(path.join(argv.dest, 'types.ts'), generatedTypes);

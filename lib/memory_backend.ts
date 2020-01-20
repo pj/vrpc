@@ -24,7 +24,7 @@ export class MemoryBackend implements Backend {
   }
 
   async getCurrentServices(): Promise<Service[]> {
-    const [_, services] = generateDefinitions(this.log);
+    const [_, services] = generateDefinitions(this.log, null, null);
     return services;
   }
 
@@ -45,12 +45,16 @@ export class MemoryBackend implements Backend {
     
     const newLog = commitChangeSet(this.log, changeSet);
     
-    const [_, services] = generateDefinitions(newLog);
+    const [_, services] = generateDefinitions(
+      newLog,
+      changeSet.log, 
+      changeSetId
+    );
     return services;
   }
 
   async getCurrentTypes(): Promise<Type[]> {
-    const [types, _] = generateDefinitions(this.log);
+    const [types, _] = generateDefinitions(this.log, null, null);
     return types;
   }
 
@@ -71,7 +75,7 @@ export class MemoryBackend implements Backend {
     
     const newLog = commitChangeSet(this.log, changeSet);
     
-    const [types, _] = generateDefinitions(newLog);
+    const [types, _] = generateDefinitions(newLog, changeSet.log, changeSetId);
     return types;
   }
 

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { FormControl, InputLabel, Select, MenuItem } from "@material-ui/core";
+import React from "react";
 
 const ACTION_NAMES = [
   "RenameFieldTypeAction",
@@ -18,12 +19,12 @@ const ACTION_NAMES = [
 ]
 
 type ActionTypeSelectorProps = {
-  logType: string,
-  onChange: (string) => void
+  logType: string | null,
+  onChange: (actionType: string) => void
 }
 
 const ActionTypeSelector = (props: ActionTypeSelectorProps) => {
-  function handleChange(event) {
+  function handleChange(event: React.ChangeEvent<HTMLSelectElement>) {
     props.onChange(event.target.value);
   }
 
@@ -32,7 +33,7 @@ const ActionTypeSelector = (props: ActionTypeSelectorProps) => {
       <InputLabel htmlFor="action-type">Action Type</InputLabel>
       <Select
         value={props.logType}
-        onChange={props.onChange}
+        onChange={handleChange}
         inputProps={{id: 'action-type'}}
       >
         {ACTION_NAMES.map(name => <MenuItem value={name} >{name}</MenuItem>)}

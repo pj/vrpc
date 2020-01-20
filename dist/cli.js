@@ -12,6 +12,7 @@ const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
 const yargs = __importStar(require("yargs"));
 const generate = __importStar(require("./generate"));
+const generate_typescript = __importStar(require("./generate_typescript"));
 const index_1 = require("./server/index");
 const file_backend_1 = require("./file_backend");
 const args = yargs
@@ -27,8 +28,8 @@ const args = yargs
 }, async (argv) => {
     const backend = new file_backend_1.FileBackend(argv.source);
     const log = await backend.getLog();
-    const [types, services] = generate.generateDefinitions(log);
-    const [generatedTypes, generatedServices, generatedClient,] = generate.generateTypescriptBoth(types, services);
+    const [types, services] = generate.generateDefinitions(log, null, null);
+    const [generatedTypes, generatedServices, generatedClient,] = generate_typescript.generateTypescriptBoth(types, services);
     fs.mkdirSync(argv.dest, { recursive: true });
     fs.writeFileSync(path.join(argv.dest, 'types.ts'), generatedTypes);
     fs.writeFileSync(path.join(argv.dest, 'services.ts'), generatedServices);

@@ -10,7 +10,6 @@
           }[];
         };
       }
-
       const result: IntrospectionResultData = {
   "__schema": {
     "types": [
@@ -139,10 +138,99 @@
             "name": "ReferenceField"
           }
         ]
+      },
+      {
+        "kind": "UNION",
+        "name": "LogActionChange",
+        "possibleTypes": [
+          {
+            "name": "NewServiceChangeAction"
+          },
+          {
+            "name": "UpdateDescriptionServiceChangeAction"
+          },
+          {
+            "name": "AddVersionServiceChangeAction"
+          },
+          {
+            "name": "RenameFieldTypeChangeAction"
+          },
+          {
+            "name": "RequiredFieldTypeChangeAction"
+          },
+          {
+            "name": "OptionalFieldTypeChangeAction"
+          },
+          {
+            "name": "DeleteFieldTypeChangeAction"
+          },
+          {
+            "name": "SetDefaultFieldTypeChangeAction"
+          },
+          {
+            "name": "RemoveDefaultFieldTypeChangeAction"
+          },
+          {
+            "name": "AddFieldTypeChangeAction"
+          },
+          {
+            "name": "UpdateDescriptionTypeChangeAction"
+          },
+          {
+            "name": "ReferenceFieldTypeChangeAction"
+          },
+          {
+            "name": "NewTypeChangeAction"
+          }
+        ]
+      },
+      {
+        "kind": "INTERFACE",
+        "name": "ChangeAction",
+        "possibleTypes": [
+          {
+            "name": "NewServiceChangeAction"
+          },
+          {
+            "name": "UpdateDescriptionServiceChangeAction"
+          },
+          {
+            "name": "AddVersionServiceChangeAction"
+          },
+          {
+            "name": "RenameFieldTypeChangeAction"
+          },
+          {
+            "name": "RequiredFieldTypeChangeAction"
+          },
+          {
+            "name": "OptionalFieldTypeChangeAction"
+          },
+          {
+            "name": "DeleteFieldTypeChangeAction"
+          },
+          {
+            "name": "SetDefaultFieldTypeChangeAction"
+          },
+          {
+            "name": "RemoveDefaultFieldTypeChangeAction"
+          },
+          {
+            "name": "AddFieldTypeChangeAction"
+          },
+          {
+            "name": "UpdateDescriptionTypeChangeAction"
+          },
+          {
+            "name": "ReferenceFieldTypeChangeAction"
+          },
+          {
+            "name": "NewTypeChangeAction"
+          }
+        ]
       }
     ]
   }
 };
-
       export default result;
     

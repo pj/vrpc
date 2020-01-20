@@ -15,41 +15,22 @@ export function startServer(backend: Backend) {
     Query: {
       log: async (parent: schema.GQLQuery, context: any): Promise<schema.GQLLogAction[]> => {
         const log = await backend.getLog();
-        const gqlLog = types.fromActionLog(log);
-        return gqlLog;
+        return (log.map(l => types.actionToGQLLogAction(l)));
       },
       services: async (): Promise<schema.GQLService[]> => {
         const currentServices = await backend.getCurrentServices();
-        let output = [];
-        for (let currentService of currentServices) {
-          output.push(
-            types.fromGenerateService(currentService)
-          );
-        }
-        return output;
+        return (currentServices.map(s => types.serviceToGQLService(s)));
       },
       types: async (): Promise<schema.GQLType[]> => {
         const currentTypes = await backend.getCurrentTypes();
-        let output = [];
-        for (let currentType of currentTypes) {
-          output.push(
-            types.fromGenerateType(currentType)
-          );
-        }
-        return output;
+        return (currentTypes.map(t => types.typeToGQLType(t)));
       },
       changeSets: async (
         _: schema.GQLQuery, 
         context: any
       ): Promise<schema.GQLChangeSet[]> => {
         const currentChangeSets = await backend.getChangeSets(context.userId);
-        let output = [];
-        for (let currentChangeSet of currentChangeSets) {
-          output.push(
-            types.fromGenerateChangeSet(currentChangeSet)
-          );
-        }
-        return output;
+        return (currentChangeSets.map(c => types.changeSetToGQLChangeSet(c)));
       }
     },
     Mutation: {
@@ -58,8 +39,16 @@ export function startServer(backend: Backend) {
         context: any, 
         args: schema.GQLMutationUpdateChangeSetArgs
       ): Promise<schema.GQLChangeSet> => {
-        await backend.updateChangeSet(context.userId, args.changeSetId, types.toChangeSet(args.changeSet));
-        return (await backend.getChangeSet(context.userId, args.changeSetId));
+        await backend.updateChangeSet(
+          context.userId,
+          args.changeSet.id, 
+          types.gqlChangeSetToChangeSet(args.changeSet)
+        );
+        const changeSet = await backend.getChangeSet(
+          context.userId, 
+          args.changeSet.id
+        );
+        return (types.changeSetToGQLChangeSet(changeSet));
       },
       commitChangeSet: async (
         parent: schema.GQLMutation, 
@@ -68,15 +57,18 @@ export function startServer(backend: Backend) {
       ): Promise<schema.GQLNewLog> => {
         await backend.commitChangeSet(context.userId, args.changeSetId);
         const currentTypes = await backend.getCurrentTypes();
-        const gqlTypes = currentTypes.map(t => types.fromGenerateType(t));
+        const gqlTypes = currentTypes.map(t => types.typeToGQLType(t));
         const services = await backend.getCurrentServices();
-        const gqlServices = services.map(s => types.fromGenerateService(s));
+        const gqlServices = services.map(s => types.serviceToGQLService(s));
+        const log = await backend.getLog();
+        const changeSets = await backend.getChangeSets(context.userId);
 
         return ({
-          log: (await backend.getLog()),
+          __typename: 'NewLog',
+          log: log.map(l => types.actionToGQLLogAction(l)),
           types: gqlTypes,
           services: gqlServices,
-          changeSets: (await backend.getChangeSets(context.userId)),
+          changeSets: changeSets.map(c => types.changeSetToGQLChangeSet(c))
         });
       },
       deleteChangeSet: async (
@@ -85,7 +77,8 @@ export function startServer(backend: Backend) {
         args: schema.GQLMutationDeleteChangeSetArgs
       ): Promise<schema.GQLChangeSet[]> => {
         await backend.deleteChangeSet(context.userId, args.changeSetId);
-        return (await backend.getChangeSets(context.userId));
+        const changeSets = await backend.getChangeSets(context.userId)
+        return (changeSets.map(c => types.changeSetToGQLChangeSet(c)));
       }
     }
   };

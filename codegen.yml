@@ -7,6 +7,7 @@ generates:
     config:
       typesPrefix: 'GQL'
       useIndexSignature: true
+      nonOptionalTypename: true
   ./lib/client/introspection_result.ts:
     plugins:
       - fragment-matcher
@@ -23,3 +24,4 @@ generates:
       hooksImportFrom: "@apollo/react-hooks"
       typesPrefix: 'GQL'
       useIndexSignature: true
+      nonOptionalTypename: true

@@ -19,249 +19,336 @@ union FieldData = StringField | IntField | FloatField | BooleanField
 enum FieldTypes {
   stringType,
   booleanType,
-  numberType
+  intType,
+  floatType
 }
 
 interface Action {
-  changeLog: String,
-  hash: String,
-  version: Int
-  unhashed: Boolean
+  changeLog: String!,
+  hash: String!,
+  version: Int!
 }
 
 type NewServiceAction implements Action {
-  changeLog: String,
-  hash: String,
-  version: Int
-  unhashed: Boolean
-  serviceName: String,
-  description: String
+  changeLog: String!,
+  hash: String!,
+  version: Int!,
+  serviceName: String!,
+  description: String!
 }
 
 type UpdateDescriptionServiceAction implements Action {
-  changeLog: String,
-  hash: String,
-  version: Int
-  unhashed: Boolean
-  serviceName: String,
-  description: String
+  changeLog: String!,
+  hash: String!,
+  version: Int!,
+  serviceName: String!,
+  description: String!
 }
 
 type AddVersionServiceAction implements Action {
-  changeLog: String,
-  hash: String,
-  version: Int
-  unhashed: Boolean
-  serviceName: String,
-  inputType: String,
-  outputType: String,
-  inputVersion: Int,
-  inputHash: String,
-  outputVersion: Int,
-  outputHash: String
+  changeLog: String!,
+  hash: String!,
+  version: Int!,
+  serviceName: String!,
+  inputType: String!,
+  outputType: String!,
+  inputVersion: Int!,
+  inputHash: String!,
+  outputVersion: Int!,
+  outputHash: String!
 }
 
 type RenameFieldTypeAction implements Action {
-  changeLog: String,
-  hash: String,
-  version: Int
-  unhashed: Boolean
-  typeName: String,
-  _from: String,
-  to: String
+  changeLog: String!,
+  hash: String!,
+  version: Int!,
+  typeName: String!,
+  _from: String!,
+  to: String!
 }
 
 type RequiredFieldTypeAction implements Action {
-  changeLog: String,
-  hash: String,
-  version: Int
-  unhashed: Boolean
-  typeName: String,
-  name: String
+  changeLog: String!,
+  hash: String!,
+  version: Int!,
+  typeName: String!,
+  name: String!
 }
 
 type OptionalFieldTypeAction implements Action {
-  changeLog: String,
-  hash: String,
-  version: Int
-  unhashed: Boolean
-  typeName: String,
-  name: String
+  changeLog: String!,
+  hash: String!,
+  version: Int!,
+  typeName: String!,
+  name: String!
 }
 
 type DeleteFieldTypeAction implements Action {
-  changeLog: String,
-  hash: String,
-  version: Int
-  unhashed: Boolean
-  typeName: String,
-  name: String
+  changeLog: String!,
+  hash: String!,
+  version: Int!,
+  typeName: String!,
+  name: String!
 }
 
 type SetDefaultFieldTypeAction implements Action {
-  changeLog: String,
-  hash: String,
-  version: Int
-  unhashed: Boolean
-  typeName: String,
-  name: String,
-  _default: FieldData
+  changeLog: String!,
+  hash: String!,
+  version: Int!,
+  typeName: String!,
+  name: String!,
+  newDefault: FieldData!
 }
 
 type RemoveDefaultFieldTypeAction implements Action {
-  changeLog: String,
-  hash: String,
-  version: Int
-  unhashed: Boolean
-  typeName: String,
-  name: String
+  changeLog: String!,
+  hash: String!,
+  version: Int!,
+  typeName: String!,
+  name: String!
 }
 
 type AddFieldTypeAction implements Action {
-  changeLog: String,
-  hash: String,
-  version: Int
-  unhashed: Boolean
-  typeName: String,
-  name: String,
-  type: String,
-  description: String,
-  optional: Boolean,
+  changeLog: String!,
+  hash: String!,
+  version: Int!,
+  typeName: String!,
+  name: String!,
+  type: FieldTypes!,
+  description: String!,
+  optional: Boolean!,
   _default: FieldData
 }
 
 type UpdateDescriptionTypeAction implements Action {
-  changeLog: String,
-  hash: String,
-  version: Int
-  unhashed: Boolean
-  typeName: String,
-  name: String,
-  description: String
+  changeLog: String!,
+  hash: String!,
+  version: Int!,
+  typeName: String!,
+  name: String!,
+  description: String!
 }
 
 type ReferenceFieldTypeAction implements Action {
-  changeLog: String,
-  hash: String,
-  version: Int
-  unhashed: Boolean
-  typeName: String,
-  name: String,
-  description: String,
-  optional: Boolean,
-  referenceType: String,
-  referenceHash: String,
-  referenceVersion: Int
+  changeLog: String!,
+  hash: String!,
+  version: Int!,
+  typeName: String!,
+  name: String!,
+  description: String!,
+  optional: Boolean!,
+  referenceType: String!,
+  referenceHash: String!,
+  referenceVersion: Int!
 }
 
 type NewTypeAction implements Action {
-  changeLog: String,
-  hash: String,
-  version: Int
-  unhashed: Boolean
-  typeName: String,
-  description: String
+  changeLog: String!,
+  hash: String!,
+  version: Int!,
+  typeName: String!,
+  description: String!
 }
 
 type GroupVersion {
-  typeName: String,
-  version: Int
-  unhashed: Boolean
+  typeName: String!,
+  version: Int!,
 }
 
 type GroupAction implements Action {
-  changeLog: String,
-  hash: String,
-  version: Int
-  unhashed: Boolean
-  groupedActions: [Action],
-  versions: [GroupVersion]
+  changeLog: String!,
+  hash: String!,
+  version: Int!,
+  groupedActions: [LogAction!]!,
+  versions: [GroupVersion!]!
 }
 
 union LogAction = NewServiceAction | UpdateDescriptionServiceAction | AddVersionServiceAction | RenameFieldTypeAction | RequiredFieldTypeAction | OptionalFieldTypeAction | DeleteFieldTypeAction | SetDefaultFieldTypeAction | RemoveDefaultFieldTypeAction | AddFieldTypeAction | UpdateDescriptionTypeAction | ReferenceFieldTypeAction | NewTypeAction | GroupAction
 
-type VersionType {
-  _type: String,
-  version: Int,
-  hash: String
+interface ChangeAction {
+  changeLog: String!,
 }
 
-type ServiceVersion {
-  inputs: [VersionType],
-  output: VersionType
+type NewServiceChangeAction implements ChangeAction {
+  changeLog: String!,
+  serviceName: String!,
+  description: String!
 }
 
-type Service {
-  name: String,
-  changeLog: [String],
-  description: String,
-  versions: [ServiceVersion]
+type UpdateDescriptionServiceChangeAction implements ChangeAction {
+  changeLog: String!,
+  serviceName: String!,
+  description: String!
 }
 
-interface BaseField {
-  name: String,
-  changeLog: String,
-  description: String,
-  optional: Boolean
+type AddVersionServiceChangeAction implements ChangeAction {
+  changeLog: String!,
+  serviceName: String!,
+  inputType: String!,
+  outputType: String!,
+  inputVersion: Int!,
+  inputHash: String!,
+  outputVersion: Int!,
+  outputHash: String!
 }
 
-type Field implements BaseField {
-  name: String,
-  changeLog: String,
-  description: String,
-  optional: Boolean,
-  _default: FieldData,
-  _type: FieldTypes
+type RenameFieldTypeChangeAction implements ChangeAction {
+  changeLog: String!,
+  typeName: String!,
+  _from: String!,
+  to: String!
 }
 
-type ReferenceField implements BaseField {
-  name: String,
-  changeLog: String,
-  description: String,
-  optional: Boolean
-  referenceType: String,
-  referenceHash: String,
-  referenceVersion: Int
+type RequiredFieldTypeChangeAction implements ChangeAction {
+  changeLog: String!,
+  typeName: String!,
+  name: String!
 }
 
-type FieldObject {
-  key: String,
-  field: BaseField
+type OptionalFieldTypeChangeAction implements ChangeAction {
+  changeLog: String!,
+  typeName: String!,
+  name: String!
 }
 
-type Version {
-  _type: String,
-  version: Int,
-  hash: String,
-  fields: [FieldObject]
+type DeleteFieldTypeChangeAction implements ChangeAction {
+  changeLog: String!,
+  typeName: String!,
+  name: String!
 }
 
-type Type {
-  name: String,
-  versions: [Version],
-  latest: Version,
-  changeLog: [String],
-  description: String
+type SetDefaultFieldTypeChangeAction implements ChangeAction {
+  changeLog: String!,
+  typeName: String!,
+  name: String!,
+  newDefault: FieldData!
 }
+
+type RemoveDefaultFieldTypeChangeAction implements ChangeAction {
+  changeLog: String!,
+  typeName: String!,
+  name: String!
+}
+
+type AddFieldTypeChangeAction implements ChangeAction {
+  changeLog: String!,
+  typeName: String!,
+  name: String!,
+  type: FieldTypes!,
+  description: String!,
+  optional: Boolean!,
+  _default: FieldData
+}
+
+type UpdateDescriptionTypeChangeAction implements ChangeAction {
+  changeLog: String!,
+  typeName: String!,
+  name: String!,
+  description: String!
+}
+
+type ReferenceFieldTypeChangeAction implements ChangeAction {
+  changeLog: String!,
+  typeName: String!,
+  name: String!,
+  description: String!,
+  optional: Boolean!,
+  referenceType: String!,
+  referenceHash: String!,
+  referenceVersion: Int!
+}
+
+type NewTypeChangeAction implements ChangeAction {
+  changeLog: String!,
+  typeName: String!,
+  description: String!
+}
+
+union LogActionChange = NewServiceChangeAction | UpdateDescriptionServiceChangeAction | AddVersionServiceChangeAction | RenameFieldTypeChangeAction | RequiredFieldTypeChangeAction | OptionalFieldTypeChangeAction | DeleteFieldTypeChangeAction | SetDefaultFieldTypeChangeAction | RemoveDefaultFieldTypeChangeAction | AddFieldTypeChangeAction | UpdateDescriptionTypeChangeAction | ReferenceFieldTypeChangeAction | NewTypeChangeAction
 
 type ChangeSet {
   id: String!
   baseHash: String!
-  log: [LogAction]
+  log: [LogActionChange!]!
+}
+
+
+type VersionType {
+  _type: String!,
+  version: Int!,
+  hash: String!
+}
+
+type ServiceVersion {
+  inputs: [VersionType!]!,
+  output: VersionType!
+}
+
+type Service {
+  name: String!,
+  changeLog: [String!]!,
+  description: String!,
+  versions: [ServiceVersion!]!
+}
+
+interface BaseField {
+  name: String!,
+  changeLog: String!,
+  description: String!,
+  optional: Boolean!
+}
+
+type Field implements BaseField {
+  name: String!,
+  changeLog: String!,
+  description: String!,
+  optional: Boolean!,
+  _default: FieldData!,
+  _type: FieldTypes!
+}
+
+type ReferenceField implements BaseField {
+  name: String!,
+  changeLog: String!,
+  description: String!,
+  optional: Boolean!,
+  referenceType: String!,
+  referenceHash: String!,
+  referenceVersion: Int!
+}
+
+type FieldObject {
+  key: String!,
+  field: BaseField!
+}
+
+type Version {
+  _type: String!,
+  version: Int!,
+  hash: String!,
+  fields: [FieldObject!]!
+}
+
+type Type {
+  name: String!,
+  versions: [Version!]!,
+  latest: Version,
+  changeLog: [String!]!,
+  description: String!
 }
 
 type NewLog {
-  log: [LogAction]
-  services: [Service]
-  types: [Type]
-  changeSets: [ChangeSet]
+  log: [LogAction!]!
+  services: [Service!]!
+  types: [Type!]!
+  changeSets: [ChangeSet!]!
 }
 
 type Query {
-  log(changeSetId: String): [LogAction]
-  services(changeSetId: String): [Service]
-  types(changeSetId: String): [Type]
-  changeSets: [ChangeSet]
+  log(changeSetId: String): [LogAction!]!
+  services(changeSetId: String): [Service!]!
+  types(changeSetId: String): [Type!]!
+  changeSets: [ChangeSet!]!
 }
 
 # input LogActionInput {
@@ -292,137 +379,98 @@ input FieldDataInput {
 }
 
 input NewServiceActionInput {
-  changeLog: String,
-  hash: String,
-  version: Int
-  unhashed: Boolean
-  serviceName: String,
-  description: String
+  changeLog: String!,
+  serviceName: String!,
+  description: String!
 }
 
 input UpdateDescriptionServiceActionInput {
-  changeLog: String,
-  hash: String,
-  version: Int
-  unhashed: Boolean
-  serviceName: String,
-  description: String
+  changeLog: String!,
+  serviceName: String!,
+  description: String!
 }
 
 input AddVersionServiceActionInput {
-  changeLog: String,
-  hash: String,
-  version: Int
-  unhashed: Boolean
-  serviceName: String,
-  inputType: String,
-  outputType: String,
-  inputVersion: Int,
-  inputHash: String,
-  outputVersion: Int,
-  outputHash: String
+  changeLog: String!,
+  serviceName: String!,
+  inputType: String!,
+  outputType: String!,
+  inputVersion: Int!,
+  inputHash: String!,
+  outputVersion: Int!,
+  outputHash: String!
 }
 
 input RenameFieldTypeActionInput {
-  changeLog: String,
-  hash: String,
-  version: Int
-  unhashed: Boolean
-  typeName: String,
-  _from: String,
-  to: String
+  changeLog: String!,
+  typeName: String!,
+  _from: String!,
+  to: String!
 }
 
 input RequiredFieldTypeActionInput {
-  changeLog: String,
-  hash: String,
-  version: Int
-  unhashed: Boolean
-  typeName: String,
-  name: String
+  changeLog: String!,
+  typeName: String!,
+  name: String!
 }
 
 input OptionalFieldTypeActionInput {
-  changeLog: String,
-  hash: String,
-  version: Int
-  unhashed: Boolean
-  typeName: String,
-  name: String
+  changeLog: String!,
+  typeName: String!,
+  name: String!
 }
 
 input DeleteFieldTypeActionInput {
-  changeLog: String,
-  hash: String,
-  version: Int
-  unhashed: Boolean
-  typeName: String,
-  name: String
+  changeLog: String!,
+  typeName: String!,
+  name: String!
 }
 
 input SetDefaultFieldTypeActionInput {
-  changeLog: String,
-  hash: String,
-  version: Int
-  unhashed: Boolean
-  typeName: String,
-  name: String,
-  _default: FieldDataInput
+  changeLog: String!,
+  typeName: String!,
+  name: String!,
+  newDefault: FieldDataInput!
 }
 
 input RemoveDefaultFieldTypeActionInput {
-  changeLog: String,
-  hash: String,
-  version: Int
-  unhashed: Boolean
-  typeName: String,
-  name: String
+  changeLog: String!,
+  typeName: String!,
+  name: String!
 }
 
 input AddFieldTypeActionInput {
-  changeLog: String,
-  hash: String,
-  version: Int
-  unhashed: Boolean
-  typeName: String,
-  name: String,
-  type: String,
-  description: String,
-  optional: Boolean,
+  changeLog: String!,
+  typeName: String!,
+  name: String!,
+  type: FieldTypes!,
+  description: String!,
+  optional: Boolean!,
   _default: FieldDataInput
 }
 
 input UpdateDescriptionTypeActionInput {
-  changeLog: String,
-  hash: String,
-  version: Int
-  unhashed: Boolean
-  typeName: String,
-  name: String,
-  description: String
+  changeLog: String!,
+  typeName: String!,
+  name: String!,
+  description: String!
 }
 
 input ReferenceFieldTypeActionInput {
-  changeLog: String,
-  hash: String,
-  version: Int
-  unhashed: Boolean
-  typeName: String,
-  name: String,
-  description: String,
-  optional: Boolean,
-  referenceType: String,
-  referenceHash: String,
-  referenceVersion: Int
+  changeLog: String!,
+  typeName: String!,
+  name: String!,
+  description: String!,
+  optional: Boolean!,
+  referenceType: String!,
+  referenceHash: String!,
+  referenceVersion: Int!
 }
 
 input NewTypeActionInput {
-  changeLog: String,
-  hash: String,
-  version: Int
-  unhashed: Boolean
-  typeName: String,
-  description: String
+  changeLog: String!,
+  typeName: String!,
+  description: String!
 }
 
 input LogActionInput {
@@ -450,7 +498,7 @@ input ChangeSetInput {
 type Mutation {
   updateChangeSet(
     changeSet: ChangeSetInput!
-  ): ChangeSet
-  commitChangeSet(changeSetId: String!): NewLog
-  deleteChangeSet(changeSetId: String!): [ChangeSet]
+  ): ChangeSet!
+  commitChangeSet(changeSetId: String!): NewLog!
+  deleteChangeSet(changeSetId: String!): [ChangeSet!]!
 }

@@ -15,7 +15,7 @@ const AddVersionServiceActionForm = ActionFormHOC(
       />
       <VersionSelector
         types={props.types}
-        handleChange={props.handleChange('inputVersion')}
+        handleChange={props.handleVersionChange('inputVersion')}
         typeName={props.value.outputType}
         version={props.value.inputVersion}
       />
@@ -26,7 +26,7 @@ const AddVersionServiceActionForm = ActionFormHOC(
       />
       <VersionSelector
         types={props.types}
-        handleChange={props.handleChange('outputVersion')}
+        handleChange={props.handleVersionChange('outputVersion')}
         typeName={props.value.outputType}
         version={props.value.outputVersion}
       />

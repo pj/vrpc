@@ -1,16 +1,17 @@
 import { GQLType } from "../hooks";
 
 import { FormControl, InputLabel, Select, MenuItem } from "@material-ui/core";
+import React from "react";
 
 type VersionSelectorProps = {
   types: GQLType[],
   typeName: string,
   version: number | null,
-  handleChange: (number) => void
+  handleChange: (version: number) => void
 }
 
 const VersionSelector = (props: VersionSelectorProps) => {
-  let versions = [];
+  let versions: number[] = [];
   for (let _type of props.types) {
     if (_type.name === props.typeName) {
       versions = _type.versions.map(t => t.version);

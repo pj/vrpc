@@ -1,669 +1,393 @@
 import {promises as fs} from 'fs';
 
-export type FieldTypes = 'string' | 'boolean' | 'number';
+export type FieldTypes = 'string' | 'boolean' | 'integer' | 'float';
 
 export type FieldDefaults = string | boolean | number;
 
-export class Action {
-  _action_type: string;
-  changeLog: string;
-  hash: string | null;
-  version: number | null;
-
-  constructor(changeLog: string, hash: string | null, version: number | null) {
-    this._action_type = this.constructor.name;
-    this.changeLog = changeLog;
-    this.hash = hash;
-    this.version = version;
-  }
-
-  fieldsToHash(): string {
-    return `${this.changeLog}`;
-  };
-
-  hasHashAndVersion(): boolean{
-    return (this.hasHash() && this.hasVersion());
-  }
-
-  hasVersion(): boolean{
-    return (this.version !== null && this.version !== undefined);
-  }
-
-  hasHash(): boolean {
-    return (this.hash !== null && this.hash !== undefined);
-  }
+export type HashedAction = {
+  hash: string;
+  version: number;
 }
 
-// Type Actions
-export class NewTypeAction extends Action {
+export type ActionDefaults = {
+  actionType: string;
+  changeLog: string;
+}
+
+// Types
+export type NewTypeActionCommon = {
+  actionType: 'NewTypeAction',
   typeName: string;
   description: string;
-
-  constructor(
-    changeLog: string,
-    hash: string | null,
-    version: number | null,
-    typeName: string,
-    description: string,
-  ) {
-    super(changeLog, hash, version);
-    this.typeName = typeName;
-    this.description = description;
-  }
-
-  fieldsToHash(): string {
-    return `${super.fieldsToHash()}_${this.typeName}_${this.description}`;
-  };
-
-  toString(): string {
-    return `NewTypeAction(${this.changeLog}, ${this.hash}, ${this.version}, ${this.typeName}, ${this.description})`;
-  }
 }
+export type NewTypeAction = HashedAction & ActionDefaults & NewTypeActionCommon;
+export type NewTypeChangeAction = NewTypeActionCommon & ActionDefaults;
 
-export class RenameFieldTypeAction extends Action {
+export type RenameFieldTypeActionCommon = {
+  actionType: 'RenameFieldTypeAction',
   typeName: string;
   _from: string;
   to: string;
-
-  constructor(
-    changeLog: string,
-    hash: string | null,
-    version: number | null,
-    typeName: string,
-    _from: string,
-    to: string,
-  ) {
-    super(changeLog, hash, version);
-    this.typeName = typeName;
-    this._from = _from;
-    this.to = to;
-  }
-
-  fieldsToHash(): string {
-    return `${super.fieldsToHash()}_${this.typeName}_${this._from}_${this.to}`;
-  };
-
-  toString(): string {
-    return `RenameFieldTypeAction(${this.changeLog}, ${this.hash}, ${this.version}, ${this.typeName}, ${this._from}, ${this.to})`;
-  }
 }
+export type RenameFieldTypeAction = HashedAction & ActionDefaults & RenameFieldTypeActionCommon;
+export type RenameFieldTypeChangeAction = ActionDefaults & RenameFieldTypeActionCommon;
 
-export class RequiredFieldTypeAction extends Action {
+export type RequiredFieldTypeActionCommon = {
+  actionType: 'RequiredFieldTypeAction',
   typeName: string;
   name: string;
-
-  constructor(
-    changeLog: string,
-    hash: string | null,
-    version: number | null,
-    typeName: string,
-    name: string,
-  ) {
-    super(changeLog, hash, version);
-    this.typeName = typeName;
-    this.name = name;
-  }
-
-  fieldsToHash(): string {
-    return `${super.fieldsToHash()}_${this.typeName}_${this.name}`;
-  };
-
-  toString(): string {
-    return `RequiredFieldTypeAction(${this.changeLog}, ${this.hash}, ${this.version}, ${this.typeName}, ${this.name})`;
-  }
 }
+export type RequiredFieldTypeAction = HashedAction & ActionDefaults & RequiredFieldTypeActionCommon;
+export type RequiredFieldTypeChangeAction = ActionDefaults & RequiredFieldTypeActionCommon;
 
-export class OptionalFieldTypeAction extends Action {
+export type OptionalFieldTypeActionCommon = {
+  actionType: 'OptionalFieldTypeAction',
   typeName: string;
   name: string;
-
-  constructor(
-    changeLog: string,
-    hash: string | null,
-    version: number | null,
-    typeName: string,
-    name: string,
-  ) {
-    super(changeLog, hash, version);
-    this.typeName = typeName;
-    this.name = name;
-  }
-
-  fieldsToHash(): string {
-    return `${super.fieldsToHash()}_${this.typeName}_${this.name}`;
-  };
-
-  toString(): string {
-    return `OptionalFieldTypeAction(${this.changeLog}, ${this.hash}, ${this.version}, ${this.typeName}, ${this.name})`;
-  }
 }
+export type OptionalFieldTypeAction = HashedAction & ActionDefaults & OptionalFieldTypeActionCommon;
+export type OptionalFieldTypeChangeAction = ActionDefaults & OptionalFieldTypeActionCommon;
 
-export class DeleteFieldTypeAction extends Action {
+export type DeleteFieldTypeActionCommon = {
+  actionType: 'DeleteFieldTypeAction',
   typeName: string;
   name: string;
-
-  constructor(
-    changeLog: string,
-    hash: string | null,
-    version: number | null,
-    typeName: string,
-    name: string,
-  ) {
-    super(changeLog, hash, version);
-    this.typeName = typeName;
-    this.name = name;
-  }
-
-  fieldsToHash(): string {
-    return `${super.fieldsToHash()}_${this.typeName}_${this.name}`;
-  };
-
-  toString(): string {
-    return `DeleteFieldTypeAction(${this.changeLog}, ${this.hash}, ${this.version}, ${this.typeName}, ${this.name})`;
-  }
 }
+export type DeleteFieldTypeAction = HashedAction & ActionDefaults & DeleteFieldTypeActionCommon;
+export type DeleteFieldTypeChangeAction = ActionDefaults & DeleteFieldTypeActionCommon;
 
-export class SetDefaultFieldTypeAction extends Action {
+export type SetDefaultFieldTypeActionCommon = {
+  actionType: 'SetDefaultFieldTypeAction',
   typeName: string;
   name: string;
   _default: FieldDefaults;
-
-  constructor(
-    changeLog: string,
-    hash: string | null,
-    version: number | null,
-    name: string,
-    typeName: string,
-    _default: FieldDefaults,
-  ) {
-    super(changeLog, hash, version);
-    this.typeName = typeName;
-    this.name = name;
-    this._default = _default;
-  }
-
-  fieldsToHash(): string {
-    return `${super.fieldsToHash()}_${this.typeName}_${this.name}_${this._default}`;
-  };
-
-  toString(): string {
-    return `SetDefaultFieldTypeAction(${this.changeLog}, ${this.hash}, ${this.version}, ${this.typeName}, ${this.name}, ${this._default})`;
-  }
 }
+export type SetDefaultFieldTypeAction = HashedAction & ActionDefaults & SetDefaultFieldTypeActionCommon;
+export type SetDefaultFieldTypeChangeAction = ActionDefaults & SetDefaultFieldTypeActionCommon;
 
-export class RemoveDefaultFieldTypeAction extends Action {
+export type RemoveDefaultFieldTypeActionCommon = {
+  actionType: 'RemoveDefaultFieldTypeAction',
   typeName: string;
   name: string;
-
-  constructor(
-    changeLog: string,
-    hash: string | null,
-    version: number | null,
-    typeName: string,
-    name: string,
-  ) {
-    super(changeLog, hash, version);
-    this.typeName = typeName;
-    this.name = name;
-  }
-
-  fieldsToHash(): string {
-    return `${super.fieldsToHash()}_${this.typeName}_${this.name}`;
-  };
-
-  toString(): string {
-    return `RemoveDefaultFieldTypeAction(${this.changeLog}, ${this.hash}, ${this.version}, ${this.typeName}, ${this.name})`;
-  }
 }
+export type RemoveDefaultFieldTypeAction = HashedAction & ActionDefaults & RemoveDefaultFieldTypeActionCommon;
+export type RemoveDefaultFieldTypeChangeAction = ActionDefaults & RemoveDefaultFieldTypeActionCommon;
 
-export class AddFieldTypeAction extends Action {
+export type AddFieldTypeActionCommon = {
+  actionType: 'AddFieldTypeAction',
   typeName: string;
   name: string;
   type: FieldTypes;
   description: string;
   optional: boolean;
   _default: FieldDefaults | null;
-
-  constructor(
-    changeLog: string,
-    hash: string | null,
-    version: number | null,
-    typeName: string,
-    name: string,
-    type: FieldTypes,
-    description: string,
-    optional: boolean,
-    _default: FieldDefaults | null
-  ) {
-    super(changeLog, hash, version);
-    this.typeName = typeName;
-    this.name = name;
-    this.type = type;
-    this.description = description;
-    this.optional = optional;
-    this._default = _default;
-  }
-
-  fieldsToHash(): string {
-    return `${super.fieldsToHash()}_${this.typeName}_${this.name}_${this.type}_${this.description}_${this.optional}_${this._default}`;
-  };
-
-  toString(): string {
-    return `AddFieldTypeAction(${this.changeLog}, ${this.hash}, ${this.version}, ${this.typeName}, ${this.name}, ${this.type}, ${this.description}, ${this.optional}, ${this._default})`;
-  }
 }
+export type AddFieldTypeAction = HashedAction & ActionDefaults & AddFieldTypeActionCommon;
+export type AddFieldTypeChangeAction = ActionDefaults & AddFieldTypeActionCommon;
 
-export class UpdateDescriptionTypeAction extends Action {
+export type UpdateDescriptionTypeActionCommon = {
+  actionType: 'UpdateDescriptionTypeAction',
   typeName: string;
   name: string;
+  type: FieldTypes;
   description: string;
-
-  constructor(
-    changeLog: string,
-    hash: string | null,
-    version: number | null,
-    typeName: string,
-    name: string,
-    description: string,
-  ) {
-    super(changeLog, hash, version);
-    this.typeName = typeName;
-    this.name = name;
-    this.description = description;
-  }
-
-  fieldsToHash(): string {
-    return `${super.fieldsToHash()}_${this.typeName}_${this.name}_${this.description}`;
-  };
-
-  toString(): string {
-    return `UpdateDescriptionTypeAction(${this.changeLog}, ${this.hash}, ${this.version}, ${this.typeName}, ${this.name}, ${this.description})`;
-  }
+  optional: boolean;
+  _default: FieldDefaults | null;
 }
+export type UpdateDescriptionTypeAction = HashedAction & ActionDefaults & UpdateDescriptionTypeActionCommon;
+export type UpdateDescriptionTypeChangeAction = ActionDefaults & UpdateDescriptionTypeActionCommon;
 
-export class ReferenceFieldTypeAction extends Action {
+export type ReferenceFieldTypeActionCommon = {
+  actionType: 'ReferenceFieldTypeAction',
   typeName: string;
   name: string;
   description: string;
   optional: boolean;
   referenceType: string;
-  referenceHash: string | null;
-  referenceVersion: number | null;
-
-  constructor(
-    changeLog: string,
-    hash: string | null,
-    version: number | null,
-    typeName: string,
-    name: string,
-    description: string,
-    optional: boolean,
-    referenceType: string,
-    referenceHash: string | null,
-    referenceVersion: number | null,
-  ) {
-    super(changeLog, hash, version);
-    this.typeName = typeName;
-    this.name = name;
-    this.description = description;
-    this.optional = optional;
-    this.referenceType = referenceType;
-    this.referenceHash = referenceHash;
-    this.referenceVersion = referenceVersion;
-    if (
-      (referenceHash === null || referenceHash === undefined)
-      && (referenceVersion === null || referenceVersion === undefined)
-    ) {
-      throw new Error("Must specify either a hash or version for referenced type");
-    }
-  }
-
-  fieldsToHash(): string {
-    return `${super.fieldsToHash()}_${this.typeName}_${this.name}_${this.description}_${this.optional}_${this.referenceType}_${this.referenceHash}_${this.referenceVersion}`;
-  };
-
-  toString(): string {
-    return `ReferenceFieldTypeAction(${this.changeLog}, ${this.hash}, ${this.version}, ${this.typeName}, ${this.name}, ${this.description}, ${this.optional}, ${this.referenceType}, ${this.referenceHash}, ${this.referenceVersion})`;
-  }
+  referenceHash: string;
+  referenceVersion: number;
 }
+export type ReferenceFieldTypeAction = HashedAction & ActionDefaults & ReferenceFieldTypeActionCommon;
+export type ReferenceFieldTypeChangeAction = ActionDefaults & ReferenceFieldTypeActionCommon;
+
+// Service Definitions
+export type NewServiceActionCommon = {
+  actionType: 'NewServiceAction',
+  serviceName: string;
+  description: string;
+}
+export type NewServiceAction = HashedAction & ActionDefaults & NewServiceActionCommon;
+export type NewServiceChangeAction = ActionDefaults & NewServiceActionCommon;
+
+export type UpdateDescriptionServiceActionCommon = {
+  actionType: 'UpdateDescriptionServiceAction',
+  serviceName: string;
+  description: string;
+}
+export type UpdateDescriptionServiceAction = HashedAction & ActionDefaults & UpdateDescriptionServiceActionCommon;
+export type UpdateDescriptionServiceChangeAction = ActionDefaults & UpdateDescriptionServiceActionCommon;
+
+export type AddVersionServiceActionCommon = {
+  actionType: 'AddVersionServiceAction',
+  serviceName: string;
+  inputType: string;
+  outputType: string;
+  inputVersion: number;
+  inputHash: string;
+  outputVersion: number;
+  outputHash: string;
+}
+export type AddVersionServiceAction = HashedAction & ActionDefaults & AddVersionServiceActionCommon;
+export type AddVersionServiceChangeAction = ActionDefaults & AddVersionServiceActionCommon;
+
+export type Action = NewTypeAction | RenameFieldTypeAction 
+  | RequiredFieldTypeAction | OptionalFieldTypeAction | DeleteFieldTypeAction 
+  | SetDefaultFieldTypeAction | RemoveDefaultFieldTypeAction | AddFieldTypeAction 
+  | UpdateDescriptionTypeAction | ReferenceFieldTypeAction | NewServiceAction
+  | UpdateDescriptionServiceAction | AddVersionServiceAction;
+
+export type ChangeAction = NewTypeChangeAction | RenameFieldTypeChangeAction 
+  | RequiredFieldTypeChangeAction | OptionalFieldTypeChangeAction 
+  | DeleteFieldTypeChangeAction | SetDefaultFieldTypeChangeAction 
+  | RemoveDefaultFieldTypeChangeAction | AddFieldTypeChangeAction 
+  | UpdateDescriptionTypeChangeAction | ReferenceFieldTypeChangeAction 
+  | NewServiceChangeAction | UpdateDescriptionServiceChangeAction 
+  | AddVersionServiceChangeAction;
 
 export type GroupVersions = {
   [key: string]: number;
 };
 
-export class GroupAction extends Action {
+export type GroupActionCommon = {
+  actionType: 'GroupAction';
   typeOrServiceName: string;
   actions: Action[];
   versions: GroupVersions;
+};
+export type GroupAction = HashedAction & ActionDefaults & GroupActionCommon;
+export type GroupChangeAction = ActionDefaults & GroupActionCommon;
 
-  constructor(
-    changeLog: string,
-    hash: string | null,
-    typeOrServiceName: string,
-    actions: Action[],
-    versions: GroupVersions,
-  ) {
-    super(changeLog, hash, null);
-    this.typeOrServiceName = typeOrServiceName;
-    this.actions = actions;
-    this.versions = versions;
-  }
-
-  fieldsToHash(): string {
-    const subHashes: string[] = [this.typeOrServiceName];
-    for (const action of this.actions) {
-      subHashes.push(action.fieldsToHash());
+export function fieldsToHash(action: ChangeAction | GroupChangeAction) {
+  switch (action.actionType) {
+  case 'AddVersionServiceAction':
+    return `${action.changeLog}_${action.serviceName}_${action.inputType}_${action.outputType}_${action.inputVersion}_${action.outputVersion}`;
+  case 'UpdateDescriptionServiceAction':
+    return `${action.changeLog}_${action.serviceName}_${action.description}`;
+  case 'NewServiceAction':
+    return `${action.changeLog}_${action.serviceName}_${action.description}`;
+  case 'ReferenceFieldTypeAction':
+    return `${action.changeLog}_${action.typeName}_${action.name}_${action.description}_${action.optional}_${action.referenceType}_${action.referenceHash}_${action.referenceVersion}`;
+  case 'UpdateDescriptionTypeAction':
+    return `${action.changeLog}_${action.typeName}_${action.name}_${action.description}`;
+  case 'AddFieldTypeAction':
+    return `${action.changeLog}_${action.typeName}_${action.name}_${action.type}_${action.description}_${action.optional}_${action._default}`;
+  case 'RemoveDefaultFieldTypeAction':
+    return `${action.changeLog}_${action.typeName}_${action.name}`;
+  case 'SetDefaultFieldTypeAction':
+    return `${action.changeLog}_${action.typeName}_${action.name}_${action._default}`;
+  case 'DeleteFieldTypeAction':
+    return `${action.changeLog}_${action.typeName}_${action.name}`; 
+  case 'OptionalFieldTypeAction':
+    return `${action.changeLog}_${action.typeName}_${action.name}`;
+  case 'RequiredFieldTypeAction':
+    return `${action.changeLog}_${action.typeName}_${action.name}`;
+  case 'RenameFieldTypeAction':
+    return `${action.changeLog}_${action.typeName}_${action._from}_${action.to}`;
+  case 'NewTypeAction':
+    return `${action.changeLog}_${action.typeName}_${action.description}`;
+  case 'GroupAction':
+    const subHashes: string[] = [action.typeOrServiceName];
+    for (const subAction of action.actions) {
+      subHashes.push(fieldsToHash(subAction));
     }
     return subHashes.join('_');
-  };
-
-  toString(): string {
-    const formattedActions = this.actions.map(action => action.toString());
-    return `GroupAction(${this.changeLog}, ${this.hash}, ${this.typeOrServiceName}, ${formattedActions}, ${this.versions})`;
-  }
-
-  hasVersion(): boolean {
-    return (
-      this.versions !== null
-      && this.versions !== undefined
-      && Object.getOwnPropertyNames(this.versions).length !== 0
-    );
-  }
-}
-
-// Service Definitions
-export class NewServiceAction extends Action {
-  serviceName: string;
-  description: string;
-
-  constructor(
-    changeLog: string,
-    hash: string | null,
-    version: number | null,
-    serviceName: string,
-    description: string,
-  ) {
-    super(changeLog, hash, version);
-    this.serviceName = serviceName;
-    this.description = description;
-  }
-
-  fieldsToHash(): string {
-    return `${super.fieldsToHash()}_${this.serviceName}_${this.description}`;
-  };
-
-  toString(): string {
-    return `NewServiceAction(${this.changeLog}, ${this.hash}, ${this.version}, ${this.serviceName}, ${this.description})`;
-  }
-}
-
-export class UpdateDescriptionServiceAction extends Action {
-  serviceName: string;
-  description: string;
-
-  constructor(
-    changeLog: string,
-    hash: string | null,
-    version: number | null,
-    serviceName: string,
-    description: string,
-  ) {
-    super(changeLog, hash, version);
-    this.serviceName = serviceName;
-    this.description = description;
-  }
-
-  fieldsToHash(): string {
-    return `${super.fieldsToHash()}_${this.serviceName}_${this.description}`;
-  };
-
-  toString(): string {
-    return `UpdateDescriptionServiceAction(${this.changeLog}, ${this.hash}, ${this.version}, ${this.serviceName}, ${this.description})`;
-  }
-}
-
-export class AddVersionServiceAction extends Action {
-  serviceName: string;
-  inputType: string;
-  outputType: string;
-  inputVersion: number | null;
-  inputHash: string | null;
-  outputVersion: number | null;
-  outputHash: string | null;
-
-  constructor(
-    changeLog: string,
-    hash: string | null,
-    version: number | null,
-    serviceName: string,
-    inputType: string,
-    outputType: string,
-    inputVersion: number | null,
-    inputHash: string | null,
-    outputVersion: number | null,
-    outputHash: string | null,
-  ) {
-    super(changeLog, hash, version);
-    this.serviceName = serviceName;
-    this.inputType = inputType;
-    this.outputType = outputType;
-    this.inputVersion = inputVersion;
-    this.inputHash = inputHash;
-    this.outputVersion = outputVersion;
-    this.outputHash = outputHash;
-    if (
-      (inputHash === null || inputHash === undefined)
-      && (inputVersion === null || inputVersion === undefined)
-    ) {
-      throw new Error("Must specify either a hash or version for input version.");
-    }
-    if (
-      (outputHash === null || outputHash === undefined)
-      && (outputVersion === null || outputVersion === undefined)
-    ) {
-      throw new Error("Must specify either a hash or version for output version.");
-    }
-  }
-
-  fieldsToHash(): string {
-    return `${super.fieldsToHash()}_${this.serviceName}_${this.inputType}_${this.outputType}_${this.inputVersion}_${this.outputVersion}`;
-  };
-
-  toString(): string {
-    return `AddVersionServiceAction(${this.changeLog}, ${this.hash}, ${this.version}, ${this.serviceName}, ${this.inputType}, ${this.outputType}, ${this.inputVersion}, ${this.outputVersion})`;
-  }
-}
+  default:
+    throw new Error(`Can't hash ${action}`)
+};
 
 // Latest/Changesets
-export class ChangeSet {
+export type ChangeSet = {
   id: string;
-  log: Action[];
-  baseHash: string | null | undefined;
+  log: ChangeAction[];
+  baseHash: string
+};
 
-  constructor(
-    id: string;
-    log: Action[],
-    baseHash: string | null | undefined,
-  ) {
-    this.log = log;
-    this.baseHash = baseHash;
-  }
-}
+// function loadAction(action: any): Action {
+//   switch(action.actionType) {
+//     // Services
+//     case 'NewServiceAction':
+//       return new NewServiceAction(
+//         action.changeLog,
+//         action.hash,
+//         action.version,
+//         action.serviceName,
+//         action.description,
+//       );
+//     case 'UpdateDescriptionServiceAction':
+//       return new UpdateDescriptionServiceAction(
+//         action.changeLog,
+//         action.hash,
+//         action.version,
+//         action.serviceName,
+//         action.description
+//       );
+//     case 'AddVersionServiceAction':
+//       return new AddVersionServiceAction(
+//         action.changeLog,
+//         action.hash,
+//         action.version,
+//         action.serviceName,
+//         action.inputType,
+//         action.outputType,
+//         action.inputVersion,
+//         action.inputHash,
+//         action.outputVersion,
+//         action.outputHash,
+//       );
+//     // Types
+//     case 'RenameFieldTypeAction':
+//       return new RenameFieldTypeAction(
+//         action.changeLog,
+//         action.hash,
+//         action.version,
+//         action.typeName,
+//         action._from,
+//         action.to
+//       );
+//     case 'RequiredFieldTypeAction':
+//       return new RequiredFieldTypeAction(
+//         action.changeLog,
+//         action.hash,
+//         action.version,
+//         action.typeName,
+//         action.name
+//       );
+//     case 'OptionalFieldTypeAction':
+//       return new OptionalFieldTypeAction(
+//         action.changeLog,
+//         action.hash,
+//         action.version,
+//         action.typeName,
+//         action.name
+//       );
+//     case 'DeleteFieldTypeAction':
+//       return new DeleteFieldTypeAction(
+//         action.changeLog,
+//         action.hash,
+//         action.version,
+//         action.typeName,
+//         action.name
+//       );
+//     case 'SetDefaultFieldTypeAction':
+//       return new SetDefaultFieldTypeAction(
+//         action.changeLog,
+//         action.hash,
+//         action.version,
+//         action.typeName,
+//         action.name,
+//         action._default
+//       );
+//     case 'RemoveDefaultFieldTypeAction':
+//       return new RemoveDefaultFieldTypeAction(
+//         action.changeLog,
+//         action.hash,
+//         action.version,
+//         action.typeName,
+//         action.name
+//       );
+//     case 'AddFieldTypeAction':
+//       return new AddFieldTypeAction(
+//         action.changeLog,
+//         action.hash,
+//         action.version,
+//         action.typeName,
+//         action.name,
+//         action.type,
+//         action.description,
+//         action.optional,
+//         action._default
+//       );
+//     case 'UpdateDescriptionTypeAction':
+//       return new UpdateDescriptionTypeAction(
+//         action.changeLog,
+//         action.hash,
+//         action.version,
+//         action.typeName,
+//         action.name,
+//         action.description
+//       );
+//     case 'ReferenceFieldTypeAction':
+//       return new ReferenceFieldTypeAction(
+//         action.changeLog,
+//         action.hash,
+//         action.version,
+//         action.typeName,
+//         action.name,
+//         action.description,
+//         action.optional,
+//         action.referenceType,
+//         action.referenceHash,
+//         action.referenceVersion
+//       );
+//     case 'NewTypeAction':
+//       return new NewTypeAction(
+//         action.changeLog,
+//         action.hash,
+//         action.version,
+//         action.typeName,
+//         action.description
+//       );
+//     case 'GroupAction':
+//       const groupedActions = [];
+//       for (const subAction of action.actions) {
+//         groupedActions.push(loadAction(subAction));
+//       }
+//       return new GroupAction(
+//         action.changeLog,
+//         action.hash,
+//         action.version,
+//         action.name,
+//         groupedActions,
+//         action.versions,
+//       );
+//     default:
+//       throw new Error(`Unknown Action: ${action}`)
+//   }
+// }
 
-function loadAction(action: any): Action {
-  switch(action._action_type) {
-    // Services
-    case 'NewServiceAction':
-      return new NewServiceAction(
-        action.changeLog,
-        action.hash,
-        action.version,
-        action.serviceName,
-        action.description,
-      );
-    case 'UpdateDescriptionServiceAction':
-      return new UpdateDescriptionServiceAction(
-        action.changeLog,
-        action.hash,
-        action.version,
-        action.serviceName,
-        action.description
-      );
-    case 'AddVersionServiceAction':
-      return new AddVersionServiceAction(
-        action.changeLog,
-        action.hash,
-        action.version,
-        action.serviceName,
-        action.inputType,
-        action.outputType,
-        action.inputVersion,
-        action.inputHash,
-        action.outputVersion,
-        action.outputHash,
-      );
-    // Types
-    case 'RenameFieldTypeAction':
-      return new RenameFieldTypeAction(
-        action.changeLog,
-        action.hash,
-        action.version,
-        action.typeName,
-        action._from,
-        action.to
-      );
-    case 'RequiredFieldTypeAction':
-      return new RequiredFieldTypeAction(
-        action.changeLog,
-        action.hash,
-        action.version,
-        action.typeName,
-        action.name
-      );
-    case 'OptionalFieldTypeAction':
-      return new OptionalFieldTypeAction(
-        action.changeLog,
-        action.hash,
-        action.version,
-        action.typeName,
-        action.name
-      );
-    case 'DeleteFieldTypeAction':
-      return new DeleteFieldTypeAction(
-        action.changeLog,
-        action.hash,
-        action.version,
-        action.typeName,
-        action.name
-      );
-    case 'SetDefaultFieldTypeAction':
-      return new SetDefaultFieldTypeAction(
-        action.changeLog,
-        action.hash,
-        action.version,
-        action.typeName,
-        action.name,
-        action._default
-      );
-    case 'RemoveDefaultFieldTypeAction':
-      return new RemoveDefaultFieldTypeAction(
-        action.changeLog,
-        action.hash,
-        action.version,
-        action.typeName,
-        action.name
-      );
-    case 'AddFieldTypeAction':
-      return new AddFieldTypeAction(
-        action.changeLog,
-        action.hash,
-        action.version,
-        action.typeName,
-        action.name,
-        action.type,
-        action.description,
-        action.optional,
-        action._default
-      );
-    case 'UpdateDescriptionTypeAction':
-      return new UpdateDescriptionTypeAction(
-        action.changeLog,
-        action.hash,
-        action.version,
-        action.typeName,
-        action.name,
-        action.description
-      );
-    case 'ReferenceFieldTypeAction':
-      return new ReferenceFieldTypeAction(
-        action.changeLog,
-        action.hash,
-        action.version,
-        action.typeName,
-        action.name,
-        action.description,
-        action.optional,
-        action.referenceType,
-        action.referenceHash,
-        action.referenceVersion
-      );
-    case 'NewTypeAction':
-      return new NewTypeAction(
-        action.changeLog,
-        action.hash,
-        action.version,
-        action.typeName,
-        action.description
-      );
-    case 'GroupAction':
-      const groupedActions = [];
-      for (const subAction of action.actions) {
-        groupedActions.push(loadAction(subAction));
-      }
-      return new GroupAction(
-        action.changeLog,
-        action.hash,
-        action.name,
-        groupedActions,
-        action.versions,
-      );
-    default:
-      throw new Error(`Unknown Action: ${action}`)
-  }
-}
-
-export function loadActionLog(path: string): Array<Action> {
+export function loadActionLog(path: string): Array<Action | GroupAction> {
   const actions = require(path);
-  const outputActions = [];
+  // const outputActions = [];
 
-  for (const action of actions) {
-    const log = loadAction(action);
-    outputActions.push(log);
-  }
+  // for (const action of actions) {
+  //   const log = loadAction(action);
+  //   outputActions.push(log);
+  // }
 
-  return outputActions;
+  return actions as Array<Action | GroupAction>;
 }
 
-export async function loadActionAsync(path: string): Promise<Array<Action>> {
+export async function loadActionAsync(path: string): Promise<Array<Action | GroupAction>> {
   const data = await fs.readFile(path, 'utf-8');
   const actions = JSON.parse(data.toString());
-  const outputActions = [];
+  // const outputActions = [];
 
-  for (const action of actions) {
-    const log = loadAction(action);
-    outputActions.push(log);
-  }
+  // for (const action of actions) {
+  //   const log = loadAction(action);
+  //   outputActions.push(log);
+  // }
 
-  return outputActions;
+  return actions as Array<Action | GroupAction>;
 }
 
-export function loadActionLogFromList(actions: any[]): Array<Action> {
-  const outputActions = [];
+export function loadActionLogFromList(actions: any[]): Array<Action | GroupAction> {
+  // const outputActions = [];
 
-  for (const action of actions) {
-    const log = loadAction(action);
-    outputActions.push(log);
-  }
+  // for (const action of actions) {
+  //   const log = loadAction(action);
+  //   outputActions.push(log);
+  // }
 
-  return outputActions;
+  // return outputActions;
+  return (actions as Array<Action | GroupAction>);
 }

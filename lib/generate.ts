@@ -124,14 +124,14 @@ export type FieldObject = {
 
 export class Version {
   _type: string;
-  version: number | null;
-  hash: string | null;
+  version: number;
+  hash: string;
   fields: FieldObject;
 
   constructor(
     _type: string,
-    hash: string | null,
-    version: number | null,
+    hash: string,
+    version: number,
     fields: FieldObject,
   ) {
     this._type = _type;
@@ -179,13 +179,13 @@ export class Type {
 
 export class VersionType {
   _type: string;
-  version: number | null;
-  hash: string | null;
+  version: number;
+  hash: string;
 
   constructor(
     _type: string,
-    hash: string | null,
-    version: number | null,
+    hash: string,
+    version: number,
   ) {
     this._type = _type;
     this.hash = hash;

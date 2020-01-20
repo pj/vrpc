@@ -21,8 +21,8 @@ const SetDefaultFieldTypeActionForm = ActionFormHOC(
           selectedType={props.value.typeName}
         />
         <DefaultSelector
-          _default={props.value._default}
-          handleChange={props.handleDefaultChange('_default')}
+          _default={props.value.newDefault}
+          handleChange={props.handleDefaultChange('newDefault')}
         />
       </React.Fragment>
     );

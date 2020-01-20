@@ -14,7 +14,7 @@ class MemoryBackend {
         return typeidea_1.validate(this.log);
     }
     async getCurrentServices() {
-        const [_, services] = generate_1.generateDefinitions(this.log);
+        const [_, services] = generate_1.generateDefinitions(this.log, null, null);
         return services;
     }
     async getCurrentServicesWithChangeSet(userId, changeSetId) {
@@ -28,11 +28,11 @@ class MemoryBackend {
             throw new Error(`Changeset not found for id: ${changeSet}`);
         }
         const newLog = typeidea_1.commitChangeSet(this.log, changeSet);
-        const [_, services] = generate_1.generateDefinitions(newLog);
+        const [_, services] = generate_1.generateDefinitions(newLog, changeSet.log, changeSetId);
         return services;
     }
     async getCurrentTypes() {
-        const [types, _] = generate_1.generateDefinitions(this.log);
+        const [types, _] = generate_1.generateDefinitions(this.log, null, null);
         return types;
     }
     async getCurrentTypesWithChangeSet(userId, changeSetId) {
@@ -46,7 +46,7 @@ class MemoryBackend {
             throw new Error(`Changeset not found for id: ${changeSet}`);
         }
         const newLog = typeidea_1.commitChangeSet(this.log, changeSet);
-        const [types, _] = generate_1.generateDefinitions(newLog);
+        const [types, _] = generate_1.generateDefinitions(newLog, changeSet.log, changeSetId);
         return types;
     }
     async getChangeSets(userId) {
@@ -103,6 +103,18 @@ class MemoryBackend {
         }
         const result = typeidea_1.commitChangeSet(this.log, changeSet);
         this.log = result;
+        userSets.delete(changeSetId);
+    }
+    async deleteChangeSet(userId, changeSetId) {
+        const changeSetData = this.changeSets;
+        const userSets = changeSetData.get(userId);
+        if (!userSets) {
+            throw new Error(`No changesets found for user: ${userId}`);
+        }
+        const changeSet = userSets.get(changeSetId);
+        if (!changeSet) {
+            throw new Error(`Changeset not found for id: ${changeSet}`);
+        }
         userSets.delete(changeSetId);
     }
 }

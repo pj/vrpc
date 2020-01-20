@@ -1,4 +1,4 @@
-import {Action, ChangeSet} from './action';
+import {Action} from './action';
 import {Type, Service} from './generate';
 
 export interface Backend {

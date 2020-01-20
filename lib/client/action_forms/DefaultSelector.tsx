@@ -1,6 +1,7 @@
+// FIXME: fix types of NumberFormat.
 import React, { useState } from "react";
 import { FormControl, InputLabel, Select, MenuItem, TextField, Checkbox } from "@material-ui/core";
-import { GQLFieldDataInput, GQLAddFieldTypeActionInput, GQLFieldData } from "../hooks";
+import { GQLFieldDataInput } from "../hooks";
 import NumberFormat from 'react-number-format';
 
 const DEFAULT_TYPES = [
@@ -13,7 +14,7 @@ const DEFAULT_TYPES = [
 type DEFAULT_TYPE_TYPE = "integer" | "float" | "string" | "boolean" | null;
 
 type DefaultSelectorProps = {
-  _default: GQLFieldDataInput,
+  _default: GQLFieldDataInput | null | undefined,
   handleChange: (_default: GQLFieldDataInput) => void
 };
 
@@ -21,7 +22,9 @@ const DefaultSelector = (props: DefaultSelectorProps) => {
   let defaultType: DEFAULT_TYPE_TYPE = null;
   let valueEditor = null;
 
-  if (props._default.stringValue) {
+  if (!props._default) {
+    valueEditor = null;
+  } else if (props._default.stringValue) {
     defaultType = "string";
     valueEditor = (
       <TextField
@@ -37,7 +40,7 @@ const DefaultSelector = (props: DefaultSelectorProps) => {
     valueEditor = (
       <NumberFormat 
         decimalScale={0}
-        inputRef={(el) => this.inputElem = el} 
+        inputRef={(el: any) => (this as any).inputElem = el} 
         customInput={TextField} 
         onValueChange={values => {props.handleChange({integerValue: values.floatValue})}}
         value={props._default.integerValue}
@@ -47,7 +50,7 @@ const DefaultSelector = (props: DefaultSelectorProps) => {
     defaultType = "float";
     valueEditor = (
       <NumberFormat 
-        inputRef={(el) => this.inputElem = el} 
+        inputRef={(el: any) => (this as any).inputElem = el} 
         customInput={TextField} 
         onValueChange={values => {props.handleChange({integerValue: values.floatValue})}}
         value={props._default.floatValue}
@@ -64,7 +67,7 @@ const DefaultSelector = (props: DefaultSelectorProps) => {
     )
   }
 
-  function changeType(event) {
+  function changeType(event: React.ChangeEvent<HTMLInputElement>) {
     if (event.target.value === "string") {
       props.handleChange({stringValue: ""});
     } else if (event.target.value === "integer") {

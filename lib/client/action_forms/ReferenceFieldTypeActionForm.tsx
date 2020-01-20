@@ -47,7 +47,7 @@ const ReferencedFieldTypeActionForm = ActionFormHOC(
         <VersionSelector
           types={props.types}
           typeName={props.value.referenceType}
-          handleChange={props.handleChange('referenceVersion')}
+          handleChange={props.handleVersionChange('referenceVersion')}
           version={props.value.referenceVersion}
         />
       </React.Fragment>

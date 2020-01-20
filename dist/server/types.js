@@ -9,6 +9,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const _ = __importStar(require("lodash"));
 const generate = __importStar(require("../generate"));
+const schema = __importStar(require("./schema"));
+const action = __importStar(require("~action"));
 // export function actionFromInput(input: any): action.Action {
 //   switch(input.logType) {
 //     // Services
@@ -164,7 +166,7 @@ const generate = __importStar(require("../generate"));
 //   }
 //   return ({log, types: outputTypes, services: outputServices});
 // }
-function fromGenerateVersion(generateVersion) {
+function versionToGQLVersion(generateVersion) {
     const fields = [];
     for (let [key, field] of Object.entries(generateVersion.fields)) {
         let gqlField = null;
@@ -180,6 +182,7 @@ function fromGenerateVersion(generateVersion) {
                 gqlDefault = { value: field._default };
             }
             gqlField = {
+                __typename: 'Field',
                 name: field.name,
                 changeLog: field.changeLog,
                 description: field.description,
@@ -191,6 +194,7 @@ function fromGenerateVersion(generateVersion) {
         }
         else if (field instanceof generate.ReferenceField) {
             gqlField = {
+                __typename: 'ReferenceField',
                 name: field.name,
                 changeLog: field.changeLog,
                 description: field.description,
@@ -203,23 +207,29 @@ function fromGenerateVersion(generateVersion) {
         else {
             throw new Error('Should never happen (famous last words).');
         }
-        fields.push({ key, field: gqlField });
+        fields.push({
+            __typename: 'FieldObject',
+            key: key,
+            field: gqlField
+        });
     }
     return ({
+        __typename: 'Version',
         _type: generateVersion._type,
         hash: generateVersion.hash,
         version: generateVersion.version,
         fields
     });
 }
-exports.fromGenerateVersion = fromGenerateVersion;
-function fromGenerateType(generateType) {
+exports.versionToGQLVersion = versionToGQLVersion;
+function typeToGQLType(generateType) {
     const versions = [];
     for (let version of generateType.versions) {
-        versions.push(fromGenerateVersion(version));
+        versions.push(versionToGQLVersion(version));
     }
     const latest = null;
     return ({
+        __typename: 'Type',
         name: generateType.name,
         description: generateType.description,
         versions,
@@ -227,12 +237,13 @@ function fromGenerateType(generateType) {
         changeLog: generateType.changeLog
     });
 }
-exports.fromGenerateType = fromGenerateType;
-function fromGenerateService(generateService) {
+exports.typeToGQLType = typeToGQLType;
+function serviceToGQLService(generateService) {
     const versions = [];
     for (let version of generateService.versions.values()) {
         const [versionOutput, versionInputs] = version;
         const gqlOutputVersion = {
+            __typename: 'VersionType',
             _type: versionOutput._type,
             hash: versionOutput.hash,
             version: versionOutput.version
@@ -240,46 +251,466 @@ function fromGenerateService(generateService) {
         const gqlInputVersions = [];
         for (let versionInput of versionInputs) {
             gqlInputVersions.push({
+                __typename: 'VersionType',
                 _type: versionInput._type,
                 hash: versionInput.hash,
                 version: versionInput.version
             });
         }
-        versions.push({ inputs: gqlInputVersions, output: gqlOutputVersion });
+        versions.push({
+            __typename: 'ServiceVersion',
+            inputs: gqlInputVersions,
+            output: gqlOutputVersion
+        });
     }
     const latest = null;
     return ({
+        __typename: 'Service',
         name: generateService.name,
         description: generateService.description,
         changeLog: generateService.changeLog,
         versions
     });
 }
-exports.fromGenerateService = fromGenerateService;
-function fromActionLog(log) {
-    return log;
+exports.serviceToGQLService = serviceToGQLService;
+function actionToGQLLogAction(log) {
+    if (log.hash === null
+        || log.hash === undefined
+        || log.version === null
+        || log.version === undefined) {
+        throw new Error(`Unhashed log action: ${log}`);
+    }
+    const hash = log.hash;
+    const version = log.version;
+    if (log instanceof action.NewServiceAction) {
+        return ({
+            __typename: 'NewServiceAction',
+            hash: hash,
+            version: version,
+            changeLog: log.changeLog,
+            serviceName: log.serviceName,
+            description: log.description
+        });
+    }
+    else if (log instanceof action.UpdateDescriptionServiceAction) {
+        return ({
+            __typename: 'UpdateDescriptionServiceAction',
+            hash: hash,
+            version: version,
+            changeLog: log.changeLog,
+            serviceName: log.serviceName,
+            description: log.description
+        });
+    }
+    else if (log instanceof action.AddVersionServiceAction) {
+        return ({
+            __typename: 'AddVersionServiceAction',
+            hash: hash,
+            version: version,
+            changeLog: log.changeLog,
+            serviceName: log.serviceName,
+            inputType: log.inputType,
+            outputType: log.outputType,
+            inputVersion: log.inputVersion,
+            inputHash: log.inputHash,
+            outputVersion: log.outputVersion,
+            outputHash: log.outputHash
+        });
+    }
+    else if (log instanceof action.RenameFieldTypeAction) {
+        return ({
+            __typename: 'RenameFieldTypeAction',
+            hash: hash,
+            version: version,
+            changeLog: log.changeLog,
+            typeName: log.typeName,
+            _from: log._from,
+            to: log.to
+        });
+    }
+    else if (log instanceof action.RequiredFieldTypeAction) {
+        return ({
+            __typename: 'RequiredFieldTypeAction',
+            hash: hash,
+            version: version,
+            changeLog: log.changeLog,
+            typeName: log.typeName,
+            name: log.name
+        });
+    }
+    else if (log instanceof action.OptionalFieldTypeAction) {
+        return ({
+            __typename: 'OptionalFieldTypeAction',
+            hash: hash,
+            version: version,
+            changeLog: log.changeLog,
+            typeName: log.typeName,
+            name: log.name
+        });
+    }
+    else if (log instanceof action.DeleteFieldTypeAction) {
+        return ({
+            __typename: 'DeleteFieldTypeAction',
+            hash: hash,
+            version: version,
+            changeLog: log.changeLog,
+            typeName: log.typeName,
+            name: log.name
+        });
+    }
+    else if (log instanceof action.SetDefaultFieldTypeAction) {
+        const _default = defaultToGQLDefault(log._default);
+        return ({
+            __typename: 'SetDefaultFieldTypeAction',
+            hash: hash,
+            version: version,
+            changeLog: log.changeLog,
+            typeName: log.typeName,
+            name: log.name,
+            newDefault: _default
+        });
+    }
+    else if (log instanceof action.RemoveDefaultFieldTypeAction) {
+        return ({
+            __typename: 'RemoveDefaultFieldTypeAction',
+            hash: hash,
+            version: version,
+            changeLog: log.changeLog,
+            typeName: log.typeName,
+            name: log.name
+        });
+    }
+    else if (log instanceof action.AddFieldTypeAction) {
+        let _default = null;
+        if (log._default !== null) {
+            _default = defaultToGQLDefault(log._default);
+        }
+        return ({
+            __typename: 'AddFieldTypeAction',
+            hash: hash,
+            version: version,
+            changeLog: log.changeLog,
+            typeName: log.typeName,
+            name: log.name,
+            type: fieldTypesToGQLFieldTypes(log.type),
+            description: log.description,
+            optional: log.optional,
+            _default: _default
+        });
+    }
+    else if (log instanceof action.UpdateDescriptionTypeAction) {
+        return ({
+            __typename: 'UpdateDescriptionTypeAction',
+            hash: hash,
+            version: version,
+            changeLog: log.changeLog,
+            typeName: log.typeName,
+            name: log.name,
+            description: log.description
+        });
+    }
+    else if (log instanceof action.ReferenceFieldTypeAction) {
+        return ({
+            __typename: 'ReferenceFieldTypeAction',
+            hash: hash,
+            version: version,
+            changeLog: log.changeLog,
+            typeName: log.typeName,
+            name: log.name,
+            description: log.description,
+            optional: log.optional,
+            referenceType: log.referenceType,
+            referenceHash: log.referenceHash,
+            referenceVersion: log.referenceVersion
+        });
+    }
+    else if (log instanceof action.NewTypeAction) {
+        return ({
+            __typename: 'NewTypeAction',
+            hash: hash,
+            version: version,
+            changeLog: log.changeLog,
+            typeName: log.typeName,
+            description: log.description
+        });
+    }
+    throw new Error(`Unknown action: ${log}`);
 }
-exports.fromActionLog = fromActionLog;
-function fromGenerateChangeSet(changeSet) {
+exports.actionToGQLLogAction = actionToGQLLogAction;
+function defaultToGQLDefault(_default) {
+    if (typeof (_default) === 'string') {
+        return ({
+            __typename: 'StringField',
+            value: _default
+        });
+    }
+    else if (typeof (_default) === 'boolean') {
+        return ({
+            __typename: 'BooleanField',
+            value: _default
+        });
+    }
+    else if (typeof (_default) === 'number') {
+        if (Number.isSafeInteger(_default)) {
+            return ({
+                __typename: 'IntField',
+                value: _default
+            });
+        }
+        else {
+            return ({
+                __typename: 'FloatField',
+                value: _default
+            });
+        }
+    }
+    throw new Error(`Unknown default: ${_default}`);
+}
+exports.defaultToGQLDefault = defaultToGQLDefault;
+function fieldTypesToGQLFieldTypes(_type) {
+    switch (_type) {
+        case 'string':
+            return schema.GQLFieldTypes.StringType;
+        case 'boolean':
+            return schema.GQLFieldTypes.BooleanType;
+        case 'integer':
+            return schema.GQLFieldTypes.IntType;
+        case 'float':
+            return schema.GQLFieldTypes.FloatType;
+        default:
+            throw new Error(`Unknown field type ${_type}`);
+    }
+}
+exports.fieldTypesToGQLFieldTypes = fieldTypesToGQLFieldTypes;
+function actionToGQLChangeAction(log) {
+    if (log instanceof action.NewServiceAction) {
+        return ({
+            __typename: 'NewServiceChangeAction',
+            changeLog: log.changeLog,
+            serviceName: log.serviceName,
+            description: log.description,
+        });
+    }
+    else if (log instanceof action.UpdateDescriptionServiceAction) {
+        return ({
+            __typename: 'UpdateDescriptionServiceChangeAction',
+            changeLog: log.changeLog,
+            serviceName: log.serviceName,
+            description: log.description
+        });
+    }
+    else if (log instanceof action.AddVersionServiceAction) {
+        return ({
+            __typename: 'AddVersionServiceChangeAction',
+            changeLog: log.changeLog,
+            serviceName: log.serviceName,
+            inputType: log.inputType,
+            outputType: log.outputType,
+            inputVersion: log.inputVersion,
+            inputHash: log.inputHash,
+            outputVersion: log.outputVersion,
+            outputHash: log.outputHash
+        });
+    }
+    else if (log instanceof action.RenameFieldTypeAction) {
+        return ({
+            __typename: 'RenameFieldTypeChangeAction',
+            changeLog: log.changeLog,
+            typeName: log.typeName,
+            _from: log._from,
+            to: log.to
+        });
+    }
+    else if (log instanceof action.RequiredFieldTypeAction) {
+        return ({
+            __typename: 'RequiredFieldTypeChangeAction',
+            changeLog: log.changeLog,
+            typeName: log.typeName,
+            name: log.name
+        });
+    }
+    else if (log instanceof action.OptionalFieldTypeAction) {
+        return ({
+            __typename: 'OptionalFieldTypeChangeAction',
+            changeLog: log.changeLog,
+            typeName: log.typeName,
+            name: log.name
+        });
+    }
+    else if (log instanceof action.DeleteFieldTypeAction) {
+        return ({
+            __typename: 'DeleteFieldTypeChangeAction',
+            changeLog: log.changeLog,
+            typeName: log.typeName,
+            name: log.name
+        });
+    }
+    else if (log instanceof action.SetDefaultFieldTypeAction) {
+        const _default = defaultToGQLDefault(log._default);
+        return ({
+            __typename: 'SetDefaultFieldTypeChangeAction',
+            changeLog: log.changeLog,
+            typeName: log.typeName,
+            name: log.name,
+            newDefault: _default
+        });
+    }
+    else if (log instanceof action.RemoveDefaultFieldTypeAction) {
+        return ({
+            __typename: 'RemoveDefaultFieldTypeChangeAction',
+            changeLog: log.changeLog,
+            typeName: log.typeName,
+            name: log.name
+        });
+    }
+    else if (log instanceof action.AddFieldTypeAction) {
+        let _default = null;
+        if (log._default !== null) {
+            _default = defaultToGQLDefault(log._default);
+        }
+        return ({
+            __typename: 'AddFieldTypeChangeAction',
+            changeLog: log.changeLog,
+            typeName: log.typeName,
+            name: log.name,
+            type: fieldTypesToGQLFieldTypes(log.type),
+            description: log.description,
+            optional: log.optional,
+            _default: _default
+        });
+    }
+    else if (log instanceof action.UpdateDescriptionTypeAction) {
+        return ({
+            __typename: 'UpdateDescriptionTypeChangeAction',
+            changeLog: log.changeLog,
+            typeName: log.typeName,
+            name: log.name,
+            description: log.description
+        });
+    }
+    else if (log instanceof action.ReferenceFieldTypeAction) {
+        return ({
+            __typename: 'ReferenceFieldTypeChangeAction',
+            changeLog: log.changeLog,
+            typeName: log.typeName,
+            name: log.name,
+            description: log.description,
+            optional: log.optional,
+            referenceType: log.referenceType,
+            referenceHash: log.referenceHash,
+            referenceVersion: log.referenceVersion
+        });
+    }
+    else if (log instanceof action.NewTypeAction) {
+        return ({
+            __typename: 'NewTypeChangeAction',
+            changeLog: log.changeLog,
+            typeName: log.typeName,
+            description: log.description
+        });
+    }
+    throw new Error(`Unknown action: ${log}`);
+}
+exports.actionToGQLChangeAction = actionToGQLChangeAction;
+function changeSetToGQLChangeSet(changeSet) {
     return ({
+        __typename: 'ChangeSet',
+        id: changeSet.id,
         baseHash: changeSet.baseHash,
-        log: changeSet.log
+        log: changeSet.log.map(a => actionToGQLChangeAction(a))
     });
 }
-exports.fromGenerateChangeSet = fromGenerateChangeSet;
-function toAction(logAction) {
-    const entry = Object.values(logAction).find(v => v);
-    if (entry === null || entry === undefined) {
-        throw new Error("GQLLogActionInput must contain one action input");
+exports.changeSetToGQLChangeSet = changeSetToGQLChangeSet;
+function gqlDefaultToDefaultField(_default) {
+    if (_default.booleanValue !== null && _default.booleanValue !== undefined) {
+        return [_default.booleanValue, 'boolean'];
     }
-    return entry;
+    else if (_default.floatValue !== null
+        && _default.floatValue !== undefined) {
+        return [_default.floatValue, 'float'];
+    }
+    else if (_default.integerValue !== null
+        && _default.integerValue !== undefined) {
+        return [_default.integerValue, 'integer'];
+    }
+    else if (_default.stringValue !== null
+        && _default.stringValue !== undefined) {
+        return [_default.stringValue, 'string'];
+    }
+    else {
+        throw new Error(`No value present in default: ${_default}`);
+    }
 }
-exports.toAction = toAction;
-function toChangeSet(changeSet) {
-    const log = changeSet.log.map(c => toAction(c));
+exports.gqlDefaultToDefaultField = gqlDefaultToDefaultField;
+function gqlFieldTypesToFieldTypes(_type) {
+    switch (_type) {
+        case 'stringType':
+            return 'string';
+        case 'booleanType':
+            return 'boolean';
+        case 'intType':
+            return 'integer';
+        case 'floatType':
+            return 'float';
+        default:
+            throw new Error(`Unknown field type ${_type}`);
+    }
+}
+exports.gqlFieldTypesToFieldTypes = gqlFieldTypesToFieldTypes;
+function gqlLogActionInputToAction(logAction) {
+    if (logAction.newService) {
+        return new action.NewServiceAction(logAction.newService.changeLog, null, null, logAction.newService.serviceName, logAction.newService.description);
+    }
+    else if (logAction.updateServiceDescription) {
+        return new action.UpdateDescriptionServiceAction(logAction.updateServiceDescription.changeLog, null, null, logAction.updateServiceDescription.serviceName, logAction.updateServiceDescription.description);
+    }
+    else if (logAction.addVersion) {
+        return new action.AddVersionServiceAction(logAction.addVersion.changeLog, null, null, logAction.addVersion.serviceName, logAction.addVersion.inputType, logAction.addVersion.outputType, logAction.addVersion.inputVersion, logAction.addVersion.inputHash, logAction.addVersion.outputVersion, logAction.addVersion.outputHash);
+    }
+    else if (logAction.renameField) {
+        return new action.RenameFieldTypeAction(logAction.renameField.changeLog, null, null, logAction.renameField.typeName, logAction.renameField._from, logAction.renameField.to);
+    }
+    else if (logAction.requiredField) {
+        return new action.RequiredFieldTypeAction(logAction.requiredField.changeLog, null, null, logAction.requiredField.typeName, logAction.requiredField.name);
+    }
+    else if (logAction.optionalField) {
+        return new action.OptionalFieldTypeAction(logAction.optionalField.changeLog, null, null, logAction.optionalField.typeName, logAction.optionalField.name);
+    }
+    else if (logAction.deleteField) {
+        return new action.DeleteFieldTypeAction(logAction.deleteField.changeLog, null, null, logAction.deleteField.typeName, logAction.deleteField.name);
+    }
+    else if (logAction.setDefault) {
+        const _default = gqlDefaultToDefaultField(logAction.setDefault.newDefault);
+        return new action.SetDefaultFieldTypeAction(logAction.setDefault.changeLog, null, null, logAction.setDefault.typeName, logAction.setDefault.name, _default[0]);
+    }
+    else if (logAction.removeDefault) {
+        return new action.RemoveDefaultFieldTypeAction(logAction.removeDefault.changeLog, null, null, logAction.removeDefault.typeName, logAction.removeDefault.name);
+    }
+    else if (logAction.addField) {
+        let _default = null;
+        if (logAction.addField._default) {
+            _default = gqlDefaultToDefaultField(logAction.addField._default)[0];
+        }
+        return new action.AddFieldTypeAction(logAction.addField.changeLog, null, null, logAction.addField.typeName, logAction.addField.name, gqlFieldTypesToFieldTypes(logAction.addField.type), logAction.addField.description, logAction.addField.optional, _default);
+    }
+    else if (logAction.updateTypeDescription) {
+        return new action.UpdateDescriptionTypeAction(logAction.updateTypeDescription.changeLog, null, null, logAction.updateTypeDescription.typeName, logAction.updateTypeDescription.name, logAction.updateTypeDescription.description);
+    }
+    else if (logAction.referenceField) {
+        return new action.ReferenceFieldTypeAction(logAction.referenceField.changeLog, null, null, logAction.referenceField.typeName, logAction.referenceField.name, logAction.referenceField.description, logAction.referenceField.optional, logAction.referenceField.referenceType, logAction.referenceField.referenceHash, logAction.referenceField.referenceVersion);
+    }
+    else if (logAction.newType) {
+        return new action.NewTypeAction(logAction.newType.changeLog, null, null, logAction.newType.typeName, logAction.newType.description);
+    }
+    throw new Error("GQLLogActionInput must contain one action input");
+}
+exports.gqlLogActionInputToAction = gqlLogActionInputToAction;
+function gqlChangeSetToChangeSet(changeSet) {
+    const log = changeSet.log.map(c => gqlLogActionInputToAction(c));
     return ({
+        id: changeSet.id,
         baseHash: changeSet.baseHash,
         log: log
     });
 }
-exports.toChangeSet = toChangeSet;
+exports.gqlChangeSetToChangeSet = gqlChangeSetToChangeSet;

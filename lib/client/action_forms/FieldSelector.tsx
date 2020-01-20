@@ -1,14 +1,16 @@
 import { FormControl, InputLabel, Select, MenuItem } from "@material-ui/core";
 import { GQLType } from "../hooks";
+import React, { ReactNode } from "react";
 
 type FieldSelectorProps<V> = {
-  types: GQLType[]
+  selectedType: string,
+  types: GQLType[],
   value: V,
-  handleChange: (event: React.SyntheticEvent): void
+  handleChange: (event: React.ChangeEvent<any>) => void
 };
 
-const FieldSelector = (props: FieldSelectorProps) => {
-  const fieldNamesByType = new Map();
+export default function FieldSelector<V>(props: FieldSelectorProps<V>) {
+  const fieldNamesByType = new Map<string, string[]>();
   for (let _type of props.types) {
     const lastVersion = _type.versions[_type.versions.length-1];
 
@@ -25,7 +27,8 @@ const FieldSelector = (props: FieldSelectorProps) => {
         inputProps={{id: 'select-field'}}
       >
       {
-        props.selectedType !== "" && fieldNamesByType.get(props.selectedType).map(
+        props.selectedType !== "" 
+        && (fieldNamesByType.get(props.selectedType) || []).map(
           fieldName =>
             <MenuItem key={fieldName} value={fieldName} >
               {fieldName}
@@ -36,5 +39,3 @@ const FieldSelector = (props: FieldSelectorProps) => {
     </FormControl>
   );
 }
-
-export default FieldSelector;

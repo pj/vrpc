@@ -3,6 +3,9 @@ fragment LogFields on LogAction {
     ... on GroupAction {
       __typename
       changeLog
+      hash
+      _id: hash
+      version
       groupedActions {
          ...ActionsFragment
       }
@@ -15,9 +18,11 @@ fragment LogFields on LogAction {
 
 fragment TypeFields on Type {
   name
+  changeLog
   description
   versions {
     version
+    hash
     _type
     fields {
       key
@@ -25,9 +30,28 @@ fragment TypeFields on Type {
         name
         description
         changeLog
+        optional
+        ... on ReferenceField {
+          referenceType
+          referenceHash
+          referenceVersion
+        }
+
         ... on Field {
-          name
-          optional
+          _default {
+            ... on StringField {
+              stringValue: value
+            }
+            ... on BooleanField {
+              booleanValue: value
+            }
+            ... on FloatField {
+              floatValue: value
+            }
+            ... on IntField {
+              intValue: value
+            }
+          }
           _type
         }
       }
@@ -43,11 +67,13 @@ fragment ServiceFields on Service {
     inputs {
       version
       _type
+      hash
     }
 
     output {
       version
       _type
+      hash
     }
   }
 }
@@ -56,7 +82,7 @@ fragment ChangeSetFields on ChangeSet {
   id
   baseHash
   log {
-      ...ActionsFragment
+      ...ChangeActionsFragment
   }
 }
 
@@ -104,7 +130,6 @@ fragment ActionsFragment on Action {
   __typename
   changeLog
   hash
-  unhashed
   _id: hash
   version
 
@@ -152,7 +177,7 @@ fragment ActionsFragment on Action {
   ... on SetDefaultFieldTypeAction {
     typeName
     name
-    _default {
+    newDefault {
       ...DataFragment
     }
   }
@@ -195,11 +220,102 @@ fragment ActionsFragment on Action {
   }
 }
 
+fragment ChangeActionsFragment on ChangeAction {
+  __typename
+  changeLog
+
+  ... on NewServiceChangeAction {
+    serviceName
+    description
+  }
+
+  ... on UpdateDescriptionServiceChangeAction {
+    serviceName
+    description
+  }
+
+  ... on AddVersionServiceChangeAction {
+    serviceName
+    inputType
+    outputType
+    inputVersion
+    inputHash
+    outputVersion
+    outputHash
+  }
+
+  ... on RenameFieldTypeChangeAction {
+    typeName
+    _from
+    to
+  }
+
+  ... on RequiredFieldTypeChangeAction {
+    typeName
+    name
+  }
+
+  ... on OptionalFieldTypeChangeAction {
+    typeName
+    name
+  }
+
+  ... on DeleteFieldTypeChangeAction {
+    typeName
+    name
+  }
+
+  ... on SetDefaultFieldTypeChangeAction {
+    typeName
+    name
+    newDefault {
+      ...DataFragment
+    }
+  }
+
+  ... on RemoveDefaultFieldTypeChangeAction {
+    typeName
+    name
+  }
+
+  ... on AddFieldTypeChangeAction {
+    typeName
+    name
+    type
+    description
+    optional
+    _default {
+      ...DataFragment
+    }
+  }
+
+  ... on UpdateDescriptionTypeChangeAction {
+    typeName
+    name
+    description
+  }
+
+  ... on ReferenceFieldTypeChangeAction {
+    typeName
+    name
+    description
+    optional
+    referenceType
+    referenceHash
+    referenceVersion
+  }
+
+  ... on NewTypeChangeAction {
+    typeName
+    description
+  }
+}
+
 fragment ChangeSetFragment on ChangeSet {
   id
   baseHash
   log {
-    ...ActionsFragment
+    ...ChangeActionsFragment
   }
 }
 

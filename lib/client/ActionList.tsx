@@ -20,7 +20,7 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 
-import {GQLLogAction} from './hooks';
+import {GQLLogAction, GQLLogActionChange} from './hooks';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -32,14 +32,12 @@ const useStyles = makeStyles(theme => ({
   },
   actionButtons: {
     display: 'flex'
-  },
-  unhashed: {
-    backgroundColor: "#F48FB1"
   }
 }));
 
 type ActionListProps = {
-  log: GQLLogAction[]
+  log: GQLLogAction[],
+  changeLog: GQLLogActionChange[]
 };
 
 const ActionList = (props: ActionListProps) => {
@@ -71,6 +69,7 @@ const ActionList = (props: ActionListProps) => {
       isService = true;
     }
 
+    // FIXME: fix any type.
     const options = [];
     for (let [key, value] of Object.entries(logAction)) {
       if (
@@ -82,13 +81,12 @@ const ActionList = (props: ActionListProps) => {
           'typeName',
           'serviceName',
           '_id',
-          'unhashed'
         ].indexOf(key) === -1
       ) {
         options.push(
           <ListItem key={key} alignItems="flex-start">
             <ListItemText primary={key}/>
-            <ListItemText primary={value}/>
+            <ListItemText primary={value as any}/>
           </ListItem>
         );
       }
@@ -96,7 +94,6 @@ const ActionList = (props: ActionListProps) => {
 
     const tableClasses = classNames({
       [`${classes.tableCell}`]: true,
-      [`${classes.unhashed}`]: logAction.unhashed
     });
     tableRows.push(
       <TableRow key={logAction.hash}>
@@ -110,7 +107,7 @@ const ActionList = (props: ActionListProps) => {
             <span>
               {logAction.version}
             </span>
-          </Tooltip>
+          </Tooltip> : "change set"
         </TableCell>
         <TableCell className={tableClasses}>{logAction.changeLog}</TableCell>
         <TableCell className={tableClasses}>

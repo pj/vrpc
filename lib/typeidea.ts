@@ -2,7 +2,7 @@ import * as crypto from 'crypto';
 import {compile} from 'ejs';
 import * as fs from 'fs';
 import * as prettier from 'prettier';
-import * as action from './action';
+import {fieldsToHash, ChangeAction, GroupChangeAction, Action, ChangeSet} from './action';
 
 type Hash = string | null;
 
@@ -11,10 +11,10 @@ class ValidationError extends Error {
 }
 
 export function hashAction(
-  logAction: action.Action,
+  logAction: ChangeAction | GroupChangeAction,
   previous: string | null
 ) {
-  if (logAction instanceof action.GroupAction) {
+  if (logAction.actionType === 'GroupAction') {
     for (let subHashable of logAction.actions) {
       previous = hashAction(subHashable, previous);
     }
@@ -27,34 +27,171 @@ export function hashAction(
     hash.update(previous);
   }
 
-  const fieldsToHash = logAction.fieldsToHash();
-  hash.update(fieldsToHash);
+  const hashFields = fieldsToHash(logAction);
+  hash.update(hashFields);
 
   return hash.digest('hex');
 }
 
-export function getActionType(logAction: action.Action): string {
+export function getActionType(logAction: Action | ChangeAction): string {
   if (
-    logAction instanceof action.RenameFieldTypeAction ||
-    logAction instanceof action.RequiredFieldTypeAction ||
-    logAction instanceof action.OptionalFieldTypeAction ||
-    logAction instanceof action.DeleteFieldTypeAction ||
-    logAction instanceof action.SetDefaultFieldTypeAction ||
-    logAction instanceof action.RemoveDefaultFieldTypeAction ||
-    logAction instanceof action.AddFieldTypeAction ||
-    logAction instanceof action.UpdateDescriptionTypeAction ||
-    logAction instanceof action.ReferenceFieldTypeAction ||
-    logAction instanceof action.NewTypeAction
+    logAction.actionType === 'RenameFieldTypeAction' ||
+    logAction.actionType === 'RequiredFieldTypeAction' ||
+    logAction.actionType === 'OptionalFieldTypeAction' ||
+    logAction.actionType === 'DeleteFieldTypeAction' ||
+    logAction.actionType === 'SetDefaultFieldTypeAction' ||
+    logAction.actionType === 'RemoveDefaultFieldTypeAction' ||
+    logAction.actionType === 'AddFieldTypeAction' ||
+    logAction.actionType === 'UpdateDescriptionTypeAction' ||
+    logAction.actionType === 'ReferenceFieldTypeAction' ||
+    logAction.actionType === 'NewTypeAction'
   ) {
     return logAction.typeName;
   } else if (
-    logAction instanceof action.NewServiceAction ||
-    logAction instanceof action.UpdateDescriptionServiceAction ||
-    logAction instanceof action.AddVersionServiceAction
+    logAction.actionType === 'NewServiceAction' ||
+    logAction.actionType === 'UpdateDescriptionServiceAction' ||
+    logAction.actionType === 'AddVersionServiceAction'
   ) {
     return logAction.serviceName;
   }
   throw new ValidationError(`Unknown log action ${logAction}`);
+}
+
+function isNewAction(hashable: ChangeAction) {
+  return (
+    hashable.actionType === 'NewTypeAction' 
+    || hashable.actionType === 'NewServiceAction'
+  );
+}
+
+function validateAndHash(
+  log: Array<Action>,
+  changeSet: ChangeSet,
+  hash: boolean
+): Action[] {
+  const versionNumbers = new Map<string, number>();
+  const newLog = [];
+  let previousHash = null;
+  for (let n = 0; n < log.length; n++) {
+    let hashable = log[n];
+    if (!hashable.hasHashAndVersion()) {
+      if (hashable.hasVersion()) {
+        throw new ValidationError(
+          `Hash not present but version is: ${n} action: ${hashable}`
+        );
+      }
+
+      if (hashable.hasHash()) {
+        throw new ValidationError(
+          `Version not present but hash is: ${n} action: ${hashable}`
+        );
+      }
+
+      if (!hash) {
+        throw new ValidationError(
+          `Hash and Version required: ${n} action: ${hashable}`
+        );
+      }
+
+      const newHash = hashAction(hashable, previousHash);
+      hashable.hash = newHash;
+      const actionName = getActionType(hashable);
+      const currentVersion = versionNumbers.get(actionName);
+      if (!currentVersion && !isNewAction(hashable)) {
+        throw new ValidationError(
+          `No current version for type ${actionName} and action is not 
+          NewTypeAction or NewServiceAction: ${hashable}`
+        );
+      }
+      hashable.version = currentVersion ? currentVersion + 1 : 0;
+      versionNumbers.set(actionName, hashable.version);
+      newLog.push(hashable);
+    } else {
+      const expectedHash = hashAction(hashable, previousHash);
+      if (expectedHash !== hashable.hash) {
+        throw new ValidationError(
+          `Invalid hash at item ${n} expected ${expectedHash} 
+          got ${hashable.hash} object: ${hashable}`
+        );
+      }
+      previousHash = hashable.hash;
+
+      if (hashable instanceof action.GroupAction) {
+        const foundTypes = new Set<string>();
+        for (let subHashable of hashable.actions) {
+          const actionName = getActionType(subHashable);
+          foundTypes.add(actionName);
+        }
+
+        for (let foundType of foundTypes) {
+          const currentVersion = versionNumbers.get(foundType) || 0;
+          const hashableVersion = hashable.versions[foundType];
+          if (hashableVersion !== currentVersion) {
+            throw new ValidationError(
+              `Group Version doesn't match at item ${n} expected 
+              ${currentVersion} got ${hashableVersion} for type ${foundType} 
+              object: ${hashable}`
+            );
+          }
+          versionNumbers.set(foundType, currentVersion + 1);
+        }
+      } else {
+        const actionName = getActionType(hashable);
+        const currentVersion = versionNumbers.get(actionName) || 0;
+        if (hashable.version !== currentVersion) {
+          throw new ValidationError(
+            `Versions don't match at item ${n} 
+             expected ${currentVersion} got ${hashable.version} 
+             object: ${hashable}`
+          );
+        }
+
+        versionNumbers.set(actionName, currentVersion + 1);
+      }
+
+      newLog.push(hashable);
+    }
+  }
+
+  return newLog;
+}
+
+export function validate(
+  log: Action[]
+): string | null {
+  try {
+    validateAndHash(log, false);
+    return null;
+  } catch (e) {
+    if (e instanceof ValidationError) {
+      return e.message;
+    }
+
+    throw e;
+  }
+}
+
+export function validateChangeSet(
+  log: Action[], 
+  changeSet: ChangeSet,
+): string | null {
+  try {
+    validateAndHash(log, changeSet, true);
+    return null;
+  } catch (e) {
+    if (e instanceof ValidationError) {
+      return e.message;
+    }
+
+    throw e;
+  }
+}
+
+export function commitChangeSet(
+  log: Action[], 
+  changeSet: ChangeSet,
+): Action[] {
+  return validateAndHash(log, changeSet, true);
 }
 
 // export function validateActions(
@@ -249,143 +386,3 @@ export function getActionType(logAction: action.Action): string {
 
 //   return hashed;
 // }
-
-function isNewAction(hashable: action.Action) {
-  return (
-    hashable instanceof action.NewTypeAction 
-    || hashable instanceof action.NewServiceAction
-  );
-}
-
-function validateAndHash(
-  log: Array<action.Action>,
-  hash: boolean
-): action.Action[] {
-  const versionNumbers = new Map<string, number>();
-  const newLog = [];
-  let previousHash = null;
-  for (let n = 0; n < log.length; n++) {
-    let hashable = log[n];
-    if (!hashable.hasHashAndVersion()) {
-      if (hashable.hasVersion()) {
-        throw new ValidationError(
-          `Hash not present but version is: ${n} action: ${hashable}`
-        );
-      }
-
-      if (hashable.hasHash()) {
-        throw new ValidationError(
-          `Version not present but hash is: ${n} action: ${hashable}`
-        );
-      }
-
-      if (!hash) {
-        throw new ValidationError(
-          `Hash and Version required: ${n} action: ${hashable}`
-        );
-      }
-
-      const newHash = hashAction(hashable, previousHash);
-      hashable.hash = newHash;
-      const actionName = getActionType(hashable);
-      const currentVersion = versionNumbers.get(actionName);
-      if (!currentVersion && !isNewAction(hashable)) {
-        throw new ValidationError(
-          `No current version for type ${actionName} and action is not 
-          NewTypeAction or NewServiceAction: ${hashable}`
-        );
-      }
-      hashable.version = currentVersion ? currentVersion + 1 : 0;
-      versionNumbers.set(actionName, hashable.version);
-      newLog.push(hashable);
-    } else {
-      const expectedHash = hashAction(hashable, previousHash);
-      if (expectedHash !== hashable.hash) {
-        throw new ValidationError(
-          `Invalid hash at item ${n} expected ${expectedHash} 
-          got ${hashable.hash} object: ${hashable}`
-        );
-      }
-      previousHash = hashable.hash;
-
-      if (hashable instanceof action.GroupAction) {
-        const foundTypes = new Set<string>();
-        for (let subHashable of hashable.actions) {
-          const actionName = getActionType(subHashable);
-          foundTypes.add(actionName);
-        }
-
-        for (let foundType of foundTypes) {
-          const currentVersion = versionNumbers.get(foundType) || 0;
-          const hashableVersion = hashable.versions[foundType];
-          if (hashableVersion !== currentVersion) {
-            throw new ValidationError(
-              `Group Version doesn't match at item ${n} expected 
-              ${currentVersion} got ${hashableVersion} for type ${foundType} 
-              object: ${hashable}`
-            );
-          }
-          versionNumbers.set(foundType, currentVersion + 1);
-        }
-      } else {
-        const actionName = getActionType(hashable);
-        const currentVersion = versionNumbers.get(actionName) || 0;
-        if (hashable.version !== currentVersion) {
-          throw new ValidationError(
-            `Versions don't match at item ${n} 
-             expected ${currentVersion} got ${hashable.version} 
-             object: ${hashable}`
-          );
-        }
-
-        versionNumbers.set(actionName, currentVersion + 1);
-      }
-
-      newLog.push(hashable);
-    }
-  }
-
-  return newLog;
-}
-
-export function validate(
-  log: action.Action[]
-): string | null {
-  try {
-    validateAndHash(log, false);
-    return null;
-  } catch (e) {
-    if (e instanceof ValidationError) {
-      return e.message;
-    }
-
-    throw e;
-  }
-}
-
-export function validateWithChangeSet(
-  log: action.Action[], 
-  changeSet: action.ChangeSet,
-): string | null {
-  let newLog = [...log, ...changeSet.log];
-
-  try {
-    validateAndHash(newLog, true);
-    return null;
-  } catch (e) {
-    if (e instanceof ValidationError) {
-      return e.message;
-    }
-
-    throw e;
-  }
-}
-
-export function commitChangeSet(
-  log: action.Action[], 
-  changeSet: action.ChangeSet,
-): action.Action[] {
-  let newLog = [...log, ...changeSet.log];
-
-  return validateAndHash(newLog, true);
-}

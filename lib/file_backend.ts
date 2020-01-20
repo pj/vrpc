@@ -1,6 +1,6 @@
 import {promises as fs} from 'fs';
 import { Backend } from './backend';
-import {Action, ChangeSet, loadActionAsync, loadActionLog} from './action';
+import {Action} from './action';
 import {generateDefinitions, Type, Service} from './generate';
 import {validateWithChangeSet, commitChangeSet, validate} from './typeidea';
 import * as lockfile from 'proper-lockfile';

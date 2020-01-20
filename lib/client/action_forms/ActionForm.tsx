@@ -1,8 +1,8 @@
-import { GQLType, GQLService, useUpdateChangeSetMutation, GQLFieldDataInput } from "../hooks";
+import { GQLType, GQLService, useUpdateChangeSetMutation, GQLFieldDataInput, GQLLogActionChange } from "../hooks";
 import { useState } from "react";
 import { makeStyles, Paper, CircularProgress, FormControl, TextField, Button } from "@material-ui/core";
 import React from "react";
-import { GQLAllInput } from "./ActionCreatorModal";
+import { GQLChangeAction } from "~server/schema";
 
 export type ActionFormProps = {
     types: GQLType[],
@@ -13,10 +13,11 @@ export type FormComponentProps<I> = {
     types: GQLType[],
     services: GQLService[],
     value: I,
-    handleChange(key: keyof I): (event: React.SyntheticEvent) => void,
-    handleBooleanChange(key: keyof I): (event: React.SyntheticEvent) => void
+    handleChange(key: keyof I): (event: React.ChangeEvent<HTMLInputElement>) => void,
+    handleBooleanChange(key: keyof I): (event: React.ChangeEvent<HTMLInputElement>) => void
     handleDefaultChange(key: keyof I): (_default: GQLFieldDataInput) => void
-    handleRenameSetType: (event: React.SyntheticEvent) => void,
+    handleRenameSetType: (event: React.ChangeEvent<HTMLInputElement>) => void,
+    handleVersionChange(key: keyof I): (version: number) => void,
 };
 
 const useStyles = makeStyles(theme => ({
@@ -24,14 +25,16 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export function ActionFormHOC<I extends GQLAllInput>(FormComponent: React.FunctionComponent<FormComponentProps<I>>) {
+export function ActionFormHOC<I extends GQLLogActionChange>(
+    FormComponent: React.FunctionComponent<FormComponentProps<Partial<I>>>
+) {
     function ActionForm(props: ActionFormProps) {
         const classes = useStyles(props);
         const [updateChangeSetMutation, {loading, error}] = useUpdateChangeSetMutation();
-        const [value, setValue] = useState<I>();
+        const [value, setValue] = useState<Partial<I>>({});
 
         function handleChange(key: keyof I) {
-            function innerHandleChange(event): void {
+            function innerHandleChange(event: React.ChangeEvent<HTMLInputElement>): void {
                 setValue({...value, [key]: event.target.value});
             }
 
@@ -39,8 +42,8 @@ export function ActionFormHOC<I extends GQLAllInput>(FormComponent: React.Functi
         }
 
         function handleBooleanChange(key: keyof I) {
-            function innerHandleChange(event) {
-            setValue({...value, [key]: !value[key]});
+            function innerHandleChange(event: React.ChangeEvent<HTMLInputElement>) {
+                setValue({...value, [key]: !value[key]});
             }
 
             return innerHandleChange;
@@ -48,14 +51,22 @@ export function ActionFormHOC<I extends GQLAllInput>(FormComponent: React.Functi
 
         function handleDefaultChange(key: keyof I) {
             function innerHandleChange(_default: GQLFieldDataInput) {
-            setValue({...value, [key]: _default});
+                setValue({...value, [key]: _default});
             }
 
             return innerHandleChange;
         }
 
-        function handleRenameSetType(event) {
+        function handleRenameSetType(event: React.ChangeEvent<HTMLInputElement>) {
             setValue({...value, typeName: event.target.value, fieldName: ""});
+        }
+
+        function handleVersionChange(key: keyof I) {
+            function innerHandleChange(version: number) {
+                setValue({...value, [key]: version});
+            }
+
+            return innerHandleChange;
         }
 
         function updateChangeSet() {
@@ -77,6 +88,7 @@ export function ActionFormHOC<I extends GQLAllInput>(FormComponent: React.Functi
                           handleBooleanChange={handleBooleanChange} 
                           handleRenameSetType={handleRenameSetType}
                           handleDefaultChange={handleDefaultChange}
+                          handleVersionChange={handleVersionChange}
                         />
                         <Button variant="contained" color="primary" onClick={updateChangeSet}>
                             Add To Log

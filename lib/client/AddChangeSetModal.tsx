@@ -31,9 +31,12 @@ const AddChangeSetModal = (props: AddChangeSetModalProps) => {
     setName("");
   };
 
+  // FIXME: fix types.
   const [updateChangeSet, { loading, error }] = useUpdateChangeSetMutation(
     {
+      // @ts-ignore
       update(cache, { data: { updateChangeSet } }) {
+        // @ts-ignore
         const { changeSets } = cache.readQuery({ query: AllDataDocument });
         cache.writeQuery({
           query: AllDataDocument,

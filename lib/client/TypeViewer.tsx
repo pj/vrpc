@@ -1,27 +1,14 @@
 import React from 'react';
 import {useState} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { useQuery } from '@apollo/react-hooks';
-import { useMutation } from '@apollo/react-hooks';
-import gql from 'graphql-tag';
 import Paper from '@material-ui/core/Paper';
-
-import {ALL_DATA, ACTIONS_FRAGMENT, GET_LOG} from './Fragments';
-
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Container from '@material-ui/core/Container';
 
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
-import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-
-import Button from '@material-ui/core/Button';
-
-import TextField from '@material-ui/core/TextField';
-import Checkbox from '@material-ui/core/Checkbox';
-
+import { GQLType, GQLVersion, GQLServiceVersion } from './hooks';
+import { GQLService } from '~server/schema';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -59,7 +46,12 @@ type ${props.version._type} {
   return (<pre>{code}</pre>);
 };
 
-const RenderService = (props: any) => {
+type RenderServiceProps = {
+  version: GQLServiceVersion,
+  service: GQLService
+};
+
+const RenderService = (props: RenderServiceProps) => {
   console.log(props);
   const inputTypes = props.version.inputs.map(
     input => `${input._type}_V${input.version}`,
@@ -75,17 +67,22 @@ function ${props.service.name}(
   return (<pre>{code}</pre>);
 };
 
-const TypeViewer = (props: any) => {
+type TypeViewerProps = {
+  types: GQLType[],
+  services: GQLService[]
+};
+
+const TypeViewer = (props: TypeViewerProps) => {
   if (!props.types) {
     return null;
   }
 
-  const versionsByType = new Map();
+  const versionsByType = new Map<string, Map<number, GQLVersion>>();
   const servicesByName = new Map();
   const typesByName = new Map();
 
   for (let _type of props.types) {
-    const versions = new Map();
+    const versions = new Map<number, GQLVersion>();
 
     for (let version of _type.versions) {
       versions.set(version.version, version);
@@ -102,9 +99,9 @@ const TypeViewer = (props: any) => {
   const classes = useStyles();
   const [selectedType, setSelectedType] = useState("");
   const [selectedVersion, setSelectedVersion] = useState("");
-  const [validVersions, setValidVersions] = useState([]);
+  const [validVersions, setValidVersions] = useState<number[]>([]);
 
-  function handleTypeChange(event) {
+  function handleTypeChange(event: React.ChangeEvent<HTMLInputElement>) {
     setSelectedType(event.target.value);
     setSelectedVersion("");
     const versions = versionsByType.get(event.target.value);
@@ -116,7 +113,7 @@ const TypeViewer = (props: any) => {
     }
   }
 
-  function handleVersionChange(event) {
+  function handleVersionChange(event: React.ChangeEvent<HTMLInputElement>) {
     setSelectedVersion(event.target.value);
   }
 

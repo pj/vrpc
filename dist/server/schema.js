@@ -4,5 +4,6 @@ var GQLFieldTypes;
 (function (GQLFieldTypes) {
     GQLFieldTypes["StringType"] = "stringType";
     GQLFieldTypes["BooleanType"] = "booleanType";
-    GQLFieldTypes["NumberType"] = "numberType";
+    GQLFieldTypes["IntType"] = "intType";
+    GQLFieldTypes["FloatType"] = "floatType";
 })(GQLFieldTypes = exports.GQLFieldTypes || (exports.GQLFieldTypes = {}));

@@ -135,6 +135,8 @@ const ActionForm = (props: ActionFormProps) => {
         services={props.services}
       />
     );
+    default:
+      throw new Error('Unknown form type');
   }
 }
 
@@ -145,7 +147,7 @@ type ActionCreatorModalProps = {
 
 const ActionCreatorModal = (props: ActionCreatorModalProps) => {
   const classes = useStyles(props);
-  const [actionType, setActionType] = useState(null);
+  const [actionType, setActionType] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
 
   const handleOpen = () => {
@@ -168,14 +170,16 @@ const ActionCreatorModal = (props: ActionCreatorModalProps) => {
         onClose={handleClose}> 
         <div>
           <ActionTypeSelector 
-            onChange={setActionType}
+            onChange={(actionType: string) => setActionType(actionType)}
             logType={actionType}
           />
-          <ActionForm 
-            logType={actionType} 
-            types={props.types} 
-            services={props.services} 
-          />
+          {
+            actionType && (<ActionForm 
+              logType={actionType} 
+              types={props.types} 
+              services={props.services} 
+            />
+          )}
         </div>
       </Modal>
     </div> 

@@ -15,14 +15,14 @@ const useStyles = makeStyles(theme => ({
 }));
 
 type ChangeSetViewerProps = {
-  currentBaseHash: string | null,
+  currentBaseHash: string,
   changeSets: GQLChangeSet[]
   types: GQLType[],
   services: GQLService[]
 }
 
 const ChangeSetViewer = (props: ChangeSetViewerProps) => {
-  const [changeSetId, setChangeSetId] = useState(null);
+  const [changeSetId, setChangeSetId] = useState<string | null>(null);
   const [commitChangeSetMutation, {loading, error}] = useCommitChangeSetMutation();
 
   if (loading) {
@@ -44,29 +44,40 @@ const ChangeSetViewer = (props: ChangeSetViewerProps) => {
   }
 
   function commitChangeSet() {
+    if (!changeSetId) {
+      throw new Error('Change set id is null, should never happen.');
+    }
     commitChangeSetMutation(
       {variables: {changeSetId}}
+    );
+  }
+
+  const changeSetSelectorItems = [];
+  for (let id of idToChangeSet.keys()) {
+    changeSetSelectorItems.push(
+      <MenuItem key={id} value={id} >
+        {id}
+      </MenuItem>
     );
   }
 
   return (
     <Paper>
       <FormControl>
-        <AddChangeSetModal currentBaseHash={props.currentBaseHash} changeSets={props.changeSets}/>
+        <AddChangeSetModal 
+          currentBaseHash={props.currentBaseHash} 
+          changeSets={props.changeSets}
+        />
         <InputLabel htmlFor="select-change-set">Select ChangeSet</InputLabel>
         <Select
           value={changeSetId}
-          onChange={event => setChangeSetId(event.target.value)}
+          onChange={
+            (event: React.ChangeEvent<HTMLInputElement>) => 
+              setChangeSetId(event.target.value)
+          }
           inputProps={{id: 'select-change-set'}}
         >
-        {
-          idToChangeSet.keys().map(
-            id =>
-              <MenuItem key={id} value={id} >
-                {id}
-              </MenuItem>
-          )
-        }
+        {changeSetSelectorItems}
         </Select>
       </FormControl>
       {selectedChangeSet && <ActionList log={selectedChangeSet.log} />}
