@@ -164,44 +164,18 @@ export class Version {
   }
 }
 
-export class LatestVersion {
-  _type: string;
-  fields: FieldObject;
-
-  constructor(
-    _type: string,
-    fields: FieldObject,
-  ) {
-    this._type = _type;
-    this.fields = fields;
-  }
-
-  toString(): string {
-    return `${this._type}_Latest`;
-  }
-
-  formatVersion(): string {
-    return this.toString();
-  }
-}
-
 export class Type {
   name: string;
   versions: Version[];
-  latest: LatestVersion | null;
   changeSetName: string | null;
   changeLog: string[];
-  latestChangeLog: string[];
   description: string;
-  latestDescripton: string;
 
   constructor(name: string, description: string) {
     this.name = name;
     this.description = description;
     this.versions = [];
-    this.latest = null;
     this.changeLog = [];
-    this.latestChangeLog = [];
   }
 }
 
@@ -229,30 +203,12 @@ export class VersionType {
   }
 }
 
-export class LatestVersionType {
-  _type: string;
-
-  constructor(_type: string) {
-    this._type = _type;
-  }
-
-  toString(): string {
-    return `${this._type}_Latest`; 
-  }
-}
-
 export class Service {
   name: string;
   changeLog: string[];
-  latestChangeLog: string[];
   description: string;
-  latestDescription: string;
   versions: Map<string, [VersionType, VersionType[]]>;
   seenInputVersions: Set<string>;
-  latest: Map<
-    string, 
-    [VersionType | LatestVersionType, Array<VersionType | LatestVersionType>]
-  >;
 
   constructor(
     name: string,
@@ -261,7 +217,6 @@ export class Service {
     this.name = name;
     this.description = description;
     this.changeLog = [];
-    this.latestChangeLog = [];
     this.versions = new Map();
     this.seenInputVersions = new Set();
   }
@@ -298,7 +253,7 @@ function updateServiceVersion(
   }
 }
 
-function updateVersion(newVersion: Version | LatestVersion, logAction: Action | ChangeAction) {
+function updateVersion(newVersion: Version, logAction: Action | ChangeAction) {
   if (logAction.actionType === 'RenameFieldTypeAction') {
     const currentField = newVersion.fields[logAction._from];
     const newField = currentField.copy();
@@ -485,7 +440,12 @@ export function generateDefinitions(
   log: GroupAction[],
   changeSet: ChangeSet | null
 ): [Type[], Service[]] {
-  typeidea.validate(log);
+  if (changeSet) {
+    log = typeidea.commitChangeSet(log, changeSet);
+  } else {
+    typeidea.validate(log);
+  }
+
 
   // const [logTypes, logServices] = groupByTypeAndService(log);
   // const types = [];
@@ -536,50 +496,48 @@ export function generateDefinitions(
     }
   }
 
-  if (changeSet) {
-    // const latestServices = new Map<string, LatestServiceVersion>();
-    const latestTypes = new Map<string, LatestVersion>();
-    for (const action of changeSet.log) {
-       if (action.actionType === 'NewTypeAction') {
-        const _type = new Type(action.typeName, action.description);
-        _type.latestDescripton = action.description;
-        _type.latestChangeLog.push(action.changeLog);
-        types.set(action.typeName, _type);
-      } else if (action.actionType === 'NewServiceAction') {
-        const service = new Service(action.serviceName, action.description);
-        service.latestDescription = action.description;
-        service.latestChangeLog.push(action.changeLog);
-        services.set(action.serviceName, service);
-      } else {
-        const [typeName, serviceName] = typeOrServiceName(action);
-        if (typeName) {
-          const _type = types.get(typeName);
-          if (!_type) {
-            throw new Error('Should not happen');
-          }
-          _type.latestChangeLog.push(action.changeLog);
-          let latestVersion = latestTypes.get(typeName);
-          if (!latestVersion) {
-            latestVersion = new LatestVersion(typeName, {});
-            latestTypes.set(typeName, latestVersion);
-          }
-          updateVersion(latestVersion, action);
-        } else if (serviceName) {
-          const service = services.get(serviceName);
-          if (!service) {
-            throw new Error('Should not happen');
-          }
-          service.latestChangeLog.push(action.changeLog);
-          if (action.actionType === 'UpdateDescriptionServiceAction') {
-            service.latestDescription = action.description;
-          }
-          updateServiceVersion(service, action);
-        } else {
-          throw new Error('Should not happen');
-        }
-      }
-    }
-  }
+  // if (changeSet) {
+  //   // const latestServices = new Map<string, LatestServiceVersion>();
+  //   const latestTypes = new Map<string, LatestVersion>();
+  //   for (const action of changeSet.log) {
+  //      if (action.actionType === 'NewTypeAction') {
+  //       const _type = new Type(action.typeName, action.description);
+  //       _type.changeLog.push(action.changeLog);
+  //       types.set(action.typeName, _type);
+  //     } else if (action.actionType === 'NewServiceAction') {
+  //       const service = new Service(action.serviceName, action.description);
+  //       service.changeLog.push(action.changeLog);
+  //       services.set(action.serviceName, service);
+  //     } else {
+  //       const [typeName, serviceName] = typeOrServiceName(action);
+  //       if (typeName) {
+  //         const _type = types.get(typeName);
+  //         if (!_type) {
+  //           throw new Error('Should not happen');
+  //         }
+  //         _type.changeLog.push(action.changeLog);
+  //         let latestVersion = latestTypes.get(typeName);
+  //         if (!latestVersion) {
+  //           latestVersion = new LatestVersion(typeName, {});
+  //           latestTypes.set(typeName, latestVersion);
+  //         }
+  //         updateVersion(latestVersion, action);
+  //       } else if (serviceName) {
+  //         const service = services.get(serviceName);
+  //         if (!service) {
+  //           throw new Error('Should not happen');
+  //         }
+  //         service.latestChangeLog.push(action.changeLog);
+  //         if (action.actionType === 'UpdateDescriptionServiceAction') {
+  //           service.latestDescription = action.description;
+  //         }
+  //         updateServiceVersion(service, action);
+  //       } else {
+  //         throw new Error('Should not happen');
+  //       }
+  //     }
+  //   }
+  // }
 
   // for (let [typeName, typeActions] of logTypes.entries()) {
   //   const _type = new Type(typeName, '');

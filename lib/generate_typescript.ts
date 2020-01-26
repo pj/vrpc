@@ -206,7 +206,7 @@ function generateFieldDeserialize(fields: FieldObject): string {
   );
 }
 
-function generateVersion(version: Version | LatestVersion, _type: Type): string {
+function generateVersion(version: Version, _type: Type): string {
   const className = version.formatVersion();
 
   let hashAlias = `, ${className} as ${version.formatHash()}`;
@@ -260,13 +260,54 @@ export {
 `;
 }
 
+function generateLatestVersion(version: LatestVersion, _type: Type): string {
+  const className = version.formatVersion();
+
+  return `/**
+${generateFieldDescription(version.fields)}
+*
+* @sealed
+*/
+class ${className} {
+  readonly _type: string;
+  ${generateFieldTypes(version.fields)}
+
+  constructor(
+    ${generateFieldArgs(version.fields)}
+  ){
+    this._type = "${version._type}";
+    ${generateFieldSetters(version.fields)}
+  }
+
+  static deserialize(message: any): ${className} {
+    if (message.version === null || message.version === undefined) {
+      throw new Error("version not present: " + message);
+    }
+    return (
+      new ${className}(
+        ${generateFieldDeserialize(version.fields)}
+      )
+    );
+  }
+
+  static serialize(message: ${className}): string {
+    if (message.version === null || message.version === undefined) {
+      throw new Error("version not present: " + message);
+    }
+    return JSON.stringify(message);
+  }
+}
+
+export {
+  ${className}
+}
+`;
+}
+
 function generateDeserializeVersion(
   _type: Type, version: Version | LatestVersion
 ) {
   let hashCase = `case "${version.formatHash()}":`;
-  if (_type.latest !== null && _type.latest !== undefined) {
-    hashCase = "";
-  }
 
   return `
     case "${version.formatVersion()}":
@@ -281,19 +322,11 @@ function generateDeserializeVersion(
 
 function generateSerialization(_type: Type) {
   const allVersions = [];
+  const allTypes = [];
 
   for (let version of _type.versions) {
     allVersions.push(generateDeserializeVersion(_type, version));
-  }
-
-  const allTypes = [];
-  for (let version of _type.versions) {
     allTypes.push(version.formatVersion());
-  }
-
-  if (_type.latest !== null && _type.latest !== undefined) {
-    allVersions.push(generateDeserializeVersion(_type, _type.latest));
-    allTypes.push(_type.latest.formatVersion());
   }
 
   return `
@@ -325,10 +358,6 @@ function generateType(_type: Type): string {
 
   for (let version of _type.versions) {
     allVersions.push(generateVersion(version, _type));
-  }
-
-  if (_type.latest !== null && _type.latest !== undefined) {
-    allVersions.push(generateVersion(_type.latest, _type));
   }
 
   return `${typeHeader(_type)}
@@ -393,10 +422,6 @@ function generateClientImports(types: Type[]): string {
     allTypes.push(_type.name);
     for (let version of _type.versions) {
       allTypes.push(version.formatVersion());
-    }
-
-    if (_type.latest !== null && _type.latest !== undefined) {
-      allTypes.push(_type.latest.formatVersion());
     }
   }
 
