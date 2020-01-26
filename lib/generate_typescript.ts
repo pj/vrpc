@@ -6,6 +6,7 @@ import {
   VersionType,
   Type,
   Version,
+  LatestVersion,
   BaseField,
   Field,
   ReferenceField,
@@ -205,7 +206,7 @@ function generateFieldDeserialize(fields: FieldObject): string {
   );
 }
 
-function generateVersion(version: Version, _type: Type): string {
+function generateVersion(version: Version | LatestVersion, _type: Type): string {
   const className = version.formatVersion();
 
   let hashAlias = `, ${className} as ${version.formatHash()}`;
@@ -259,7 +260,9 @@ export {
 `;
 }
 
-function generateDeserializeVersion(_type: Type, version: Version) {
+function generateDeserializeVersion(
+  _type: Type, version: Version | LatestVersion
+) {
   let hashCase = `case "${version.formatHash()}":`;
   if (_type.latest !== null && _type.latest !== undefined) {
     hashCase = "";

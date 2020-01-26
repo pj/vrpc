@@ -191,7 +191,9 @@ export class Type {
   latest: LatestVersion | null;
   changeSetName: string | null;
   changeLog: string[];
+  latestChangeLog: string[];
   description: string;
+  latestDescripton: string;
 
   constructor(name: string, description: string) {
     this.name = name;
@@ -199,6 +201,7 @@ export class Type {
     this.versions = [];
     this.latest = null;
     this.changeLog = [];
+    this.latestChangeLog = [];
   }
 }
 
@@ -226,13 +229,30 @@ export class VersionType {
   }
 }
 
+export class LatestVersionType {
+  _type: string;
+
+  constructor(_type: string) {
+    this._type = _type;
+  }
+
+  toString(): string {
+    return `${this._type}_Latest`; 
+  }
+}
+
 export class Service {
   name: string;
   changeLog: string[];
+  latestChangeLog: string[];
   description: string;
+  latestDescription: string;
   versions: Map<string, [VersionType, VersionType[]]>;
   seenInputVersions: Set<string>;
-  latest: Map<string, [VersionType, VersionType[]]>;
+  latest: Map<
+    string, 
+    [VersionType | LatestVersionType, Array<VersionType | LatestVersionType>]
+  >;
 
   constructor(
     name: string,
@@ -241,6 +261,7 @@ export class Service {
     this.name = name;
     this.description = description;
     this.changeLog = [];
+    this.latestChangeLog = [];
     this.versions = new Map();
     this.seenInputVersions = new Set();
   }
@@ -248,7 +269,7 @@ export class Service {
 
 function updateServiceVersion(
   service: Service,
-  logAction: Action,
+  logAction: Action | ChangeAction
 ): void {
   if (logAction.actionType === 'AddVersionServiceAction') {
     const inputVersion = `${logAction.inputType}_${logAction.inputVersion}`;
@@ -272,8 +293,6 @@ function updateServiceVersion(
         ],
       );
     }
-  } else if (logAction.actionType === 'UpdateDescriptionServiceAction') {
-    service.description = logAction.description;
   } else {
     throw new Error('Should not happen');
   }
@@ -354,7 +373,7 @@ function updateVersion(newVersion: Version | LatestVersion, logAction: Action | 
 }
 
 export function typeOrServiceName(
-  logAction: Action
+  logAction: Action | ChangeAction
 ): [string | null, string | null] {
   if (
     logAction.actionType === 'RenameFieldTypeAction'
@@ -479,9 +498,11 @@ export function generateDefinitions(
     for (const action of groupAction.actions) {
       if (action.actionType === 'NewTypeAction') {
         const _type = new Type(action.typeName, action.description);
+        _type.changeLog.push(action.changeLog);
         types.set(action.typeName, _type);
       } else if (action.actionType === 'NewServiceAction') {
         const service = new Service(action.serviceName, action.description);
+        service.changeLog.push(action.changeLog);
         services.set(action.serviceName, service);
       } else {
         const [typeName, serviceName] = typeOrServiceName(action);
@@ -504,6 +525,9 @@ export function generateDefinitions(
             throw new Error('Should not happen');
           }
           service.changeLog.push(action.changeLog);
+          if (action.actionType === 'UpdateDescriptionServiceAction') {
+            service.description = action.description;
+          }
           updateServiceVersion(service, action);
         } else {
           throw new Error('Should not happen');
@@ -516,7 +540,44 @@ export function generateDefinitions(
     // const latestServices = new Map<string, LatestServiceVersion>();
     const latestTypes = new Map<string, LatestVersion>();
     for (const action of changeSet.log) {
-       
+       if (action.actionType === 'NewTypeAction') {
+        const _type = new Type(action.typeName, action.description);
+        _type.latestDescripton = action.description;
+        _type.latestChangeLog.push(action.changeLog);
+        types.set(action.typeName, _type);
+      } else if (action.actionType === 'NewServiceAction') {
+        const service = new Service(action.serviceName, action.description);
+        service.latestDescription = action.description;
+        service.latestChangeLog.push(action.changeLog);
+        services.set(action.serviceName, service);
+      } else {
+        const [typeName, serviceName] = typeOrServiceName(action);
+        if (typeName) {
+          const _type = types.get(typeName);
+          if (!_type) {
+            throw new Error('Should not happen');
+          }
+          _type.latestChangeLog.push(action.changeLog);
+          let latestVersion = latestTypes.get(typeName);
+          if (!latestVersion) {
+            latestVersion = new LatestVersion(typeName, {});
+            latestTypes.set(typeName, latestVersion);
+          }
+          updateVersion(latestVersion, action);
+        } else if (serviceName) {
+          const service = services.get(serviceName);
+          if (!service) {
+            throw new Error('Should not happen');
+          }
+          service.latestChangeLog.push(action.changeLog);
+          if (action.actionType === 'UpdateDescriptionServiceAction') {
+            service.latestDescription = action.description;
+          }
+          updateServiceVersion(service, action);
+        } else {
+          throw new Error('Should not happen');
+        }
+      }
     }
   }
 

@@ -25,7 +25,7 @@ const args = yargs
     async (argv: any) => {
       const backend = new FileBackend(argv.source);
       const log = await backend.getLog();
-      const [types, services] = generate.generateDefinitions(log, null, null);
+      const [types, services] = generate.generateDefinitions(log, null);
       const [
         generatedTypes,
         generatedServices,

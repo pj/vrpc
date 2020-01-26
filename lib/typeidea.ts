@@ -308,6 +308,7 @@ function loadAction(rawAction: any): Action {
     return ({
       actionType: 'UpdateDescriptionTypeAction',
       typeName: stringNotNull(rawAction, 'typeName'),
+      name: stringNotNull(rawAction, 'name'),
       description: stringNotNull(rawAction, 'description'),
       ...commonFields
     });
@@ -421,7 +422,7 @@ export function validate(
   }
 }
 
-export function validateChangeSet(
+export function validateWithChangeSet(
   log: GroupAction[], 
   changeSet: ChangeSet,
 ): string | null {

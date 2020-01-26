@@ -1,7 +1,7 @@
 import { Backend } from './backend';
 import {Action, ChangeSet, GroupAction} from './action';
 import {generateDefinitions, Type, Service} from './generate';
-import {validate, commitChangeSet} from './typeidea';
+import {validate, commitChangeSet, validateWithChangeSet} from './typeidea';
 
 export class MemoryBackend implements Backend {
   log: GroupAction[];
@@ -24,7 +24,7 @@ export class MemoryBackend implements Backend {
   }
 
   async getCurrentServices(): Promise<Service[]> {
-    const [_, services] = generateDefinitions(this.log, null, null);
+    const [_, services] = generateDefinitions(this.log, null);
     return services;
   }
 
@@ -45,16 +45,12 @@ export class MemoryBackend implements Backend {
     
     const newLog = commitChangeSet(this.log, changeSet);
     
-    const [_, services] = generateDefinitions(
-      newLog,
-      changeSet.log, 
-      changeSetId
-    );
+    const [_, services] = generateDefinitions(newLog, changeSet);
     return services;
   }
 
   async getCurrentTypes(): Promise<Type[]> {
-    const [types, _] = generateDefinitions(this.log, null, null);
+    const [types, _] = generateDefinitions(this.log, null);
     return types;
   }
 
@@ -75,7 +71,7 @@ export class MemoryBackend implements Backend {
     
     const newLog = commitChangeSet(this.log, changeSet);
     
-    const [types, _] = generateDefinitions(newLog, changeSet.log, changeSetId);
+    const [types, _] = generateDefinitions(newLog, changeSet);
     return types;
   }
 

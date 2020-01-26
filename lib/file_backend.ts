@@ -1,17 +1,15 @@
 import {promises as fs} from 'fs';
 import { Backend } from './backend';
-import {Action, ChangeSet} from './action';
+import {Action, ChangeSet, GroupAction} from './action';
 import {generateDefinitions, Type, Service} from './generate';
-import {commitChangeSet, validate} from './typeidea';
+import {commitChangeSet, validate, validateWithChangeSet} from './typeidea';
 import * as lockfile from 'proper-lockfile';
 import {JsonProperty, ObjectMapper} from 'json-object-mapper';
 import {MapDeserializer} from './utils';
 
 class StoredData {
-  @JsonProperty({type: Map})
   changeSets: Map<string, Map<string, ChangeSet>>;
-  @JsonProperty({type: Action})
-  log: Action[];
+  log: GroupAction[];
 }
 
 export class FileBackend implements Backend {
@@ -23,13 +21,13 @@ export class FileBackend implements Backend {
   private async doWithLock<A>(func: (data: StoredData) => Promise<A>): Promise<A> {
     const release = await lockfile.lock(this.fileName);
     const rawData = await fs.readFile(this.fileName, {encoding: 'utf8'});
-    const storedData = ObjectMapper.deserialize(StoredData, JSON.parse(rawData));
+    const storedData = JSON.parse(rawData) as StoredData;
     const result = await func(storedData);
     await release();
     return result;
   }
 
-  async getLog(): Promise<Action[]> {
+  async getLog(): Promise<GroupAction[]> {
     return this.doWithLock(
       async (data: StoredData) => {
         return data.log;
@@ -48,7 +46,7 @@ export class FileBackend implements Backend {
   async getCurrentServices(): Promise<Service[]> {
     return this.doWithLock(
       async (data: StoredData) => {
-        const [_, services] = generateDefinitions(data.log, null, null);
+        const [_, services] = generateDefinitions(data.log, null);
         return services;
       }
     );
@@ -70,7 +68,7 @@ export class FileBackend implements Backend {
         
         const newLog = commitChangeSet(data.log, changeSet);
         
-        const [_, services] = generateDefinitions(newLog, changeSet.log, changeSetId);
+        const [_, services] = generateDefinitions(newLog, changeSet);
         return services;
       }
     );
@@ -79,7 +77,7 @@ export class FileBackend implements Backend {
   async getCurrentTypes(): Promise<Type[]> {
     return this.doWithLock(
       async (data: StoredData) => {
-        const [types, _] = generateDefinitions(data.log, null, null);
+        const [types, _] = generateDefinitions(data.log, null);
         return types;
       }
     );
@@ -101,7 +99,7 @@ export class FileBackend implements Backend {
         
         const newLog = commitChangeSet(data.log, changeSet);
         
-        const [types, _] = generateDefinitions(newLog, changeSet.log, changeSetId);
+        const [types, _] = generateDefinitions(newLog, changeSet);
         return types;
       }
     );
