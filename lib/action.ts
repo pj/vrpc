@@ -2,6 +2,8 @@ import {promises as fs} from 'fs';
 
 export type FieldTypes = 'string' | 'boolean' | 'integer' | 'float';
 
+export const FieldTypeValues = ['string', 'boolean', 'integer', 'float'];
+
 export type FieldDefaults = string | boolean | number;
 
 export type HashedAction = {
@@ -89,10 +91,7 @@ export type UpdateDescriptionTypeActionCommon = {
   actionType: 'UpdateDescriptionTypeAction',
   typeName: string;
   name: string;
-  type: FieldTypes;
   description: string;
-  optional: boolean;
-  _default: FieldDefaults | null;
 }
 export type UpdateDescriptionTypeAction = HashedAction & ActionDefaults & UpdateDescriptionTypeActionCommon;
 export type UpdateDescriptionTypeChangeAction = ActionDefaults & UpdateDescriptionTypeActionCommon;
@@ -160,12 +159,11 @@ export type GroupVersions = {
 
 export type GroupActionCommon = {
   actionType: 'GroupAction';
-  typeOrServiceName: string;
   actions: Action[];
   versions: GroupVersions;
 };
-export type GroupAction = HashedAction & ActionDefaults & GroupActionCommon;
-export type GroupChangeAction = ActionDefaults & GroupActionCommon;
+export type GroupAction = HashedAction & GroupActionCommon;
+export type GroupChangeAction = GroupActionCommon;
 
 export function fieldsToHash(action: ChangeAction | GroupChangeAction) {
   switch (action.actionType) {
@@ -178,7 +176,7 @@ export function fieldsToHash(action: ChangeAction | GroupChangeAction) {
   case 'ReferenceFieldTypeAction':
     return `${action.changeLog}_${action.typeName}_${action.name}_${action.description}_${action.optional}_${action.referenceType}_${action.referenceHash}_${action.referenceVersion}`;
   case 'UpdateDescriptionTypeAction':
-    return `${action.changeLog}_${action.typeName}_${action.name}_${action.description}`;
+    return `${action.changeLog}_${action.typeName}_${action.description}`;
   case 'AddFieldTypeAction':
     return `${action.changeLog}_${action.typeName}_${action.name}_${action.type}_${action.description}_${action.optional}_${action._default}`;
   case 'RemoveDefaultFieldTypeAction':
@@ -196,16 +194,16 @@ export function fieldsToHash(action: ChangeAction | GroupChangeAction) {
   case 'NewTypeAction':
     return `${action.changeLog}_${action.typeName}_${action.description}`;
   case 'GroupAction':
-    const subHashes: string[] = [action.typeOrServiceName];
+    const subHashes: string[] = [];
     for (const subAction of action.actions) {
       subHashes.push(fieldsToHash(subAction));
     }
     return subHashes.join('_');
   default:
     throw new Error(`Can't hash ${action}`)
+  }
 };
 
-// Latest/Changesets
 export type ChangeSet = {
   id: string;
   log: ChangeAction[];
@@ -355,39 +353,39 @@ export type ChangeSet = {
 //   }
 // }
 
-export function loadActionLog(path: string): Array<Action | GroupAction> {
-  const actions = require(path);
-  // const outputActions = [];
+// export function loadActionLog(path: string): Array<Action | GroupAction> {
+//   const actions = require(path);
+//   // const outputActions = [];
 
-  // for (const action of actions) {
-  //   const log = loadAction(action);
-  //   outputActions.push(log);
-  // }
+//   // for (const action of actions) {
+//   //   const log = loadAction(action);
+//   //   outputActions.push(log);
+//   // }
 
-  return actions as Array<Action | GroupAction>;
-}
+//   return actions as Array<Action | GroupAction>;
+// }
 
-export async function loadActionAsync(path: string): Promise<Array<Action | GroupAction>> {
-  const data = await fs.readFile(path, 'utf-8');
-  const actions = JSON.parse(data.toString());
-  // const outputActions = [];
+// export async function loadActionAsync(path: string): Promise<Array<Action | GroupAction>> {
+//   const data = await fs.readFile(path, 'utf-8');
+//   const actions = JSON.parse(data.toString());
+//   // const outputActions = [];
 
-  // for (const action of actions) {
-  //   const log = loadAction(action);
-  //   outputActions.push(log);
-  // }
+//   // for (const action of actions) {
+//   //   const log = loadAction(action);
+//   //   outputActions.push(log);
+//   // }
 
-  return actions as Array<Action | GroupAction>;
-}
+//   return actions as Array<Action | GroupAction>;
+// }
 
-export function loadActionLogFromList(actions: any[]): Array<Action | GroupAction> {
-  // const outputActions = [];
+// export function loadActionLogFromList(actions: any[]): Array<Action | GroupAction> {
+//   // const outputActions = [];
 
-  // for (const action of actions) {
-  //   const log = loadAction(action);
-  //   outputActions.push(log);
-  // }
+//   // for (const action of actions) {
+//   //   const log = loadAction(action);
+//   //   outputActions.push(log);
+//   // }
 
-  // return outputActions;
-  return (actions as Array<Action | GroupAction>);
-}
+//   // return outputActions;
+//   return (actions as Array<Action | GroupAction>);
+// }

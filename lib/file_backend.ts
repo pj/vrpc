@@ -1,8 +1,8 @@
 import {promises as fs} from 'fs';
 import { Backend } from './backend';
-import {Action} from './action';
+import {Action, ChangeSet} from './action';
 import {generateDefinitions, Type, Service} from './generate';
-import {validateWithChangeSet, commitChangeSet, validate} from './typeidea';
+import {commitChangeSet, validate} from './typeidea';
 import * as lockfile from 'proper-lockfile';
 import {JsonProperty, ObjectMapper} from 'json-object-mapper';
 import {MapDeserializer} from './utils';

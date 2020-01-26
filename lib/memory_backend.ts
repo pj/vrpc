@@ -1,21 +1,21 @@
 import { Backend } from './backend';
-import {Action, ChangeSet} from './action';
+import {Action, ChangeSet, GroupAction} from './action';
 import {generateDefinitions, Type, Service} from './generate';
-import {validate, validateWithChangeSet, commitChangeSet} from './typeidea';
+import {validate, commitChangeSet} from './typeidea';
 
 export class MemoryBackend implements Backend {
-  log: Action[];
+  log: GroupAction[];
   changeSets: Map<string, Map<string, ChangeSet>>;
 
   constructor(
-      log: Action[] | null, 
+      log: GroupAction[] | null, 
       changeSets: Map<string, Map<string, ChangeSet>> | null
     ) {
       this.log = log || [];
       this.changeSets = changeSets || new Map();
   }
 
-  async getLog(): Promise<Action[]> {
+  async getLog(): Promise<GroupAction[]> {
     return this.log;
   }
 

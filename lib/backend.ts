@@ -1,8 +1,8 @@
-import {Action} from './action';
+import {Action, ChangeSet, GroupAction} from './action';
 import {Type, Service} from './generate';
 
 export interface Backend {
-  getLog(): Promise<Action[]>;
+  getLog(): Promise<GroupAction[]>;
   // mostly for testing I guess?
   validateLog(): Promise<string | null>;
   getCurrentServices(): Promise<Service[]>;

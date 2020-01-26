@@ -2,7 +2,16 @@ import * as crypto from 'crypto';
 import {compile} from 'ejs';
 import * as fs from 'fs';
 import * as prettier from 'prettier';
-import {fieldsToHash, ChangeAction, GroupChangeAction, Action, ChangeSet} from './action';
+import {
+  fieldsToHash, 
+  ChangeAction, 
+  GroupChangeAction, 
+  Action, 
+  ChangeSet, 
+  GroupAction,
+  FieldTypeValues,
+  GroupVersions
+} from './action';
 
 type Hash = string | null;
 
@@ -11,13 +20,17 @@ class ValidationError extends Error {
 }
 
 export function hashAction(
-  logAction: ChangeAction | GroupChangeAction,
+  logAction: ChangeAction | GroupChangeAction | Action | GroupAction,
   previous: string | null
-) {
+): string {
   if (logAction.actionType === 'GroupAction') {
+    if (logAction.actions.length === 0) {
+      throw new Error(`Can't hash group action because it has no sub actions`);
+    }
     for (let subHashable of logAction.actions) {
       previous = hashAction(subHashable, previous);
     }
+    // @ts-ignore
     return previous;
   }
 
@@ -64,103 +77,340 @@ function isNewAction(hashable: ChangeAction) {
   );
 }
 
-function validateAndHash(
-  log: Array<Action>,
-  changeSet: ChangeSet,
-  hash: boolean
-): Action[] {
+// function validateAndHash(
+//   log: Array<Action>,
+//   changeSet: ChangeSet,
+//   hash: boolean
+// ): Action[] {
+//   const versionNumbers = new Map<string, number>();
+//   const newLog = [];
+//   let previousHash = null;
+//   for (let n = 0; n < log.length; n++) {
+//     let hashable = log[n];
+//     if (!hashable.hasHashAndVersion()) {
+//       if (hashable.hasVersion()) {
+//         throw new ValidationError(
+//           `Hash not present but version is: ${n} action: ${hashable}`
+//         );
+//       }
+
+//       if (hashable.hasHash()) {
+//         throw new ValidationError(
+//           `Version not present but hash is: ${n} action: ${hashable}`
+//         );
+//       }
+
+//       if (!hash) {
+//         throw new ValidationError(
+//           `Hash and Version required: ${n} action: ${hashable}`
+//         );
+//       }
+
+//       const newHash = hashAction(hashable, previousHash);
+//       hashable.hash = newHash;
+//       const actionName = getActionType(hashable);
+//       const currentVersion = versionNumbers.get(actionName);
+//       if (!currentVersion && !isNewAction(hashable)) {
+//         throw new ValidationError(
+//           `No current version for type ${actionName} and action is not 
+//           NewTypeAction or NewServiceAction: ${hashable}`
+//         );
+//       }
+//       hashable.version = currentVersion ? currentVersion + 1 : 0;
+//       versionNumbers.set(actionName, hashable.version);
+//       newLog.push(hashable);
+//     } else {
+//       const expectedHash = hashAction(hashable, previousHash);
+//       if (expectedHash !== hashable.hash) {
+//         throw new ValidationError(
+//           `Invalid hash at item ${n} expected ${expectedHash} 
+//           got ${hashable.hash} object: ${hashable}`
+//         );
+//       }
+//       previousHash = hashable.hash;
+
+//       if (hashable instanceof action.GroupAction) {
+//         const foundTypes = new Set<string>();
+//         for (let subHashable of hashable.actions) {
+//           const actionName = getActionType(subHashable);
+//           foundTypes.add(actionName);
+//         }
+
+//         for (let foundType of foundTypes) {
+//           const currentVersion = versionNumbers.get(foundType) || 0;
+//           const hashableVersion = hashable.versions[foundType];
+//           if (hashableVersion !== currentVersion) {
+//             throw new ValidationError(
+//               `Group Version doesn't match at item ${n} expected 
+//               ${currentVersion} got ${hashableVersion} for type ${foundType} 
+//               object: ${hashable}`
+//             );
+//           }
+//           versionNumbers.set(foundType, currentVersion + 1);
+//         }
+//       } else {
+//         const actionName = getActionType(hashable);
+//         const currentVersion = versionNumbers.get(actionName) || 0;
+//         if (hashable.version !== currentVersion) {
+//           throw new ValidationError(
+//             `Versions don't match at item ${n} 
+//              expected ${currentVersion} got ${hashable.version} 
+//              object: ${hashable}`
+//           );
+//         }
+
+//         versionNumbers.set(actionName, currentVersion + 1);
+//       }
+
+//       newLog.push(hashable);
+//     }
+//   }
+// }
+
+function stringNotNull(action: any, name: string): string {
+  const field = action[name];
+
+  if (field === null || field === undefined) {
+    throw new ValidationError(`Field ${name} must not be null or undefined. ${action}`);
+  }
+
+  if (typeof field === 'string') {
+    return field;
+  }
+
+  throw new ValidationError(`Field ${name} must be a string. ${action}`);
+}
+
+function integerNotNull(action: any, name: string): number {
+  const field = action[name];
+
+  if (field === null || field === undefined) {
+    throw new ValidationError(`Field ${name} must not be null or undefined. ${action}`);
+  }
+
+  if (typeof field === 'number' && parseInt(field.toString())) {
+    return field;
+  }
+
+  throw new ValidationError(`Field ${name} must be an integer. ${action}`);
+}
+
+function booleanNotNull(action: any, name: string): boolean {
+  const field = action[name];
+
+  if (field === null || field === undefined) {
+    throw new ValidationError(`Field ${name} must not be null or undefined. ${action}`);
+  }
+
+  if (typeof field === 'boolean') {
+    return field;
+  }
+
+  throw new ValidationError(`Field ${name} must be a boolean. ${action}`);
+}
+
+function loadAction(rawAction: any): Action {
+  const commonFields = {
+    changeLog: stringNotNull(rawAction, 'changeLog'),
+    hash: stringNotNull(rawAction, 'hash'),
+    version: integerNotNull(rawAction, 'version'),
+  };
+  switch(rawAction.actionType) {
+  // Services
+  case 'NewServiceAction':
+    return ({
+      actionType: 'NewServiceAction',
+      serviceName: stringNotNull(rawAction, 'serviceName'),
+      description: stringNotNull(rawAction, 'description'),
+      ...commonFields
+    });
+  case 'UpdateDescriptionServiceAction':
+    return ({
+      actionType: 'UpdateDescriptionServiceAction',
+      serviceName: stringNotNull(rawAction, 'serviceName'),
+      description: stringNotNull(rawAction, 'description'),
+      ...commonFields
+    });
+  case 'AddVersionServiceAction':
+    return ({
+      actionType: 'AddVersionServiceAction',
+      serviceName: stringNotNull(rawAction, 'serviceName'),
+      inputType: stringNotNull(rawAction, 'inputType'),
+      outputType: stringNotNull(rawAction, 'outputType'),
+      inputVersion: integerNotNull(rawAction, 'inputVersion'),
+      inputHash: stringNotNull(rawAction, 'inputHash'),
+      outputVersion: integerNotNull(rawAction, 'outputVersion'),
+      outputHash: stringNotNull(rawAction, 'outputHash'),
+      ...commonFields
+    });
+  // Types
+  case 'RenameFieldTypeAction':
+    return ({
+      actionType: 'RenameFieldTypeAction',
+      typeName: stringNotNull(rawAction, 'typeName'),
+      _from: stringNotNull(rawAction, '_from'),
+      to: stringNotNull(rawAction, 'to'),
+      ...commonFields
+    });
+  case 'RequiredFieldTypeAction':
+    return ({
+      actionType: 'RequiredFieldTypeAction',
+      typeName: stringNotNull(rawAction, 'typeName'),
+      name: stringNotNull(rawAction, 'name'),
+      ...commonFields
+    });
+  case 'OptionalFieldTypeAction':
+    return ({
+      actionType: 'OptionalFieldTypeAction',
+      typeName: stringNotNull(rawAction, 'typeName'),
+      name: stringNotNull(rawAction, 'name'),
+      ...commonFields
+    });
+  case 'DeleteFieldTypeAction':
+    return ({
+      actionType: 'DeleteFieldTypeAction',
+      typeName: stringNotNull(rawAction, 'typeName'),
+      name: stringNotNull(rawAction, 'name'),
+      ...commonFields
+    });
+  case 'SetDefaultFieldTypeAction':
+    return ({
+      actionType: 'SetDefaultFieldTypeAction',
+      typeName: stringNotNull(rawAction, 'typeName'),
+      name: stringNotNull(rawAction, 'name'),
+      _default: stringNotNull(rawAction, '_default'),
+      ...commonFields
+    });
+  case 'RemoveDefaultFieldTypeAction':
+    return ({
+      actionType: 'RemoveDefaultFieldTypeAction',
+      typeName: stringNotNull(rawAction, 'typeName'),
+      name: stringNotNull(rawAction, 'name'),
+      ...commonFields
+    });
+  case 'AddFieldTypeAction':
+    if (FieldTypeValues.indexOf(rawAction.type) === -1) {
+      throw new Error(
+        'Unknown field type ${rawAction.type} in action ${rawAction}'
+      );
+    }
+    return ({
+      actionType: 'AddFieldTypeAction',
+      typeName: stringNotNull(rawAction, 'typeName'),
+      name: stringNotNull(rawAction, 'name'),
+      type: rawAction.type,
+      description: stringNotNull(rawAction, 'description'),
+      optional: booleanNotNull(rawAction, 'optional'),
+      _default: rawAction._default,
+      ...commonFields
+    });
+  case 'UpdateDescriptionTypeAction':
+    return ({
+      actionType: 'UpdateDescriptionTypeAction',
+      typeName: stringNotNull(rawAction, 'typeName'),
+      description: stringNotNull(rawAction, 'description'),
+      ...commonFields
+    });
+  case 'ReferenceFieldTypeAction':
+    return ({
+      actionType: 'ReferenceFieldTypeAction',
+      typeName: stringNotNull(rawAction, 'typeName'),
+      name: stringNotNull(rawAction, 'name'),
+      description: stringNotNull(rawAction, 'description'),
+      optional: booleanNotNull(rawAction, 'optional'),
+      referenceType: stringNotNull(rawAction, 'referenceType'),
+      referenceHash: stringNotNull(rawAction, 'referenceHash'),
+      referenceVersion: integerNotNull(rawAction, 'referenceVersion'),
+      ...commonFields
+    });
+  case 'NewTypeAction':
+    return ({
+      actionType: 'NewTypeAction',
+      typeName: stringNotNull(rawAction, 'typeName'),
+      description: rawAction.description,
+      ...commonFields
+    });
+  default:
+    throw new Error(`Unknown Action: ${rawAction}`)
+  }
+}
+
+export function loadActions(log: any[]): GroupAction[] {
+  const loadedActions: GroupAction[] = [];
+  for (let rawAction of log) {
+    if (rawAction.actionType !== 'GroupAction') {
+      throw new Error(`Log entry must be GroupAction ${rawAction}`);
+    }
+    const groupedActions = [];
+    for (const subAction of rawAction.actions) {
+      groupedActions.push(loadAction(subAction));
+    }
+    const versions: GroupVersions = {};
+    Object.keys(rawAction.versions).forEach(key => {
+      if (!(typeof key === 'string')) {
+        throw new Error(`version key must be a string key: ${key}, action: ${rawAction}`);
+      }
+
+      const version = rawAction.versions[key];
+      if (!(typeof version !== 'number')) {
+        throw new Error(`version must be a number: key: ${key} version: ${version}, action: ${rawAction}`);
+      }
+
+      versions[key] = version;
+    })
+    loadedActions.push({
+      actionType: 'GroupAction',
+      actions: groupedActions,
+      versions: versions,
+      hash: stringNotNull(rawAction, 'hash'),
+      version: integerNotNull(rawAction, 'version')
+    });
+  }
+
+  return loadedActions;
+}
+
+export function validateLog(
+  log: GroupAction[]
+): Map<string, number> {
   const versionNumbers = new Map<string, number>();
-  const newLog = [];
   let previousHash = null;
   for (let n = 0; n < log.length; n++) {
-    let hashable = log[n];
-    if (!hashable.hasHashAndVersion()) {
-      if (hashable.hasVersion()) {
-        throw new ValidationError(
-          `Hash not present but version is: ${n} action: ${hashable}`
-        );
-      }
+    const action = log[n];
+    const expectedHash = hashAction(action, previousHash);
+    if (expectedHash !== action.hash) {
+      throw new Error(`Invalid hash at item ${n} expected ${expectedHash} got ${action.hash} object: ${action}`)
+    }
+    previousHash = action.hash;
 
-      if (hashable.hasHash()) {
-        throw new ValidationError(
-          `Version not present but hash is: ${n} action: ${hashable}`
-        );
-      }
-
-      if (!hash) {
-        throw new ValidationError(
-          `Hash and Version required: ${n} action: ${hashable}`
-        );
-      }
-
-      const newHash = hashAction(hashable, previousHash);
-      hashable.hash = newHash;
-      const actionName = getActionType(hashable);
+    const foundTypes = new Set<string>();
+    for (let subHashable of action.actions) {
+      const actionName = getActionType(subHashable);
       const currentVersion = versionNumbers.get(actionName);
-      if (!currentVersion && !isNewAction(hashable)) {
-        throw new ValidationError(
-          `No current version for type ${actionName} and action is not 
-          NewTypeAction or NewServiceAction: ${hashable}`
-        );
+      if (currentVersion === undefined && !isNewAction(subHashable)) {
+        throw new Error(`First action for a type must be new type, actionType: ${action.actionType} object: ${action}`)
+      } 
+      foundTypes.add(actionName);
+    }
+
+    for (let foundType of foundTypes) {
+      const currentVersion = versionNumbers.get(foundType) || 0;
+      const actionVersion = action.versions[foundType];
+      if (actionVersion !== currentVersion) {
+        throw new Error(`Group Version doesn't match at item ${n} expected ${currentVersion} got ${actionVersion} for type ${foundType} object: ${action}`)
       }
-      hashable.version = currentVersion ? currentVersion + 1 : 0;
-      versionNumbers.set(actionName, hashable.version);
-      newLog.push(hashable);
-    } else {
-      const expectedHash = hashAction(hashable, previousHash);
-      if (expectedHash !== hashable.hash) {
-        throw new ValidationError(
-          `Invalid hash at item ${n} expected ${expectedHash} 
-          got ${hashable.hash} object: ${hashable}`
-        );
-      }
-      previousHash = hashable.hash;
-
-      if (hashable instanceof action.GroupAction) {
-        const foundTypes = new Set<string>();
-        for (let subHashable of hashable.actions) {
-          const actionName = getActionType(subHashable);
-          foundTypes.add(actionName);
-        }
-
-        for (let foundType of foundTypes) {
-          const currentVersion = versionNumbers.get(foundType) || 0;
-          const hashableVersion = hashable.versions[foundType];
-          if (hashableVersion !== currentVersion) {
-            throw new ValidationError(
-              `Group Version doesn't match at item ${n} expected 
-              ${currentVersion} got ${hashableVersion} for type ${foundType} 
-              object: ${hashable}`
-            );
-          }
-          versionNumbers.set(foundType, currentVersion + 1);
-        }
-      } else {
-        const actionName = getActionType(hashable);
-        const currentVersion = versionNumbers.get(actionName) || 0;
-        if (hashable.version !== currentVersion) {
-          throw new ValidationError(
-            `Versions don't match at item ${n} 
-             expected ${currentVersion} got ${hashable.version} 
-             object: ${hashable}`
-          );
-        }
-
-        versionNumbers.set(actionName, currentVersion + 1);
-      }
-
-      newLog.push(hashable);
+      versionNumbers.set(foundType, currentVersion + 1);
     }
   }
 
-  return newLog;
+  return versionNumbers;
 }
 
 export function validate(
-  log: Action[]
+  log: GroupAction[]
 ): string | null {
   try {
-    validateAndHash(log, false);
+    validateLog(log);
     return null;
   } catch (e) {
     if (e instanceof ValidationError) {
@@ -172,11 +422,11 @@ export function validate(
 }
 
 export function validateChangeSet(
-  log: Action[], 
+  log: GroupAction[], 
   changeSet: ChangeSet,
 ): string | null {
   try {
-    validateAndHash(log, changeSet, true);
+    commitChangeSet(log, changeSet);
     return null;
   } catch (e) {
     if (e instanceof ValidationError) {
@@ -188,10 +438,50 @@ export function validateChangeSet(
 }
 
 export function commitChangeSet(
-  log: Action[], 
+  log: GroupAction[], 
   changeSet: ChangeSet,
-): Action[] {
-  return validateAndHash(log, changeSet, true);
+): GroupAction[] {
+  const currentVersions = validateLog(log);
+  const newActions = log.slice();
+
+  // TODO: Check if change can cleanly apply e.g. if someone else has touched 
+  // the field or added an identical one.
+  const versions: GroupVersions = {};
+  const groupActions: Action[] = [];
+  let previousHash = log.length > 0 ? log[-1].hash : null;
+  for (let changeAction of changeSet.log) {
+    const newHash = hashAction(changeAction, previousHash);
+    const actionType = getActionType(changeAction);
+    const currentVersion = currentVersions.get(actionType);
+    if (currentVersion === undefined && !isNewAction(changeAction)) {
+      throw new Error(`First action for a type must be new type, actionType: ${changeAction.actionType} object: ${changeAction}`)
+    } 
+    const newVersion = currentVersion ? currentVersion + 1 : 0;
+
+    groupActions.push({
+      hash: newHash,
+      version: newVersion,
+      ...changeAction
+    });
+
+    versions[actionType] = newVersion;
+  }
+
+  if (groupActions.length === 0) {
+    return newActions;
+  } else {
+    newActions.push({
+      actionType: 'GroupAction',
+      actions: groupActions,
+      versions: versions, 
+      // @ts-ignore
+      hash: previousHash
+    });
+
+    validateLog(newActions);
+
+    return newActions;
+  }
 }
 
 // export function validateActions(
