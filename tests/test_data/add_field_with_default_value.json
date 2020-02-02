@@ -1,20 +1,20 @@
 [
-  {
-    "_action_type": "NewTypeAction",
-    "changeLog": "Creating a new type",
-    "hash": null,
-    "name": "Test",
-    "description": "Test"
-  },
-  {
-    "_action_type": "AddFieldTypeAction",
-    "changeLog": "Adding a field",
-    "hash": null,
-    "typeName": "Test",
-    "name": "test_field",
-    "type": "string",
-    "description": "A field that helps testing",
-    "optional": true,
-    "_default": "A value"
-  }
+  [
+    {
+      "actionType": "NewTypeAction",
+      "changeLog": "Creating a new type",
+      "typeName": "Test",
+      "description": "Test"
+    },
+    {
+      "actionType": "AddFieldTypeAction",
+      "changeLog": "Adding a field",
+      "typeName": "Test",
+      "name": "test_field",
+      "type": "string",
+      "description": "A field that helps testing",
+      "optional": true,
+      "_default": "A value"
+    }
+  ]
 ]

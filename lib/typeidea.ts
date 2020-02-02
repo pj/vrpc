@@ -290,7 +290,7 @@ function loadAction(rawAction: any): Action {
     });
   case 'AddFieldTypeAction':
     if (FieldTypeValues.indexOf(rawAction.type) === -1) {
-      throw new Error(
+      throw new ValidationError(
         'Unknown field type ${rawAction.type} in action ${rawAction}'
       );
     }
@@ -332,7 +332,7 @@ function loadAction(rawAction: any): Action {
       ...commonFields
     });
   default:
-    throw new Error(`Unknown Action: ${rawAction}`)
+    throw new ValidationError(`Unknown Action: ${rawAction}`)
   }
 }
 
@@ -340,7 +340,7 @@ export function loadActions(log: any[]): GroupAction[] {
   const loadedActions: GroupAction[] = [];
   for (let rawAction of log) {
     if (rawAction.actionType !== 'GroupAction') {
-      throw new Error(`Log entry must be GroupAction ${rawAction}`);
+      throw new ValidationError(`Log entry must be GroupAction ${rawAction}`);
     }
     const groupedActions = [];
     for (const subAction of rawAction.actions) {
@@ -349,12 +349,12 @@ export function loadActions(log: any[]): GroupAction[] {
     const versions: GroupVersions = {};
     Object.keys(rawAction.versions).forEach(key => {
       if (!(typeof key === 'string')) {
-        throw new Error(`version key must be a string key: ${key}, action: ${rawAction}`);
+        throw new ValidationError(`version key must be a string key: ${key}, action: ${rawAction}`);
       }
 
       const version = rawAction.versions[key];
       if (!(typeof version !== 'number')) {
-        throw new Error(`version must be a number: key: ${key} version: ${version}, action: ${rawAction}`);
+        throw new ValidationError(`version must be a number: key: ${key} version: ${version}, action: ${rawAction}`);
       }
 
       versions[key] = version;
@@ -377,30 +377,42 @@ export function validateLog(
   const versionNumbers = new Map<string, number>();
   let previousHash = null;
   for (let n = 0; n < log.length; n++) {
-    const action = log[n];
-    const expectedHash = hashAction(action, previousHash);
-    if (expectedHash !== action.hash) {
-      throw new Error(`Invalid hash at item ${n} expected ${expectedHash} got ${action.hash} object: ${action}`)
-    }
-    previousHash = action.hash;
-
-    const foundTypes = new Set<string>();
-    for (let subHashable of action.actions) {
-      const actionName = getActionType(subHashable);
-      const currentVersion = versionNumbers.get(actionName);
-      if (currentVersion === undefined && !isNewAction(subHashable)) {
-        throw new Error(`First action for a type must be new type, actionType: ${action.actionType} object: ${action}`)
-      } 
-      foundTypes.add(actionName);
-    }
-
-    for (let foundType of foundTypes) {
-      const currentVersion = versionNumbers.get(foundType) || 0;
-      const actionVersion = action.versions[foundType];
-      if (actionVersion !== currentVersion) {
-        throw new Error(`Group Version doesn't match at item ${n} expected ${currentVersion} got ${actionVersion} for type ${foundType} object: ${action}`)
+    const groupAction = log[n];
+    const typesIncremented = new Set<string>();
+    for (let subHashable of groupAction.actions) {
+      const expectedHash = hashAction(subHashable, previousHash);
+      if (expectedHash !== subHashable.hash) {
+        throw new ValidationError(`Invalid hash at item ${n} expected ${expectedHash} got ${subHashable.hash} object: ${JSON.stringify(subHashable, null, 4)}`)
       }
-      versionNumbers.set(foundType, currentVersion + 1);
+      previousHash = expectedHash;
+
+      const actionType = getActionType(subHashable);
+      let currentVersion = versionNumbers.get(actionType);
+      if (currentVersion === undefined && !isNewAction(subHashable)) {
+        throw new ValidationError(`First action for a type must be new type, actionType: ${subHashable.actionType} object: ${subHashable}`)
+      } 
+
+      if (currentVersion === undefined) {
+        currentVersion = 0;
+        typesIncremented.add(actionType);
+      } else if (!typesIncremented.has(actionType)) {
+        currentVersion = versionNumbers.get(actionType);
+        if (currentVersion === undefined) {
+          throw new ValidationError('Should not happen');
+        }
+        currentVersion += 1;
+        typesIncremented.add(actionType);
+      }
+
+      const actionVersion = groupAction.versions[actionType];
+      if (actionVersion !== currentVersion) {
+        throw new ValidationError(`Group Version doesn't match at item ${n} expected ${currentVersion} got ${actionVersion} for type ${actionType} object: ${JSON.stringify(subHashable, null, 4)}`)
+      }
+      versionNumbers.set(actionType, currentVersion);
+    }
+
+    if (groupAction.hash !== previousHash) {
+      throw new ValidationError(`Invalid hash on group item expected ${groupAction.hash} got ${previousHash} object: ${JSON.stringify(groupAction, null, 4)}`)
     }
   }
 
@@ -449,23 +461,37 @@ export function commitChangeSet(
   // the field or added an identical one.
   const versions: GroupVersions = {};
   const groupActions: Action[] = [];
-  let previousHash = log.length > 0 ? log[-1].hash : null;
+  let previousHash = log.length > 0 ? log[log.length-1].hash : null;
+  const typesIncremented = new Set<string>();
   for (let changeAction of changeSet.log) {
     const newHash = hashAction(changeAction, previousHash);
     const actionType = getActionType(changeAction);
-    const currentVersion = currentVersions.get(actionType);
+    let currentVersion = currentVersions.get(actionType);
     if (currentVersion === undefined && !isNewAction(changeAction)) {
-      throw new Error(`First action for a type must be new type, actionType: ${changeAction.actionType} object: ${changeAction}`)
+      throw new ValidationError(`First action for a type must be new type, actionType: ${changeAction.actionType} object: ${JSON.stringify(changeAction)}`)
     } 
-    const newVersion = currentVersion ? currentVersion + 1 : 0;
+
+    if (currentVersion === undefined) {
+      currentVersion = 0;
+      typesIncremented.add(actionType);
+    } else if (!typesIncremented.has(actionType)) {
+      currentVersion = currentVersions.get(actionType);
+      if (currentVersion === undefined) {
+        throw new ValidationError('Should not happen');
+      }
+      currentVersion += 1;
+      typesIncremented.add(actionType);
+    }
 
     groupActions.push({
       hash: newHash,
-      version: newVersion,
+      version: currentVersion,
       ...changeAction
     });
 
-    versions[actionType] = newVersion;
+    versions[actionType] = currentVersion;
+    currentVersions.set(actionType, currentVersion);
+    previousHash = newHash;
   }
 
   if (groupActions.length === 0) {

@@ -205,9 +205,6 @@ export {
 }
 function generateDeserializeVersion(_type, version) {
     let hashCase = `case "${version.formatHash()}":`;
-    if (_type.latest !== null && _type.latest !== undefined) {
-        hashCase = "";
-    }
     return `
     case "${version.formatVersion()}":
     ${hashCase}
@@ -220,16 +217,10 @@ function generateDeserializeVersion(_type, version) {
 }
 function generateSerialization(_type) {
     const allVersions = [];
-    for (let version of _type.versions) {
-        allVersions.push(generateDeserializeVersion(_type, version));
-    }
     const allTypes = [];
     for (let version of _type.versions) {
+        allVersions.push(generateDeserializeVersion(_type, version));
         allTypes.push(version.formatVersion());
-    }
-    if (_type.latest !== null && _type.latest !== undefined) {
-        allVersions.push(generateDeserializeVersion(_type, _type.latest));
-        allTypes.push(_type.latest.formatVersion());
     }
     return `
 export class ${_type.name} {
@@ -258,9 +249,6 @@ function generateType(_type) {
     const allVersions = [];
     for (let version of _type.versions) {
         allVersions.push(generateVersion(version, _type));
-    }
-    if (_type.latest !== null && _type.latest !== undefined) {
-        allVersions.push(generateVersion(_type.latest, _type));
     }
     return `${typeHeader(_type)}
 ${allVersions.join('\n')}
@@ -313,9 +301,6 @@ function generateClientImports(types) {
         allTypes.push(_type.name);
         for (let version of _type.versions) {
             allTypes.push(version.formatVersion());
-        }
-        if (_type.latest !== null && _type.latest !== undefined) {
-            allTypes.push(_type.latest.formatVersion());
         }
     }
     return `import {

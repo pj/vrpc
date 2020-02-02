@@ -1,6 +1,6 @@
 [
   {
-    "_action_type": "NewTypeAction",
+    "actionType": "NewTypeAction",
     "name": "Test",
     "changeLog": "Creating a new type",
     "hash": null,
@@ -8,7 +8,7 @@
     "description": "Test"
   },
   {
-    "_action_type": "AddFieldTypeAction",
+    "actionType": "AddFieldTypeAction",
     "typeName": "Test",
     "changeLog": "Adding a field",
     "hash": null,
@@ -20,7 +20,7 @@
     "_default": null
   },
   {
-    "_action_type": "AddFieldTypeAction",
+    "actionType": "AddFieldTypeAction",
     "typeName": "Test",
     "changeLog": "Adding another field",
     "hash": null,
@@ -32,7 +32,7 @@
     "_default": "blah"
   },
   {
-    "_action_type": "AddFieldTypeAction",
+    "actionType": "AddFieldTypeAction",
     "typeName": "Test",
     "changeLog": "Adding yet another field",
     "hash": null,

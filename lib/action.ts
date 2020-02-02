@@ -200,14 +200,14 @@ export function fieldsToHash(action: ChangeAction | GroupChangeAction) {
     }
     return subHashes.join('_');
   default:
-    throw new Error(`Can't hash ${action}`)
+    throw new Error(`Can't hash ${JSON.stringify(action, null, 4)}`)
   }
 };
 
 export type ChangeSet = {
   id: string;
   log: ChangeAction[];
-  baseHash: string
+  baseHash: string | null 
 };
 
 // function loadAction(action: any): Action {

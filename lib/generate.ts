@@ -7,6 +7,7 @@ import {
   ChangeSet
 } from './action';
 import * as typeidea from './typeidea';
+import { version } from 'punycode';
 
 type VersionState = 'active' | 'removed' | 'deprecated';
 
@@ -455,6 +456,7 @@ export function generateDefinitions(
   const services = new Map<string, Service>();
 
   for (const groupAction of log) {
+    const versionsForTypes = new Map<string, Version>();
     for (const action of groupAction.actions) {
       if (action.actionType === 'NewTypeAction') {
         const _type = new Type(action.typeName, action.description);
@@ -472,13 +474,17 @@ export function generateDefinitions(
             throw new Error('Should not happen');
           }
           _type.changeLog.push(action.changeLog);
-          const version = groupAction.versions[typeName];
-          const newVersion = new Version(typeName, groupAction.hash, version, {});
-          if (_type.versions.length > 0) {
-            newVersion.fields = {..._type.versions[_type.versions.length-1].fields};
+          const versionNumber = groupAction.versions[typeName];
+          let newVersion = versionsForTypes.get(typeName);
+          if (newVersion === undefined) {
+            newVersion = new Version(typeName, groupAction.hash, versionNumber, {});
+            versionsForTypes.set(typeName, newVersion);
+            if (_type.versions.length > 0) {
+              newVersion.fields = {..._type.versions[_type.versions.length-1].fields};
+            }
+            _type.versions.push(newVersion);
           }
           updateVersion(newVersion, action);
-          _type.versions.push(newVersion);
         } else if (serviceName) {
           const service = services.get(serviceName);
           if (!service) {

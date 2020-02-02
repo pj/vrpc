@@ -6,7 +6,6 @@ import {
   VersionType,
   Type,
   Version,
-  LatestVersion,
   BaseField,
   Field,
   ReferenceField,
@@ -260,52 +259,8 @@ export {
 `;
 }
 
-function generateLatestVersion(version: LatestVersion, _type: Type): string {
-  const className = version.formatVersion();
-
-  return `/**
-${generateFieldDescription(version.fields)}
-*
-* @sealed
-*/
-class ${className} {
-  readonly _type: string;
-  ${generateFieldTypes(version.fields)}
-
-  constructor(
-    ${generateFieldArgs(version.fields)}
-  ){
-    this._type = "${version._type}";
-    ${generateFieldSetters(version.fields)}
-  }
-
-  static deserialize(message: any): ${className} {
-    if (message.version === null || message.version === undefined) {
-      throw new Error("version not present: " + message);
-    }
-    return (
-      new ${className}(
-        ${generateFieldDeserialize(version.fields)}
-      )
-    );
-  }
-
-  static serialize(message: ${className}): string {
-    if (message.version === null || message.version === undefined) {
-      throw new Error("version not present: " + message);
-    }
-    return JSON.stringify(message);
-  }
-}
-
-export {
-  ${className}
-}
-`;
-}
-
 function generateDeserializeVersion(
-  _type: Type, version: Version | LatestVersion
+  _type: Type, version: Version
 ) {
   let hashCase = `case "${version.formatHash()}":`;
 

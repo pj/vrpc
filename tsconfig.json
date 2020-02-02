@@ -14,7 +14,8 @@
     "baseUrl": "./lib",
     "paths": {
       "~*": ["./*"]
-    }
+    },
+    "emitDecoratorMetadata": true,
   },
   "include": [
     "lib"

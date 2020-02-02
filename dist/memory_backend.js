@@ -14,7 +14,7 @@ class MemoryBackend {
         return typeidea_1.validate(this.log);
     }
     async getCurrentServices() {
-        const [_, services] = generate_1.generateDefinitions(this.log, null, null);
+        const [_, services] = generate_1.generateDefinitions(this.log, null);
         return services;
     }
     async getCurrentServicesWithChangeSet(userId, changeSetId) {
@@ -28,11 +28,11 @@ class MemoryBackend {
             throw new Error(`Changeset not found for id: ${changeSet}`);
         }
         const newLog = typeidea_1.commitChangeSet(this.log, changeSet);
-        const [_, services] = generate_1.generateDefinitions(newLog, changeSet.log, changeSetId);
+        const [_, services] = generate_1.generateDefinitions(newLog, changeSet);
         return services;
     }
     async getCurrentTypes() {
-        const [types, _] = generate_1.generateDefinitions(this.log, null, null);
+        const [types, _] = generate_1.generateDefinitions(this.log, null);
         return types;
     }
     async getCurrentTypesWithChangeSet(userId, changeSetId) {
@@ -46,7 +46,7 @@ class MemoryBackend {
             throw new Error(`Changeset not found for id: ${changeSet}`);
         }
         const newLog = typeidea_1.commitChangeSet(this.log, changeSet);
-        const [types, _] = generate_1.generateDefinitions(newLog, changeSet.log, changeSetId);
+        const [types, _] = generate_1.generateDefinitions(newLog, changeSet);
         return types;
     }
     async getChangeSets(userId) {
