@@ -199,7 +199,7 @@ function loadAction(rawAction) {
             if (action_1.FieldTypeValues.indexOf(rawAction.type) === -1) {
                 throw new ValidationError('Unknown field type ${rawAction.type} in action ${rawAction}');
             }
-            return (Object.assign({ actionType: 'AddFieldTypeAction', typeName: stringNotNull(rawAction, 'typeName'), name: stringNotNull(rawAction, 'name'), type: rawAction.type, description: stringNotNull(rawAction, 'description'), optional: booleanNotNull(rawAction, 'optional'), _default: rawAction._default }, commonFields));
+            return (Object.assign({ actionType: 'AddFieldTypeAction', typeName: stringNotNull(rawAction, 'typeName'), name: stringNotNull(rawAction, 'name'), _type: rawAction._type, description: stringNotNull(rawAction, 'description'), optional: booleanNotNull(rawAction, 'optional'), _default: rawAction._default }, commonFields));
         case 'UpdateDescriptionTypeAction':
             return (Object.assign({ actionType: 'UpdateDescriptionTypeAction', typeName: stringNotNull(rawAction, 'typeName'), name: stringNotNull(rawAction, 'name'), description: stringNotNull(rawAction, 'description') }, commonFields));
         case 'ReferenceFieldTypeAction':

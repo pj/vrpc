@@ -1,6 +1,807 @@
 "use strict";
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+const type_graphql_1 = require("type-graphql");
+var FieldTypes;
+(function (FieldTypes) {
+    FieldTypes["STRING"] = "string";
+    FieldTypes["BOOLEAN"] = "boolean";
+    FieldTypes["INTEGER"] = "integer";
+    FieldTypes["FLOAT"] = "float";
+})(FieldTypes = exports.FieldTypes || (exports.FieldTypes = {}));
+type_graphql_1.registerEnumType(FieldTypes, {
+    name: "FieldTypes"
+});
 exports.FieldTypeValues = ['string', 'boolean', 'integer', 'float'];
+let StringField = class StringField {
+};
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], StringField.prototype, "value", void 0);
+StringField = __decorate([
+    type_graphql_1.ObjectType()
+], StringField);
+exports.StringField = StringField;
+let BooleanField = class BooleanField {
+};
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", Boolean)
+], BooleanField.prototype, "value", void 0);
+BooleanField = __decorate([
+    type_graphql_1.ObjectType()
+], BooleanField);
+exports.BooleanField = BooleanField;
+let FloatField = class FloatField {
+};
+__decorate([
+    type_graphql_1.Field(type => type_graphql_1.Float),
+    __metadata("design:type", Number)
+], FloatField.prototype, "value", void 0);
+FloatField = __decorate([
+    type_graphql_1.ObjectType()
+], FloatField);
+exports.FloatField = FloatField;
+let IntegerField = class IntegerField {
+};
+__decorate([
+    type_graphql_1.Field(type => type_graphql_1.Int),
+    __metadata("design:type", Number)
+], IntegerField.prototype, "value", void 0);
+IntegerField = __decorate([
+    type_graphql_1.ObjectType()
+], IntegerField);
+exports.IntegerField = IntegerField;
+exports.FieldDefaultsUnion = type_graphql_1.createUnionType({
+    name: "FieldDefaults",
+    types: () => [StringField, BooleanField, FloatField, IntegerField],
+});
+// Types
+let NewTypeAction = class NewTypeAction {
+};
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], NewTypeAction.prototype, "hash", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", Number)
+], NewTypeAction.prototype, "version", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], NewTypeAction.prototype, "changeLog", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], NewTypeAction.prototype, "typeName", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], NewTypeAction.prototype, "description", void 0);
+NewTypeAction = __decorate([
+    type_graphql_1.ObjectType()
+], NewTypeAction);
+exports.NewTypeAction = NewTypeAction;
+let NewTypeChangeAction = class NewTypeChangeAction {
+};
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], NewTypeChangeAction.prototype, "changeLog", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], NewTypeChangeAction.prototype, "typeName", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], NewTypeChangeAction.prototype, "description", void 0);
+NewTypeChangeAction = __decorate([
+    type_graphql_1.ObjectType()
+], NewTypeChangeAction);
+exports.NewTypeChangeAction = NewTypeChangeAction;
+let RenameFieldTypeAction = class RenameFieldTypeAction {
+};
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], RenameFieldTypeAction.prototype, "hash", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", Number)
+], RenameFieldTypeAction.prototype, "version", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], RenameFieldTypeAction.prototype, "changeLog", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], RenameFieldTypeAction.prototype, "typeName", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], RenameFieldTypeAction.prototype, "_from", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], RenameFieldTypeAction.prototype, "to", void 0);
+RenameFieldTypeAction = __decorate([
+    type_graphql_1.ObjectType()
+], RenameFieldTypeAction);
+exports.RenameFieldTypeAction = RenameFieldTypeAction;
+let RenameFieldTypeChangeAction = class RenameFieldTypeChangeAction {
+};
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], RenameFieldTypeChangeAction.prototype, "changeLog", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], RenameFieldTypeChangeAction.prototype, "typeName", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], RenameFieldTypeChangeAction.prototype, "_from", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], RenameFieldTypeChangeAction.prototype, "to", void 0);
+RenameFieldTypeChangeAction = __decorate([
+    type_graphql_1.ObjectType()
+], RenameFieldTypeChangeAction);
+exports.RenameFieldTypeChangeAction = RenameFieldTypeChangeAction;
+let RequiredFieldTypeAction = class RequiredFieldTypeAction {
+};
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], RequiredFieldTypeAction.prototype, "hash", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", Number)
+], RequiredFieldTypeAction.prototype, "version", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], RequiredFieldTypeAction.prototype, "changeLog", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], RequiredFieldTypeAction.prototype, "typeName", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], RequiredFieldTypeAction.prototype, "name", void 0);
+RequiredFieldTypeAction = __decorate([
+    type_graphql_1.ObjectType()
+], RequiredFieldTypeAction);
+exports.RequiredFieldTypeAction = RequiredFieldTypeAction;
+let RequiredFieldTypeChangeAction = class RequiredFieldTypeChangeAction {
+};
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], RequiredFieldTypeChangeAction.prototype, "changeLog", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], RequiredFieldTypeChangeAction.prototype, "typeName", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], RequiredFieldTypeChangeAction.prototype, "name", void 0);
+RequiredFieldTypeChangeAction = __decorate([
+    type_graphql_1.ObjectType()
+], RequiredFieldTypeChangeAction);
+exports.RequiredFieldTypeChangeAction = RequiredFieldTypeChangeAction;
+let OptionalFieldTypeAction = class OptionalFieldTypeAction {
+};
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], OptionalFieldTypeAction.prototype, "hash", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", Number)
+], OptionalFieldTypeAction.prototype, "version", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], OptionalFieldTypeAction.prototype, "changeLog", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], OptionalFieldTypeAction.prototype, "typeName", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], OptionalFieldTypeAction.prototype, "name", void 0);
+OptionalFieldTypeAction = __decorate([
+    type_graphql_1.ObjectType()
+], OptionalFieldTypeAction);
+exports.OptionalFieldTypeAction = OptionalFieldTypeAction;
+let OptionalFieldTypeChangeAction = class OptionalFieldTypeChangeAction {
+};
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], OptionalFieldTypeChangeAction.prototype, "changeLog", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], OptionalFieldTypeChangeAction.prototype, "typeName", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], OptionalFieldTypeChangeAction.prototype, "name", void 0);
+OptionalFieldTypeChangeAction = __decorate([
+    type_graphql_1.ObjectType()
+], OptionalFieldTypeChangeAction);
+exports.OptionalFieldTypeChangeAction = OptionalFieldTypeChangeAction;
+let DeleteFieldTypeAction = class DeleteFieldTypeAction {
+};
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], DeleteFieldTypeAction.prototype, "hash", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", Number)
+], DeleteFieldTypeAction.prototype, "version", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], DeleteFieldTypeAction.prototype, "changeLog", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], DeleteFieldTypeAction.prototype, "typeName", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], DeleteFieldTypeAction.prototype, "name", void 0);
+DeleteFieldTypeAction = __decorate([
+    type_graphql_1.ObjectType()
+], DeleteFieldTypeAction);
+exports.DeleteFieldTypeAction = DeleteFieldTypeAction;
+let DeleteFieldTypeChangeAction = class DeleteFieldTypeChangeAction {
+};
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], DeleteFieldTypeChangeAction.prototype, "changeLog", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], DeleteFieldTypeChangeAction.prototype, "typeName", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], DeleteFieldTypeChangeAction.prototype, "name", void 0);
+DeleteFieldTypeChangeAction = __decorate([
+    type_graphql_1.ObjectType()
+], DeleteFieldTypeChangeAction);
+exports.DeleteFieldTypeChangeAction = DeleteFieldTypeChangeAction;
+let SetDefaultFieldTypeAction = class SetDefaultFieldTypeAction {
+};
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], SetDefaultFieldTypeAction.prototype, "hash", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", Number)
+], SetDefaultFieldTypeAction.prototype, "version", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], SetDefaultFieldTypeAction.prototype, "changeLog", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], SetDefaultFieldTypeAction.prototype, "typeName", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], SetDefaultFieldTypeAction.prototype, "name", void 0);
+__decorate([
+    type_graphql_1.Field(type => exports.FieldDefaultsUnion),
+    __metadata("design:type", Object)
+], SetDefaultFieldTypeAction.prototype, "_default", void 0);
+SetDefaultFieldTypeAction = __decorate([
+    type_graphql_1.ObjectType()
+], SetDefaultFieldTypeAction);
+exports.SetDefaultFieldTypeAction = SetDefaultFieldTypeAction;
+let SetDefaultFieldTypeChangeAction = class SetDefaultFieldTypeChangeAction {
+};
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], SetDefaultFieldTypeChangeAction.prototype, "changeLog", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], SetDefaultFieldTypeChangeAction.prototype, "typeName", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], SetDefaultFieldTypeChangeAction.prototype, "name", void 0);
+__decorate([
+    type_graphql_1.Field(type => exports.FieldDefaultsUnion),
+    __metadata("design:type", Object)
+], SetDefaultFieldTypeChangeAction.prototype, "_default", void 0);
+SetDefaultFieldTypeChangeAction = __decorate([
+    type_graphql_1.ObjectType()
+], SetDefaultFieldTypeChangeAction);
+exports.SetDefaultFieldTypeChangeAction = SetDefaultFieldTypeChangeAction;
+let RemoveDefaultFieldTypeAction = class RemoveDefaultFieldTypeAction {
+};
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], RemoveDefaultFieldTypeAction.prototype, "hash", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", Number)
+], RemoveDefaultFieldTypeAction.prototype, "version", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], RemoveDefaultFieldTypeAction.prototype, "changeLog", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], RemoveDefaultFieldTypeAction.prototype, "typeName", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], RemoveDefaultFieldTypeAction.prototype, "name", void 0);
+RemoveDefaultFieldTypeAction = __decorate([
+    type_graphql_1.ObjectType()
+], RemoveDefaultFieldTypeAction);
+exports.RemoveDefaultFieldTypeAction = RemoveDefaultFieldTypeAction;
+let RemoveDefaultFieldTypeChangeAction = class RemoveDefaultFieldTypeChangeAction {
+};
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], RemoveDefaultFieldTypeChangeAction.prototype, "changeLog", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], RemoveDefaultFieldTypeChangeAction.prototype, "typeName", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], RemoveDefaultFieldTypeChangeAction.prototype, "name", void 0);
+RemoveDefaultFieldTypeChangeAction = __decorate([
+    type_graphql_1.ObjectType()
+], RemoveDefaultFieldTypeChangeAction);
+exports.RemoveDefaultFieldTypeChangeAction = RemoveDefaultFieldTypeChangeAction;
+let AddFieldTypeAction = class AddFieldTypeAction {
+};
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], AddFieldTypeAction.prototype, "hash", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", Number)
+], AddFieldTypeAction.prototype, "version", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], AddFieldTypeAction.prototype, "changeLog", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], AddFieldTypeAction.prototype, "typeName", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], AddFieldTypeAction.prototype, "name", void 0);
+__decorate([
+    type_graphql_1.Field(type => FieldTypes),
+    __metadata("design:type", String)
+], AddFieldTypeAction.prototype, "_type", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], AddFieldTypeAction.prototype, "description", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", Boolean)
+], AddFieldTypeAction.prototype, "optional", void 0);
+__decorate([
+    type_graphql_1.Field(type => exports.FieldDefaultsUnion, { nullable: true }),
+    __metadata("design:type", Object)
+], AddFieldTypeAction.prototype, "_default", void 0);
+AddFieldTypeAction = __decorate([
+    type_graphql_1.ObjectType()
+], AddFieldTypeAction);
+exports.AddFieldTypeAction = AddFieldTypeAction;
+let AddFieldTypeChangeAction = class AddFieldTypeChangeAction {
+};
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], AddFieldTypeChangeAction.prototype, "changeLog", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], AddFieldTypeChangeAction.prototype, "typeName", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], AddFieldTypeChangeAction.prototype, "name", void 0);
+__decorate([
+    type_graphql_1.Field(type => FieldTypes),
+    __metadata("design:type", String)
+], AddFieldTypeChangeAction.prototype, "_type", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], AddFieldTypeChangeAction.prototype, "description", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", Boolean)
+], AddFieldTypeChangeAction.prototype, "optional", void 0);
+__decorate([
+    type_graphql_1.Field(type => exports.FieldDefaultsUnion, { nullable: true }),
+    __metadata("design:type", Object)
+], AddFieldTypeChangeAction.prototype, "_default", void 0);
+AddFieldTypeChangeAction = __decorate([
+    type_graphql_1.ObjectType()
+], AddFieldTypeChangeAction);
+exports.AddFieldTypeChangeAction = AddFieldTypeChangeAction;
+let UpdateDescriptionTypeAction = class UpdateDescriptionTypeAction {
+};
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], UpdateDescriptionTypeAction.prototype, "hash", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", Number)
+], UpdateDescriptionTypeAction.prototype, "version", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], UpdateDescriptionTypeAction.prototype, "changeLog", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], UpdateDescriptionTypeAction.prototype, "typeName", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], UpdateDescriptionTypeAction.prototype, "name", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], UpdateDescriptionTypeAction.prototype, "description", void 0);
+UpdateDescriptionTypeAction = __decorate([
+    type_graphql_1.ObjectType()
+], UpdateDescriptionTypeAction);
+exports.UpdateDescriptionTypeAction = UpdateDescriptionTypeAction;
+let UpdateDescriptionTypeChangeAction = class UpdateDescriptionTypeChangeAction {
+};
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], UpdateDescriptionTypeChangeAction.prototype, "changeLog", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], UpdateDescriptionTypeChangeAction.prototype, "typeName", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], UpdateDescriptionTypeChangeAction.prototype, "name", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], UpdateDescriptionTypeChangeAction.prototype, "description", void 0);
+UpdateDescriptionTypeChangeAction = __decorate([
+    type_graphql_1.ObjectType()
+], UpdateDescriptionTypeChangeAction);
+exports.UpdateDescriptionTypeChangeAction = UpdateDescriptionTypeChangeAction;
+let ReferenceFieldTypeAction = class ReferenceFieldTypeAction {
+};
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], ReferenceFieldTypeAction.prototype, "hash", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", Number)
+], ReferenceFieldTypeAction.prototype, "version", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], ReferenceFieldTypeAction.prototype, "changeLog", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], ReferenceFieldTypeAction.prototype, "typeName", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], ReferenceFieldTypeAction.prototype, "name", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], ReferenceFieldTypeAction.prototype, "description", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", Boolean)
+], ReferenceFieldTypeAction.prototype, "optional", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], ReferenceFieldTypeAction.prototype, "referenceType", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], ReferenceFieldTypeAction.prototype, "referenceHash", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", Number)
+], ReferenceFieldTypeAction.prototype, "referenceVersion", void 0);
+ReferenceFieldTypeAction = __decorate([
+    type_graphql_1.ObjectType()
+], ReferenceFieldTypeAction);
+exports.ReferenceFieldTypeAction = ReferenceFieldTypeAction;
+let ReferenceFieldTypeChangeAction = class ReferenceFieldTypeChangeAction {
+};
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], ReferenceFieldTypeChangeAction.prototype, "changeLog", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], ReferenceFieldTypeChangeAction.prototype, "typeName", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], ReferenceFieldTypeChangeAction.prototype, "name", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], ReferenceFieldTypeChangeAction.prototype, "description", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", Boolean)
+], ReferenceFieldTypeChangeAction.prototype, "optional", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], ReferenceFieldTypeChangeAction.prototype, "referenceType", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], ReferenceFieldTypeChangeAction.prototype, "referenceHash", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", Number)
+], ReferenceFieldTypeChangeAction.prototype, "referenceVersion", void 0);
+ReferenceFieldTypeChangeAction = __decorate([
+    type_graphql_1.ObjectType()
+], ReferenceFieldTypeChangeAction);
+exports.ReferenceFieldTypeChangeAction = ReferenceFieldTypeChangeAction;
+// Service Definitions
+let NewServiceAction = class NewServiceAction {
+};
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], NewServiceAction.prototype, "hash", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", Number)
+], NewServiceAction.prototype, "version", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], NewServiceAction.prototype, "changeLog", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], NewServiceAction.prototype, "serviceName", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], NewServiceAction.prototype, "description", void 0);
+NewServiceAction = __decorate([
+    type_graphql_1.ObjectType()
+], NewServiceAction);
+exports.NewServiceAction = NewServiceAction;
+let NewServiceChangeAction = class NewServiceChangeAction {
+};
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], NewServiceChangeAction.prototype, "changeLog", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], NewServiceChangeAction.prototype, "serviceName", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], NewServiceChangeAction.prototype, "description", void 0);
+NewServiceChangeAction = __decorate([
+    type_graphql_1.ObjectType()
+], NewServiceChangeAction);
+exports.NewServiceChangeAction = NewServiceChangeAction;
+let UpdateDescriptionServiceAction = class UpdateDescriptionServiceAction {
+};
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], UpdateDescriptionServiceAction.prototype, "hash", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", Number)
+], UpdateDescriptionServiceAction.prototype, "version", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], UpdateDescriptionServiceAction.prototype, "changeLog", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], UpdateDescriptionServiceAction.prototype, "serviceName", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], UpdateDescriptionServiceAction.prototype, "description", void 0);
+UpdateDescriptionServiceAction = __decorate([
+    type_graphql_1.ObjectType()
+], UpdateDescriptionServiceAction);
+exports.UpdateDescriptionServiceAction = UpdateDescriptionServiceAction;
+let UpdateDescriptionServiceChangeAction = class UpdateDescriptionServiceChangeAction {
+};
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], UpdateDescriptionServiceChangeAction.prototype, "changeLog", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], UpdateDescriptionServiceChangeAction.prototype, "serviceName", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], UpdateDescriptionServiceChangeAction.prototype, "description", void 0);
+UpdateDescriptionServiceChangeAction = __decorate([
+    type_graphql_1.ObjectType()
+], UpdateDescriptionServiceChangeAction);
+exports.UpdateDescriptionServiceChangeAction = UpdateDescriptionServiceChangeAction;
+let AddVersionServiceAction = class AddVersionServiceAction {
+};
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], AddVersionServiceAction.prototype, "hash", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", Number)
+], AddVersionServiceAction.prototype, "version", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], AddVersionServiceAction.prototype, "changeLog", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], AddVersionServiceAction.prototype, "serviceName", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], AddVersionServiceAction.prototype, "inputType", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], AddVersionServiceAction.prototype, "outputType", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", Number)
+], AddVersionServiceAction.prototype, "inputVersion", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], AddVersionServiceAction.prototype, "inputHash", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", Number)
+], AddVersionServiceAction.prototype, "outputVersion", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], AddVersionServiceAction.prototype, "outputHash", void 0);
+AddVersionServiceAction = __decorate([
+    type_graphql_1.ObjectType()
+], AddVersionServiceAction);
+exports.AddVersionServiceAction = AddVersionServiceAction;
+let AddVersionServiceChangeAction = class AddVersionServiceChangeAction {
+};
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], AddVersionServiceChangeAction.prototype, "changeLog", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], AddVersionServiceChangeAction.prototype, "serviceName", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], AddVersionServiceChangeAction.prototype, "inputType", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], AddVersionServiceChangeAction.prototype, "outputType", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", Number)
+], AddVersionServiceChangeAction.prototype, "inputVersion", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], AddVersionServiceChangeAction.prototype, "inputHash", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", Number)
+], AddVersionServiceChangeAction.prototype, "outputVersion", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], AddVersionServiceChangeAction.prototype, "outputHash", void 0);
+AddVersionServiceChangeAction = __decorate([
+    type_graphql_1.ObjectType()
+], AddVersionServiceChangeAction);
+exports.AddVersionServiceChangeAction = AddVersionServiceChangeAction;
+;
+exports.ActionUnion = type_graphql_1.createUnionType({
+    name: "Action",
+    types: () => [NewTypeAction, RenameFieldTypeAction, RequiredFieldTypeAction,
+        OptionalFieldTypeAction, DeleteFieldTypeAction, SetDefaultFieldTypeAction,
+        RemoveDefaultFieldTypeAction, AddFieldTypeAction,
+        UpdateDescriptionTypeAction, ReferenceFieldTypeAction, NewServiceAction,
+        UpdateDescriptionServiceAction, AddVersionServiceAction
+    ],
+});
+exports.ChangeActionUnion = type_graphql_1.createUnionType({
+    name: "ChangeAction",
+    types: () => [NewTypeChangeAction, RenameFieldTypeChangeAction,
+        RequiredFieldTypeChangeAction, OptionalFieldTypeChangeAction,
+        DeleteFieldTypeChangeAction, SetDefaultFieldTypeChangeAction,
+        RemoveDefaultFieldTypeChangeAction, AddFieldTypeChangeAction,
+        UpdateDescriptionTypeChangeAction, ReferenceFieldTypeChangeAction,
+        NewServiceChangeAction, UpdateDescriptionServiceChangeAction,
+        AddVersionServiceChangeAction
+    ],
+});
+class GroupAction {
+}
+exports.GroupAction = GroupAction;
+class GroupChangeAction {
+}
+exports.GroupChangeAction = GroupChangeAction;
 function fieldsToHash(action) {
     switch (action.actionType) {
         case 'AddVersionServiceAction':
@@ -14,7 +815,7 @@ function fieldsToHash(action) {
         case 'UpdateDescriptionTypeAction':
             return `${action.changeLog}_${action.typeName}_${action.description}`;
         case 'AddFieldTypeAction':
-            return `${action.changeLog}_${action.typeName}_${action.name}_${action.type}_${action.description}_${action.optional}_${action._default}`;
+            return `${action.changeLog}_${action.typeName}_${action.name}_${action._type}_${action.description}_${action.optional}_${action._default}`;
         case 'RemoveDefaultFieldTypeAction':
             return `${action.changeLog}_${action.typeName}_${action.name}`;
         case 'SetDefaultFieldTypeAction':
@@ -41,173 +842,22 @@ function fieldsToHash(action) {
 }
 exports.fieldsToHash = fieldsToHash;
 ;
-// function loadAction(action: any): Action {
-//   switch(action.actionType) {
-//     // Services
-//     case 'NewServiceAction':
-//       return new NewServiceAction(
-//         action.changeLog,
-//         action.hash,
-//         action.version,
-//         action.serviceName,
-//         action.description,
-//       );
-//     case 'UpdateDescriptionServiceAction':
-//       return new UpdateDescriptionServiceAction(
-//         action.changeLog,
-//         action.hash,
-//         action.version,
-//         action.serviceName,
-//         action.description
-//       );
-//     case 'AddVersionServiceAction':
-//       return new AddVersionServiceAction(
-//         action.changeLog,
-//         action.hash,
-//         action.version,
-//         action.serviceName,
-//         action.inputType,
-//         action.outputType,
-//         action.inputVersion,
-//         action.inputHash,
-//         action.outputVersion,
-//         action.outputHash,
-//       );
-//     // Types
-//     case 'RenameFieldTypeAction':
-//       return new RenameFieldTypeAction(
-//         action.changeLog,
-//         action.hash,
-//         action.version,
-//         action.typeName,
-//         action._from,
-//         action.to
-//       );
-//     case 'RequiredFieldTypeAction':
-//       return new RequiredFieldTypeAction(
-//         action.changeLog,
-//         action.hash,
-//         action.version,
-//         action.typeName,
-//         action.name
-//       );
-//     case 'OptionalFieldTypeAction':
-//       return new OptionalFieldTypeAction(
-//         action.changeLog,
-//         action.hash,
-//         action.version,
-//         action.typeName,
-//         action.name
-//       );
-//     case 'DeleteFieldTypeAction':
-//       return new DeleteFieldTypeAction(
-//         action.changeLog,
-//         action.hash,
-//         action.version,
-//         action.typeName,
-//         action.name
-//       );
-//     case 'SetDefaultFieldTypeAction':
-//       return new SetDefaultFieldTypeAction(
-//         action.changeLog,
-//         action.hash,
-//         action.version,
-//         action.typeName,
-//         action.name,
-//         action._default
-//       );
-//     case 'RemoveDefaultFieldTypeAction':
-//       return new RemoveDefaultFieldTypeAction(
-//         action.changeLog,
-//         action.hash,
-//         action.version,
-//         action.typeName,
-//         action.name
-//       );
-//     case 'AddFieldTypeAction':
-//       return new AddFieldTypeAction(
-//         action.changeLog,
-//         action.hash,
-//         action.version,
-//         action.typeName,
-//         action.name,
-//         action.type,
-//         action.description,
-//         action.optional,
-//         action._default
-//       );
-//     case 'UpdateDescriptionTypeAction':
-//       return new UpdateDescriptionTypeAction(
-//         action.changeLog,
-//         action.hash,
-//         action.version,
-//         action.typeName,
-//         action.name,
-//         action.description
-//       );
-//     case 'ReferenceFieldTypeAction':
-//       return new ReferenceFieldTypeAction(
-//         action.changeLog,
-//         action.hash,
-//         action.version,
-//         action.typeName,
-//         action.name,
-//         action.description,
-//         action.optional,
-//         action.referenceType,
-//         action.referenceHash,
-//         action.referenceVersion
-//       );
-//     case 'NewTypeAction':
-//       return new NewTypeAction(
-//         action.changeLog,
-//         action.hash,
-//         action.version,
-//         action.typeName,
-//         action.description
-//       );
-//     case 'GroupAction':
-//       const groupedActions = [];
-//       for (const subAction of action.actions) {
-//         groupedActions.push(loadAction(subAction));
-//       }
-//       return new GroupAction(
-//         action.changeLog,
-//         action.hash,
-//         action.version,
-//         action.name,
-//         groupedActions,
-//         action.versions,
-//       );
-//     default:
-//       throw new Error(`Unknown Action: ${action}`)
-//   }
-// }
-// export function loadActionLog(path: string): Array<Action | GroupAction> {
-//   const actions = require(path);
-//   // const outputActions = [];
-//   // for (const action of actions) {
-//   //   const log = loadAction(action);
-//   //   outputActions.push(log);
-//   // }
-//   return actions as Array<Action | GroupAction>;
-// }
-// export async function loadActionAsync(path: string): Promise<Array<Action | GroupAction>> {
-//   const data = await fs.readFile(path, 'utf-8');
-//   const actions = JSON.parse(data.toString());
-//   // const outputActions = [];
-//   // for (const action of actions) {
-//   //   const log = loadAction(action);
-//   //   outputActions.push(log);
-//   // }
-//   return actions as Array<Action | GroupAction>;
-// }
-// export function loadActionLogFromList(actions: any[]): Array<Action | GroupAction> {
-//   // const outputActions = [];
-//   // for (const action of actions) {
-//   //   const log = loadAction(action);
-//   //   outputActions.push(log);
-//   // }
-//   // return outputActions;
-//   return (actions as Array<Action | GroupAction>);
-// }
+let ChangeSet = class ChangeSet {
+};
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], ChangeSet.prototype, "id", void 0);
+__decorate([
+    type_graphql_1.Field(type => [exports.ChangeActionUnion]),
+    __metadata("design:type", Array)
+], ChangeSet.prototype, "log", void 0);
+__decorate([
+    type_graphql_1.Field({ nullable: true }),
+    __metadata("design:type", String)
+], ChangeSet.prototype, "baseHash", void 0);
+ChangeSet = __decorate([
+    type_graphql_1.ObjectType()
+], ChangeSet);
+exports.ChangeSet = ChangeSet;
+;

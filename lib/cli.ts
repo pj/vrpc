@@ -5,7 +5,7 @@ import * as yargs from 'yargs';
 
 import * as generate from './generate';
 import * as generate_typescript from './generate_typescript';
-import {startServer} from './server/index';
+import {startServer} from './server';
 import {FileBackend} from './file_backend';
 
 const args = yargs

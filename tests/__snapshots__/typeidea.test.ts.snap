@@ -535,7 +535,7 @@ class Test_V0 {
     this._type = \\"Test\\";
     this.version = 0;
     this.hash =
-      \\"d7c8411a6cd628f2e2f9a7a33465dce1c80e3357b664985396bcd8898793a6aa\\";
+      \\"31cd9f3eb7d5e94d9544cfdc740e0830bf68bff85ae4f81f0d25d0e4c9c7c499\\";
     this.test_field = test_field;
   }
 
@@ -556,7 +556,7 @@ class Test_V0 {
 
 export {
   Test_V0,
-  Test_V0 as Test_Hd7c8411a6cd628f2e2f9a7a33465dce1c80e3357b664985396bcd8898793a6aa
+  Test_V0 as Test_H31cd9f3eb7d5e94d9544cfdc740e0830bf68bff85ae4f81f0d25d0e4c9c7c499
 };
 
 export class Test {
@@ -566,7 +566,7 @@ export class Test {
     }
     switch (message.version) {
       case \\"Test_V0\\":
-      case \\"Test_Hd7c8411a6cd628f2e2f9a7a33465dce1c80e3357b664985396bcd8898793a6aa\\":
+      case \\"Test_H31cd9f3eb7d5e94d9544cfdc740e0830bf68bff85ae4f81f0d25d0e4c9c7c499\\":
         return new Test_V0(message.test_field);
 
       default:
@@ -600,15 +600,15 @@ class Test2_V1 {
   readonly _type: string;
   readonly version: number;
   readonly hash: string;
-  readonly test_field2: Test.h_d7c8411a6cd628f2e2f9a7a33465dce1c80e3357b664985396bcd8898793a6aa;
+  readonly test_field2: Test.h_31cd9f3eb7d5e94d9544cfdc740e0830bf68bff85ae4f81f0d25d0e4c9c7c499;
 
   constructor(
-    test_field2: Test.h_d7c8411a6cd628f2e2f9a7a33465dce1c80e3357b664985396bcd8898793a6aa
+    test_field2: Test.h_31cd9f3eb7d5e94d9544cfdc740e0830bf68bff85ae4f81f0d25d0e4c9c7c499
   ) {
     this._type = \\"Test2\\";
     this.version = 1;
     this.hash =
-      \\"31e091598eb421713428bc356c535fa1980a1b7fa886fe54664d97443efe6ecd\\";
+      \\"86efd7ca23593bb2c1c9b4da08723bd42c922231550dcd0e54e8695b4473b40c\\";
     this.test_field2 = test_field2;
   }
 
@@ -629,7 +629,7 @@ class Test2_V1 {
 
 export {
   Test2_V1,
-  Test2_V1 as Test2_H31e091598eb421713428bc356c535fa1980a1b7fa886fe54664d97443efe6ecd
+  Test2_V1 as Test2_H86efd7ca23593bb2c1c9b4da08723bd42c922231550dcd0e54e8695b4473b40c
 };
 
 export class Test2 {
@@ -639,7 +639,7 @@ export class Test2 {
     }
     switch (message.version) {
       case \\"Test2_V1\\":
-      case \\"Test2_H31e091598eb421713428bc356c535fa1980a1b7fa886fe54664d97443efe6ecd\\":
+      case \\"Test2_H86efd7ca23593bb2c1c9b4da08723bd42c922231550dcd0e54e8695b4473b40c\\":
         return new Test2_V1(message.test_field2);
 
       default:

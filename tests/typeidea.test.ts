@@ -1,5 +1,6 @@
+import "reflect-metadata";
 import * as typeidea from '../lib/typeidea';
-import {Action, ChangeAction, ReferenceFieldTypeAction} from '../lib/action';
+import {Action, ChangeAction, ReferenceFieldTypeAction, FieldTypes} from '../lib/action';
 import {generateDefinitions} from '../lib/generate';
 import {generateTypescript, generateTypescriptBoth} from '../lib/generate_typescript';
 import {MemoryBackend} from '../lib/memory_backend';
@@ -71,14 +72,13 @@ it('Changing an action makes hashing invalid', async () => {
       changeLog: 'Adding a field',
       typeName: 'Test',
       name: 'test_field',
-      type: 'string',
+      _type: FieldTypes.STRING,
       description: 'A field that helps testing',
-      optional: true,
-      _default: null
+      optional: true
     }
   ];
   const memoryStore = new MemoryBackend(null, null);
-  const changeSet = {id: 'Test change set', log: addField, baseHash: null};
+  const changeSet = {id: 'Test change set', log: addField};
   await memoryStore.updateChangeSet("test", "test", changeSet);
   await memoryStore.commitChangeSet("test", "test")
 
@@ -103,15 +103,14 @@ it('Deleting version causes error', async () => {
       changeLog: 'Adding a field',
       typeName: 'Test',
       name: 'test_field',
-      type: 'string',
+      _type: FieldTypes.STRING,
       description: 'A field that helps testing',
       optional: true,
-      _default: null
     }
   ];
 
   const memoryStore = new MemoryBackend(null, null);
-  const changeSet = {id: 'Test change set', log: addField, baseHash: null};
+  const changeSet = {id: 'Test change set', log: addField};
   await memoryStore.updateChangeSet("test", "test", changeSet);
   await memoryStore.commitChangeSet("test", "test")
 
@@ -135,15 +134,14 @@ it('Deleting hash causes error', async () => {
       changeLog: 'Adding a field',
       typeName: 'Test',
       name: 'test_field',
-      type: 'string',
+      _type: FieldTypes.STRING,
       description: 'A field that helps testing',
       optional: true,
-      _default: null
     }
   ];
 
   const memoryStore = new MemoryBackend(null, null);
-  const changeSet = {id: 'Test change set', log: addField, baseHash: null};
+  const changeSet = {id: 'Test change set', log: addField};
   await memoryStore.updateChangeSet("test", "test", changeSet);
   await memoryStore.commitChangeSet("test", "test")
   await memoryStore.getLog();
@@ -168,10 +166,9 @@ it('Multiple types with type reference', async () => {
       changeLog: 'Adding a field',
       typeName: 'Test',
       name: 'test_field',
-      type: 'string',
+      _type: FieldTypes.STRING,
       description: 'A field that helps testing',
       optional: true,
-      _default: null
     },
     {
       actionType: 'NewTypeAction',
@@ -184,7 +181,6 @@ it('Multiple types with type reference', async () => {
   const changeSet = {
     log: basicTypes, 
     id: 'Test multiple types 1', 
-    baseHash: null
   };
   await memoryStore.updateChangeSet("test", "test", changeSet);
   await memoryStore.commitChangeSet("test", "test")
@@ -203,8 +199,7 @@ it('Multiple types with type reference', async () => {
     };
   const changeSet2 = {
     log: [referenceChange], 
-    id: 'Test multiple types 2', 
-    baseHash: null
+    id: 'Test multiple types 2'
   };
   await memoryStore.updateChangeSet("test", "test2", changeSet2);
   await memoryStore.commitChangeSet("test", "test2")
@@ -243,7 +238,7 @@ for (const [name, path, hashTo] of json_snapshot_tests) {
     const changeSets = require(path);
     const memoryStore = new MemoryBackend(null, null);
     for (let rawChangeSet of changeSets) {
-      const changeSet = {log: rawChangeSet, id: name, baseHash: null};
+      const changeSet = {log: rawChangeSet, id: name};
       await memoryStore.updateChangeSet("test", "test", changeSet);
       await memoryStore.commitChangeSet("test", "test")
     }

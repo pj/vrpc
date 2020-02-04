@@ -13,7 +13,7 @@ const path = __importStar(require("path"));
 const yargs = __importStar(require("yargs"));
 const generate = __importStar(require("./generate"));
 const generate_typescript = __importStar(require("./generate_typescript"));
-const index_1 = require("./server/index");
+const server_1 = require("./server");
 const file_backend_1 = require("./file_backend");
 const args = yargs
     .command('generate <source> <dest>', 'generate type and service definitions', (yargs) => {
@@ -54,6 +54,6 @@ const args = yargs
     else {
         throw new Error('Only file backends are valid at the moment.');
     }
-    index_1.startServer(backend);
+    server_1.startServer(backend);
 })
     .argv;

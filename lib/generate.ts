@@ -1,20 +1,30 @@
 import {
+    Field as GQLField,
+    ObjectType
+} from 'type-graphql';
+import {
   Action, 
   ChangeAction,
   GroupAction, 
   FieldTypes, 
   FieldDefaults, 
-  ChangeSet
+  ChangeSet,
+  FieldDefaultsUnion
 } from './action';
 import * as typeidea from './typeidea';
-import { version } from 'punycode';
 
-type VersionState = 'active' | 'removed' | 'deprecated';
-
+@ObjectType()
 export class BaseField {
+  @GQLField()
   name: string;
+
+  @GQLField()
   changeLog: string;
+
+  @GQLField()
   description: string;
+
+  @GQLField()
   optional: boolean;
 
   constructor(
@@ -42,9 +52,13 @@ export class BaseField {
   }
 }
 
+@ObjectType()
 export class Field extends BaseField {
+  @GQLField(type => FieldTypes)
   type: FieldTypes;
-  _default: FieldDefaults | null;
+
+  @GQLField(type => FieldDefaultsUnion, {nullable: true})
+  _default?: FieldDefaults;
 
   constructor(
     name: string,
@@ -52,7 +66,7 @@ export class Field extends BaseField {
     description: string,
     optional: boolean,
     type: FieldTypes,
-    _default: FieldDefaults | null
+    _default: FieldDefaults | undefined
   ) {
     super(name, changeLog, description, optional);
     this.type = type;
@@ -85,10 +99,16 @@ export class Field extends BaseField {
   }
 }
 
+@ObjectType()
 export class ReferenceField extends BaseField {
+  @GQLField()
   referenceType: string;
-  referenceHash: string | null;
-  referenceVersion: number | null;
+
+  @GQLField({nullable: true})
+  referenceHash?: string;
+
+  @GQLField({nullable: true})
+  referenceVersion?: number;
 
   constructor(
     name: string,
@@ -96,8 +116,8 @@ export class ReferenceField extends BaseField {
     description: string,
     optional: boolean,
     referenceType: string,
-    referenceHash: string | null,
-    referenceVersion: number | null
+    referenceHash: string | undefined,
+    referenceVersion: number | undefined
   ) {
     super(name, changeLog, description, optional);
     this.referenceType = referenceType;
@@ -130,10 +150,27 @@ export type FieldObject = {
   [key: string]: BaseField;
 };
 
+@ObjectType()
+export class GQLFieldObject {
+  @GQLField()
+  name: string;
+
+  @GQLField()
+  field: BaseField
+}
+
+@ObjectType()
 export class Version {
+  @GQLField()
   _type: string;
+
+  @GQLField()
   version: number;
+
+  @GQLField()
   hash: string;
+
+  @GQLField(type => GQLFieldObject)
   fields: FieldObject;
 
   constructor(
@@ -165,11 +202,21 @@ export class Version {
   }
 }
 
+@ObjectType()
 export class Type {
+  @GQLField()
   name: string;
+
+  @GQLField(type => [Version])
   versions: Version[];
-  changeSetName: string | null;
+
+  @GQLField({nullable: true})
+  changeSetName?: string;
+
+  @GQLField(type => [String])
   changeLog: string[];
+
+  @GQLField()
   description: string;
 
   constructor(name: string, description: string) {
@@ -180,9 +227,15 @@ export class Type {
   }
 }
 
+@ObjectType()
 export class VersionType {
+  @GQLField()
   _type: string;
+
+  @GQLField()
   version: number;
+
+  @GQLField()
   hash: string;
 
   constructor(
@@ -204,11 +257,29 @@ export class VersionType {
   }
 }
 
+@ObjectType()
+export class GQLVersionType {
+  @GQLField(type => VersionType)
+  input: VersionType;
+
+  @GQLField(type => [VersionType])
+  outputs: VersionType[];
+}
+
+@ObjectType()
 export class Service {
+  @GQLField()
   name: string;
+
+  @GQLField(type => [String])
   changeLog: string[];
+
+  @GQLField()
   description: string;
+
+  @GQLField(type => [GQLVersionType])
   versions: Map<string, [VersionType, VersionType[]]>;
+
   seenInputVersions: Set<string>;
 
   constructor(
@@ -290,7 +361,7 @@ function updateVersion(newVersion: Version, logAction: Action | ChangeAction) {
     const currentField = newVersion.fields[logAction.name];
     const newField = currentField.copy();
     if (newField instanceof Field) {
-      newField._default = null;
+      newField._default = undefined;
     }
     newField.changeLog = logAction.changeLog;
     newVersion.fields[newField.name] = newField;
@@ -301,8 +372,8 @@ function updateVersion(newVersion: Version, logAction: Action | ChangeAction) {
       logAction.changeLog,
       logAction.description,
       logAction.optional,
-      logAction.type,
-      logAction._default
+      logAction._type,
+      logAction._default = logAction._default
     );
     newVersion.fields[newField.name] = newField;
   } else if (logAction.actionType === 'UpdateDescriptionTypeAction') {

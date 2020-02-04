@@ -13,7 +13,7 @@
       "changeLog": "Adding a field",
       "state": "active",
       "name": "test_field",
-      "type": "string",
+      "_type": "string",
       "description": "A field that helps testing",
       "optional": true,
       "_default": null

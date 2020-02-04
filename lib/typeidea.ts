@@ -298,7 +298,7 @@ function loadAction(rawAction: any): Action {
       actionType: 'AddFieldTypeAction',
       typeName: stringNotNull(rawAction, 'typeName'),
       name: stringNotNull(rawAction, 'name'),
-      type: rawAction.type,
+      _type: rawAction._type,
       description: stringNotNull(rawAction, 'description'),
       optional: booleanNotNull(rawAction, 'optional'),
       _default: rawAction._default,
