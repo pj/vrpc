@@ -151,7 +151,7 @@ export type FieldObject = {
   [key: string]: BaseField;
 };
 
-@ObjectType()
+@ObjectType('FieldObject')
 export class GQLFieldObject {
   @GQLField()
   name: string;
@@ -258,7 +258,7 @@ export class VersionType {
   }
 }
 
-@ObjectType()
+@ObjectType('ServiceVersionType')
 export class GQLVersionType {
   @GQLField(type => VersionType)
   output: VersionType;

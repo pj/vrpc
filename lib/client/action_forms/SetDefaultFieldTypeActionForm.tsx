@@ -3,10 +3,10 @@ import React from "react";
 import TypeSelector from "./TypeSelector";
 import DefaultSelector from "./DefaultSelector";
 import FieldSelector from "./FieldSelector";
-import { GQLSetDefaultFieldTypeActionInput } from "../hooks";
+import { SetDefaultFieldTypeActionInput } from "../hooks";
 
 const SetDefaultFieldTypeActionForm = ActionFormHOC(
-  function (props: FormComponentProps<GQLSetDefaultFieldTypeActionInput>) {
+  function (props: FormComponentProps<SetDefaultFieldTypeActionInput>) {
     return (
       <React.Fragment>
         <TypeSelector

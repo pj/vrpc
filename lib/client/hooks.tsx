@@ -172,6 +172,12 @@ export type Field = BaseField & {
 
 export type FieldDefaults = StringField | BooleanField | FloatField | IntegerField;
 
+export type FieldObject = {
+   __typename: 'FieldObject',
+  name: Scalars['String'],
+  field: BaseField,
+};
+
 export enum FieldTypes {
   String = 'STRING',
   Boolean = 'BOOLEAN',
@@ -182,18 +188,6 @@ export enum FieldTypes {
 export type FloatField = {
    __typename: 'FloatField',
   value: Scalars['Float'],
-};
-
-export type GqlFieldObject = {
-   __typename: 'GQLFieldObject',
-  name: Scalars['String'],
-  field: BaseField,
-};
-
-export type GqlVersionType = {
-   __typename: 'GQLVersionType',
-  output: VersionType,
-  inputs: Array<VersionType>,
 };
 
 export type GroupAction = {
@@ -433,7 +427,13 @@ export type Service = {
   name: Scalars['String'],
   changeLog: Array<Scalars['String']>,
   description: Scalars['String'],
-  versions: Array<GqlVersionType>,
+  versions: Array<ServiceVersionType>,
+};
+
+export type ServiceVersionType = {
+   __typename: 'ServiceVersionType',
+  output: VersionType,
+  inputs: Array<VersionType>,
 };
 
 export type SetDefaultFieldTypeAction = {
@@ -530,7 +530,7 @@ export type Version = {
   _type: Scalars['String'],
   version: Scalars['Float'],
   hash: Scalars['String'],
-  fields: GqlFieldObject,
+  fields: FieldObject,
 };
 
 export type VersionType = {
@@ -543,6 +543,46 @@ export type VersionType = {
 export type LogFieldsFragment = (
   { __typename: 'GroupAction' }
   & Pick<GroupAction, 'hash'>
+  & { actions: Array<(
+    { __typename: 'NewTypeAction' }
+    & ActionsFragment_NewTypeAction_Fragment
+  ) | (
+    { __typename: 'RenameFieldTypeAction' }
+    & ActionsFragment_RenameFieldTypeAction_Fragment
+  ) | (
+    { __typename: 'RequiredFieldTypeAction' }
+    & ActionsFragment_RequiredFieldTypeAction_Fragment
+  ) | (
+    { __typename: 'OptionalFieldTypeAction' }
+    & ActionsFragment_OptionalFieldTypeAction_Fragment
+  ) | (
+    { __typename: 'DeleteFieldTypeAction' }
+    & ActionsFragment_DeleteFieldTypeAction_Fragment
+  ) | (
+    { __typename: 'SetDefaultFieldTypeAction' }
+    & ActionsFragment_SetDefaultFieldTypeAction_Fragment
+  ) | (
+    { __typename: 'RemoveDefaultFieldTypeAction' }
+    & ActionsFragment_RemoveDefaultFieldTypeAction_Fragment
+  ) | (
+    { __typename: 'AddFieldTypeAction' }
+    & ActionsFragment_AddFieldTypeAction_Fragment
+  ) | (
+    { __typename: 'UpdateDescriptionTypeAction' }
+    & ActionsFragment_UpdateDescriptionTypeAction_Fragment
+  ) | (
+    { __typename: 'ReferenceFieldTypeAction' }
+    & ActionsFragment_ReferenceFieldTypeAction_Fragment
+  ) | (
+    { __typename: 'NewServiceAction' }
+    & ActionsFragment_NewServiceAction_Fragment
+  ) | (
+    { __typename: 'UpdateDescriptionServiceAction' }
+    & ActionsFragment_UpdateDescriptionServiceAction_Fragment
+  ) | (
+    { __typename: 'AddVersionServiceAction' }
+    & ActionsFragment_AddVersionServiceAction_Fragment
+  )> }
 );
 
 export type TypeFieldsFragment = (
@@ -552,7 +592,7 @@ export type TypeFieldsFragment = (
     { __typename: 'Version' }
     & Pick<Version, 'version' | 'hash' | '_type'>
     & { fields: (
-      { __typename: 'GQLFieldObject' }
+      { __typename: 'FieldObject' }
       & { field: (
         { __typename: 'Field' }
         & Pick<Field, 'type' | 'name' | 'description' | 'changeLog' | 'optional'>
@@ -581,7 +621,7 @@ export type ServiceFieldsFragment = (
   { __typename: 'Service' }
   & Pick<Service, 'name' | 'description' | 'changeLog'>
   & { versions: Array<(
-    { __typename: 'GQLVersionType' }
+    { __typename: 'ServiceVersionType' }
     & { inputs: Array<(
       { __typename: 'VersionType' }
       & Pick<VersionType, 'version' | '_type' | 'hash'>
@@ -961,72 +1001,6 @@ export type CommitChangeSetMutation = (
   ) }
 );
 
-export const LogFieldsFragmentDoc = gql`
-    fragment LogFields on GroupAction {
-  hash
-}
-    `;
-export const TypeFieldsFragmentDoc = gql`
-    fragment TypeFields on Type {
-  name
-  changeLog
-  description
-  versions {
-    version
-    hash
-    _type
-    fields {
-      field {
-        name
-        description
-        changeLog
-        optional
-        ... on ReferenceField {
-          referenceType
-          referenceHash
-          referenceVersion
-        }
-        ... on Field {
-          _default {
-            ... on StringField {
-              stringValue: value
-            }
-            ... on BooleanField {
-              booleanValue: value
-            }
-            ... on FloatField {
-              floatValue: value
-            }
-            ... on IntegerField {
-              intValue: value
-            }
-          }
-          type
-        }
-      }
-    }
-  }
-}
-    `;
-export const ServiceFieldsFragmentDoc = gql`
-    fragment ServiceFields on Service {
-  name
-  description
-  changeLog
-  versions {
-    inputs {
-      version
-      _type
-      hash
-    }
-    output {
-      version
-      _type
-      hash
-    }
-  }
-}
-    `;
 export const DataFragmentFragmentDoc = gql`
     fragment DataFragment on FieldDefaults {
   ... on StringField {
@@ -1047,118 +1021,6 @@ export const DataFragmentFragmentDoc = gql`
   }
 }
     `;
-export const ChangeActionsFragmentFragmentDoc = gql`
-    fragment ChangeActionsFragment on ChangeAction {
-  ... on NewServiceChangeAction {
-    __typename
-    changeLog
-    serviceName
-    description
-  }
-  ... on UpdateDescriptionServiceChangeAction {
-    __typename
-    changeLog
-    serviceName
-    description
-  }
-  ... on AddVersionServiceChangeAction {
-    __typename
-    changeLog
-    serviceName
-    inputType
-    outputType
-    inputVersion
-    inputHash
-    outputVersion
-    outputHash
-  }
-  ... on RenameFieldTypeChangeAction {
-    __typename
-    changeLog
-    typeName
-    _from
-    to
-  }
-  ... on RequiredFieldTypeChangeAction {
-    __typename
-    changeLog
-    typeName
-    name
-  }
-  ... on OptionalFieldTypeChangeAction {
-    __typename
-    changeLog
-    typeName
-    name
-  }
-  ... on DeleteFieldTypeChangeAction {
-    __typename
-    changeLog
-    typeName
-    name
-  }
-  ... on SetDefaultFieldTypeChangeAction {
-    __typename
-    changeLog
-    typeName
-    name
-    newDefault: _default {
-      ...DataFragment
-    }
-  }
-  ... on RemoveDefaultFieldTypeChangeAction {
-    __typename
-    changeLog
-    typeName
-    name
-  }
-  ... on AddFieldTypeChangeAction {
-    __typename
-    changeLog
-    typeName
-    name
-    _type
-    description
-    optional
-    _default {
-      ...DataFragment
-    }
-  }
-  ... on UpdateDescriptionTypeChangeAction {
-    __typename
-    changeLog
-    typeName
-    name
-    description
-  }
-  ... on ReferenceFieldTypeChangeAction {
-    __typename
-    changeLog
-    typeName
-    name
-    description
-    optional
-    referenceType
-    referenceHash
-    referenceVersion
-  }
-  ... on NewTypeChangeAction {
-    __typename
-    changeLog
-    typeName
-    description
-  }
-}
-    ${DataFragmentFragmentDoc}`;
-export const ChangeSetFieldsFragmentDoc = gql`
-    fragment ChangeSetFields on ChangeSet {
-  id
-  baseHash
-  log {
-    ...ChangeActionsFragment
-  }
-}
-    ${ChangeActionsFragmentFragmentDoc}`;
 export const ActionsFragmentFragmentDoc = gql`
     fragment ActionsFragment on Action {
   ... on NewServiceAction {
@@ -1301,6 +1163,187 @@ export const ActionsFragmentFragmentDoc = gql`
   }
 }
     ${DataFragmentFragmentDoc}`;
+export const LogFieldsFragmentDoc = gql`
+    fragment LogFields on GroupAction {
+  hash
+  actions {
+    ...ActionsFragment
+  }
+}
+    ${ActionsFragmentFragmentDoc}`;
+export const TypeFieldsFragmentDoc = gql`
+    fragment TypeFields on Type {
+  name
+  changeLog
+  description
+  versions {
+    version
+    hash
+    _type
+    fields {
+      field {
+        name
+        description
+        changeLog
+        optional
+        ... on ReferenceField {
+          referenceType
+          referenceHash
+          referenceVersion
+        }
+        ... on Field {
+          _default {
+            ... on StringField {
+              stringValue: value
+            }
+            ... on BooleanField {
+              booleanValue: value
+            }
+            ... on FloatField {
+              floatValue: value
+            }
+            ... on IntegerField {
+              intValue: value
+            }
+          }
+          type
+        }
+      }
+    }
+  }
+}
+    `;
+export const ServiceFieldsFragmentDoc = gql`
+    fragment ServiceFields on Service {
+  name
+  description
+  changeLog
+  versions {
+    inputs {
+      version
+      _type
+      hash
+    }
+    output {
+      version
+      _type
+      hash
+    }
+  }
+}
+    `;
+export const ChangeActionsFragmentFragmentDoc = gql`
+    fragment ChangeActionsFragment on ChangeAction {
+  ... on NewServiceChangeAction {
+    __typename
+    changeLog
+    serviceName
+    description
+  }
+  ... on UpdateDescriptionServiceChangeAction {
+    __typename
+    changeLog
+    serviceName
+    description
+  }
+  ... on AddVersionServiceChangeAction {
+    __typename
+    changeLog
+    serviceName
+    inputType
+    outputType
+    inputVersion
+    inputHash
+    outputVersion
+    outputHash
+  }
+  ... on RenameFieldTypeChangeAction {
+    __typename
+    changeLog
+    typeName
+    _from
+    to
+  }
+  ... on RequiredFieldTypeChangeAction {
+    __typename
+    changeLog
+    typeName
+    name
+  }
+  ... on OptionalFieldTypeChangeAction {
+    __typename
+    changeLog
+    typeName
+    name
+  }
+  ... on DeleteFieldTypeChangeAction {
+    __typename
+    changeLog
+    typeName
+    name
+  }
+  ... on SetDefaultFieldTypeChangeAction {
+    __typename
+    changeLog
+    typeName
+    name
+    newDefault: _default {
+      ...DataFragment
+    }
+  }
+  ... on RemoveDefaultFieldTypeChangeAction {
+    __typename
+    changeLog
+    typeName
+    name
+  }
+  ... on AddFieldTypeChangeAction {
+    __typename
+    changeLog
+    typeName
+    name
+    _type
+    description
+    optional
+    _default {
+      ...DataFragment
+    }
+  }
+  ... on UpdateDescriptionTypeChangeAction {
+    __typename
+    changeLog
+    typeName
+    name
+    description
+  }
+  ... on ReferenceFieldTypeChangeAction {
+    __typename
+    changeLog
+    typeName
+    name
+    description
+    optional
+    referenceType
+    referenceHash
+    referenceVersion
+  }
+  ... on NewTypeChangeAction {
+    __typename
+    changeLog
+    typeName
+    description
+  }
+}
+    ${DataFragmentFragmentDoc}`;
+export const ChangeSetFieldsFragmentDoc = gql`
+    fragment ChangeSetFields on ChangeSet {
+  id
+  baseHash
+  log {
+    ...ChangeActionsFragment
+  }
+}
+    ${ChangeActionsFragmentFragmentDoc}`;
 export const ChangeSetFragmentFragmentDoc = gql`
     fragment ChangeSetFragment on ChangeSet {
   id

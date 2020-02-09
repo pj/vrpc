@@ -1,10 +1,10 @@
 import { FormControl, InputLabel, Select, MenuItem } from "@material-ui/core";
-import { GQLType } from "../hooks";
+import { Type } from "../hooks";
 import React, { ReactNode } from "react";
 
 type FieldSelectorProps<V> = {
   selectedType: string,
-  types: GQLType[],
+  types: TypeFieldsFragment[],
   value: V,
   handleChange: (event: React.ChangeEvent<any>) => void
 };

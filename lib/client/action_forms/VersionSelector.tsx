@@ -1,10 +1,10 @@
-import { GQLType } from "../hooks";
+import { Type, TypeFieldsFragment } from "../hooks";
 
 import { FormControl, InputLabel, Select, MenuItem } from "@material-ui/core";
 import React from "react";
 
 type VersionSelectorProps = {
-  types: GQLType[],
+  types: TypeFieldsFragment[],
   typeName: string,
   version: number | null,
   handleChange: (version: number) => void

@@ -1,10 +1,10 @@
 import { FormComponentProps, ActionFormHOC } from "./ActionForm"
 import React from "react";
-import { GQLNewServiceActionInput } from "../hooks";
+import { NewServiceActionInput } from "../hooks";
 import { FormControl, TextField } from "@material-ui/core";
 
 const NewServiceActionForm = ActionFormHOC(
-  function (props: FormComponentProps<GQLNewServiceActionInput>) {
+  function (props: FormComponentProps<NewServiceActionInput>) {
     return (
       <React.Fragment>
         <FormControl>

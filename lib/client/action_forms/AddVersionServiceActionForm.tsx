@@ -1,11 +1,11 @@
 import { FormComponentProps, ActionFormHOC } from "./ActionForm"
 import React from "react";
-import { GQLAddVersionServiceActionInput } from "../hooks";
+import { AddVersionServiceActionInput } from "../hooks";
 import TypeSelector from "./TypeSelector";
 import VersionSelector from "./VersionSelector";
 
 const AddVersionServiceActionForm = ActionFormHOC(
-  function (props: FormComponentProps<GQLAddVersionServiceActionInput>) {
+  function (props: FormComponentProps<AddVersionServiceActionInput>) {
     return (
     <React.Fragment>
       <TypeSelector

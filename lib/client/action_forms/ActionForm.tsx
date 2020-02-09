@@ -1,21 +1,21 @@
-import { GQLType, GQLService, useUpdateChangeSetMutation, GQLFieldDataInput, GQLLogActionChange } from "../hooks";
+import { Type, Service, useUpdateChangeSetMutation, FieldDataInput, LogActionChange } from "../hooks";
 import { useState } from "react";
 import { makeStyles, Paper, CircularProgress, FormControl, TextField, Button } from "@material-ui/core";
 import React from "react";
-import { GQLChangeAction } from "~server/schema";
+import { ChangeAction } from "~server/schema";
 
 export type ActionFormProps = {
-    types: GQLType[],
-    services: GQLService[]
+    types: TypeFieldsFragment[],
+    services: ServiceFieldsFragment[]
 };
 
 export type FormComponentProps<I> = {
-    types: GQLType[],
-    services: GQLService[],
+    types: TypeFieldsFragment[],
+    services: ServiceFieldsFragment[],
     value: I,
     handleChange(key: keyof I): (event: React.ChangeEvent<HTMLInputElement>) => void,
     handleBooleanChange(key: keyof I): (event: React.ChangeEvent<HTMLInputElement>) => void
-    handleDefaultChange(key: keyof I): (_default: GQLFieldDataInput) => void
+    handleDefaultChange(key: keyof I): (_default: FieldDataInput) => void
     handleRenameSetType: (event: React.ChangeEvent<HTMLInputElement>) => void,
     handleVersionChange(key: keyof I): (version: number) => void,
 };
@@ -25,7 +25,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export function ActionFormHOC<I extends GQLLogActionChange>(
+export function ActionFormHOC<I extends LogActionChange>(
     FormComponent: React.FunctionComponent<FormComponentProps<Partial<I>>>
 ) {
     function ActionForm(props: ActionFormProps) {
@@ -50,7 +50,7 @@ export function ActionFormHOC<I extends GQLLogActionChange>(
         }
 
         function handleDefaultChange(key: keyof I) {
-            function innerHandleChange(_default: GQLFieldDataInput) {
+            function innerHandleChange(_default: FieldDataInput) {
                 setValue({...value, [key]: _default});
             }
 

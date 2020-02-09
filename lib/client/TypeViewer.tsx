@@ -7,8 +7,8 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-import { GQLType, GQLVersion, GQLServiceVersion } from './hooks';
-import { GQLService } from '~server/schema';
+import { Type, Version, ServiceVersion, ServiceFieldsFragment, TypeFieldsFragment } from './hooks';
+import { Service } from '~server/schema';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -47,8 +47,8 @@ type ${props.version._type} {
 };
 
 type RenderServiceProps = {
-  version: GQLServiceVersion,
-  service: GQLService
+  version: ServiceVersion,
+  service: ServiceFieldsFragment
 };
 
 const RenderService = (props: RenderServiceProps) => {
@@ -68,8 +68,8 @@ function ${props.service.name}(
 };
 
 type TypeViewerProps = {
-  types: GQLType[],
-  services: GQLService[]
+  types: TypeFieldsFragment[],
+  services: ServiceFieldsFragment[]
 };
 
 const TypeViewer = (props: TypeViewerProps) => {
@@ -77,12 +77,12 @@ const TypeViewer = (props: TypeViewerProps) => {
     return null;
   }
 
-  const versionsByType = new Map<string, Map<number, GQLVersion>>();
+  const versionsByType = new Map<string, Map<number, Version>>();
   const servicesByName = new Map();
   const typesByName = new Map();
 
   for (let _type of props.types) {
-    const versions = new Map<number, GQLVersion>();
+    const versions = new Map<number, Version>();
 
     for (let version of _type.versions) {
       versions.set(version.version, version);

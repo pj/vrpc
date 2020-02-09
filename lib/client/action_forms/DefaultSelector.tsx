@@ -1,7 +1,7 @@
 // FIXME: fix types of NumberFormat.
 import React, { useState } from "react";
 import { FormControl, InputLabel, Select, MenuItem, TextField, Checkbox } from "@material-ui/core";
-import { GQLFieldDataInput } from "../hooks";
+import { FieldDataInput } from "../hooks";
 import NumberFormat from 'react-number-format';
 
 const DEFAULT_TYPES = [
@@ -14,8 +14,8 @@ const DEFAULT_TYPES = [
 type DEFAULT_TYPE_TYPE = "integer" | "float" | "string" | "boolean" | null;
 
 type DefaultSelectorProps = {
-  _default: GQLFieldDataInput | null | undefined,
-  handleChange: (_default: GQLFieldDataInput) => void
+  _default: FieldDataInput | null | undefined,
+  handleChange: (_default: FieldDataInput) => void
 };
 
 const DefaultSelector = (props: DefaultSelectorProps) => {

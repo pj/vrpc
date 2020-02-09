@@ -5,7 +5,7 @@ import Paper from '@material-ui/core/Paper';
 
 import AddFieldTypeActionForm from "./AddFieldTypeActionForm";
 import ActionTypeSelector from './ActionTypeSelector';
-import { GQLType, GQLService, GQLRequiredFieldTypeActionInput, GQLOptionalFieldTypeActionInput, GQLDeleteFieldTypeActionInput, GQLRemoveDefaultFieldTypeActionInput } from '../hooks';
+import { TypeFieldsFragment, ServiceFieldsFragment } from '../hooks';
 import AddVersionServiceActionForm from './AddVersionServiceActionForm';
 import NewServiceActionForm from './NewServiceActionForm';
 import RenameFieldTypeActionForm from './RenameFieldTypeActionForm';
@@ -34,8 +34,8 @@ const useStyles = makeStyles(theme => ({
 
 type ActionFormProps = {
   logType: string,
-  types: GQLType[],
-  services: GQLService[]
+  types: TypeFieldsFragment[],
+  services: ServiceFieldsFragment[]
 };
 
 const ActionForm = (props: ActionFormProps) => {
@@ -48,7 +48,7 @@ const ActionForm = (props: ActionFormProps) => {
       />
     );
   case "RequiredFieldTypeAction":
-    let RequiredFieldTypeActionForm = FieldTypeActionFormHOC<GQLRequiredFieldTypeActionInput>();
+    let RequiredFieldTypeActionForm = FieldTypeActionFormHOC<RequiredFieldTypeActionInput>();
     return (
       <RequiredFieldTypeActionForm 
         types={props.types}
@@ -56,7 +56,7 @@ const ActionForm = (props: ActionFormProps) => {
       />
     );
   case "OptionalFieldTypeAction":
-    let OptionalFieldTypeActionForm = FieldTypeActionFormHOC<GQLOptionalFieldTypeActionInput>();
+    let OptionalFieldTypeActionForm = FieldTypeActionFormHOC<OptionalFieldTypeActionInput>();
     return (
       <OptionalFieldTypeActionForm 
         types={props.types}
@@ -64,7 +64,7 @@ const ActionForm = (props: ActionFormProps) => {
       />
     );
   case "DeleteFieldTypeAction":
-    let DeleteFieldTypeActionForm = FieldTypeActionFormHOC<GQLDeleteFieldTypeActionInput>();
+    let DeleteFieldTypeActionForm = FieldTypeActionFormHOC<DeleteFieldTypeActionInput>();
     return (
       <DeleteFieldTypeActionForm 
         types={props.types}
@@ -72,7 +72,7 @@ const ActionForm = (props: ActionFormProps) => {
       />
     );
   case "RemoveDefaultFieldTypeAction":
-    let RemoveDefaultFieldTypeActionForm = FieldTypeActionFormHOC<GQLRemoveDefaultFieldTypeActionInput>();
+    let RemoveDefaultFieldTypeActionForm = FieldTypeActionFormHOC<RemoveDefaultFieldTypeActionInput>();
     return (
       <RemoveDefaultFieldTypeActionForm 
         types={props.types}
@@ -141,8 +141,8 @@ const ActionForm = (props: ActionFormProps) => {
 }
 
 type ActionCreatorModalProps = {
-  types: GQLType[],
-  services: GQLService[]
+  types: TypeFieldsFragment[],
+  services: ServiceFieldsFragment[]
 }
 
 const ActionCreatorModal = (props: ActionCreatorModalProps) => {

@@ -1,14 +1,14 @@
 import { FormControl, InputLabel, Select, MenuItem } from "@material-ui/core";
-import { GQLService } from "../hooks";
+import { Service } from "../hooks";
 import React from "react";
 
 type ServiceSelectorProps<V> = {
-  services: GQLService[]
+  services: ServiceFieldsFragment[]
   value: V,
   handleChange: (event: React.ChangeEvent<any>) => void
 };
 
-export default function ServiceSelector<V>(props: ServiceSelectorProps<V>) {
+export default function ServiceSelector<V>(props: ServiceFieldsFragmentSelectorProps<V>) {
   const serviceNames = props.services.map(s => s.name);
 
   return (

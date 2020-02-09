@@ -154,6 +154,11 @@ type Field implements BaseField {
 
 union FieldDefaults = StringField | BooleanField | FloatField | IntegerField
 
+type FieldObject {
+  name: String!
+  field: BaseField!
+}
+
 enum FieldTypes {
   STRING
   BOOLEAN
@@ -163,16 +168,6 @@ enum FieldTypes {
 
 type FloatField {
   value: Float!
-}
-
-type GQLFieldObject {
-  name: String!
-  field: BaseField!
-}
-
-type GQLVersionType {
-  output: VersionType!
-  inputs: [VersionType!]!
 }
 
 type GroupAction {
@@ -372,7 +367,12 @@ type Service {
   name: String!
   changeLog: [String!]!
   description: String!
-  versions: [GQLVersionType!]!
+  versions: [ServiceVersionType!]!
+}
+
+type ServiceVersionType {
+  output: VersionType!
+  inputs: [VersionType!]!
 }
 
 type SetDefaultFieldTypeAction {
@@ -460,7 +460,7 @@ type Version {
   _type: String!
   version: Float!
   hash: String!
-  fields: GQLFieldObject!
+  fields: FieldObject!
 }
 
 type VersionType {

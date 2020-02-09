@@ -1,13 +1,13 @@
 import { FormComponentProps, ActionFormHOC } from "./ActionForm"
 import React from "react";
-import { GQLAddVersionServiceActionInput, GQLAddFieldTypeActionInput } from "../hooks";
+import { AddVersionServiceActionInput, AddFieldTypeActionInput } from "../hooks";
 import TypeSelector from "./TypeSelector";
 import VersionSelector from "./VersionSelector";
 import DefaultSelector from "./DefaultSelector";
 import { FormControl, TextField, Checkbox } from "@material-ui/core";
 
 const AddFieldTypeActionForm = ActionFormHOC(
-  function (props: FormComponentProps<GQLAddFieldTypeActionInput>) {
+  function (props: FormComponentProps<AddFieldTypeActionInput>) {
     return (
       <React.Fragment>
         <TypeSelector

@@ -1,12 +1,12 @@
 import { FormComponentProps, ActionFormHOC } from "./ActionForm"
 import React from "react";
-import { GQLNewServiceActionInput, GQLAddFieldTypeActionInput, GQLRequiredFieldTypeActionInput, GQLOptionalFieldTypeActionInput, GQLDeleteFieldTypeActionInput, GQLRemoveDefaultFieldTypeActionInput } from "../hooks";
+import { NewServiceActionInput, AddFieldTypeActionInput, RequiredFieldTypeActionInput, OptionalFieldTypeActionInput, DeleteFieldTypeActionInput, RemoveDefaultFieldTypeActionInput } from "../hooks";
 import { FormControl, TextField } from "@material-ui/core";
 import TypeSelector from "./TypeSelector";
 import FieldSelector from "./FieldSelector";
 
-type FieldInputTypes = GQLRequiredFieldTypeActionInput | GQLOptionalFieldTypeActionInput 
-  | GQLDeleteFieldTypeActionInput | GQLRemoveDefaultFieldTypeActionInput;
+type FieldInputTypes = RequiredFieldTypeActionInput | OptionalFieldTypeActionInput 
+  | DeleteFieldTypeActionInput | RemoveDefaultFieldTypeActionInput;
 
 function FieldTypeActionFormHOC<I extends FieldInputTypes>() {
   const InnerComponent = ActionFormHOC(

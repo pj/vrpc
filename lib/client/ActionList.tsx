@@ -20,7 +20,7 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 
-import {GQLLogAction, GQLLogActionChange} from './hooks';
+import { LogFieldsFragment, ChangeActionsFragmentFragment, ActionsFragmentFragment, ChangeSetFieldsFragment } from './hooks';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -32,89 +32,215 @@ const useStyles = makeStyles(theme => ({
   },
   actionButtons: {
     display: 'flex'
+  },
+  spacerRow: {
+
+  },
+  headerRow: {
+
+  },
+  metadataRow: {
+
   }
+
 }));
 
 type ActionListProps = {
-  log: GQLLogAction[],
-  changeLog: GQLLogActionChange[]
+  log: LogFieldsFragment[],
 };
 
-const ActionList = (props: ActionListProps) => {
+
+type MetaDataRowProps = {
+
+}
+const MetaDataRow = (props: MetaDataRowProps) => {
   const classes = useStyles(props);
+  return (
+    <TableRow className={classes.metadataRow}>
+      <TableCell>
+      </TableCell>
+    </TableRow>
+  );
+}
 
-  const tableRows = [];
-  for (let [idx, logAction] of props.log.entries()) {
-    let isService = false;
-    let name = 'Group';
+type HeaderRowProps = {
+
+}
+const HeaderRow = (props: HeaderRowProps) => {
+  const classes = useStyles(props);
+  return (
+    <TableRow className={classes.headerRow}>
+      <TableCell>
+      </TableCell>
+      <TableCell>Name</TableCell>
+      <TableCell>Action</TableCell>
+      <TableCell>Version</TableCell>
+      <TableCell>Change</TableCell>
+      <TableCell>Options</TableCell>
+    </TableRow>
+  );
+}
+
+type SpacerRowProps = {
+
+}
+const SpacerRow = (props: SpacerRowProps) => {
+  const classes = useStyles(props);
+  return (
+    <TableRow className={classes.spacerRow}>
+      <TableCell>
+      </TableCell>
+    </TableRow>
+  );
+}
+
+function getTypeOrServiceName(
+  action: ActionsFragmentFragment | ChangeActionsFragmentFragment
+): [string, boolean] {
+  if (
+    action.__typename === "RenameFieldTypeAction"
+    || action.__typename === "RequiredFieldTypeAction"
+    || action.__typename === "OptionalFieldTypeAction"
+    || action.__typename === "DeleteFieldTypeAction"
+    || action.__typename === "SetDefaultFieldTypeAction"
+    || action.__typename === "RemoveDefaultFieldTypeAction"
+    || action.__typename === "AddFieldTypeAction"
+    || action.__typename === "UpdateDescriptionTypeAction"
+    || action.__typename === "ReferenceFieldTypeAction"
+    || action.__typename === "NewTypeAction"
+    || action.__typename === "RenameFieldTypeChangeAction"
+    || action.__typename === "RequiredFieldTypeChangeAction"
+    || action.__typename === "OptionalFieldTypeChangeAction"
+    || action.__typename === "DeleteFieldTypeChangeAction"
+    || action.__typename === "SetDefaultFieldTypeChangeAction"
+    || action.__typename === "RemoveDefaultFieldTypeChangeAction"
+    || action.__typename === "AddFieldTypeChangeAction"
+    || action.__typename === "UpdateDescriptionTypeChangeAction"
+    || action.__typename === "ReferenceFieldTypeChangeAction"
+    || action.__typename === "NewTypeChangeAction"
+  ) {
+    return [action.typeName, false];
+  } else if (
+    action.__typename === "UpdateDescriptionServiceAction"
+    || action.__typename === "AddVersionServiceAction"
+    || action.__typename === "NewServiceAction"
+    || action.__typename === "UpdateDescriptionServiceChangeAction"
+    || action.__typename === "AddVersionServiceChangeAction"
+    || action.__typename === "NewServiceChangeAction"
+  ) {
+    return [action.serviceName, true];
+  }
+
+  throw new Error(`Unable to get type or service name for action ${action}`);
+}
+
+type OptionsCellProps = {
+  action: ActionsFragmentFragment | ChangeActionsFragmentFragment;
+};
+
+const OptionsCell = (props: OptionsCellProps) => {
+  const classes = useStyles(props);
+  const options = [];
+  for (let [key, value] of Object.entries(props.action)) {
     if (
-      logAction.__typename === "RenameFieldTypeAction"
-      || logAction.__typename === "RequiredFieldTypeAction"
-      || logAction.__typename === "OptionalFieldTypeAction"
-      || logAction.__typename === "DeleteFieldTypeAction"
-      || logAction.__typename === "SetDefaultFieldTypeAction"
-      || logAction.__typename === "RemoveDefaultFieldTypeAction"
-      || logAction.__typename === "AddFieldTypeAction"
-      || logAction.__typename === "UpdateDescriptionTypeAction"
-      || logAction.__typename === "ReferenceFieldTypeAction"
-      || logAction.__typename === "NewTypeAction"
+      [
+        '__typename',
+        'version',
+        'changeLog',
+        'hash',
+        'typeName',
+        'serviceName',
+        '_id',
+      ].indexOf(key) === -1
     ) {
-      name = logAction.typeName;
-    } else if (
-      logAction.__typename === "UpdateDescriptionServiceAction"
-      || logAction.__typename === "AddVersionServiceAction"
-      || logAction.__typename === "NewServiceAction"
-    ) {
-      name = logAction.serviceName;
-      isService = true;
+      options.push(
+        <ListItem key={key} alignItems="flex-start">
+          <ListItemText primary={key}/>
+          <ListItemText primary={value as any}/>
+        </ListItem>
+      );
     }
-
-    // FIXME: fix any type.
-    const options = [];
-    for (let [key, value] of Object.entries(logAction)) {
-      if (
-        [
-          '__typename',
-          'version',
-          'changeLog',
-          'hash',
-          'typeName',
-          'serviceName',
-          '_id',
-        ].indexOf(key) === -1
-      ) {
-        options.push(
-          <ListItem key={key} alignItems="flex-start">
-            <ListItemText primary={key}/>
-            <ListItemText primary={value as any}/>
-          </ListItem>
-        );
-      }
-    }
-
+  }
     const tableClasses = classNames({
       [`${classes.tableCell}`]: true,
     });
+  return (
+    <TableCell className={tableClasses}>
+      <List dense={true}>
+        {options}
+      </List>
+    </TableCell>
+  );
+}
+
+export const ActionList = (props: ActionListProps) => {
+  const classes = useStyles(props);
+
+  const tableRows = [];
+  for (let groupAction of props.log) {
+    for (let action of groupAction.actions) {
+      tableRows.push(<MetaDataRow />);
+      tableRows.push(<HeaderRow />);
+      const [name, isService] = getTypeOrServiceName(action);
+      const tableClasses = classNames({
+        [`${classes.tableCell}`]: true,
+      });
+      tableRows.push(
+        <TableRow key={action.hash}>
+          <TableCell className={tableClasses}>
+            {isService ? "Service" : "Type"}
+          </TableCell>
+          <TableCell className={tableClasses}>{name}</TableCell>
+          <TableCell className={tableClasses}>{action.__typename}</TableCell>
+          <TableCell className={tableClasses}>
+            <Tooltip title={`hash: ${action.hash}`} placement="top">
+              <span>
+                {action.version}
+              </span>
+            </Tooltip>
+          </TableCell>
+          <TableCell className={tableClasses}>{action.changeLog}</TableCell>
+          <OptionsCell action={action} />
+        </TableRow>
+      );
+    }
+    tableRows.push(<SpacerRow />);
+  }
+
+  return (
+    <Paper>
+      <Table className={classes.table}>
+        <TableBody>
+          {tableRows.reverse()}
+        </TableBody>
+      </Table>
+    </Paper>
+  );
+};
+
+type ChangeSetActionListProps = {
+  actions: ChangeActionsFragmentFragment[]
+};
+
+export const ChangeSetActionList = (props: ChangeSetActionListProps) => {
+  const classes = useStyles(props);
+
+  const tableRows = [];
+  const tableClasses = classNames({
+    [`${classes.tableCell}`]: true,
+  });
+  for (let changeAction of props.actions ) {
+    const [name, isService] = getTypeOrServiceName(changeAction);
     tableRows.push(
-      <TableRow key={logAction.hash}>
+      <TableRow>
         <TableCell className={tableClasses}>
           {isService ? "Service" : "Type"}
         </TableCell>
         <TableCell className={tableClasses}>{name}</TableCell>
-        <TableCell className={tableClasses}>{logAction.__typename}</TableCell>
-        <TableCell className={tableClasses}>
-          <Tooltip title={`hash: ${logAction.hash}`} placement="top">
-            <span>
-              {logAction.version}
-            </span>
-          </Tooltip> : "change set"
-        </TableCell>
-        <TableCell className={tableClasses}>{logAction.changeLog}</TableCell>
-        <TableCell className={tableClasses}>
-          <List dense={true}>
-            {options}
-          </List>
-        </TableCell>
+        <TableCell className={tableClasses}>{changeAction.__typename}</TableCell>
+        // @ts-ignore
+        <TableCell className={tableClasses}>{changeAction.changeLog}</TableCell>
+        <OptionsCell action={changeAction} />
       </TableRow>
     );
   }
@@ -122,23 +248,10 @@ const ActionList = (props: ActionListProps) => {
   return (
     <Paper>
       <Table className={classes.table}>
-        <TableHead>
-          <TableRow>
-            <TableCell>
-            </TableCell>
-            <TableCell>Name</TableCell>
-            <TableCell>Action</TableCell>
-            <TableCell>Version</TableCell>
-            <TableCell>Change</TableCell>
-            <TableCell>Options</TableCell>
-          </TableRow>
-        </TableHead>
         <TableBody>
           {tableRows.reverse()}
         </TableBody>
       </Table>
     </Paper>
   );
-}
-
-export default ActionList;
+};

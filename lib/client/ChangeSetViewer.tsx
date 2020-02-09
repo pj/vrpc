@@ -3,7 +3,7 @@ import {useState} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 
-import {GQLChangeSet, useCommitChangeSetMutation, GQLType, GQLService} from './hooks';
+import {ChangeSet, useCommitChangeSetMutation, Type, Service, ChangeSetFieldsFragment, TypeFieldsFragment, ServiceFieldsFragment} from './hooks';
 import ActionList from './ActionList';
 import { FormControl, InputLabel, Select, MenuItem, Modal, Button, CircularProgress } from '@material-ui/core';
 import AddChangeSetModal from './AddChangeSetModal';
@@ -16,9 +16,9 @@ const useStyles = makeStyles(theme => ({
 
 type ChangeSetViewerProps = {
   currentBaseHash: string,
-  changeSets: GQLChangeSet[]
-  types: GQLType[],
-  services: GQLService[]
+  changeSets: ChangeSetFieldsFragment[],
+  types: TypeFieldsFragment[],
+  services: ServiceFieldsFragment[]
 }
 
 const ChangeSetViewer = (props: ChangeSetViewerProps) => {
@@ -33,7 +33,7 @@ const ChangeSetViewer = (props: ChangeSetViewerProps) => {
     return (<Paper>{error.toString()}</Paper>);
   }
 
-  const idToChangeSet = new Map<string, GQLChangeSet>();
+  const idToChangeSet = new Map<string, ChangeSetFieldsFragment>();
   for (let changeSet of props.changeSets) {
     idToChangeSet.set(changeSet.id, changeSet);
   }

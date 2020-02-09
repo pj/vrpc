@@ -1,10 +1,10 @@
 import { FormComponentProps, ActionFormHOC } from "./ActionForm"
 import React from "react";
-import { GQLReferenceFieldTypeActionInput } from "../hooks";
+import { ReferenceFieldTypeActionInput } from "../hooks";
 import { FormControl, TextField } from "@material-ui/core";
 
 const NewTypeActionForm = ActionFormHOC(
-  function (props: FormComponentProps<GQLReferenceFieldTypeActionInput>) {
+  function (props: FormComponentProps<ReferenceFieldTypeActionInput>) {
     return (
       <React.Fragment>
         <FormControl>

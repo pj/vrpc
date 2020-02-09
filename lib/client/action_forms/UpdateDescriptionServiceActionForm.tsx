@@ -1,11 +1,11 @@
 import { FormComponentProps, ActionFormHOC } from "./ActionForm"
 import ServiceSelector from "./ServiceSelector";
-import { GQLUpdateDescriptionServiceActionInput } from "../hooks";
+import { UpdateDescriptionServiceActionInput } from "../hooks";
 import React from "react";
 import { FormControl, TextField } from "@material-ui/core";
 
 const UpdateDescriptionServiceActionForm = ActionFormHOC(
-  function (props: FormComponentProps<GQLUpdateDescriptionServiceActionInput>) {
+  function (props: FormComponentProps<UpdateDescriptionServiceActionInput>) {
     return (
       <React.Fragment>
         <ServiceSelector

@@ -5,7 +5,7 @@ import AppBar from '@material-ui/core/AppBar';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import ActionList from './ActionList';
+import {ActionList} from './ActionList';
 import ChangeSetViewer from './ChangeSetViewer'
 
 import { useAllDataQuery } from './hooks';
@@ -64,7 +64,6 @@ const App = (props: any) => {
           types={data.types}
           services={data.services}
         />
-        // @ts-ignore 
         <ActionList log={data.log} />
       </main>
     </div>

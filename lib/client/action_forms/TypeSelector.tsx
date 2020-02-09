@@ -1,15 +1,15 @@
 import React from "react";
 import FormControl from "@material-ui/core/FormControl";
 import { InputLabel, Select, MenuItem } from "@material-ui/core";
-import { GQLType } from "~client/hooks";
+import { Type } from "~client/hooks";
 
 type TypeSelectorProps = {
-  types: GQLType[],
+  types: TypeFieldsFragment[],
   value: string,
   handleChange: (event: React.ChangeEvent<any>) => void
 }
 
-const TypeSelector = (props: TypeSelectorProps) => {
+const TypeSelector = (props: TypeFieldsFragmentSelectorProps) => {
   const typeNames = props.types.map(t => t.name);
 
   return (

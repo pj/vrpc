@@ -1,12 +1,12 @@
 import { FormComponentProps, ActionFormHOC } from "./ActionForm"
 import React from "react";
 import TypeSelector from "./TypeSelector";
-import { GQLReferenceFieldTypeActionInput } from "../hooks";
+import { ReferenceFieldTypeActionInput } from "../hooks";
 import { FormControl, TextField, Checkbox } from "@material-ui/core";
 import VersionSelector from "./VersionSelector";
 
 const ReferencedFieldTypeActionForm = ActionFormHOC(
-  function (props: FormComponentProps<GQLReferenceFieldTypeActionInput>) {
+  function (props: FormComponentProps<ReferenceFieldTypeActionInput>) {
     return (
       <React.Fragment>
         <TypeSelector
