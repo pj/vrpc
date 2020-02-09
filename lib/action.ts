@@ -632,16 +632,20 @@ export type GroupVersions = {
   [key: string]: number;
 };
 
-export type GroupActionCommon = {
-  actionType: 'GroupAction';
-  actions: Action[];
-  versions: GroupVersions;
-};
+@ObjectType()
 export class GroupAction implements HashedAction {
+  @Field()
   hash: string;
+
+  @Field()
   version: number;
+
+  @Field()
   actionType: 'GroupAction';
+
+  @Field(type => [ActionUnion])
   actions: Action[];
+
   versions: GroupVersions;
 }
 export class GroupChangeAction {

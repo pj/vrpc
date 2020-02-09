@@ -1,19 +1,5 @@
-fragment LogFields on LogAction {
-    ...ActionsFragment
-    ... on GroupAction {
-      __typename
-      changeLog
-      hash
-      _id: hash
-      version
-      groupedActions {
-         ...ActionsFragment
-      }
-      versions {
-        typeName,
-        version
-      }
-    }
+fragment LogFields on GroupAction {
+  hash
 }
 
 fragment TypeFields on Type {
@@ -25,7 +11,6 @@ fragment TypeFields on Type {
     hash
     _type
     fields {
-      key
       field {
         name
         description
@@ -48,11 +33,11 @@ fragment TypeFields on Type {
             ... on FloatField {
               floatValue: value
             }
-            ... on IntField {
+            ... on IntegerField {
               intValue: value
             }
           }
-          _type
+          type
         }
       }
     }
@@ -104,13 +89,13 @@ query allData {
   }
 }
 
-fragment DataFragment on FieldData {
+fragment DataFragment on FieldDefaults {
   ... on StringField {
     __typename
     stringValue: value
   }
 
-  ... on IntField {
+  ... on IntegerField {
     __typename
     intValue: value
   }
@@ -127,23 +112,32 @@ fragment DataFragment on FieldData {
 }
 
 fragment ActionsFragment on Action {
-  __typename
-  changeLog
-  hash
-  _id: hash
-  version
-
   ... on NewServiceAction {
+    __typename
+    changeLog
+    hash
+    _id: hash
+    version
     serviceName
     description
   }
 
   ... on UpdateDescriptionServiceAction {
+    __typename
+    changeLog
+    hash
+    _id: hash
+    version
     serviceName
     description
   }
 
   ... on AddVersionServiceAction {
+    __typename
+    changeLog
+    hash
+    _id: hash
+    version
     serviceName
     inputType
     outputType
@@ -154,43 +148,78 @@ fragment ActionsFragment on Action {
   }
 
   ... on RenameFieldTypeAction {
+    __typename
+    changeLog
+    hash
+    _id: hash
+    version
     typeName
     _from
     to
   }
 
   ... on RequiredFieldTypeAction {
+    __typename
+    changeLog
+    hash
+    _id: hash
+    version
     typeName
     name
   }
 
   ... on OptionalFieldTypeAction {
+    __typename
+    changeLog
+    hash
+    _id: hash
+    version
     typeName
     name
   }
 
   ... on DeleteFieldTypeAction {
+    __typename
+    changeLog
+    hash
+    _id: hash
+    version
     typeName
     name
   }
 
   ... on SetDefaultFieldTypeAction {
+    __typename
+    changeLog
+    hash
+    _id: hash
+    version
     typeName
     name
-    newDefault {
+    newDefault: _default {
       ...DataFragment
     }
   }
 
   ... on RemoveDefaultFieldTypeAction {
+    __typename
+    changeLog
+    hash
+    _id: hash
+    version
     typeName
     name
   }
 
   ... on AddFieldTypeAction {
+    __typename
+    changeLog
+    hash
+    _id: hash
+    version
     typeName
     name
-    type
+    _type
     description
     optional
     _default {
@@ -199,12 +228,22 @@ fragment ActionsFragment on Action {
   }
 
   ... on UpdateDescriptionTypeAction {
+    __typename
+    changeLog
+    hash
+    _id: hash
+    version
     typeName
     name
     description
   }
 
   ... on ReferenceFieldTypeAction {
+    __typename
+    changeLog
+    hash
+    _id: hash
+    version
     typeName
     name
     description
@@ -215,26 +254,34 @@ fragment ActionsFragment on Action {
   }
 
   ... on NewTypeAction {
+    __typename
+    changeLog
+    hash
+    _id: hash
+    version
     typeName
     description
   }
 }
 
 fragment ChangeActionsFragment on ChangeAction {
-  __typename
-  changeLog
-
   ... on NewServiceChangeAction {
+    __typename
+    changeLog
     serviceName
     description
   }
 
   ... on UpdateDescriptionServiceChangeAction {
+    __typename
+    changeLog
     serviceName
     description
   }
 
   ... on AddVersionServiceChangeAction {
+    __typename
+    changeLog
     serviceName
     inputType
     outputType
@@ -245,43 +292,57 @@ fragment ChangeActionsFragment on ChangeAction {
   }
 
   ... on RenameFieldTypeChangeAction {
+    __typename
+    changeLog
     typeName
     _from
     to
   }
 
   ... on RequiredFieldTypeChangeAction {
+    __typename
+    changeLog
     typeName
     name
   }
 
   ... on OptionalFieldTypeChangeAction {
+    __typename
+    changeLog
     typeName
     name
   }
 
   ... on DeleteFieldTypeChangeAction {
+    __typename
+    changeLog
     typeName
     name
   }
 
   ... on SetDefaultFieldTypeChangeAction {
+    __typename
+    changeLog
     typeName
     name
-    newDefault {
+    newDefault: _default {
       ...DataFragment
     }
   }
 
   ... on RemoveDefaultFieldTypeChangeAction {
+    __typename
+    changeLog
     typeName
     name
   }
 
   ... on AddFieldTypeChangeAction {
+    __typename
+    changeLog
     typeName
     name
-    type
+    _type
     description
     optional
     _default {
@@ -290,12 +351,16 @@ fragment ChangeActionsFragment on ChangeAction {
   }
 
   ... on UpdateDescriptionTypeChangeAction {
+    __typename
+    changeLog
     typeName
     name
     description
   }
 
   ... on ReferenceFieldTypeChangeAction {
+    __typename
+    changeLog
     typeName
     name
     description
@@ -306,6 +371,8 @@ fragment ChangeActionsFragment on ChangeAction {
   }
 
   ... on NewTypeChangeAction {
+    __typename
+    changeLog
     typeName
     description
   }

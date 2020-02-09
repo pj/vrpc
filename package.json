@@ -72,6 +72,7 @@
     "build:validate:watch": "tsc --noEmit --watch",
     "start:client:dev": "parcel -d build_temp lib/client/index.html",
     "start:server:dev": "ts-node-dev lib/server/index.ts",
-    "server:generate_types": "graphql-codegen --config codegen.yml"
+    "generate:schema": "ts-node lib/emit_schema.ts",
+    "generate:client": "yarn generate:schema & graphql-codegen --config codegen.yml"
   }
 }

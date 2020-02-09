@@ -1,6 +1,7 @@
 import {
     Field as GQLField,
-    ObjectType
+    ObjectType,
+    InterfaceType
 } from 'type-graphql';
 import {
   Action, 
@@ -13,8 +14,8 @@ import {
 } from './action';
 import * as typeidea from './typeidea';
 
-@ObjectType()
-export class BaseField {
+@InterfaceType()
+export abstract class BaseField {
   @GQLField()
   name: string;
 
@@ -52,7 +53,7 @@ export class BaseField {
   }
 }
 
-@ObjectType()
+@ObjectType({implements: BaseField})
 export class Field extends BaseField {
   @GQLField(type => FieldTypes)
   type: FieldTypes;
@@ -99,7 +100,7 @@ export class Field extends BaseField {
   }
 }
 
-@ObjectType()
+@ObjectType({implements: BaseField})
 export class ReferenceField extends BaseField {
   @GQLField()
   referenceType: string;
@@ -260,10 +261,10 @@ export class VersionType {
 @ObjectType()
 export class GQLVersionType {
   @GQLField(type => VersionType)
-  input: VersionType;
+  output: VersionType;
 
   @GQLField(type => [VersionType])
-  outputs: VersionType[];
+  inputs: VersionType[];
 }
 
 @ObjectType()

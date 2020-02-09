@@ -1,13 +1,5 @@
-schema: ./lib/server/schema.graphql
+schema: ./lib/schema.gql
 generates:
-  ./lib/server/schema.ts:
-    plugins:
-      - typescript
-      - typescript-resolvers
-    config:
-      typesPrefix: 'GQL'
-      useIndexSignature: true
-      nonOptionalTypename: true
   ./lib/client/introspection_result.ts:
     plugins:
       - fragment-matcher
@@ -22,6 +14,5 @@ generates:
       withHOC: false
       withComponent: false
       hooksImportFrom: "@apollo/react-hooks"
-      typesPrefix: 'GQL'
       useIndexSignature: true
       nonOptionalTypename: true
