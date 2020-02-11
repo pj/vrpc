@@ -34,10 +34,7 @@ input AddFieldTypeInputAction {
   _type: FieldTypes!
   description: String!
   optional: Boolean!
-  defaultString: String!
-  defaultInteger: Float!
-  defaultFloat: Float!
-  defaultBoolean: Boolean!
+  _default: FieldDataInput!
 }
 
 type AddVersionServiceAction {
@@ -150,6 +147,13 @@ type Field implements BaseField {
   optional: Boolean!
   type: FieldTypes!
   _default: FieldDefaults
+}
+
+input FieldDataInput {
+  stringValue: String
+  integerValue: Float
+  floatValue: Float
+  booleanValue: Boolean
 }
 
 union FieldDefaults = StringField | BooleanField | FloatField | IntegerField
@@ -395,10 +399,7 @@ input SetDefaultFieldTypeInputAction {
   changeLog: String!
   typeName: String!
   name: String!
-  defaultString: String!
-  defaultInteger: Float!
-  defaultFloat: Float!
-  defaultBoolean: Boolean!
+  _default: FieldDataInput!
 }
 
 type StringField {

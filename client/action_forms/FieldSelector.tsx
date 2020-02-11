@@ -1,5 +1,5 @@
 import { FormControl, InputLabel, Select, MenuItem } from "@material-ui/core";
-import { Type } from "../hooks";
+import { TypeFieldsFragment } from "../hooks";
 import React, { ReactNode } from "react";
 
 type FieldSelectorProps<V> = {

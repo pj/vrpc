@@ -14,6 +14,21 @@ import { Backend } from './backend';
 import { isObjectType } from 'graphql';
 
 @InputType()
+export class FieldDataInput {
+  @Field({nullable: true})
+  stringValue?: string;
+
+  @Field({nullable: true})
+  integerValue?: number;
+
+  @Field({nullable: true})
+  floatValue?: number;
+
+  @Field({nullable: true})
+  booleanValue?: boolean;
+}
+
+@InputType()
 export class NewTypeInputAction {
   actionType: 'NewTypeAction';
   @Field()
@@ -95,17 +110,8 @@ export class SetDefaultFieldTypeInputAction {
   @Field()
   name: string;
 
-  @Field()
-  defaultString: string;
-
-  @Field()
-  defaultInteger: number;
-
-  @Field()
-  defaultFloat: number;
-
-  @Field()
-  defaultBoolean: boolean;
+  @Field(type => FieldDataInput)
+  _default: FieldDataInput
 }
 
 @InputType()
@@ -143,17 +149,8 @@ export class AddFieldTypeInputAction {
   @Field()
   optional: boolean;
 
-  @Field()
-  defaultString: string;
-
-  @Field()
-  defaultInteger: number;
-
-  @Field()
-  defaultFloat: number;
-
-  @Field()
-  defaultBoolean: boolean;
+  @Field(type => FieldDataInput)
+  _default: FieldDataInput
 }
 
 @InputType()

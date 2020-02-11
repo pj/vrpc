@@ -1,6 +1,6 @@
 import { FormControl, InputLabel, Select, MenuItem } from "@material-ui/core";
-import { Service } from "../hooks";
 import React from "react";
+import { ServiceFieldsFragment } from "~hooks";
 
 type ServiceSelectorProps<V> = {
   services: ServiceFieldsFragment[]
@@ -8,7 +8,7 @@ type ServiceSelectorProps<V> = {
   handleChange: (event: React.ChangeEvent<any>) => void
 };
 
-export default function ServiceSelector<V>(props: ServiceFieldsFragmentSelectorProps<V>) {
+export default function ServiceSelector<V>(props: ServiceSelectorProps<V>) {
   const serviceNames = props.services.map(s => s.name);
 
   return (

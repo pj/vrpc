@@ -7,8 +7,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-import { Type, Version, ServiceVersion, ServiceFieldsFragment, TypeFieldsFragment } from './hooks';
-import { Service } from '~server/schema';
+import { Version, ServiceFieldsFragment, TypeFieldsFragment, ServiceVersionType } from './hooks';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -47,7 +46,7 @@ type ${props.version._type} {
 };
 
 type RenderServiceProps = {
-  version: ServiceVersion,
+  version: ServiceVersionType,
   service: ServiceFieldsFragment
 };
 

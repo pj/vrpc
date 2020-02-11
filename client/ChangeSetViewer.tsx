@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 
 import {ChangeSet, useCommitChangeSetMutation, Type, Service, ChangeSetFieldsFragment, TypeFieldsFragment, ServiceFieldsFragment} from './hooks';
-import ActionList from './ActionList';
+import {ChangeSetActionList} from './ActionList';
 import { FormControl, InputLabel, Select, MenuItem, Modal, Button, CircularProgress } from '@material-ui/core';
 import AddChangeSetModal from './AddChangeSetModal';
 import ActionCreatorModal from './action_forms/ActionCreatorModal';
@@ -80,7 +80,7 @@ const ChangeSetViewer = (props: ChangeSetViewerProps) => {
         {changeSetSelectorItems}
         </Select>
       </FormControl>
-      {selectedChangeSet && <ActionList log={selectedChangeSet.log} />}
+      {selectedChangeSet && <ChangeSetActionList actions={selectedChangeSet.log} />}
       {
         selectedChangeSet && <ActionCreatorModal 
           types={props.types} 

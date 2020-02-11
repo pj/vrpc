@@ -1,8 +1,15 @@
-import { Type, Service, useUpdateChangeSetMutation, FieldDataInput, LogActionChange } from "../hooks";
+import { useUpdateChangeSetMutation, TypeFieldsFragment, ServiceFieldsFragment, NewServiceInputAction, UpdateDescriptionServiceInputAction, AddVersionServiceInputAction, RenameFieldTypeInputAction, RequiredFieldTypeInputAction, OptionalFieldTypeInputAction, DeleteFieldTypeInputAction, SetDefaultFieldTypeInputAction, RemoveDefaultFieldTypeInputAction, AddFieldTypeInputAction, UpdateDescriptionTypeInputAction, ReferenceFieldTypeInputAction, NewTypeInputAction, FieldDataInput } from "../hooks";
 import { useState } from "react";
-import { makeStyles, Paper, CircularProgress, FormControl, TextField, Button } from "@material-ui/core";
+import { makeStyles, Paper, CircularProgress, FormControl, Button } from "@material-ui/core";
 import React from "react";
-import { ChangeAction } from "~server/schema";
+
+type InputAction = NewServiceInputAction | UpdateDescriptionServiceInputAction 
+| AddVersionServiceInputAction | RenameFieldTypeInputAction 
+| RequiredFieldTypeInputAction | OptionalFieldTypeInputAction 
+| DeleteFieldTypeInputAction | SetDefaultFieldTypeInputAction 
+| RemoveDefaultFieldTypeInputAction | AddFieldTypeInputAction 
+| UpdateDescriptionTypeInputAction | ReferenceFieldTypeInputAction 
+| NewTypeInputAction;
 
 export type ActionFormProps = {
     types: TypeFieldsFragment[],
@@ -25,7 +32,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export function ActionFormHOC<I extends LogActionChange>(
+export function ActionFormHOC<I extends InputAction>(
     FormComponent: React.FunctionComponent<FormComponentProps<Partial<I>>>
 ) {
     function ActionForm(props: ActionFormProps) {

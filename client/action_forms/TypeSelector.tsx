@@ -1,7 +1,7 @@
 import React from "react";
 import FormControl from "@material-ui/core/FormControl";
 import { InputLabel, Select, MenuItem } from "@material-ui/core";
-import { Type } from "~client/hooks";
+import { TypeFieldsFragment } from "~hooks";
 
 type TypeSelectorProps = {
   types: TypeFieldsFragment[],
@@ -9,7 +9,7 @@ type TypeSelectorProps = {
   handleChange: (event: React.ChangeEvent<any>) => void
 }
 
-const TypeSelector = (props: TypeFieldsFragmentSelectorProps) => {
+const TypeSelector = (props: TypeSelectorProps) => {
   const typeNames = props.types.map(t => t.name);
 
   return (

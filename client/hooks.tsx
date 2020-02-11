@@ -44,10 +44,7 @@ export type AddFieldTypeInputAction = {
   _type: FieldTypes,
   description: Scalars['String'],
   optional: Scalars['Boolean'],
-  defaultString: Scalars['String'],
-  defaultInteger: Scalars['Float'],
-  defaultFloat: Scalars['Float'],
-  defaultBoolean: Scalars['Boolean'],
+  _default: FieldDataInput,
 };
 
 export type AddVersionServiceAction = {
@@ -168,6 +165,13 @@ export type Field = BaseField & {
   optional: Scalars['Boolean'],
   type: FieldTypes,
   _default?: Maybe<FieldDefaults>,
+};
+
+export type FieldDataInput = {
+  stringValue?: Maybe<Scalars['String']>,
+  integerValue?: Maybe<Scalars['Float']>,
+  floatValue?: Maybe<Scalars['Float']>,
+  booleanValue?: Maybe<Scalars['Boolean']>,
 };
 
 export type FieldDefaults = StringField | BooleanField | FloatField | IntegerField;
@@ -458,10 +462,7 @@ export type SetDefaultFieldTypeInputAction = {
   changeLog: Scalars['String'],
   typeName: Scalars['String'],
   name: Scalars['String'],
-  defaultString: Scalars['String'],
-  defaultInteger: Scalars['Float'],
-  defaultFloat: Scalars['Float'],
-  defaultBoolean: Scalars['Boolean'],
+  _default: FieldDataInput,
 };
 
 export type StringField = {
