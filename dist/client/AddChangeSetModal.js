@@ -39,7 +39,7 @@ const AddChangeSetModal = (props) => {
         updateChangeSet({ variables: { changeSet: {
                     id: name,
                     baseHash: props.currentBaseHash,
-                    log: []
+                    actions: []
                 } } });
     };
     return (react_1.default.createElement("div", null,

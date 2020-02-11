@@ -1,12 +1,13 @@
 import { FormComponentProps, ActionFormHOC } from "./ActionForm"
 import React from "react";
+import { AddFieldTypeInputAction } from "../hooks";
 import TypeSelector from "./TypeSelector";
-import { ReferenceFieldTypeActionInput } from "../hooks";
-import { FormControl, TextField, Checkbox } from "@material-ui/core";
 import VersionSelector from "./VersionSelector";
+import DefaultSelector from "./DefaultSelector";
+import { FormControl, TextField, Checkbox } from "@material-ui/core";
 
-const ReferencedFieldTypeActionForm = ActionFormHOC(
-  function (props: FormComponentProps<ReferenceFieldTypeActionInput>) {
+const AddFieldTypeActionForm = ActionFormHOC(
+  function (props: FormComponentProps<AddFieldTypeInputAction>) {
     return (
       <React.Fragment>
         <TypeSelector
@@ -39,20 +40,22 @@ const ReferencedFieldTypeActionForm = ActionFormHOC(
             onChange={props.handleBooleanChange('optional')}
           />
         </FormControl>
-        <TypeSelector
-          types={props.types}
-          handleChange={props.handleChange('referenceType')}
-          value={props.value.referenceType}
+        <DefaultSelector
+          _default={props.value._default}
+          handleChange={props.handleDefaultChange('_default')}
         />
-        <VersionSelector
-          types={props.types}
-          typeName={props.value.referenceType}
-          handleChange={props.handleVersionChange('referenceVersion')}
-          version={props.value.referenceVersion}
-        />
+        <FormControl>
+          <TextField
+              id="standard-name"
+              label="Change Log"
+              value={props.value.changeLog}
+              onChange={props.handleChange('changeLog')}
+              margin="normal"
+          />
+        </FormControl>
       </React.Fragment>
     );
   }
 );
 
-export default ReferencedFieldTypeActionForm;
+export default AddFieldTypeActionForm;

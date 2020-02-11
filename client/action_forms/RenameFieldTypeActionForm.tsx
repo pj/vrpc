@@ -2,11 +2,11 @@ import { FormComponentProps, ActionFormHOC } from "./ActionForm"
 import React from "react";
 import TypeSelector from "./TypeSelector";
 import FieldSelector from "./FieldSelector";
-import { RenameFieldTypeActionInput } from "../hooks";
+import { RenameFieldTypeInputAction } from "../hooks";
 import { FormControl, TextField } from "@material-ui/core";
 
 const RenameFieldTypeActionForm = ActionFormHOC(
-  function (props: FormComponentProps<RenameFieldTypeActionInput>) {
+  function (props: FormComponentProps<RenameFieldTypeInputAction>) {
     return (
       <React.Fragment>
         <TypeSelector

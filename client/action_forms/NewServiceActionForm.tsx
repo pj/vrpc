@@ -1,25 +1,25 @@
 import { FormComponentProps, ActionFormHOC } from "./ActionForm"
 import React from "react";
-import { ReferenceFieldTypeActionInput } from "../hooks";
+import { NewServiceInputAction } from "../hooks";
 import { FormControl, TextField } from "@material-ui/core";
 
-const NewTypeActionForm = ActionFormHOC(
-  function (props: FormComponentProps<ReferenceFieldTypeActionInput>) {
+const NewServiceActionForm = ActionFormHOC(
+  function (props: FormComponentProps<NewServiceInputAction>) {
     return (
       <React.Fragment>
         <FormControl>
           <TextField
-            id="typeName"
-            label="Name of new Type"
-            value={props.value.typeName}
-            onChange={props.handleChange('typeName')}
+            id="serviceName"
+            label="Name of new Service"
+            value={props.value.serviceName}
+            onChange={props.handleChange('serviceName')}
             margin="normal"
           />
         </FormControl>
         <FormControl>
           <TextField
             id="description"
-            label="Description of new type"
+            label="Description of new service"
             value={props.value.description}
             onChange={props.handleChange('description')}
             margin="normal"
@@ -30,4 +30,4 @@ const NewTypeActionForm = ActionFormHOC(
   }
 );
 
-export default NewTypeActionForm;
+export default NewServiceActionForm;

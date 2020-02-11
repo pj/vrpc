@@ -5,64 +5,10 @@ const result = {
         "types": [
             {
                 "kind": "UNION",
-                "name": "LogAction",
-                "possibleTypes": [
-                    {
-                        "name": "NewServiceAction"
-                    },
-                    {
-                        "name": "UpdateDescriptionServiceAction"
-                    },
-                    {
-                        "name": "AddVersionServiceAction"
-                    },
-                    {
-                        "name": "RenameFieldTypeAction"
-                    },
-                    {
-                        "name": "RequiredFieldTypeAction"
-                    },
-                    {
-                        "name": "OptionalFieldTypeAction"
-                    },
-                    {
-                        "name": "DeleteFieldTypeAction"
-                    },
-                    {
-                        "name": "SetDefaultFieldTypeAction"
-                    },
-                    {
-                        "name": "RemoveDefaultFieldTypeAction"
-                    },
-                    {
-                        "name": "AddFieldTypeAction"
-                    },
-                    {
-                        "name": "UpdateDescriptionTypeAction"
-                    },
-                    {
-                        "name": "ReferenceFieldTypeAction"
-                    },
-                    {
-                        "name": "NewTypeAction"
-                    },
-                    {
-                        "name": "GroupAction"
-                    }
-                ]
-            },
-            {
-                "kind": "INTERFACE",
                 "name": "Action",
                 "possibleTypes": [
                     {
-                        "name": "NewServiceAction"
-                    },
-                    {
-                        "name": "UpdateDescriptionServiceAction"
-                    },
-                    {
-                        "name": "AddVersionServiceAction"
+                        "name": "NewTypeAction"
                     },
                     {
                         "name": "RenameFieldTypeAction"
@@ -92,28 +38,31 @@ const result = {
                         "name": "ReferenceFieldTypeAction"
                     },
                     {
-                        "name": "NewTypeAction"
+                        "name": "NewServiceAction"
                     },
                     {
-                        "name": "GroupAction"
+                        "name": "UpdateDescriptionServiceAction"
+                    },
+                    {
+                        "name": "AddVersionServiceAction"
                     }
                 ]
             },
             {
                 "kind": "UNION",
-                "name": "FieldData",
+                "name": "FieldDefaults",
                 "possibleTypes": [
                     {
                         "name": "StringField"
                     },
                     {
-                        "name": "IntField"
+                        "name": "BooleanField"
                     },
                     {
                         "name": "FloatField"
                     },
                     {
-                        "name": "BooleanField"
+                        "name": "IntegerField"
                     }
                 ]
             },
@@ -131,61 +80,10 @@ const result = {
             },
             {
                 "kind": "UNION",
-                "name": "LogActionChange",
-                "possibleTypes": [
-                    {
-                        "name": "NewServiceChangeAction"
-                    },
-                    {
-                        "name": "UpdateDescriptionServiceChangeAction"
-                    },
-                    {
-                        "name": "AddVersionServiceChangeAction"
-                    },
-                    {
-                        "name": "RenameFieldTypeChangeAction"
-                    },
-                    {
-                        "name": "RequiredFieldTypeChangeAction"
-                    },
-                    {
-                        "name": "OptionalFieldTypeChangeAction"
-                    },
-                    {
-                        "name": "DeleteFieldTypeChangeAction"
-                    },
-                    {
-                        "name": "SetDefaultFieldTypeChangeAction"
-                    },
-                    {
-                        "name": "RemoveDefaultFieldTypeChangeAction"
-                    },
-                    {
-                        "name": "AddFieldTypeChangeAction"
-                    },
-                    {
-                        "name": "UpdateDescriptionTypeChangeAction"
-                    },
-                    {
-                        "name": "ReferenceFieldTypeChangeAction"
-                    },
-                    {
-                        "name": "NewTypeChangeAction"
-                    }
-                ]
-            },
-            {
-                "kind": "INTERFACE",
                 "name": "ChangeAction",
                 "possibleTypes": [
                     {
-                        "name": "NewServiceChangeAction"
-                    },
-                    {
-                        "name": "UpdateDescriptionServiceChangeAction"
-                    },
-                    {
-                        "name": "AddVersionServiceChangeAction"
+                        "name": "NewTypeChangeAction"
                     },
                     {
                         "name": "RenameFieldTypeChangeAction"
@@ -215,7 +113,13 @@ const result = {
                         "name": "ReferenceFieldTypeChangeAction"
                     },
                     {
-                        "name": "NewTypeChangeAction"
+                        "name": "NewServiceChangeAction"
+                    },
+                    {
+                        "name": "UpdateDescriptionServiceChangeAction"
+                    },
+                    {
+                        "name": "AddVersionServiceChangeAction"
                     }
                 ]
             }

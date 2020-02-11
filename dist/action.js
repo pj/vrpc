@@ -796,8 +796,27 @@ exports.ChangeActionUnion = type_graphql_1.createUnionType({
         AddVersionServiceChangeAction
     ],
 });
-class GroupAction {
-}
+let GroupAction = class GroupAction {
+};
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], GroupAction.prototype, "hash", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", Number)
+], GroupAction.prototype, "version", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], GroupAction.prototype, "actionType", void 0);
+__decorate([
+    type_graphql_1.Field(type => [exports.ActionUnion]),
+    __metadata("design:type", Array)
+], GroupAction.prototype, "actions", void 0);
+GroupAction = __decorate([
+    type_graphql_1.ObjectType()
+], GroupAction);
 exports.GroupAction = GroupAction;
 class GroupChangeAction {
 }

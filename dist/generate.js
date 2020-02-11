@@ -54,7 +54,7 @@ __decorate([
     __metadata("design:type", Boolean)
 ], BaseField.prototype, "optional", void 0);
 BaseField = __decorate([
-    type_graphql_1.ObjectType(),
+    type_graphql_1.InterfaceType(),
     __metadata("design:paramtypes", [String, String, String, Boolean])
 ], BaseField);
 exports.BaseField = BaseField;
@@ -89,7 +89,7 @@ __decorate([
     __metadata("design:type", Object)
 ], Field.prototype, "_default", void 0);
 Field = Field_1 = __decorate([
-    type_graphql_1.ObjectType(),
+    type_graphql_1.ObjectType({ implements: BaseField }),
     __metadata("design:paramtypes", [String, String, String, Boolean, String, Object])
 ], Field);
 exports.Field = Field;
@@ -123,7 +123,7 @@ __decorate([
     __metadata("design:type", Number)
 ], ReferenceField.prototype, "referenceVersion", void 0);
 ReferenceField = ReferenceField_1 = __decorate([
-    type_graphql_1.ObjectType(),
+    type_graphql_1.ObjectType({ implements: BaseField }),
     __metadata("design:paramtypes", [String, String, String, Boolean, String, Object, Object])
 ], ReferenceField);
 exports.ReferenceField = ReferenceField;
@@ -138,7 +138,7 @@ __decorate([
     __metadata("design:type", BaseField)
 ], GQLFieldObject.prototype, "field", void 0);
 GQLFieldObject = __decorate([
-    type_graphql_1.ObjectType()
+    type_graphql_1.ObjectType('FieldObject')
 ], GQLFieldObject);
 exports.GQLFieldObject = GQLFieldObject;
 let Version = class Version {
@@ -254,13 +254,13 @@ let GQLVersionType = class GQLVersionType {
 __decorate([
     type_graphql_1.Field(type => VersionType),
     __metadata("design:type", VersionType)
-], GQLVersionType.prototype, "input", void 0);
+], GQLVersionType.prototype, "output", void 0);
 __decorate([
     type_graphql_1.Field(type => [VersionType]),
     __metadata("design:type", Array)
-], GQLVersionType.prototype, "outputs", void 0);
+], GQLVersionType.prototype, "inputs", void 0);
 GQLVersionType = __decorate([
-    type_graphql_1.ObjectType()
+    type_graphql_1.ObjectType('ServiceVersionType')
 ], GQLVersionType);
 exports.GQLVersionType = GQLVersionType;
 let Service = class Service {

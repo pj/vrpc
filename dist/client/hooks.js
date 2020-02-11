@@ -12,20 +12,20 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const graphql_tag_1 = __importDefault(require("graphql-tag"));
 const ApolloReactHooks = __importStar(require("@apollo/react-hooks"));
-var GQLFieldTypes;
-(function (GQLFieldTypes) {
-    GQLFieldTypes["StringType"] = "stringType";
-    GQLFieldTypes["BooleanType"] = "booleanType";
-    GQLFieldTypes["IntType"] = "intType";
-    GQLFieldTypes["FloatType"] = "floatType";
-})(GQLFieldTypes = exports.GQLFieldTypes || (exports.GQLFieldTypes = {}));
+var FieldTypes;
+(function (FieldTypes) {
+    FieldTypes["String"] = "STRING";
+    FieldTypes["Boolean"] = "BOOLEAN";
+    FieldTypes["Integer"] = "INTEGER";
+    FieldTypes["Float"] = "FLOAT";
+})(FieldTypes = exports.FieldTypes || (exports.FieldTypes = {}));
 exports.DataFragmentFragmentDoc = graphql_tag_1.default `
-    fragment DataFragment on FieldData {
+    fragment DataFragment on FieldDefaults {
   ... on StringField {
     __typename
     stringValue: value
   }
-  ... on IntField {
+  ... on IntegerField {
     __typename
     intValue: value
   }
@@ -41,20 +41,30 @@ exports.DataFragmentFragmentDoc = graphql_tag_1.default `
     `;
 exports.ActionsFragmentFragmentDoc = graphql_tag_1.default `
     fragment ActionsFragment on Action {
-  __typename
-  changeLog
-  hash
-  _id: hash
-  version
   ... on NewServiceAction {
+    __typename
+    changeLog
+    hash
+    _id: hash
+    version
     serviceName
     description
   }
   ... on UpdateDescriptionServiceAction {
+    __typename
+    changeLog
+    hash
+    _id: hash
+    version
     serviceName
     description
   }
   ... on AddVersionServiceAction {
+    __typename
+    changeLog
+    hash
+    _id: hash
+    version
     serviceName
     inputType
     outputType
@@ -64,37 +74,72 @@ exports.ActionsFragmentFragmentDoc = graphql_tag_1.default `
     outputHash
   }
   ... on RenameFieldTypeAction {
+    __typename
+    changeLog
+    hash
+    _id: hash
+    version
     typeName
     _from
     to
   }
   ... on RequiredFieldTypeAction {
+    __typename
+    changeLog
+    hash
+    _id: hash
+    version
     typeName
     name
   }
   ... on OptionalFieldTypeAction {
+    __typename
+    changeLog
+    hash
+    _id: hash
+    version
     typeName
     name
   }
   ... on DeleteFieldTypeAction {
+    __typename
+    changeLog
+    hash
+    _id: hash
+    version
     typeName
     name
   }
   ... on SetDefaultFieldTypeAction {
+    __typename
+    changeLog
+    hash
+    _id: hash
+    version
     typeName
     name
-    newDefault {
+    newDefault: _default {
       ...DataFragment
     }
   }
   ... on RemoveDefaultFieldTypeAction {
+    __typename
+    changeLog
+    hash
+    _id: hash
+    version
     typeName
     name
   }
   ... on AddFieldTypeAction {
+    __typename
+    changeLog
+    hash
+    _id: hash
+    version
     typeName
     name
-    type
+    _type
     description
     optional
     _default {
@@ -102,11 +147,21 @@ exports.ActionsFragmentFragmentDoc = graphql_tag_1.default `
     }
   }
   ... on UpdateDescriptionTypeAction {
+    __typename
+    changeLog
+    hash
+    _id: hash
+    version
     typeName
     name
     description
   }
   ... on ReferenceFieldTypeAction {
+    __typename
+    changeLog
+    hash
+    _id: hash
+    version
     typeName
     name
     description
@@ -116,27 +171,21 @@ exports.ActionsFragmentFragmentDoc = graphql_tag_1.default `
     referenceVersion
   }
   ... on NewTypeAction {
+    __typename
+    changeLog
+    hash
+    _id: hash
+    version
     typeName
     description
   }
 }
     ${exports.DataFragmentFragmentDoc}`;
 exports.LogFieldsFragmentDoc = graphql_tag_1.default `
-    fragment LogFields on LogAction {
-  ...ActionsFragment
-  ... on GroupAction {
-    __typename
-    changeLog
-    hash
-    _id: hash
-    version
-    groupedActions {
-      ...ActionsFragment
-    }
-    versions {
-      typeName
-      version
-    }
+    fragment LogFields on GroupAction {
+  hash
+  actions {
+    ...ActionsFragment
   }
 }
     ${exports.ActionsFragmentFragmentDoc}`;
@@ -150,7 +199,6 @@ exports.TypeFieldsFragmentDoc = graphql_tag_1.default `
     hash
     _type
     fields {
-      key
       field {
         name
         description
@@ -172,11 +220,11 @@ exports.TypeFieldsFragmentDoc = graphql_tag_1.default `
             ... on FloatField {
               floatValue: value
             }
-            ... on IntField {
+            ... on IntegerField {
               intValue: value
             }
           }
-          _type
+          type
         }
       }
     }
@@ -204,17 +252,21 @@ exports.ServiceFieldsFragmentDoc = graphql_tag_1.default `
     `;
 exports.ChangeActionsFragmentFragmentDoc = graphql_tag_1.default `
     fragment ChangeActionsFragment on ChangeAction {
-  __typename
-  changeLog
   ... on NewServiceChangeAction {
+    __typename
+    changeLog
     serviceName
     description
   }
   ... on UpdateDescriptionServiceChangeAction {
+    __typename
+    changeLog
     serviceName
     description
   }
   ... on AddVersionServiceChangeAction {
+    __typename
+    changeLog
     serviceName
     inputType
     outputType
@@ -224,37 +276,51 @@ exports.ChangeActionsFragmentFragmentDoc = graphql_tag_1.default `
     outputHash
   }
   ... on RenameFieldTypeChangeAction {
+    __typename
+    changeLog
     typeName
     _from
     to
   }
   ... on RequiredFieldTypeChangeAction {
+    __typename
+    changeLog
     typeName
     name
   }
   ... on OptionalFieldTypeChangeAction {
+    __typename
+    changeLog
     typeName
     name
   }
   ... on DeleteFieldTypeChangeAction {
+    __typename
+    changeLog
     typeName
     name
   }
   ... on SetDefaultFieldTypeChangeAction {
+    __typename
+    changeLog
     typeName
     name
-    newDefault {
+    newDefault: _default {
       ...DataFragment
     }
   }
   ... on RemoveDefaultFieldTypeChangeAction {
+    __typename
+    changeLog
     typeName
     name
   }
   ... on AddFieldTypeChangeAction {
+    __typename
+    changeLog
     typeName
     name
-    type
+    _type
     description
     optional
     _default {
@@ -262,11 +328,15 @@ exports.ChangeActionsFragmentFragmentDoc = graphql_tag_1.default `
     }
   }
   ... on UpdateDescriptionTypeChangeAction {
+    __typename
+    changeLog
     typeName
     name
     description
   }
   ... on ReferenceFieldTypeChangeAction {
+    __typename
+    changeLog
     typeName
     name
     description
@@ -276,6 +346,8 @@ exports.ChangeActionsFragmentFragmentDoc = graphql_tag_1.default `
     referenceVersion
   }
   ... on NewTypeChangeAction {
+    __typename
+    changeLog
     typeName
     description
   }

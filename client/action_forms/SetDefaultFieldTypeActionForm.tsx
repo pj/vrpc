@@ -3,10 +3,10 @@ import React from "react";
 import TypeSelector from "./TypeSelector";
 import DefaultSelector from "./DefaultSelector";
 import FieldSelector from "./FieldSelector";
-import { SetDefaultFieldTypeActionInput } from "../hooks";
+import { SetDefaultFieldTypeInputAction } from "../hooks";
 
 const SetDefaultFieldTypeActionForm = ActionFormHOC(
-  function (props: FormComponentProps<SetDefaultFieldTypeActionInput>) {
+  function (props: FormComponentProps<SetDefaultFieldTypeInputAction>) {
     return (
       <React.Fragment>
         <TypeSelector

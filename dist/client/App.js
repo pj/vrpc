@@ -9,7 +9,7 @@ const AppBar_1 = __importDefault(require("@material-ui/core/AppBar"));
 const CssBaseline_1 = __importDefault(require("@material-ui/core/CssBaseline"));
 const Toolbar_1 = __importDefault(require("@material-ui/core/Toolbar"));
 const Typography_1 = __importDefault(require("@material-ui/core/Typography"));
-const ActionList_1 = __importDefault(require("./ActionList"));
+const ActionList_1 = require("./ActionList");
 const ChangeSetViewer_1 = __importDefault(require("./ChangeSetViewer"));
 const hooks_1 = require("./hooks");
 const drawerWidth = 240;
@@ -53,10 +53,7 @@ const App = (props) => {
                 react_1.default.createElement(Typography_1.default, { variant: "h6", noWrap: true }, "VRPC editing"))),
         react_1.default.createElement("main", { className: classes.content },
             react_1.default.createElement("div", { className: classes.toolbar }),
-            react_1.default.createElement(ChangeSetViewer_1.default, { changeSets: data.changeSets, currentBaseHash: data.log[0].hash, types: data.types, services: data.services })
-        // @ts-ignore 
-        ,
-            "// @ts-ignore",
-            react_1.default.createElement(ActionList_1.default, { log: data.log }))));
+            react_1.default.createElement(ChangeSetViewer_1.default, { changeSets: data.changeSets, currentBaseHash: data.log[0].hash, types: data.types, services: data.services }),
+            react_1.default.createElement(ActionList_1.ActionList, { log: data.log }))));
 };
 exports.default = App;
