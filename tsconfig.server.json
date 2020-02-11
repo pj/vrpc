@@ -1,6 +1,17 @@
 {
-    "extends": "./tsconfig.json",
-    "include": [
-      "lib"
-    ],
-  }
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "module": "commonjs",
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "lib": ["ES2017", "ESNext.AsyncIterable"],
+    "target": "ES2017",
+    "rootDir": "lib",
+    "outDir": "dist",
+    "esModuleInterop": true,
+    "emitDecoratorMetadata": true
+  },
+  "include": [
+    "lib"
+  ]
+}

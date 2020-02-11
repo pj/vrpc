@@ -66,12 +66,14 @@
   "scripts": {
     "test": "jest",
     "test:watch": "chokidar \"lib/**/*.ejs\" \"lib/**/*.ts\" \"tests/**/*.ts\" \"tests/**/*.json\" -c \"yarn run test\" --ignore runtest --ignore tests/snapshots",
-    "build": "tsc --outDir dist --rootDir lib && cp lib/server/schema.graphql dist/server",
+    "build": "tsc --project tsconfig.server.json && cp lib/schema.gql dist",
     "build:watch": "chokidar \"lib/**/*.ejs\" \"lib/**/*.ts\" \"tests/**/*.ts\" \"server/**/*.ts\" -c \"graphql-codegen --config codegen.yml && tsc --outDir dist --rootDir lib && cp lib/server/schema.graphql dist/server\" --ignore runtest --ignore tests/snapshots",
-    "build:validate": "tsc --noEmit",
-    "build:validate:watch": "tsc --noEmit --watch",
-    "start:client:dev": "parcel -d build_temp lib/client/index.html",
-    "start:server:dev": "ts-node-dev lib/server/index.ts",
+    "build:validate": "tsc --project tsconfig.server.json --noEmit",
+    "build:validate:watch": "tsc --project tsconfig.server.json --noEmit --watch",
+    "client:validate": "tsc --project tsconfig.json",
+    "client:validate:watch": "tsc --project tsconfig.json --watch  ",
+    "client:serve": "parcel -d build_temp client/index.html",
+    "start:server:dev": "ts-node-dev --project tsconfig.server.json lib/index.ts",
     "generate:schema": "ts-node lib/emit_schema.ts",
     "generate:client": "yarn generate:schema & graphql-codegen --config codegen.yml"
   }

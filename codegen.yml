@@ -1,10 +1,10 @@
 schema: ./lib/schema.gql
 generates:
-  ./lib/client/introspection_result.ts:
+  ./client/introspection_result.ts:
     plugins:
       - fragment-matcher
-  ./lib/client/hooks.tsx:
-    documents: ./lib/client/document.graphql
+  ./client/hooks.tsx:
+    documents: ./client/document.graphql
     plugins:
       - typescript
       - typescript-operations

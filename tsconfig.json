@@ -6,12 +6,10 @@
     "strictNullChecks": true,
     "lib": ["ES2017", "ESNext.AsyncIterable", "dom"],
     "target": "ES2017",
-    "rootDir": "lib",
-    "outDir": "dist",
     "jsx": "react",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "baseUrl": "./lib",
+    "baseUrl": "./client",
     "paths": {
       "~*": ["./*"]
     },
@@ -19,5 +17,8 @@
   },
   "exclude": [
     "node_modules"
+  ],
+  "include": [
+    "client"
   ]
 }
