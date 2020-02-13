@@ -109,8 +109,8 @@ input ChangeSetAction {
 
 input ChangeSetInput {
   id: String!
-  baseHash: String!
-  actions: [ChangeSetAction!]!
+  baseHash: String
+  log: [ChangeSetAction!]!
 }
 
 type CommitOutput {

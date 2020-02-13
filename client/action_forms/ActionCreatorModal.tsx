@@ -29,6 +29,9 @@ const useStyles = makeStyles(theme => ({
   },
   tableCell: {
     verticalAlign: 'top'
+  },
+  modal: {
+    backgroundColor: 'white'
   }
 }));
 
@@ -147,17 +150,17 @@ type ActionCreatorModalProps = {
 
 const ActionCreatorModal = (props: ActionCreatorModalProps) => {
   const classes = useStyles(props);
-  const [actionType, setActionType] = useState<string | null>(null);
+  const [actionType, setActionType] = useState<string>("");
   const [open, setOpen] = useState(false);
 
   const handleOpen = () => {
     setOpen(true);
-    setActionType(null);
+    setActionType("");
   };
 
   const handleClose = () => {
     setOpen(false);
-    setActionType(null);
+    setActionType("");
   };
 
   return (
@@ -168,7 +171,7 @@ const ActionCreatorModal = (props: ActionCreatorModalProps) => {
       <Modal
         open={open}
         onClose={handleClose}> 
-        <div>
+        <div className={classes.modal}>
           <ActionTypeSelector 
             onChange={(actionType: string) => setActionType(actionType)}
             logType={actionType}

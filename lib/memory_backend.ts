@@ -79,7 +79,7 @@ export class MemoryBackend implements Backend {
     const changeSetData = this.changeSets;
     const userSets = changeSetData.get(userId);
     if (!userSets) {
-        throw new Error(`No changesets found for user: ${userId}`)
+      return [];
     }
 
     const changeSets = Array.from(userSets.values());

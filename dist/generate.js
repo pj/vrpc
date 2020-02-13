@@ -127,20 +127,10 @@ ReferenceField = ReferenceField_1 = __decorate([
     __metadata("design:paramtypes", [String, String, String, Boolean, String, Object, Object])
 ], ReferenceField);
 exports.ReferenceField = ReferenceField;
-let GQLFieldObject = class GQLFieldObject {
-};
-__decorate([
-    type_graphql_1.Field(),
-    __metadata("design:type", String)
-], GQLFieldObject.prototype, "name", void 0);
-__decorate([
-    type_graphql_1.Field(),
-    __metadata("design:type", BaseField)
-], GQLFieldObject.prototype, "field", void 0);
-GQLFieldObject = __decorate([
-    type_graphql_1.ObjectType('FieldObject')
-], GQLFieldObject);
-exports.GQLFieldObject = GQLFieldObject;
+exports.FieldUnion = type_graphql_1.createUnionType({
+    name: "FieldUnion",
+    types: () => [ReferenceField, Field]
+});
 let Version = class Version {
     constructor(_type, hash, version, fields) {
         this._type = _type;
@@ -176,7 +166,7 @@ __decorate([
     __metadata("design:type", String)
 ], Version.prototype, "hash", void 0);
 __decorate([
-    type_graphql_1.Field(type => GQLFieldObject),
+    type_graphql_1.Field(type => [exports.FieldUnion]),
     __metadata("design:type", Object)
 ], Version.prototype, "fields", void 0);
 Version = __decorate([

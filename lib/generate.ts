@@ -150,7 +150,7 @@ export class ReferenceField extends BaseField {
 
 export const FieldUnion = createUnionType({
   name: "FieldUnion",
-  types: () => [ReferenceField, Field], 
+  types: () => [ReferenceField, Field]
 });
 
 export type FieldObject = {

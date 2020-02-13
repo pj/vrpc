@@ -15,6 +15,28 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
 const generate_1 = require("./generate");
 const action_1 = require("./action");
+let FieldDataInput = class FieldDataInput {
+};
+__decorate([
+    type_graphql_1.Field({ nullable: true }),
+    __metadata("design:type", String)
+], FieldDataInput.prototype, "stringValue", void 0);
+__decorate([
+    type_graphql_1.Field({ nullable: true }),
+    __metadata("design:type", Number)
+], FieldDataInput.prototype, "integerValue", void 0);
+__decorate([
+    type_graphql_1.Field({ nullable: true }),
+    __metadata("design:type", Number)
+], FieldDataInput.prototype, "floatValue", void 0);
+__decorate([
+    type_graphql_1.Field({ nullable: true }),
+    __metadata("design:type", Boolean)
+], FieldDataInput.prototype, "booleanValue", void 0);
+FieldDataInput = __decorate([
+    type_graphql_1.InputType()
+], FieldDataInput);
+exports.FieldDataInput = FieldDataInput;
 let NewTypeInputAction = class NewTypeInputAction {
 };
 __decorate([
@@ -124,21 +146,9 @@ __decorate([
     __metadata("design:type", String)
 ], SetDefaultFieldTypeInputAction.prototype, "name", void 0);
 __decorate([
-    type_graphql_1.Field(),
-    __metadata("design:type", String)
-], SetDefaultFieldTypeInputAction.prototype, "defaultString", void 0);
-__decorate([
-    type_graphql_1.Field(),
-    __metadata("design:type", Number)
-], SetDefaultFieldTypeInputAction.prototype, "defaultInteger", void 0);
-__decorate([
-    type_graphql_1.Field(),
-    __metadata("design:type", Number)
-], SetDefaultFieldTypeInputAction.prototype, "defaultFloat", void 0);
-__decorate([
-    type_graphql_1.Field(),
-    __metadata("design:type", Boolean)
-], SetDefaultFieldTypeInputAction.prototype, "defaultBoolean", void 0);
+    type_graphql_1.Field(type => FieldDataInput),
+    __metadata("design:type", FieldDataInput)
+], SetDefaultFieldTypeInputAction.prototype, "_default", void 0);
 SetDefaultFieldTypeInputAction = __decorate([
     type_graphql_1.InputType()
 ], SetDefaultFieldTypeInputAction);
@@ -188,21 +198,9 @@ __decorate([
     __metadata("design:type", Boolean)
 ], AddFieldTypeInputAction.prototype, "optional", void 0);
 __decorate([
-    type_graphql_1.Field(),
-    __metadata("design:type", String)
-], AddFieldTypeInputAction.prototype, "defaultString", void 0);
-__decorate([
-    type_graphql_1.Field(),
-    __metadata("design:type", Number)
-], AddFieldTypeInputAction.prototype, "defaultInteger", void 0);
-__decorate([
-    type_graphql_1.Field(),
-    __metadata("design:type", Number)
-], AddFieldTypeInputAction.prototype, "defaultFloat", void 0);
-__decorate([
-    type_graphql_1.Field(),
-    __metadata("design:type", Boolean)
-], AddFieldTypeInputAction.prototype, "defaultBoolean", void 0);
+    type_graphql_1.Field(type => FieldDataInput),
+    __metadata("design:type", FieldDataInput)
+], AddFieldTypeInputAction.prototype, "_default", void 0);
 AddFieldTypeInputAction = __decorate([
     type_graphql_1.InputType()
 ], AddFieldTypeInputAction);
@@ -407,13 +405,13 @@ __decorate([
     __metadata("design:type", String)
 ], ChangeSetInput.prototype, "id", void 0);
 __decorate([
-    type_graphql_1.Field(),
+    type_graphql_1.Field({ nullable: true }),
     __metadata("design:type", String)
 ], ChangeSetInput.prototype, "baseHash", void 0);
 __decorate([
     type_graphql_1.Field(type => [ChangeSetAction]),
     __metadata("design:type", Array)
-], ChangeSetInput.prototype, "actions", void 0);
+], ChangeSetInput.prototype, "log", void 0);
 ChangeSetInput = __decorate([
     type_graphql_1.InputType()
 ], ChangeSetInput);
@@ -546,7 +544,7 @@ function actionInputToChangeAction(logAction) {
 }
 exports.actionInputToChangeAction = actionInputToChangeAction;
 function inputChangesetToChangeSet(changeSet) {
-    const log = changeSet.actions.map(c => actionInputToChangeAction(c));
+    const log = changeSet.log.map(c => actionInputToChangeAction(c));
     return ({
         id: changeSet.id,
         baseHash: changeSet.baseHash,

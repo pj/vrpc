@@ -70,10 +70,10 @@
     "server:watch": "chokidar \"lib/**/*.ejs\" \"lib/**/*.ts\" \"tests/**/*.ts\" \"server/**/*.ts\" -c \"graphql-codegen --config codegen.yml && tsc --outDir dist --rootDir lib && cp lib/server/schema.graphql dist/server\" --ignore runtest --ignore tests/snapshots",
     "server:validate": "tsc --project tsconfig.server.json --noEmit",
     "server:validate:watch": "tsc --project tsconfig.server.json --noEmit --watch",
-    "server:start": "ts-node-dev --project tsconfig.server.json lib/index.ts",
+    "server:start": "ts-node-dev --project tsconfig.server.json lib/test_server.ts",
     "client:validate": "tsc --project tsconfig.json --noEmit",
     "client:validate:watch": "tsc --project tsconfig.json --watch --noEmit",
-    "client:serve": "parcel -d build_temp client/index.html",
+    "client:start": "parcel -d build_temp client/index.html",
     "generate:schema": "ts-node lib/emit_schema.ts && graphql-codegen --config codegen.yml && cp lib/schema.gql dist"
   }
 }

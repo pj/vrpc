@@ -123,8 +123,8 @@ export type ChangeSetAction = {
 
 export type ChangeSetInput = {
   id: Scalars['String'],
-  baseHash: Scalars['String'],
-  actions: Array<ChangeSetAction>,
+  baseHash?: Maybe<Scalars['String']>,
+  log: Array<ChangeSetAction>,
 };
 
 export type CommitOutput = {

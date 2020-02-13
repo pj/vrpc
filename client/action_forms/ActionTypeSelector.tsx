@@ -19,7 +19,7 @@ const ACTION_NAMES = [
 ]
 
 type ActionTypeSelectorProps = {
-  logType: string | null,
+  logType: string,
   onChange: (actionType: string) => void
 }
 
@@ -36,7 +36,9 @@ const ActionTypeSelector = (props: ActionTypeSelectorProps) => {
         onChange={handleChange}
         inputProps={{id: 'action-type'}}
       >
-        {ACTION_NAMES.map(name => <MenuItem value={name} >{name}</MenuItem>)}
+        {ACTION_NAMES.map(name => 
+          <MenuItem key={name} value={name} >{name}</MenuItem>
+        )}
       </Select>
     </FormControl>
   );

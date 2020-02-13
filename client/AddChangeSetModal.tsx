@@ -7,11 +7,14 @@ import { FormControl, Modal, TextField, Button, CircularProgress } from '@materi
 
 const useStyles = makeStyles(theme => ({
   root: {
+  },
+  modalStyle: {
+    backgroundColor: 'white'
   }
 }));
 
 type AddChangeSetModalProps = {
-  currentBaseHash: string,
+  currentBaseHash: string | null,
   changeSets: ChangeSetFieldsFragment[]
 }
 
@@ -42,49 +45,57 @@ const AddChangeSetModal = (props: AddChangeSetModalProps) => {
           query: AllDataDocument,
           data: { changeSets: changeSets.concat([updateChangeSet]) },
         });
+        setOpen(false);
+        setName("");
       }
     }
   );
 
   const handleUpdateChangeSet = () => {
-    updateChangeSet({variables: {changeSet: {
-      id: name,
-      baseHash: props.currentBaseHash,
-      actions: []
-    }}})
+    updateChangeSet(
+      {
+        variables: {
+          changeSet: {
+            id: name,
+            baseHash: props.currentBaseHash,
+            log: []
+          }
+        }, 
+      }
+    );
   };
 
   return (
-      <div>
-        <button type="button" onClick={handleOpen}>
-          Add ChangeSet
-        </button>
-        <Modal
-          open={open}
-          onClose={handleClose}
-        > 
-          <div>
-            {!error && loading && <CircularProgress />}
-            {error && !loading && <div>{error}</div>}
-            {!error && !loading && 
-              <React.Fragment>
-                <h2 id="simple-modal-title">Add Change Set</h2>
+    <div>
+      <button type="button" onClick={handleOpen}>
+        Add ChangeSet
+      </button>
+      <Modal
+        open={open}
+        onClose={handleClose}
+      > 
+        <div className={classes.modalStyle}>
+          {!error && loading && <CircularProgress />}
+          {error && !loading && <div>{error}</div>}
+          {!error && !loading && 
+            <React.Fragment>
+              <h2 id="simple-modal-title">Add Change Set</h2>
 
-                <FormControl>
-                  <TextField
-                    id="name"
-                    label="Change Set Name"
-                    value={name}
-                    onChange={event => setName(event.target.value)}
-                    margin="normal"
-                  />
-                </FormControl>
-                <FormControl>
-                  <Button variant="contained" color="primary" onClick={handleUpdateChangeSet}>
-                    Add
-                  </Button>
-                </FormControl>
-              </React.Fragment>
+              <FormControl>
+                <TextField
+                  id="name"
+                  label="Change Set Name"
+                  value={name}
+                  onChange={event => setName(event.target.value)}
+                  margin="normal"
+                />
+              </FormControl>
+              <FormControl>
+                <Button variant="contained" color="primary" onClick={handleUpdateChangeSet}>
+                  Add
+                </Button>
+              </FormControl>
+            </React.Fragment>
           }
         </div>
       </Modal>

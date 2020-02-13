@@ -15,14 +15,14 @@ const useStyles = makeStyles(theme => ({
 }));
 
 type ChangeSetViewerProps = {
-  currentBaseHash: string,
+  currentBaseHash: string | null,
   changeSets: ChangeSetFieldsFragment[],
   types: TypeFieldsFragment[],
   services: ServiceFieldsFragment[]
 }
 
 const ChangeSetViewer = (props: ChangeSetViewerProps) => {
-  const [changeSetId, setChangeSetId] = useState<string | null>(null);
+  const [changeSetId, setChangeSetId] = useState<string>("");
   const [commitChangeSetMutation, {loading, error}] = useCommitChangeSetMutation();
 
   if (loading) {

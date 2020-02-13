@@ -304,11 +304,11 @@ class ChangeSetInput {
   @Field()
   id: string;
 
-  @Field()
-  baseHash: string;
+  @Field({nullable: true})
+  baseHash?: string;
 
   @Field(type => [ChangeSetAction])
-  actions: ChangeSetAction[]
+  log: ChangeSetAction[]
 }
 
 export function actionInputToChangeAction(
@@ -435,7 +435,7 @@ export function actionInputToChangeAction(
 export function inputChangesetToChangeSet(
     changeSet: ChangeSetInput
 ): ChangeSet {
-  const log = changeSet.actions.map(c => actionInputToChangeAction(c));
+  const log = changeSet.log.map(c => actionInputToChangeAction(c));
   return ({
     id: changeSet.id,
     baseHash: changeSet.baseHash,
