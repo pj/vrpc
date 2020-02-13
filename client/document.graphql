@@ -5,45 +5,57 @@ fragment LogFields on GroupAction {
   }
 }
 
+fragment VersionQuery on Version {
+  version
+  hash
+  _type
+  fields {
+    ... on Field {
+      name
+      description
+      changeLog
+      optional
+    }
+    ... on ReferenceField {
+      name
+      description
+      changeLog
+      optional
+      referenceType
+      referenceHash
+      referenceVersion
+    }
+
+    ... on Field {
+      name
+      description
+      changeLog
+      optional
+      _default {
+        ... on StringField {
+          stringValue: value
+        }
+        ... on BooleanField {
+          booleanValue: value
+        }
+        ... on FloatField {
+          floatValue: value
+        }
+        ... on IntegerField {
+          intValue: value
+        }
+      }
+      type
+    }
+  }
+}
+
 fragment TypeFields on Type {
   name
   changeLog
   description
   versions {
-    version
-    hash
-    _type
-    fields {
-      field {
-        name
-        description
-        changeLog
-        optional
-        ... on ReferenceField {
-          referenceType
-          referenceHash
-          referenceVersion
-        }
-
-        ... on Field {
-          _default {
-            ... on StringField {
-              stringValue: value
-            }
-            ... on BooleanField {
-              booleanValue: value
-            }
-            ... on FloatField {
-              floatValue: value
-            }
-            ... on IntegerField {
-              intValue: value
-            }
-          }
-          type
-        }
-      }
-    }
+    ...VersionQuery
   }
 }
 

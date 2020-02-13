@@ -77,14 +77,26 @@
         ]
       },
       {
+        "kind": "UNION",
+        "name": "FieldUnion",
+        "possibleTypes": [
+          {
+            "name": "ReferenceField"
+          },
+          {
+            "name": "Field"
+          }
+        ]
+      },
+      {
         "kind": "INTERFACE",
         "name": "BaseField",
         "possibleTypes": [
           {
-            "name": "Field"
+            "name": "ReferenceField"
           },
           {
-            "name": "ReferenceField"
+            "name": "Field"
           }
         ]
       },

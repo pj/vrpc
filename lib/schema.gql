@@ -158,17 +158,14 @@ input FieldDataInput {
 
 union FieldDefaults = StringField | BooleanField | FloatField | IntegerField
 
-type FieldObject {
-  name: String!
-  field: BaseField!
-}
-
 enum FieldTypes {
   STRING
   BOOLEAN
   INTEGER
   FLOAT
 }
+
+union FieldUnion = ReferenceField | Field
 
 type FloatField {
   value: Float!
@@ -461,7 +458,7 @@ type Version {
   _type: String!
   version: Float!
   hash: String!
-  fields: FieldObject!
+  fields: [FieldUnion!]!
 }
 
 type VersionType {

@@ -14,7 +14,7 @@ export default function FieldSelector<V>(props: FieldSelectorProps<V>) {
   for (let _type of props.types) {
     const lastVersion = _type.versions[_type.versions.length-1];
 
-    const fields = lastVersion.fields.map(f => f.key);
+    const fields = lastVersion.fields.map(f => f.name);
     fieldNamesByType.set(_type.name, fields);
   }
 

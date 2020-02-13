@@ -7,7 +7,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-import { Version, ServiceFieldsFragment, TypeFieldsFragment, ServiceVersionType } from './hooks';
+import { Version, ServiceFieldsFragment, TypeFieldsFragment, ServiceVersionType, VersionQueryFragment } from './hooks';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -76,12 +76,12 @@ const TypeViewer = (props: TypeViewerProps) => {
     return null;
   }
 
-  const versionsByType = new Map<string, Map<number, Version>>();
+  const versionsByType = new Map<string, Map<number, VersionQueryFragment>>();
   const servicesByName = new Map();
   const typesByName = new Map();
 
   for (let _type of props.types) {
-    const versions = new Map<number, Version>();
+    const versions = new Map<number, VersionQueryFragment>();
 
     for (let version of _type.versions) {
       versions.set(version.version, version);

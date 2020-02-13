@@ -176,18 +176,14 @@ export type FieldDataInput = {
 
 export type FieldDefaults = StringField | BooleanField | FloatField | IntegerField;
 
-export type FieldObject = {
-   __typename: 'FieldObject',
-  name: Scalars['String'],
-  field: BaseField,
-};
-
 export enum FieldTypes {
   String = 'STRING',
   Boolean = 'BOOLEAN',
   Integer = 'INTEGER',
   Float = 'FLOAT'
 }
+
+export type FieldUnion = ReferenceField | Field;
 
 export type FloatField = {
    __typename: 'FloatField',
@@ -531,7 +527,7 @@ export type Version = {
   _type: Scalars['String'],
   version: Scalars['Float'],
   hash: Scalars['String'],
-  fields: FieldObject,
+  fields: Array<FieldUnion>,
 };
 
 export type VersionType = {
@@ -586,35 +582,37 @@ export type LogFieldsFragment = (
   )> }
 );
 
+export type VersionQueryFragment = (
+  { __typename: 'Version' }
+  & Pick<Version, 'version' | 'hash' | '_type'>
+  & { fields: Array<(
+    { __typename: 'ReferenceField' }
+    & Pick<ReferenceField, 'name' | 'description' | 'changeLog' | 'optional' | 'referenceType' | 'referenceHash' | 'referenceVersion'>
+  ) | (
+    { __typename: 'Field' }
+    & Pick<Field, 'name' | 'description' | 'changeLog' | 'optional' | 'type'>
+    & { _default: Maybe<(
+      { __typename: 'StringField' }
+      & { stringValue: StringField['value'] }
+    ) | (
+      { __typename: 'BooleanField' }
+      & { booleanValue: BooleanField['value'] }
+    ) | (
+      { __typename: 'FloatField' }
+      & { floatValue: FloatField['value'] }
+    ) | (
+      { __typename: 'IntegerField' }
+      & { intValue: IntegerField['value'] }
+    )> }
+  )> }
+);
+
 export type TypeFieldsFragment = (
   { __typename: 'Type' }
   & Pick<Type, 'name' | 'changeLog' | 'description'>
   & { versions: Array<(
     { __typename: 'Version' }
-    & Pick<Version, 'version' | 'hash' | '_type'>
-    & { fields: (
-      { __typename: 'FieldObject' }
-      & { field: (
-        { __typename: 'Field' }
-        & Pick<Field, 'type' | 'name' | 'description' | 'changeLog' | 'optional'>
-        & { _default: Maybe<(
-          { __typename: 'StringField' }
-          & { stringValue: StringField['value'] }
-        ) | (
-          { __typename: 'BooleanField' }
-          & { booleanValue: BooleanField['value'] }
-        ) | (
-          { __typename: 'FloatField' }
-          & { floatValue: FloatField['value'] }
-        ) | (
-          { __typename: 'IntegerField' }
-          & { intValue: IntegerField['value'] }
-        )> }
-      ) | (
-        { __typename: 'ReferenceField' }
-        & Pick<ReferenceField, 'referenceType' | 'referenceHash' | 'referenceVersion' | 'name' | 'description' | 'changeLog' | 'optional'>
-      ) }
-    ) }
+    & VersionQueryFragment
   )> }
 );
 
@@ -1172,48 +1170,61 @@ export const LogFieldsFragmentDoc = gql`
   }
 }
     ${ActionsFragmentFragmentDoc}`;
+export const VersionQueryFragmentDoc = gql`
+    fragment VersionQuery on Version {
+  version
+  hash
+  _type
+  fields {
+    ... on Field {
+      name
+      description
+      changeLog
+      optional
+    }
+    ... on ReferenceField {
+      name
+      description
+      changeLog
+      optional
+      referenceType
+      referenceHash
+      referenceVersion
+    }
+    ... on Field {
+      name
+      description
+      changeLog
+      optional
+      _default {
+        ... on StringField {
+          stringValue: value
+        }
+        ... on BooleanField {
+          booleanValue: value
+        }
+        ... on FloatField {
+          floatValue: value
+        }
+        ... on IntegerField {
+          intValue: value
+        }
+      }
+      type
+    }
+  }
+}
+    `;
 export const TypeFieldsFragmentDoc = gql`
     fragment TypeFields on Type {
   name
   changeLog
   description
   versions {
-    version
-    hash
-    _type
-    fields {
-      field {
-        name
-        description
-        changeLog
-        optional
-        ... on ReferenceField {
-          referenceType
-          referenceHash
-          referenceVersion
-        }
-        ... on Field {
-          _default {
-            ... on StringField {
-              stringValue: value
-            }
-            ... on BooleanField {
-              booleanValue: value
-            }
-            ... on FloatField {
-              floatValue: value
-            }
-            ... on IntegerField {
-              intValue: value
-            }
-          }
-          type
-        }
-      }
-    }
+    ...VersionQuery
   }
 }
-    `;
+    ${VersionQueryFragmentDoc}`;
 export const ServiceFieldsFragmentDoc = gql`
     fragment ServiceFields on Service {
   name

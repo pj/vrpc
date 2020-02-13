@@ -1,7 +1,8 @@
 import {
     Field as GQLField,
     ObjectType,
-    InterfaceType
+    InterfaceType,
+    createUnionType
 } from 'type-graphql';
 import {
   Action, 
@@ -147,18 +148,14 @@ export class ReferenceField extends BaseField {
   }
 }
 
+export const FieldUnion = createUnionType({
+  name: "FieldUnion",
+  types: () => [ReferenceField, Field], 
+});
+
 export type FieldObject = {
   [key: string]: BaseField;
 };
-
-@ObjectType('FieldObject')
-export class GQLFieldObject {
-  @GQLField()
-  name: string;
-
-  @GQLField()
-  field: BaseField
-}
 
 @ObjectType()
 export class Version {
@@ -171,7 +168,7 @@ export class Version {
   @GQLField()
   hash: string;
 
-  @GQLField(type => GQLFieldObject)
+  @GQLField(type => [FieldUnion])
   fields: FieldObject;
 
   constructor(
