@@ -232,7 +232,7 @@ let Service = class Service {
         this.name = name;
         this.description = description;
         this.changeLog = [];
-        this.versions = new Map();
+        this.versions = {};
         this.seenInputVersions = new Set();
     }
 };
@@ -261,15 +261,15 @@ function updateServiceVersion(service, logAction) {
             throw new Error(`Input version ${inputVersion} used elsewhere`);
         }
         service.seenInputVersions.add(inputVersion);
-        const existingVersion = service.versions.get(outputVersion);
+        const existingVersion = service.versions[outputVersion];
         if (existingVersion) {
-            existingVersion[1].push(new VersionType(logAction.inputType, logAction.inputHash, logAction.inputVersion));
+            existingVersion.inputs.push(new VersionType(logAction.inputType, logAction.inputHash, logAction.inputVersion));
         }
         else {
-            service.versions.set(outputVersion, [
-                new VersionType(logAction.outputType, logAction.outputHash, logAction.outputVersion),
-                [new VersionType(logAction.inputType, logAction.inputHash, logAction.inputVersion)],
-            ]);
+            service.versions[outputVersion] = ({
+                output: new VersionType(logAction.outputType, logAction.outputHash, logAction.outputVersion),
+                inputs: [new VersionType(logAction.inputType, logAction.inputHash, logAction.inputVersion)],
+            });
         }
     }
     else {

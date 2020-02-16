@@ -45,11 +45,11 @@ class FileBackend {
     async getCurrentServicesWithChangeSet(userId, changeSetId) {
         return this.doWithLock(async (data) => {
             const changeSetData = data.changeSets;
-            const userSets = changeSetData.get(userId);
+            const userSets = changeSetData[userId];
             if (!userSets) {
                 throw new Error(`No changesets found for user: ${userId}`);
             }
-            const changeSet = userSets.get(changeSetId);
+            const changeSet = userSets[changeSetId];
             if (!changeSet) {
                 throw new Error(`Changeset not found for id: ${changeSet}`);
             }
@@ -67,11 +67,11 @@ class FileBackend {
     async getCurrentTypesWithChangeSet(userId, changeSetId) {
         return this.doWithLock(async (data) => {
             const changeSetData = data.changeSets;
-            const userSets = changeSetData.get(userId);
+            const userSets = changeSetData[userId];
             if (!userSets) {
                 throw new Error(`No changesets found for user: ${userId}`);
             }
-            const changeSet = userSets.get(changeSetId);
+            const changeSet = userSets[changeSetId];
             if (!changeSet) {
                 throw new Error(`Changeset not found for id: ${changeSet}`);
             }
@@ -83,22 +83,21 @@ class FileBackend {
     async getChangeSets(userId) {
         return this.doWithLock(async (data) => {
             const changeSetData = data.changeSets;
-            const userSets = changeSetData.get(userId);
+            const userSets = changeSetData[userId];
             if (!userSets) {
                 throw new Error(`No changesets found for user: ${userId}`);
             }
-            const changeSets = Array.from(userSets.values());
-            return changeSets;
+            return Object.values(userSets);
         });
     }
     async getChangeSet(userId, changeSetId) {
         return this.doWithLock(async (data) => {
             const changeSetData = data.changeSets;
-            const userSets = changeSetData.get(userId);
+            const userSets = changeSetData[userId];
             if (!userSets) {
                 throw new Error(`No changesets found for user: ${userId}`);
             }
-            const changeSet = userSets.get(changeSetId);
+            const changeSet = userSets[changeSetId];
             if (!changeSet) {
                 throw new Error(`Changeset not found for id: ${changeSet}`);
             }
@@ -108,22 +107,22 @@ class FileBackend {
     async updateChangeSet(userId, changeSetId, changeSet) {
         return this.doWithLock(async (data) => {
             const changeSetData = data.changeSets;
-            let userSets = changeSetData.get(userId);
+            let userSets = changeSetData[userId];
             if (!userSets) {
-                userSets = new Map();
-                changeSetData.set(userId, userSets);
+                userSets = {};
+                changeSetData[userId] = userSets;
             }
-            userSets.set(changeSetId, changeSet);
+            userSets[changeSetId] = changeSet;
         });
     }
     async validateChangeSet(userId, changeSetId) {
         return this.doWithLock(async (data) => {
             const changeSetData = data.changeSets;
-            const userSets = changeSetData.get(userId);
+            const userSets = changeSetData[userId];
             if (!userSets) {
                 throw new Error(`No changesets found for user: ${userId}`);
             }
-            const changeSet = userSets.get(changeSetId);
+            const changeSet = userSets[changeSetId];
             if (!changeSet) {
                 throw new Error(`Changeset not found for id: ${changeSet}`);
             }
@@ -133,17 +132,17 @@ class FileBackend {
     async commitChangeSet(userId, changeSetId) {
         return this.doWithLock(async (data) => {
             const changeSetData = data.changeSets;
-            const userSets = changeSetData.get(userId);
+            const userSets = changeSetData[userId];
             if (!userSets) {
                 throw new Error(`No changesets found for user: ${userId}`);
             }
-            const changeSet = userSets.get(changeSetId);
+            const changeSet = userSets[changeSetId];
             if (!changeSet) {
                 throw new Error(`Changeset not found for id: ${changeSet}`);
             }
             const result = typeidea_1.commitChangeSet(data.log, changeSet);
             data.log = result;
-            userSets.delete(changeSetId);
+            delete userSets[changeSetId];
             const serialized = json_object_mapper_1.ObjectMapper.serialize(data);
             await fs_1.promises.writeFile(this.fileName, serialized);
         });
@@ -151,15 +150,15 @@ class FileBackend {
     async deleteChangeSet(userId, changeSetId) {
         return this.doWithLock(async (data) => {
             const changeSetData = data.changeSets;
-            const userSets = changeSetData.get(userId);
+            const userSets = changeSetData[userId];
             if (!userSets) {
                 throw new Error(`No changesets found for user: ${userId}`);
             }
-            const changeSet = userSets.get(changeSetId);
+            const changeSet = userSets[changeSetId];
             if (!changeSet) {
                 throw new Error(`Changeset not found for id: ${changeSet}`);
             }
-            userSets.delete(changeSetId);
+            delete userSets[changeSetId];
             const serialized = json_object_mapper_1.ObjectMapper.serialize(data);
             await fs_1.promises.writeFile(this.fileName, serialized);
         });

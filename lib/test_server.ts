@@ -1,7 +1,7 @@
 import "reflect-metadata";
-import { MemoryBackend } from "./memory_backend";
-import {startServer} from "./server";
+import { startServer } from "./server";
+import { FileBackend } from "./file_backend";
 
-// const backend = new FileBackend('./test_data.json');
-const backend = new MemoryBackend([], new Map());
+const backend = new FileBackend('./test_data.json');
+// const backend = new MemoryBackend([], new Map());
 startServer(backend);

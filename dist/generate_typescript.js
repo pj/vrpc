@@ -21,12 +21,11 @@ const serviceHeader = (service) => `/*
 const changeLog = (changeLog) => changeLog.map((log, index) => `* ${index}. ${log}`).join('\n');
 function imports(versions) {
     let allImports = [];
-    for (let version of versions.values()) {
-        const [outputVersion, inputVersions] = version;
+    for (let version of Object.values(versions)) {
         let versionImports = [];
-        versionImports.push(outputVersion);
-        versionImports.push(outputVersion._type);
-        for (let inputVersion of inputVersions) {
+        versionImports.push(version.output);
+        versionImports.push(version.output._type);
+        for (let inputVersion of version.inputs) {
             versionImports.push(inputVersion);
             versionImports.push(inputVersion._type);
         }
@@ -54,16 +53,15 @@ function serviceBody(service) {
     const allVersions = [];
     const allResponses = [];
     const allDefines = [];
-    for (let version of service.versions.values()) {
-        const [outputVersion, inputVersions] = version;
+    for (let version of Object.values(service.versions)) {
         //const allInputs = inputVersions.join(' | ');
-        allDefines.push(serviceVersion(service, inputVersions, outputVersion));
-        for (let inputVersion of inputVersions) {
+        allDefines.push(serviceVersion(service, version.inputs, version.output));
+        for (let inputVersion of version.inputs) {
             allResponses.push(`case '${inputVersion}':
   const inputMessage = ${inputVersion}.deserialize(body);
   const func = ${service.name}Definitions.get("${inputVersion}");
   const response = func(inputMessage);
-  const outputMessage = ${outputVersion._type}.serialize(response);
+  const outputMessage = ${version.output._type}.serialize(response);
   res.json(outputMessage);
   return;`);
             allVersions.push(`"${inputVersion}"`);
@@ -267,8 +265,7 @@ ${allTypes.join('\n')}
 }
 exports.generateTypes = generateTypes;
 // Generate Client
-function generateClientVersion(service, version) {
-    const [outputVersion, inputVersions] = version;
+function generateClientVersion(service, inputVersions, outputVersion) {
     return `
 async ${service.name}(
   input: ${inputVersions.join(" | ")}
@@ -288,8 +285,8 @@ async ${service.name}(
 }
 function generateServiceClient(service) {
     const allVersions = [];
-    for (let [_, versions] of service.versions) {
-        allVersions.push(generateClientVersion(service, versions));
+    for (let serviceVersion of Object.values(service.versions)) {
+        allVersions.push(generateClientVersion(service, serviceVersion.inputs, serviceVersion.output));
     }
     return `
   ${allVersions.join('\n')}

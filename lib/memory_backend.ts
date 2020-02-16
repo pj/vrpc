@@ -3,16 +3,22 @@ import {Action, ChangeSet, GroupAction} from './action';
 import {generateDefinitions, Type, Service} from './generate';
 import {validate, commitChangeSet, validateWithChangeSet} from './typeidea';
 
+type StoredChangeSets = {
+  [key: string]: {
+    [key: string]: ChangeSet
+  }
+};
+
 export class MemoryBackend implements Backend {
   log: GroupAction[];
-  changeSets: Map<string, Map<string, ChangeSet>>;
+  changeSets: StoredChangeSets;
 
   constructor(
       log: GroupAction[] | null, 
-      changeSets: Map<string, Map<string, ChangeSet>> | null
+      changeSets: StoredChangeSets | null
     ) {
       this.log = log || [];
-      this.changeSets = changeSets || new Map();
+      this.changeSets = changeSets || {};
   }
 
   async getLog(): Promise<GroupAction[]> {
@@ -33,12 +39,12 @@ export class MemoryBackend implements Backend {
       changeSetId: string
     ): Promise<Service[]> {
     const changeSetData = this.changeSets;
-    const userSets = changeSetData.get(userId);
+    const userSets = changeSetData[userId];
     if (!userSets) {
         throw new Error(`No changesets found for user: ${userId}`)
     }
 
-    const changeSet = userSets.get(changeSetId);
+    const changeSet = userSets[changeSetId];
     if (!changeSet) {
         throw new Error(`Changeset not found for id: ${changeSet}`)
     }
@@ -59,12 +65,12 @@ export class MemoryBackend implements Backend {
       changeSetId: string
     ): Promise<Type[]> {
     const changeSetData = this.changeSets;
-    const userSets = changeSetData.get(userId);
+    const userSets = changeSetData[userId];
     if (!userSets) {
         throw new Error(`No changesets found for user: ${userId}`)
     }
 
-    const changeSet = userSets.get(changeSetId);
+    const changeSet = userSets[changeSetId];
     if (!changeSet) {
         throw new Error(`Changeset not found for id: ${changeSet}`)
     }
@@ -77,23 +83,22 @@ export class MemoryBackend implements Backend {
 
   async getChangeSets(userId: string): Promise<ChangeSet[]> {
     const changeSetData = this.changeSets;
-    const userSets = changeSetData.get(userId);
+    const userSets = changeSetData[userId];
     if (!userSets) {
       return [];
     }
 
-    const changeSets = Array.from(userSets.values());
-    return changeSets;
+    return Object.values(userSets);
   }
 
   async getChangeSet(userId: string, changeSetId: string): Promise<ChangeSet> {
     const changeSetData = this.changeSets;
-    const userSets = changeSetData.get(userId);
+    const userSets = changeSetData[userId];
     if (!userSets) {
         throw new Error(`No changesets found for user: ${userId}`)
     }
 
-    const changeSet = userSets.get(changeSetId);
+    const changeSet = userSets[changeSetId];
     if (!changeSet) {
         throw new Error(`Changeset not found for id: ${changeSet}`)
     }
@@ -106,13 +111,13 @@ export class MemoryBackend implements Backend {
       changeSetId: string, changeSet: ChangeSet
     ): Promise<void> {
     const changeSetData = this.changeSets;
-    let userSets = changeSetData.get(userId);
+    let userSets = changeSetData[userId];
     if (!userSets) {
-        userSets = new Map();
-        changeSetData.set(userId, userSets);
+      userSets = {}
+      changeSetData[userId] = userSets;
     }
 
-    userSets.set(changeSetId, changeSet);
+    userSets[changeSetId] = changeSet;
   }
 
   async validateChangeSet(
@@ -120,12 +125,12 @@ export class MemoryBackend implements Backend {
       changeSetId: string
     ): Promise<string | null> {
     const changeSetData = this.changeSets;
-    const userSets = changeSetData.get(userId);
+    const userSets = changeSetData[userId];
     if (!userSets) {
         throw new Error(`No changesets found for user: ${userId}`)
     }
 
-    const changeSet = userSets.get(changeSetId);
+    const changeSet = userSets[changeSetId];
     if (!changeSet) {
         throw new Error(`Changeset not found for id: ${changeSet}`)
     }
@@ -135,32 +140,32 @@ export class MemoryBackend implements Backend {
 
   async commitChangeSet(userId: string, changeSetId: string): Promise<void> {
     const changeSetData = this.changeSets;
-    const userSets = changeSetData.get(userId);
+    const userSets = changeSetData[userId];
     if (!userSets) {
         throw new Error(`No changesets found for user: ${userId}`)
     }
 
-    const changeSet = userSets.get(changeSetId);
+    const changeSet = userSets[changeSetId];
     if (!changeSet) {
         throw new Error(`Changeset not found for id: ${changeSet}`)
     }
 
     const result = commitChangeSet(this.log, changeSet);
     this.log = result;
-    userSets.delete(changeSetId);
+    delete userSets[changeSetId];
   }
 
   async deleteChangeSet(userId: string, changeSetId: string): Promise<void> {
     const changeSetData = this.changeSets;
-    const userSets = changeSetData.get(userId);
+    const userSets = changeSetData[userId];
     if (!userSets) {
         throw new Error(`No changesets found for user: ${userId}`)
     }
 
-    const changeSet = userSets.get(changeSetId);
+    const changeSet = userSets[changeSetId];
     if (!changeSet) {
         throw new Error(`Changeset not found for id: ${changeSet}`)
     }
-    userSets.delete(changeSetId);
+    delete userSets[changeSetId];
   }
 }

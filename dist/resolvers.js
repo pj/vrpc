@@ -616,10 +616,10 @@ exports.GQLVersionType = GQLVersionType;
 let ServiceResolver = class ServiceResolver {
     versions(service) {
         const versionTypes = [];
-        for (let [output, inputs] of service.versions.values()) {
+        for (let serviceVersion of Object.values(service.versions)) {
             const gqlVersionType = new GQLVersionType();
-            gqlVersionType.output = output;
-            gqlVersionType.inputs = inputs;
+            gqlVersionType.output = serviceVersion.output;
+            gqlVersionType.inputs = serviceVersion.inputs;
             versionTypes.push(gqlVersionType);
         }
         return versionTypes;

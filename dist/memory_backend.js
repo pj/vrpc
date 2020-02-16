@@ -5,7 +5,7 @@ const typeidea_1 = require("./typeidea");
 class MemoryBackend {
     constructor(log, changeSets) {
         this.log = log || [];
-        this.changeSets = changeSets || new Map();
+        this.changeSets = changeSets || {};
     }
     async getLog() {
         return this.log;
@@ -19,11 +19,11 @@ class MemoryBackend {
     }
     async getCurrentServicesWithChangeSet(userId, changeSetId) {
         const changeSetData = this.changeSets;
-        const userSets = changeSetData.get(userId);
+        const userSets = changeSetData[userId];
         if (!userSets) {
             throw new Error(`No changesets found for user: ${userId}`);
         }
-        const changeSet = userSets.get(changeSetId);
+        const changeSet = userSets[changeSetId];
         if (!changeSet) {
             throw new Error(`Changeset not found for id: ${changeSet}`);
         }
@@ -37,11 +37,11 @@ class MemoryBackend {
     }
     async getCurrentTypesWithChangeSet(userId, changeSetId) {
         const changeSetData = this.changeSets;
-        const userSets = changeSetData.get(userId);
+        const userSets = changeSetData[userId];
         if (!userSets) {
             throw new Error(`No changesets found for user: ${userId}`);
         }
-        const changeSet = userSets.get(changeSetId);
+        const changeSet = userSets[changeSetId];
         if (!changeSet) {
             throw new Error(`Changeset not found for id: ${changeSet}`);
         }
@@ -51,20 +51,19 @@ class MemoryBackend {
     }
     async getChangeSets(userId) {
         const changeSetData = this.changeSets;
-        const userSets = changeSetData.get(userId);
+        const userSets = changeSetData[userId];
         if (!userSets) {
             return [];
         }
-        const changeSets = Array.from(userSets.values());
-        return changeSets;
+        return Object.values(userSets);
     }
     async getChangeSet(userId, changeSetId) {
         const changeSetData = this.changeSets;
-        const userSets = changeSetData.get(userId);
+        const userSets = changeSetData[userId];
         if (!userSets) {
             throw new Error(`No changesets found for user: ${userId}`);
         }
-        const changeSet = userSets.get(changeSetId);
+        const changeSet = userSets[changeSetId];
         if (!changeSet) {
             throw new Error(`Changeset not found for id: ${changeSet}`);
         }
@@ -72,20 +71,20 @@ class MemoryBackend {
     }
     async updateChangeSet(userId, changeSetId, changeSet) {
         const changeSetData = this.changeSets;
-        let userSets = changeSetData.get(userId);
+        let userSets = changeSetData[userId];
         if (!userSets) {
-            userSets = new Map();
-            changeSetData.set(userId, userSets);
+            userSets = {};
+            changeSetData[userId] = userSets;
         }
-        userSets.set(changeSetId, changeSet);
+        userSets[changeSetId] = changeSet;
     }
     async validateChangeSet(userId, changeSetId) {
         const changeSetData = this.changeSets;
-        const userSets = changeSetData.get(userId);
+        const userSets = changeSetData[userId];
         if (!userSets) {
             throw new Error(`No changesets found for user: ${userId}`);
         }
-        const changeSet = userSets.get(changeSetId);
+        const changeSet = userSets[changeSetId];
         if (!changeSet) {
             throw new Error(`Changeset not found for id: ${changeSet}`);
         }
@@ -93,29 +92,29 @@ class MemoryBackend {
     }
     async commitChangeSet(userId, changeSetId) {
         const changeSetData = this.changeSets;
-        const userSets = changeSetData.get(userId);
+        const userSets = changeSetData[userId];
         if (!userSets) {
             throw new Error(`No changesets found for user: ${userId}`);
         }
-        const changeSet = userSets.get(changeSetId);
+        const changeSet = userSets[changeSetId];
         if (!changeSet) {
             throw new Error(`Changeset not found for id: ${changeSet}`);
         }
         const result = typeidea_1.commitChangeSet(this.log, changeSet);
         this.log = result;
-        userSets.delete(changeSetId);
+        delete userSets[changeSetId];
     }
     async deleteChangeSet(userId, changeSetId) {
         const changeSetData = this.changeSets;
-        const userSets = changeSetData.get(userId);
+        const userSets = changeSetData[userId];
         if (!userSets) {
             throw new Error(`No changesets found for user: ${userId}`);
         }
-        const changeSet = userSets.get(changeSetId);
+        const changeSet = userSets[changeSetId];
         if (!changeSet) {
             throw new Error(`Changeset not found for id: ${changeSet}`);
         }
-        userSets.delete(changeSetId);
+        delete userSets[changeSetId];
     }
 }
 exports.MemoryBackend = MemoryBackend;

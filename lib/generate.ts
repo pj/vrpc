@@ -250,6 +250,13 @@ export class VersionType {
   }
 }
 
+export type ServiceVersions = {
+  [key: string]: {
+    output: VersionType,
+    inputs: VersionType[]
+  }
+};
+
 @ObjectType()
 export class Service {
   @Field()
@@ -262,7 +269,7 @@ export class Service {
   description: string;
 
   // Handled by field resolver in resolvers.ts
-  versions: Map<string, [VersionType, VersionType[]]>;
+  versions: ServiceVersions; // Map<string, [VersionType, VersionType[]]>;
 
   seenInputVersions: Set<string>;
 
@@ -273,7 +280,7 @@ export class Service {
     this.name = name;
     this.description = description;
     this.changeLog = [];
-    this.versions = new Map();
+    this.versions = {};
     this.seenInputVersions = new Set();
   }
 }
@@ -290,19 +297,16 @@ function updateServiceVersion(
       throw new Error(`Input version ${inputVersion} used elsewhere`);
     }
     service.seenInputVersions.add(inputVersion);
-    const existingVersion = service.versions.get(outputVersion);
+    const existingVersion = service.versions[outputVersion];
     if (existingVersion) {
-      existingVersion[1].push(
+      existingVersion.inputs.push(
         new VersionType(logAction.inputType, logAction.inputHash, logAction.inputVersion),
       );
     } else {
-      service.versions.set(
-        outputVersion,
-        [
-          new VersionType(logAction.outputType, logAction.outputHash, logAction.outputVersion),
-          [new VersionType(logAction.inputType, logAction.inputHash, logAction.inputVersion)],
-        ],
-      );
+      service.versions[outputVersion] = ({
+        output: new VersionType(logAction.outputType, logAction.outputHash, logAction.outputVersion),
+        inputs: [new VersionType(logAction.inputType, logAction.inputHash, logAction.inputVersion)],
+      });
     }
   } else {
     throw new Error('Should not happen');

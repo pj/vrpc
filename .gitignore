@@ -3,3 +3,6 @@ runtest
 build_temp
 .cache
 .vscode
+
+# exclude server test data for now
+test_data.json
