@@ -1,5 +1,5 @@
 import {
-    Field as GQLField,
+    Field,
     ObjectType,
     InterfaceType,
     createUnionType
@@ -17,16 +17,16 @@ import * as typeidea from './typeidea';
 
 @InterfaceType()
 export abstract class BaseField {
-  @GQLField()
+  @Field()
   name: string;
 
-  @GQLField()
+  @Field()
   changeLog: string;
 
-  @GQLField()
+  @Field()
   description: string;
 
-  @GQLField()
+  @Field()
   optional: boolean;
 
   constructor(
@@ -55,11 +55,11 @@ export abstract class BaseField {
 }
 
 @ObjectType({implements: BaseField})
-export class Field extends BaseField {
-  @GQLField(type => FieldTypes)
+export class ScalarField extends BaseField {
+  @Field(type => FieldTypes)
   type: FieldTypes;
 
-  @GQLField(type => FieldDefaultsUnion, {nullable: true})
+  // Handled by ScalarFieldResolver in resolvers.ts
   _default?: FieldDefaults;
 
   constructor(
@@ -75,8 +75,8 @@ export class Field extends BaseField {
     this._default = _default;
   }
 
-  copy(): Field {
-    return new Field(
+  copy(): ScalarField {
+    return new ScalarField(
       this.name,
       this.changeLog,
       this.description,
@@ -103,13 +103,13 @@ export class Field extends BaseField {
 
 @ObjectType({implements: BaseField})
 export class ReferenceField extends BaseField {
-  @GQLField()
+  @Field()
   referenceType: string;
 
-  @GQLField({nullable: true})
+  @Field({nullable: true})
   referenceHash?: string;
 
-  @GQLField({nullable: true})
+  @Field({nullable: true})
   referenceVersion?: number;
 
   constructor(
@@ -148,27 +148,22 @@ export class ReferenceField extends BaseField {
   }
 }
 
-export const FieldUnion = createUnionType({
-  name: "FieldUnion",
-  types: () => [ReferenceField, Field]
-});
-
 export type FieldObject = {
   [key: string]: BaseField;
 };
 
 @ObjectType()
 export class Version {
-  @GQLField()
+  @Field()
   _type: string;
 
-  @GQLField()
+  @Field()
   version: number;
 
-  @GQLField()
+  @Field()
   hash: string;
 
-  @GQLField(type => [FieldUnion])
+  // Handled by VersionResolver in resolvers.ts
   fields: FieldObject;
 
   constructor(
@@ -202,19 +197,19 @@ export class Version {
 
 @ObjectType()
 export class Type {
-  @GQLField()
+  @Field()
   name: string;
 
-  @GQLField(type => [Version])
+  @Field(type => [Version])
   versions: Version[];
 
-  @GQLField({nullable: true})
+  @Field({nullable: true})
   changeSetName?: string;
 
-  @GQLField(type => [String])
+  @Field(type => [String])
   changeLog: string[];
 
-  @GQLField()
+  @Field()
   description: string;
 
   constructor(name: string, description: string) {
@@ -227,13 +222,13 @@ export class Type {
 
 @ObjectType()
 export class VersionType {
-  @GQLField()
+  @Field()
   _type: string;
 
-  @GQLField()
+  @Field()
   version: number;
 
-  @GQLField()
+  @Field()
   hash: string;
 
   constructor(
@@ -255,27 +250,18 @@ export class VersionType {
   }
 }
 
-@ObjectType('ServiceVersionType')
-export class GQLVersionType {
-  @GQLField(type => VersionType)
-  output: VersionType;
-
-  @GQLField(type => [VersionType])
-  inputs: VersionType[];
-}
-
 @ObjectType()
 export class Service {
-  @GQLField()
+  @Field()
   name: string;
 
-  @GQLField(type => [String])
+  @Field(type => [String])
   changeLog: string[];
 
-  @GQLField()
+  @Field()
   description: string;
 
-  @GQLField(type => [GQLVersionType])
+  // Handled by field resolver in resolvers.ts
   versions: Map<string, [VersionType, VersionType[]]>;
 
   seenInputVersions: Set<string>;
@@ -350,7 +336,7 @@ function updateVersion(newVersion: Version, logAction: Action | ChangeAction) {
   } else if (logAction.actionType === 'SetDefaultFieldTypeAction') {
     const currentField = newVersion.fields[logAction.name];
     const newField = currentField.copy();
-    if (newField instanceof Field) {
+    if (newField instanceof ScalarField) {
       newField._default = logAction._default;
     }
     newField.changeLog = logAction.changeLog;
@@ -358,14 +344,14 @@ function updateVersion(newVersion: Version, logAction: Action | ChangeAction) {
   } else if (logAction.actionType === 'RemoveDefaultFieldTypeAction') {
     const currentField = newVersion.fields[logAction.name];
     const newField = currentField.copy();
-    if (newField instanceof Field) {
+    if (newField instanceof ScalarField) {
       newField._default = undefined;
     }
     newField.changeLog = logAction.changeLog;
     newVersion.fields[newField.name] = newField;
   } else if (logAction.actionType === 'AddFieldTypeAction') {
     const currentField = newVersion.fields[logAction.name];
-    const newField = new Field(
+    const newField = new ScalarField(
       logAction.name,
       logAction.changeLog,
       logAction.description,

@@ -157,16 +157,6 @@ export type DeleteFieldTypeInputAction = {
   name: Scalars['String'],
 };
 
-export type Field = BaseField & {
-   __typename: 'Field',
-  name: Scalars['String'],
-  changeLog: Scalars['String'],
-  description: Scalars['String'],
-  optional: Scalars['Boolean'],
-  type: FieldTypes,
-  _default?: Maybe<FieldDefaults>,
-};
-
 export type FieldDataInput = {
   stringValue?: Maybe<Scalars['String']>,
   integerValue?: Maybe<Scalars['Float']>,
@@ -183,7 +173,7 @@ export enum FieldTypes {
   Float = 'FLOAT'
 }
 
-export type FieldUnion = ReferenceField | Field;
+export type FieldUnion = ReferenceField | ScalarField;
 
 export type FloatField = {
    __typename: 'FloatField',
@@ -422,6 +412,16 @@ export type RequiredFieldTypeInputAction = {
   name: Scalars['String'],
 };
 
+export type ScalarField = BaseField & {
+   __typename: 'ScalarField',
+  name: Scalars['String'],
+  changeLog: Scalars['String'],
+  description: Scalars['String'],
+  optional: Scalars['Boolean'],
+  type: FieldTypes,
+  _default?: Maybe<Array<FieldDefaults>>,
+};
+
 export type Service = {
    __typename: 'Service',
   name: Scalars['String'],
@@ -589,9 +589,9 @@ export type VersionQueryFragment = (
     { __typename: 'ReferenceField' }
     & Pick<ReferenceField, 'name' | 'description' | 'changeLog' | 'optional' | 'referenceType' | 'referenceHash' | 'referenceVersion'>
   ) | (
-    { __typename: 'Field' }
-    & Pick<Field, 'name' | 'description' | 'changeLog' | 'optional' | 'type'>
-    & { _default: Maybe<(
+    { __typename: 'ScalarField' }
+    & Pick<ScalarField, 'name' | 'description' | 'changeLog' | 'optional' | 'type'>
+    & { _default: Maybe<Array<(
       { __typename: 'StringField' }
       & { stringValue: StringField['value'] }
     ) | (
@@ -603,7 +603,7 @@ export type VersionQueryFragment = (
     ) | (
       { __typename: 'IntegerField' }
       & { intValue: IntegerField['value'] }
-    )> }
+    )>> }
   )> }
 );
 
@@ -1176,12 +1176,6 @@ export const VersionQueryFragmentDoc = gql`
   hash
   _type
   fields {
-    ... on Field {
-      name
-      description
-      changeLog
-      optional
-    }
     ... on ReferenceField {
       name
       description
@@ -1191,7 +1185,7 @@ export const VersionQueryFragmentDoc = gql`
       referenceHash
       referenceVersion
     }
-    ... on Field {
+    ... on ScalarField {
       name
       description
       changeLog

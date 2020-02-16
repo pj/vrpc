@@ -7,7 +7,7 @@ import {
   Type,
   Version,
   BaseField,
-  Field,
+  ScalarField,
   ReferenceField,
   FieldObject,
 } from './generate';

@@ -84,7 +84,7 @@
             "name": "ReferenceField"
           },
           {
-            "name": "Field"
+            "name": "ScalarField"
           }
         ]
       },
@@ -96,7 +96,7 @@
             "name": "ReferenceField"
           },
           {
-            "name": "Field"
+            "name": "ScalarField"
           }
         ]
       },

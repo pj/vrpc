@@ -6,12 +6,15 @@ import {
     Ctx, 
     InputType, 
     ObjectType,
-    Field
+    Field,
+    FieldResolver,
+    Root,
+    createUnionType
 } from 'type-graphql';
-import {Type, Service} from './generate';
-import {ActionUnion, ChangeSet, GroupAction, NewServiceChangeAction, UpdateDescriptionServiceChangeAction, AddVersionServiceChangeAction, RenameFieldTypeChangeAction, RequiredFieldTypeChangeAction, OptionalFieldTypeChangeAction, DeleteFieldTypeChangeAction, SetDefaultFieldTypeChangeAction, RemoveDefaultFieldTypeChangeAction, AddFieldTypeChangeAction, UpdateDescriptionTypeChangeAction, ReferenceFieldTypeChangeAction, NewTypeChangeAction, ChangeAction, FieldDefaultsUnion, FieldDefaults, FieldTypes } from './action';
+import {Type, Service, VersionType, Version, ReferenceField, ScalarField, BaseField} from './generate';
+import {ActionUnion, ChangeSet, GroupAction, NewServiceChangeAction, UpdateDescriptionServiceChangeAction, AddVersionServiceChangeAction, RenameFieldTypeChangeAction, RequiredFieldTypeChangeAction, OptionalFieldTypeChangeAction, DeleteFieldTypeChangeAction, SetDefaultFieldTypeChangeAction, RemoveDefaultFieldTypeChangeAction, AddFieldTypeChangeAction, UpdateDescriptionTypeChangeAction, ReferenceFieldTypeChangeAction, NewTypeChangeAction, ChangeAction, FieldDefaultsUnion, FieldDefaults, FieldTypes, StringField, BooleanField, FloatField, IntegerField, SetDefaultFieldTypeAction, AddFieldTypeAction } from './action';
 import { Backend } from './backend';
-import { isObjectType } from 'graphql';
+import { version } from 'punycode';
 
 @InputType()
 export class FieldDataInput {
@@ -458,6 +461,120 @@ export class CommitOutput {
     changeSets: ChangeSet[];
 }
 
+@ObjectType('ServiceVersionType')
+export class GQLVersionType {
+  @Field(type => VersionType)
+  output: VersionType;
+
+  @Field(type => [VersionType])
+  inputs: VersionType[];
+}
+
+@Resolver(of => Service)
+export class ServiceResolver {
+  @FieldResolver(type => [GQLVersionType])
+  versions(@Root() service: Service): GQLVersionType[] {
+    const versionTypes = [];
+    for (let [output, inputs] of service.versions.values()) {
+      const gqlVersionType = new GQLVersionType();
+      gqlVersionType.output = output;
+      gqlVersionType.inputs = inputs;
+      versionTypes.push(gqlVersionType);
+    }
+
+    return versionTypes;
+  }
+}
+
+export const FieldUnion = createUnionType({
+  name: "FieldUnion",
+  types: () => [ReferenceField, ScalarField]
+});
+
+@Resolver(of => Version)
+export class VersionResolver {
+  @FieldResolver(type => [FieldUnion])
+  fields(@Root() version: Version): Array<BaseField> {
+    const fields = [];
+    for (let field of Object.values(version.fields)) {
+      fields.push(field);
+    }
+
+    return fields;
+  }
+}
+
+function defaultToField(
+  _default?: FieldDefaults
+): StringField | BooleanField | FloatField | IntegerField | undefined  {
+  if (_default === undefined) {
+    return undefined;
+  } else if (typeof _default === 'string') {
+      return ({
+        value: _default
+      });
+  } else if (typeof _default === 'number') {
+      return ({
+        value: _default
+      });
+  } else if (typeof _default === 'boolean') {
+      return ({
+        value: _default
+      });
+  }
+
+  throw new Error(`Unknown type of _default ${_default}`);
+}
+
+@Resolver(of => ScalarField)
+export class ScalarFieldResolver {
+  @FieldResolver(type => [FieldDefaultsUnion], {nullable: true})
+  _default(
+    @Root() scalarField: ScalarField
+  ): StringField | BooleanField | FloatField | IntegerField | undefined {
+    return defaultToField(scalarField._default);
+  }
+}
+
+@Resolver(of => SetDefaultFieldTypeAction)
+export class SetDefaultFieldTypeActionResolver {
+  @FieldResolver(type => [FieldDefaultsUnion], {nullable: true})
+  _default(
+    @Root() action: SetDefaultFieldTypeAction
+  ): StringField | BooleanField | FloatField | IntegerField | undefined {
+    return defaultToField(action._default);
+  }
+}
+
+@Resolver(of => SetDefaultFieldTypeChangeAction)
+export class SetDefaultFieldTypeChangeActionResolver {
+  @FieldResolver(type => [FieldDefaultsUnion], {nullable: true})
+  _default(
+    @Root() action: SetDefaultFieldTypeChangeAction
+  ): StringField | BooleanField | FloatField | IntegerField | undefined {
+    return defaultToField(action._default);
+  }
+}
+
+@Resolver(of => AddFieldTypeAction)
+export class AddFieldTypeActionResolver {
+  @FieldResolver(type => [FieldDefaultsUnion], {nullable: true})
+  _default(
+    @Root() action: AddFieldTypeAction
+  ): StringField | BooleanField | FloatField | IntegerField | undefined {
+    return defaultToField(action._default);
+  }
+}
+
+@Resolver(of => AddFieldTypeChangeAction)
+export class AddFieldTypeChangeActionResolver {
+  @FieldResolver(type => [FieldDefaultsUnion], {nullable: true})
+  _default(
+    @Root() action: AddFieldTypeChangeAction
+  ): StringField | BooleanField | FloatField | IntegerField | undefined {
+    return defaultToField(action._default);
+  }
+}
 export type VRPCContext = {
     backend: Backend;
 }

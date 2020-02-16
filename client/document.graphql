@@ -10,12 +10,6 @@ fragment VersionQuery on Version {
   hash
   _type
   fields {
-    ... on Field {
-      name
-      description
-      changeLog
-      optional
-    }
     ... on ReferenceField {
       name
       description
@@ -26,7 +20,7 @@ fragment VersionQuery on Version {
       referenceVersion
     }
 
-    ... on Field {
+    ... on ScalarField {
       name
       description
       changeLog

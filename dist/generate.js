@@ -15,7 +15,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     result["default"] = mod;
     return result;
 };
-var Field_1, ReferenceField_1;
+var ScalarField_1, ReferenceField_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
 const action_1 = require("./action");
@@ -58,14 +58,14 @@ BaseField = __decorate([
     __metadata("design:paramtypes", [String, String, String, Boolean])
 ], BaseField);
 exports.BaseField = BaseField;
-let Field = Field_1 = class Field extends BaseField {
+let ScalarField = ScalarField_1 = class ScalarField extends BaseField {
     constructor(name, changeLog, description, optional, type, _default) {
         super(name, changeLog, description, optional);
         this.type = type;
         this._default = _default;
     }
     copy() {
-        return new Field_1(this.name, this.changeLog, this.description, this.optional, this.type, this._default);
+        return new ScalarField_1(this.name, this.changeLog, this.description, this.optional, this.type, this._default);
     }
     fieldType() {
         return this.type + (this.optional ? " | null" : "");
@@ -83,16 +83,12 @@ let Field = Field_1 = class Field extends BaseField {
 __decorate([
     type_graphql_1.Field(type => action_1.FieldTypes),
     __metadata("design:type", String)
-], Field.prototype, "type", void 0);
-__decorate([
-    type_graphql_1.Field(type => action_1.FieldDefaultsUnion, { nullable: true }),
-    __metadata("design:type", Object)
-], Field.prototype, "_default", void 0);
-Field = Field_1 = __decorate([
+], ScalarField.prototype, "type", void 0);
+ScalarField = ScalarField_1 = __decorate([
     type_graphql_1.ObjectType({ implements: BaseField }),
     __metadata("design:paramtypes", [String, String, String, Boolean, String, Object])
-], Field);
-exports.Field = Field;
+], ScalarField);
+exports.ScalarField = ScalarField;
 let ReferenceField = ReferenceField_1 = class ReferenceField extends BaseField {
     constructor(name, changeLog, description, optional, referenceType, referenceHash, referenceVersion) {
         super(name, changeLog, description, optional);
@@ -127,10 +123,6 @@ ReferenceField = ReferenceField_1 = __decorate([
     __metadata("design:paramtypes", [String, String, String, Boolean, String, Object, Object])
 ], ReferenceField);
 exports.ReferenceField = ReferenceField;
-exports.FieldUnion = type_graphql_1.createUnionType({
-    name: "FieldUnion",
-    types: () => [ReferenceField, Field]
-});
 let Version = class Version {
     constructor(_type, hash, version, fields) {
         this._type = _type;
@@ -165,10 +157,6 @@ __decorate([
     type_graphql_1.Field(),
     __metadata("design:type", String)
 ], Version.prototype, "hash", void 0);
-__decorate([
-    type_graphql_1.Field(type => [exports.FieldUnion]),
-    __metadata("design:type", Object)
-], Version.prototype, "fields", void 0);
 Version = __decorate([
     type_graphql_1.ObjectType(),
     __metadata("design:paramtypes", [String, String, Number, Object])
@@ -239,20 +227,6 @@ VersionType = __decorate([
     __metadata("design:paramtypes", [String, String, Number])
 ], VersionType);
 exports.VersionType = VersionType;
-let GQLVersionType = class GQLVersionType {
-};
-__decorate([
-    type_graphql_1.Field(type => VersionType),
-    __metadata("design:type", VersionType)
-], GQLVersionType.prototype, "output", void 0);
-__decorate([
-    type_graphql_1.Field(type => [VersionType]),
-    __metadata("design:type", Array)
-], GQLVersionType.prototype, "inputs", void 0);
-GQLVersionType = __decorate([
-    type_graphql_1.ObjectType('ServiceVersionType')
-], GQLVersionType);
-exports.GQLVersionType = GQLVersionType;
 let Service = class Service {
     constructor(name, description) {
         this.name = name;
@@ -274,10 +248,6 @@ __decorate([
     type_graphql_1.Field(),
     __metadata("design:type", String)
 ], Service.prototype, "description", void 0);
-__decorate([
-    type_graphql_1.Field(type => [GQLVersionType]),
-    __metadata("design:type", Map)
-], Service.prototype, "versions", void 0);
 Service = __decorate([
     type_graphql_1.ObjectType(),
     __metadata("design:paramtypes", [String, String])
@@ -337,7 +307,7 @@ function updateVersion(newVersion, logAction) {
     else if (logAction.actionType === 'SetDefaultFieldTypeAction') {
         const currentField = newVersion.fields[logAction.name];
         const newField = currentField.copy();
-        if (newField instanceof Field) {
+        if (newField instanceof ScalarField) {
             newField._default = logAction._default;
         }
         newField.changeLog = logAction.changeLog;
@@ -346,7 +316,7 @@ function updateVersion(newVersion, logAction) {
     else if (logAction.actionType === 'RemoveDefaultFieldTypeAction') {
         const currentField = newVersion.fields[logAction.name];
         const newField = currentField.copy();
-        if (newField instanceof Field) {
+        if (newField instanceof ScalarField) {
             newField._default = undefined;
         }
         newField.changeLog = logAction.changeLog;
@@ -354,7 +324,7 @@ function updateVersion(newVersion, logAction) {
     }
     else if (logAction.actionType === 'AddFieldTypeAction') {
         const currentField = newVersion.fields[logAction.name];
-        const newField = new Field(logAction.name, logAction.changeLog, logAction.description, logAction.optional, logAction._type, logAction._default = logAction._default);
+        const newField = new ScalarField(logAction.name, logAction.changeLog, logAction.description, logAction.optional, logAction._type, logAction._default = logAction._default);
         newVersion.fields[newField.name] = newField;
     }
     else if (logAction.actionType === 'UpdateDescriptionTypeAction') {
