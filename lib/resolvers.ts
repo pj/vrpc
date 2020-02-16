@@ -314,6 +314,25 @@ class ChangeSetInput {
   log: ChangeSetAction[]
 }
 
+function fieldInputToDefault(
+  inputDefault?: FieldDataInput
+): FieldDefaults | undefined {
+  if (!inputDefault) {
+    return undefined;
+  }
+  if (inputDefault.booleanValue) {
+    return inputDefault.booleanValue;
+  } else if (inputDefault.stringValue) {
+    return inputDefault.stringValue;
+  } else if (inputDefault.integerValue) {
+    return inputDefault.integerValue;
+  } else if (inputDefault.floatValue) {
+    return inputDefault.floatValue;
+  } else {
+    throw new Error(`Unknown field data input ${inputDefault}`);
+  }
+}
+
 export function actionInputToChangeAction(
     logAction: ChangeSetAction
 ): ChangeAction {
@@ -372,15 +391,18 @@ export function actionInputToChangeAction(
       typeName: logAction.deleteField.typeName,
       name: logAction.deleteField.name
     });
-//   } else if (logAction.setDefault) {
-//     const _default = gqlDefaultToDefaultField(logAction.setDefault._default);
-//     return ({
-//       actionType: 'SetDefaultFieldTypeAction',
-//       changeLog: logAction.setDefault.changeLog,
-//       typeName: logAction.setDefault.typeName,
-//       name: logAction.setDefault.name,
-//       _default: _default[0]
-//     });
+  } else if (logAction.setDefault) {
+    const _default = fieldInputToDefault(logAction.setDefault._default);
+    if (!_default) {
+      throw new Error('should not happen');
+    }
+    return ({
+      actionType: 'SetDefaultFieldTypeAction',
+      changeLog: logAction.setDefault.changeLog,
+      typeName: logAction.setDefault.typeName,
+      name: logAction.setDefault.name,
+      _default: _default
+    });
   } else if (logAction.removeDefault) {
     return ({
       actionType: 'RemoveDefaultFieldTypeAction',
@@ -388,21 +410,21 @@ export function actionInputToChangeAction(
       typeName: logAction.removeDefault.typeName,
       name: logAction.removeDefault.name
     });
-//   } else if (logAction.addField) {
-//     let _default = null
-//     if (logAction.addField._default) {
-//       _default = gqlDefaultToDefaultField(logAction.addField._default)[0];
-//     }
-//     return ({
-//       actionType: 'AddFieldTypeAction',
-//       changeLog: logAction.addField.changeLog,
-//       typeName: logAction.addField.typeName,
-//       name: logAction.addField.name,
-//       gqlFieldTypesToFieldTypes(logAction.addField.type),
-//       description: logAction.addField.description,
-//       optional: logAction.addField.optional,
-//       _default
-//     });
+  } else if (logAction.addField) {
+    let _default = undefined;
+    if (logAction.addField._default) {
+      _default = fieldInputToDefault(logAction.addField._default);
+    }
+    return ({
+      actionType: 'AddFieldTypeAction',
+      changeLog: logAction.addField.changeLog,
+      typeName: logAction.addField.typeName,
+      name: logAction.addField.name,
+      _type: logAction.addField._type,
+      description: logAction.addField.description,
+      optional: logAction.addField.optional,
+      _default
+    });
   } else if (logAction.updateTypeDescription) {
     return ({
       actionType: 'UpdateDescriptionTypeAction',
