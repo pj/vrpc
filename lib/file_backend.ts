@@ -22,19 +22,25 @@ export class FileBackend implements Backend {
   fileName: string;
   constructor(fileName: string) {
     this.fileName = fileName;
+    // if (lockfile.checkSync(this.fileName)) {
+    //   console.log('asdfasdfasdf');
+    //   lockfile.unlockSync(this.fileName);
+    //   console.log('qewrqwerqwer');
+    // }
   }
 
   private async doWithLock<A>(func: (data: StoredData) => Promise<A>): Promise<A> {
-    const release = await lockfile.lock(this.fileName);
+    // const release = await lockfile.lock(this.fileName);
     const rawData = await fs.readFile(this.fileName, {encoding: 'utf8'});
+    console.log(rawData);
     const storedData = JSON.parse(rawData) as StoredData;
     const result = await func(storedData);
-    await release();
+    // await release();
     return result;
   }
 
   async getLog(): Promise<GroupAction[]> {
-    return this.doWithLock(
+    return await this.doWithLock(
       async (data: StoredData) => {
         return data.log;
       }
@@ -42,7 +48,7 @@ export class FileBackend implements Backend {
   }
 
   async validateLog(): Promise<string | null> {
-    return this.doWithLock(
+    return await this.doWithLock(
       async (data: StoredData) => {
         return validate(data.log);
       }
@@ -50,7 +56,7 @@ export class FileBackend implements Backend {
   }
 
   async getCurrentServices(): Promise<Service[]> {
-    return this.doWithLock(
+    return await this.doWithLock(
       async (data: StoredData) => {
         const [_, services] = generateDefinitions(data.log, null);
         return services;
@@ -59,7 +65,7 @@ export class FileBackend implements Backend {
   }
 
   async getCurrentServicesWithChangeSet(userId: string, changeSetId: string): Promise<Service[]> {
-    return this.doWithLock(
+    return await this.doWithLock(
       async (data: StoredData) => {
         const changeSetData = data.changeSets;
         const userSets = changeSetData[userId];
@@ -81,7 +87,7 @@ export class FileBackend implements Backend {
   }
 
   async getCurrentTypes(): Promise<Type[]> {
-    return this.doWithLock(
+    return await this.doWithLock(
       async (data: StoredData) => {
         const [types, _] = generateDefinitions(data.log, null);
         return types;
@@ -90,7 +96,7 @@ export class FileBackend implements Backend {
   }
 
   async getCurrentTypesWithChangeSet(userId: string, changeSetId: string): Promise<Type[]> {
-    return this.doWithLock(
+    return await this.doWithLock(
       async (data: StoredData) => {
         const changeSetData = data.changeSets;
         const userSets = changeSetData[userId];
@@ -112,12 +118,12 @@ export class FileBackend implements Backend {
   }
 
   async getChangeSets(userId: string): Promise<ChangeSet[]> {
-    return this.doWithLock(
+    return await this.doWithLock(
       async (data: StoredData) => {
         const changeSetData = data.changeSets;
         const userSets = changeSetData[userId];
         if (!userSets) {
-          throw new Error(`No changesets found for user: ${userId}`)
+          return [];
         }
 
         return Object.values(userSets);
@@ -126,7 +132,7 @@ export class FileBackend implements Backend {
   }
 
   async getChangeSet(userId: string, changeSetId: string): Promise<ChangeSet> {
-    return this.doWithLock(
+    return await this.doWithLock(
       async (data: StoredData) => {
         const changeSetData = data.changeSets;
         const userSets = changeSetData[userId];
@@ -145,9 +151,11 @@ export class FileBackend implements Backend {
   }
 
   async updateChangeSet(userId: string, changeSetId: string, changeSet: ChangeSet): Promise<void> {
-    return this.doWithLock(
+    return await this.doWithLock(
       async (data: StoredData) => {
         const changeSetData = data.changeSets;
+        console.log(changeSetData);
+        console.log(typeof data);
         let userSets = changeSetData[userId];
         if (!userSets) {
           userSets = {};
@@ -155,12 +163,15 @@ export class FileBackend implements Backend {
         }
 
         userSets[changeSetId] = changeSet;
+        console.log(data);
+        console.log(JSON.stringify(data));
+        await fs.writeFile(this.fileName, JSON.stringify(data));
       }
     );
   }
 
   async validateChangeSet(userId: string, changeSetId: string): Promise<string | null> {
-    return this.doWithLock(
+    return await this.doWithLock(
       async (data: StoredData) => {
         const changeSetData = data.changeSets;
         const userSets = changeSetData[userId];
@@ -179,7 +190,7 @@ export class FileBackend implements Backend {
   }
 
   async commitChangeSet(userId: string, changeSetId: string): Promise<void> {
-    return this.doWithLock(
+    return await this.doWithLock(
       async (data: StoredData) => {
         const changeSetData = data.changeSets;
         const userSets = changeSetData[userId];
@@ -195,14 +206,13 @@ export class FileBackend implements Backend {
         const result = commitChangeSet(data.log, changeSet);
         data.log = result;
         delete userSets[changeSetId];
-        const serialized = ObjectMapper.serialize(data);
-        await fs.writeFile(this.fileName, serialized);
+        await fs.writeFile(this.fileName, JSON.stringify(data));
       }
     );
   }
 
   async deleteChangeSet(userId: string, changeSetId: string): Promise<void> {
-    return this.doWithLock(
+    return await this.doWithLock(
       async (data: StoredData) => {
         const changeSetData = data.changeSets;
         const userSets = changeSetData[userId];
@@ -216,8 +226,7 @@ export class FileBackend implements Backend {
         }
 
         delete userSets[changeSetId];
-        const serialized = ObjectMapper.serialize(data);
-        await fs.writeFile(this.fileName, serialized);
+        await fs.writeFile(this.fileName, JSON.stringify(data));
       }
     );
   }

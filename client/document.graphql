@@ -387,17 +387,15 @@ fragment ChangeActionsFragment on ChangeAction {
   }
 }
 
-fragment ChangeSetFragment on ChangeSet {
-  id
-  baseHash
-  log {
-    ...ChangeActionsFragment
+mutation UpdateChangeSet($changeSet: ChangeSetInput!) {
+  updateChangeSet(changeSet: $changeSet) {
+    ...ChangeSetFields
   }
 }
 
-mutation UpdateChangeSet($changeSet: ChangeSetInput!) {
-  updateChangeSet(changeSet: $changeSet) {
-    ...ChangeSetFragment
+mutation AppendChangeSet($changeSet: ChangeSetAppend!) {
+  appendChangeSet(changeSet: $changeSet) {
+    ...ChangeSetFields
   }
 }
 

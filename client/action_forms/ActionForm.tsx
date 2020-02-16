@@ -1,4 +1,4 @@
-import { useUpdateChangeSetMutation, TypeFieldsFragment, ServiceFieldsFragment, NewServiceInputAction, UpdateDescriptionServiceInputAction, AddVersionServiceInputAction, RenameFieldTypeInputAction, RequiredFieldTypeInputAction, OptionalFieldTypeInputAction, DeleteFieldTypeInputAction, SetDefaultFieldTypeInputAction, RemoveDefaultFieldTypeInputAction, AddFieldTypeInputAction, UpdateDescriptionTypeInputAction, ReferenceFieldTypeInputAction, NewTypeInputAction, FieldDataInput } from "../hooks";
+import { useUpdateChangeSetMutation, TypeFieldsFragment, ServiceFieldsFragment, NewServiceInputAction, UpdateDescriptionServiceInputAction, AddVersionServiceInputAction, RenameFieldTypeInputAction, RequiredFieldTypeInputAction, OptionalFieldTypeInputAction, DeleteFieldTypeInputAction, SetDefaultFieldTypeInputAction, RemoveDefaultFieldTypeInputAction, AddFieldTypeInputAction, UpdateDescriptionTypeInputAction, ReferenceFieldTypeInputAction, NewTypeInputAction, FieldDataInput, useAppendChangeSetMutation } from "../hooks";
 import { useState } from "react";
 import { makeStyles, Paper, CircularProgress, FormControl, Button } from "@material-ui/core";
 import React from "react";
@@ -13,7 +13,8 @@ type InputAction = NewServiceInputAction | UpdateDescriptionServiceInputAction
 
 export type ActionFormProps = {
     types: TypeFieldsFragment[],
-    services: ServiceFieldsFragment[]
+    services: ServiceFieldsFragment[],
+    changeSetId: string
 };
 
 export type FormComponentProps<I> = {
@@ -37,7 +38,10 @@ export function ActionFormHOC<I extends InputAction>(
 ) {
     function ActionForm(props: ActionFormProps) {
         const classes = useStyles(props);
-        const [updateChangeSetMutation, {loading, error}] = useUpdateChangeSetMutation();
+        const [
+            appendChangeSetMutation, 
+            {loading, error}
+        ] = useAppendChangeSetMutation();
         const [value, setValue] = useState<Partial<I>>({});
 
         function handleChange(key: keyof I) {
@@ -76,8 +80,17 @@ export function ActionFormHOC<I extends InputAction>(
             return innerHandleChange;
         }
 
-        function updateChangeSet() {
-
+        function handleAppendChangeSet() {
+            appendChangeSetMutation(
+                {
+                    variables: {
+                        changeSet: {
+                            id: props.changeSetId,
+                            action: value
+                        }
+                    }
+                }
+            );
         }
 
         return (
@@ -97,7 +110,11 @@ export function ActionFormHOC<I extends InputAction>(
                           handleDefaultChange={handleDefaultChange}
                           handleVersionChange={handleVersionChange}
                         />
-                        <Button variant="contained" color="primary" onClick={updateChangeSet}>
+                        <Button 
+                          variant="contained" 
+                          color="primary" 
+                          onClick={handleAppendChangeSet}
+                        >
                             Add To Log
                         </Button>
                     </FormControl>

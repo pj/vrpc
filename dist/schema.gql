@@ -107,6 +107,11 @@ input ChangeSetAction {
   newType: NewTypeInputAction
 }
 
+input ChangeSetAppend {
+  id: String!
+  action: ChangeSetAction!
+}
+
 input ChangeSetInput {
   id: String!
   baseHash: String
@@ -175,6 +180,7 @@ type IntegerField {
 
 type Mutation {
   updateChangeSet(changeSet: ChangeSetInput!): ChangeSet!
+  appendChangeSet(changeSet: ChangeSetAppend!): ChangeSet!
   commitChangeSet(changeSetId: String!): CommitOutput!
   deleteChangeSet(changeSetId: String!): [ChangeSet!]!
 }

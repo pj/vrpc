@@ -121,6 +121,11 @@ export type ChangeSetAction = {
   newType?: Maybe<NewTypeInputAction>,
 };
 
+export type ChangeSetAppend = {
+  id: Scalars['String'],
+  action: ChangeSetAction,
+};
+
 export type ChangeSetInput = {
   id: Scalars['String'],
   baseHash?: Maybe<Scalars['String']>,
@@ -196,6 +201,7 @@ export type IntegerField = {
 export type Mutation = {
    __typename: 'Mutation',
   updateChangeSet: ChangeSet,
+  appendChangeSet: ChangeSet,
   commitChangeSet: CommitOutput,
   deleteChangeSet: Array<ChangeSet>,
 };
@@ -203,6 +209,11 @@ export type Mutation = {
 
 export type MutationUpdateChangeSetArgs = {
   changeSet: ChangeSetInput
+};
+
+
+export type MutationAppendChangeSetArgs = {
+  changeSet: ChangeSetAppend
 };
 
 
@@ -917,51 +928,6 @@ type ChangeActionsFragment_AddVersionServiceChangeAction_Fragment = (
 
 export type ChangeActionsFragmentFragment = ChangeActionsFragment_NewTypeChangeAction_Fragment | ChangeActionsFragment_RenameFieldTypeChangeAction_Fragment | ChangeActionsFragment_RequiredFieldTypeChangeAction_Fragment | ChangeActionsFragment_OptionalFieldTypeChangeAction_Fragment | ChangeActionsFragment_DeleteFieldTypeChangeAction_Fragment | ChangeActionsFragment_SetDefaultFieldTypeChangeAction_Fragment | ChangeActionsFragment_RemoveDefaultFieldTypeChangeAction_Fragment | ChangeActionsFragment_AddFieldTypeChangeAction_Fragment | ChangeActionsFragment_UpdateDescriptionTypeChangeAction_Fragment | ChangeActionsFragment_ReferenceFieldTypeChangeAction_Fragment | ChangeActionsFragment_NewServiceChangeAction_Fragment | ChangeActionsFragment_UpdateDescriptionServiceChangeAction_Fragment | ChangeActionsFragment_AddVersionServiceChangeAction_Fragment;
 
-export type ChangeSetFragmentFragment = (
-  { __typename: 'ChangeSet' }
-  & Pick<ChangeSet, 'id' | 'baseHash'>
-  & { log: Array<(
-    { __typename: 'NewTypeChangeAction' }
-    & ChangeActionsFragment_NewTypeChangeAction_Fragment
-  ) | (
-    { __typename: 'RenameFieldTypeChangeAction' }
-    & ChangeActionsFragment_RenameFieldTypeChangeAction_Fragment
-  ) | (
-    { __typename: 'RequiredFieldTypeChangeAction' }
-    & ChangeActionsFragment_RequiredFieldTypeChangeAction_Fragment
-  ) | (
-    { __typename: 'OptionalFieldTypeChangeAction' }
-    & ChangeActionsFragment_OptionalFieldTypeChangeAction_Fragment
-  ) | (
-    { __typename: 'DeleteFieldTypeChangeAction' }
-    & ChangeActionsFragment_DeleteFieldTypeChangeAction_Fragment
-  ) | (
-    { __typename: 'SetDefaultFieldTypeChangeAction' }
-    & ChangeActionsFragment_SetDefaultFieldTypeChangeAction_Fragment
-  ) | (
-    { __typename: 'RemoveDefaultFieldTypeChangeAction' }
-    & ChangeActionsFragment_RemoveDefaultFieldTypeChangeAction_Fragment
-  ) | (
-    { __typename: 'AddFieldTypeChangeAction' }
-    & ChangeActionsFragment_AddFieldTypeChangeAction_Fragment
-  ) | (
-    { __typename: 'UpdateDescriptionTypeChangeAction' }
-    & ChangeActionsFragment_UpdateDescriptionTypeChangeAction_Fragment
-  ) | (
-    { __typename: 'ReferenceFieldTypeChangeAction' }
-    & ChangeActionsFragment_ReferenceFieldTypeChangeAction_Fragment
-  ) | (
-    { __typename: 'NewServiceChangeAction' }
-    & ChangeActionsFragment_NewServiceChangeAction_Fragment
-  ) | (
-    { __typename: 'UpdateDescriptionServiceChangeAction' }
-    & ChangeActionsFragment_UpdateDescriptionServiceChangeAction_Fragment
-  ) | (
-    { __typename: 'AddVersionServiceChangeAction' }
-    & ChangeActionsFragment_AddVersionServiceChangeAction_Fragment
-  )> }
-);
-
 export type UpdateChangeSetMutationVariables = {
   changeSet: ChangeSetInput
 };
@@ -971,7 +937,20 @@ export type UpdateChangeSetMutation = (
   { __typename: 'Mutation' }
   & { updateChangeSet: (
     { __typename: 'ChangeSet' }
-    & ChangeSetFragmentFragment
+    & ChangeSetFieldsFragment
+  ) }
+);
+
+export type AppendChangeSetMutationVariables = {
+  changeSet: ChangeSetAppend
+};
+
+
+export type AppendChangeSetMutation = (
+  { __typename: 'Mutation' }
+  & { appendChangeSet: (
+    { __typename: 'ChangeSet' }
+    & ChangeSetFieldsFragment
   ) }
 );
 
@@ -1350,15 +1329,6 @@ export const ChangeSetFieldsFragmentDoc = gql`
   }
 }
     ${ChangeActionsFragmentFragmentDoc}`;
-export const ChangeSetFragmentFragmentDoc = gql`
-    fragment ChangeSetFragment on ChangeSet {
-  id
-  baseHash
-  log {
-    ...ChangeActionsFragment
-  }
-}
-    ${ChangeActionsFragmentFragmentDoc}`;
 export const AllDataDocument = gql`
     query allData {
   log {
@@ -1406,10 +1376,10 @@ export type AllDataQueryResult = ApolloReactCommon.QueryResult<AllDataQuery, All
 export const UpdateChangeSetDocument = gql`
     mutation UpdateChangeSet($changeSet: ChangeSetInput!) {
   updateChangeSet(changeSet: $changeSet) {
-    ...ChangeSetFragment
+    ...ChangeSetFields
   }
 }
-    ${ChangeSetFragmentFragmentDoc}`;
+    ${ChangeSetFieldsFragmentDoc}`;
 export type UpdateChangeSetMutationFn = ApolloReactCommon.MutationFunction<UpdateChangeSetMutation, UpdateChangeSetMutationVariables>;
 
 /**
@@ -1435,6 +1405,38 @@ export function useUpdateChangeSetMutation(baseOptions?: ApolloReactHooks.Mutati
 export type UpdateChangeSetMutationHookResult = ReturnType<typeof useUpdateChangeSetMutation>;
 export type UpdateChangeSetMutationResult = ApolloReactCommon.MutationResult<UpdateChangeSetMutation>;
 export type UpdateChangeSetMutationOptions = ApolloReactCommon.BaseMutationOptions<UpdateChangeSetMutation, UpdateChangeSetMutationVariables>;
+export const AppendChangeSetDocument = gql`
+    mutation AppendChangeSet($changeSet: ChangeSetAppend!) {
+  appendChangeSet(changeSet: $changeSet) {
+    ...ChangeSetFields
+  }
+}
+    ${ChangeSetFieldsFragmentDoc}`;
+export type AppendChangeSetMutationFn = ApolloReactCommon.MutationFunction<AppendChangeSetMutation, AppendChangeSetMutationVariables>;
+
+/**
+ * __useAppendChangeSetMutation__
+ *
+ * To run a mutation, you first call `useAppendChangeSetMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAppendChangeSetMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [appendChangeSetMutation, { data, loading, error }] = useAppendChangeSetMutation({
+ *   variables: {
+ *      changeSet: // value for 'changeSet'
+ *   },
+ * });
+ */
+export function useAppendChangeSetMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<AppendChangeSetMutation, AppendChangeSetMutationVariables>) {
+        return ApolloReactHooks.useMutation<AppendChangeSetMutation, AppendChangeSetMutationVariables>(AppendChangeSetDocument, baseOptions);
+      }
+export type AppendChangeSetMutationHookResult = ReturnType<typeof useAppendChangeSetMutation>;
+export type AppendChangeSetMutationResult = ApolloReactCommon.MutationResult<AppendChangeSetMutation>;
+export type AppendChangeSetMutationOptions = ApolloReactCommon.BaseMutationOptions<AppendChangeSetMutation, AppendChangeSetMutationVariables>;
 export const CommitChangeSetDocument = gql`
     mutation CommitChangeSet($changeSetId: String!) {
   commitChangeSet(changeSetId: $changeSetId) {

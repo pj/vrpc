@@ -314,6 +314,15 @@ class ChangeSetInput {
   log: ChangeSetAction[]
 }
 
+@InputType()
+class ChangeSetAppend {
+  @Field()
+  id: string;
+
+  @Field(type => ChangeSetAction)
+  action: ChangeSetAction
+}
+
 function fieldInputToDefault(
   inputDefault?: FieldDataInput
 ): FieldDefaults | undefined {
@@ -649,6 +658,29 @@ export class VRPCResolver {
         "test", 
         changeSet.id, 
         updatedChangeSet
+    );
+    return (await context.backend.getChangeSet("test", changeSet.id));
+  }
+
+  @Mutation(returns => ChangeSet)
+  async appendChangeSet(
+      @Arg("changeSet") changeSet: ChangeSetAppend, 
+      @Ctx() context: VRPCContext
+  ): Promise<ChangeSet> {
+    const newAction = actionInputToChangeAction(changeSet.action);
+
+    const currentChangeSet = await context.backend.getChangeSet(
+      "test", 
+      changeSet.id
+    );
+
+    await context.backend.updateChangeSet(
+        "test", 
+        changeSet.id, 
+        {
+          ...currentChangeSet,
+          log: [...currentChangeSet.log, newAction]
+        }
     );
     return (await context.backend.getChangeSet("test", changeSet.id));
   }

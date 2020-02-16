@@ -1,49 +1,46 @@
 "use strict";
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = require("fs");
 const generate_1 = require("./generate");
 const typeidea_1 = require("./typeidea");
-const lockfile = __importStar(require("proper-lockfile"));
-const json_object_mapper_1 = require("json-object-mapper");
 class StoredData {
 }
 class FileBackend {
     constructor(fileName) {
         this.fileName = fileName;
+        // if (lockfile.checkSync(this.fileName)) {
+        //   console.log('asdfasdfasdf');
+        //   lockfile.unlockSync(this.fileName);
+        //   console.log('qewrqwerqwer');
+        // }
     }
     async doWithLock(func) {
-        const release = await lockfile.lock(this.fileName);
+        // const release = await lockfile.lock(this.fileName);
         const rawData = await fs_1.promises.readFile(this.fileName, { encoding: 'utf8' });
+        console.log(rawData);
         const storedData = JSON.parse(rawData);
         const result = await func(storedData);
-        await release();
+        // await release();
         return result;
     }
     async getLog() {
-        return this.doWithLock(async (data) => {
+        return await this.doWithLock(async (data) => {
             return data.log;
         });
     }
     async validateLog() {
-        return this.doWithLock(async (data) => {
+        return await this.doWithLock(async (data) => {
             return typeidea_1.validate(data.log);
         });
     }
     async getCurrentServices() {
-        return this.doWithLock(async (data) => {
+        return await this.doWithLock(async (data) => {
             const [_, services] = generate_1.generateDefinitions(data.log, null);
             return services;
         });
     }
     async getCurrentServicesWithChangeSet(userId, changeSetId) {
-        return this.doWithLock(async (data) => {
+        return await this.doWithLock(async (data) => {
             const changeSetData = data.changeSets;
             const userSets = changeSetData[userId];
             if (!userSets) {
@@ -59,13 +56,13 @@ class FileBackend {
         });
     }
     async getCurrentTypes() {
-        return this.doWithLock(async (data) => {
+        return await this.doWithLock(async (data) => {
             const [types, _] = generate_1.generateDefinitions(data.log, null);
             return types;
         });
     }
     async getCurrentTypesWithChangeSet(userId, changeSetId) {
-        return this.doWithLock(async (data) => {
+        return await this.doWithLock(async (data) => {
             const changeSetData = data.changeSets;
             const userSets = changeSetData[userId];
             if (!userSets) {
@@ -81,17 +78,17 @@ class FileBackend {
         });
     }
     async getChangeSets(userId) {
-        return this.doWithLock(async (data) => {
+        return await this.doWithLock(async (data) => {
             const changeSetData = data.changeSets;
             const userSets = changeSetData[userId];
             if (!userSets) {
-                throw new Error(`No changesets found for user: ${userId}`);
+                return [];
             }
             return Object.values(userSets);
         });
     }
     async getChangeSet(userId, changeSetId) {
-        return this.doWithLock(async (data) => {
+        return await this.doWithLock(async (data) => {
             const changeSetData = data.changeSets;
             const userSets = changeSetData[userId];
             if (!userSets) {
@@ -105,18 +102,23 @@ class FileBackend {
         });
     }
     async updateChangeSet(userId, changeSetId, changeSet) {
-        return this.doWithLock(async (data) => {
+        return await this.doWithLock(async (data) => {
             const changeSetData = data.changeSets;
+            console.log(changeSetData);
+            console.log(typeof data);
             let userSets = changeSetData[userId];
             if (!userSets) {
                 userSets = {};
                 changeSetData[userId] = userSets;
             }
             userSets[changeSetId] = changeSet;
+            console.log(data);
+            console.log(JSON.stringify(data));
+            await fs_1.promises.writeFile(this.fileName, JSON.stringify(data));
         });
     }
     async validateChangeSet(userId, changeSetId) {
-        return this.doWithLock(async (data) => {
+        return await this.doWithLock(async (data) => {
             const changeSetData = data.changeSets;
             const userSets = changeSetData[userId];
             if (!userSets) {
@@ -130,7 +132,7 @@ class FileBackend {
         });
     }
     async commitChangeSet(userId, changeSetId) {
-        return this.doWithLock(async (data) => {
+        return await this.doWithLock(async (data) => {
             const changeSetData = data.changeSets;
             const userSets = changeSetData[userId];
             if (!userSets) {
@@ -143,12 +145,11 @@ class FileBackend {
             const result = typeidea_1.commitChangeSet(data.log, changeSet);
             data.log = result;
             delete userSets[changeSetId];
-            const serialized = json_object_mapper_1.ObjectMapper.serialize(data);
-            await fs_1.promises.writeFile(this.fileName, serialized);
+            await fs_1.promises.writeFile(this.fileName, JSON.stringify(data));
         });
     }
     async deleteChangeSet(userId, changeSetId) {
-        return this.doWithLock(async (data) => {
+        return await this.doWithLock(async (data) => {
             const changeSetData = data.changeSets;
             const userSets = changeSetData[userId];
             if (!userSets) {
@@ -159,8 +160,7 @@ class FileBackend {
                 throw new Error(`Changeset not found for id: ${changeSet}`);
             }
             delete userSets[changeSetId];
-            const serialized = json_object_mapper_1.ObjectMapper.serialize(data);
-            await fs_1.promises.writeFile(this.fileName, serialized);
+            await fs_1.promises.writeFile(this.fileName, JSON.stringify(data));
         });
     }
 }

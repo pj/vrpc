@@ -108,7 +108,8 @@ export class MemoryBackend implements Backend {
 
   async updateChangeSet(
       userId: string,
-      changeSetId: string, changeSet: ChangeSet
+      changeSetId: string, 
+      changeSet: ChangeSet
     ): Promise<void> {
     const changeSetData = this.changeSets;
     let userSets = changeSetData[userId];

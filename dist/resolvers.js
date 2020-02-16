@@ -415,6 +415,19 @@ __decorate([
 ChangeSetInput = __decorate([
     type_graphql_1.InputType()
 ], ChangeSetInput);
+let ChangeSetAppend = class ChangeSetAppend {
+};
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], ChangeSetAppend.prototype, "id", void 0);
+__decorate([
+    type_graphql_1.Field(type => ChangeSetAction),
+    __metadata("design:type", ChangeSetAction)
+], ChangeSetAppend.prototype, "action", void 0);
+ChangeSetAppend = __decorate([
+    type_graphql_1.InputType()
+], ChangeSetAppend);
 function fieldInputToDefault(inputDefault) {
     if (!inputDefault) {
         return undefined;
@@ -782,6 +795,12 @@ let VRPCResolver = class VRPCResolver {
         await context.backend.updateChangeSet("test", changeSet.id, updatedChangeSet);
         return (await context.backend.getChangeSet("test", changeSet.id));
     }
+    async appendChangeSet(changeSet, context) {
+        const newAction = actionInputToChangeAction(changeSet.action);
+        const currentChangeSet = await context.backend.getChangeSet("test", changeSet.id);
+        await context.backend.updateChangeSet("test", changeSet.id, Object.assign(Object.assign({}, currentChangeSet), { log: [...currentChangeSet.log, newAction] }));
+        return (await context.backend.getChangeSet("test", changeSet.id));
+    }
     async commitChangeSet(changeSetId, context) {
         await context.backend.commitChangeSet("test", changeSetId);
         const log = await context.backend.getLog();
@@ -844,6 +863,14 @@ __decorate([
     __metadata("design:paramtypes", [ChangeSetInput, Object]),
     __metadata("design:returntype", Promise)
 ], VRPCResolver.prototype, "updateChangeSet", null);
+__decorate([
+    type_graphql_1.Mutation(returns => action_1.ChangeSet),
+    __param(0, type_graphql_1.Arg("changeSet")),
+    __param(1, type_graphql_1.Ctx()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [ChangeSetAppend, Object]),
+    __metadata("design:returntype", Promise)
+], VRPCResolver.prototype, "appendChangeSet", null);
 __decorate([
     type_graphql_1.Mutation(returns => CommitOutput),
     __param(0, type_graphql_1.Arg("changeSetId")),
