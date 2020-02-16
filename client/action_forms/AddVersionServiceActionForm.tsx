@@ -33,7 +33,8 @@ const AddVersionServiceActionForm = ActionFormHOC(
     </React.Fragment>
 
     );
-  }
+  },
+  'addVersion'
 );
 
 export default AddVersionServiceActionForm;

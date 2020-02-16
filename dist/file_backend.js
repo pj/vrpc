@@ -17,7 +17,6 @@ class FileBackend {
     async doWithLock(func) {
         // const release = await lockfile.lock(this.fileName);
         const rawData = await fs_1.promises.readFile(this.fileName, { encoding: 'utf8' });
-        console.log(rawData);
         const storedData = JSON.parse(rawData);
         const result = await func(storedData);
         // await release();
@@ -104,16 +103,12 @@ class FileBackend {
     async updateChangeSet(userId, changeSetId, changeSet) {
         return await this.doWithLock(async (data) => {
             const changeSetData = data.changeSets;
-            console.log(changeSetData);
-            console.log(typeof data);
             let userSets = changeSetData[userId];
             if (!userSets) {
                 userSets = {};
                 changeSetData[userId] = userSets;
             }
             userSets[changeSetId] = changeSet;
-            console.log(data);
-            console.log(JSON.stringify(data));
             await fs_1.promises.writeFile(this.fileName, JSON.stringify(data));
         });
     }

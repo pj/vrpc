@@ -599,13 +599,16 @@ export type Action = NewTypeAction | RenameFieldTypeAction
   | UpdateDescriptionServiceAction | AddVersionServiceAction;
 
 export const ActionUnion = createUnionType({
-  name: "Action", // the name of the GraphQL union
+  name: "Action",
   types: () => [NewTypeAction, RenameFieldTypeAction, RequiredFieldTypeAction, 
     OptionalFieldTypeAction, DeleteFieldTypeAction , SetDefaultFieldTypeAction, 
     RemoveDefaultFieldTypeAction, AddFieldTypeAction, 
     UpdateDescriptionTypeAction, ReferenceFieldTypeAction, NewServiceAction, 
     UpdateDescriptionServiceAction, AddVersionServiceAction
-  ], // function that returns array of object types classes });
+  ],
+  resolveType: (value: Action) => {
+    return value.actionType;
+  }
 });
 
 export type ChangeAction = NewTypeChangeAction | RenameFieldTypeChangeAction 
@@ -617,7 +620,7 @@ export type ChangeAction = NewTypeChangeAction | RenameFieldTypeChangeAction
   | AddVersionServiceChangeAction;
 
 export const ChangeActionUnion = createUnionType({
-  name: "ChangeAction", // the name of the GraphQL union
+  name: "ChangeAction",
   types: () => [NewTypeChangeAction, RenameFieldTypeChangeAction, 
     RequiredFieldTypeChangeAction, OptionalFieldTypeChangeAction, 
     DeleteFieldTypeChangeAction, SetDefaultFieldTypeChangeAction, 
@@ -625,7 +628,41 @@ export const ChangeActionUnion = createUnionType({
     UpdateDescriptionTypeChangeAction, ReferenceFieldTypeChangeAction, 
     NewServiceChangeAction , UpdateDescriptionServiceChangeAction, 
     AddVersionServiceChangeAction
-  ], // function that returns array of object types classes });
+  ],
+  resolveType: (value: ChangeAction) => {
+    switch (value.actionType) {
+    case 'AddVersionServiceAction':
+      return 'AddVersionServiceChangeAction';
+    case 'UpdateDescriptionServiceAction':
+      return 'UpdateDescriptionServiceChangeAction';
+    case 'NewServiceAction':
+      return 'NewServiceChangeAction';
+    case 'ReferenceFieldTypeAction':
+      return 'ReferenceFieldTypeChangeAction';
+    case 'UpdateDescriptionTypeAction':
+      return 'UpdateDescriptionTypeChangeAction';
+    case 'AddFieldTypeAction':
+      return 'AddFieldTypeChangeAction';
+    case 'RemoveDefaultFieldTypeAction':
+      return 'RemoveDefaultFieldTypeChangeAction';
+    case 'SetDefaultFieldTypeAction':
+      return 'SetDefaultFieldTypeChangeAction';
+    case 'DeleteFieldTypeAction':
+      return 'DeleteFieldTypeChangeAction';
+    case 'OptionalFieldTypeAction':
+      return 'OptionalFieldTypeChangeAction';
+    case 'RequiredFieldTypeAction':
+      return 'RequiredFieldTypeChangeAction';
+    case 'RenameFieldTypeAction':
+      return 'RenameFieldTypeChangeAction';
+    case 'NewTypeAction':
+      return 'NewTypeChangeAction';
+    default:
+      throw new Error(
+        `Can't find change action type for ${JSON.stringify(value)}`
+      );
+    }
+  }
 });
 
 export type GroupVersions = {

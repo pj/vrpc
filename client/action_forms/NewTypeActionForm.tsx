@@ -27,7 +27,8 @@ const NewTypeActionForm = ActionFormHOC(
         </FormControl>
       </React.Fragment>
     );
-  }
+  },
+  'newType'
 );
 
 export default NewTypeActionForm;

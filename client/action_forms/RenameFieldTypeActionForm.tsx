@@ -31,7 +31,8 @@ const RenameFieldTypeActionForm = ActionFormHOC(
         </FormControl>
       </React.Fragment>
     );
-  }
+  },
+  'renameField'
 );
 
 export default RenameFieldTypeActionForm;

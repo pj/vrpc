@@ -52,7 +52,8 @@ const ReferencedFieldTypeActionForm = ActionFormHOC(
         />
       </React.Fragment>
     );
-  }
+  },
+  'referenceField'
 );
 
 export default ReferencedFieldTypeActionForm;

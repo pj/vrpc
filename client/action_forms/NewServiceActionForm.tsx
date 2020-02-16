@@ -27,7 +27,8 @@ const NewServiceActionForm = ActionFormHOC(
         </FormControl>
       </React.Fragment>
     );
-  }
+  },
+  'newService'
 );
 
 export default NewServiceActionForm;

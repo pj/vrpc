@@ -1,6 +1,6 @@
-import { useUpdateChangeSetMutation, TypeFieldsFragment, ServiceFieldsFragment, NewServiceInputAction, UpdateDescriptionServiceInputAction, AddVersionServiceInputAction, RenameFieldTypeInputAction, RequiredFieldTypeInputAction, OptionalFieldTypeInputAction, DeleteFieldTypeInputAction, SetDefaultFieldTypeInputAction, RemoveDefaultFieldTypeInputAction, AddFieldTypeInputAction, UpdateDescriptionTypeInputAction, ReferenceFieldTypeInputAction, NewTypeInputAction, FieldDataInput, useAppendChangeSetMutation } from "../hooks";
+import { useUpdateChangeSetMutation, TypeFieldsFragment, ServiceFieldsFragment, NewServiceInputAction, UpdateDescriptionServiceInputAction, AddVersionServiceInputAction, RenameFieldTypeInputAction, RequiredFieldTypeInputAction, OptionalFieldTypeInputAction, DeleteFieldTypeInputAction, SetDefaultFieldTypeInputAction, RemoveDefaultFieldTypeInputAction, AddFieldTypeInputAction, UpdateDescriptionTypeInputAction, ReferenceFieldTypeInputAction, NewTypeInputAction, FieldDataInput, useAppendChangeSetMutation, ChangeSetAction } from "../hooks";
 import { useState } from "react";
-import { makeStyles, Paper, CircularProgress, FormControl, Button } from "@material-ui/core";
+import { makeStyles, Paper, CircularProgress, FormControl, Button, TextField } from "@material-ui/core";
 import React from "react";
 
 type InputAction = NewServiceInputAction | UpdateDescriptionServiceInputAction 
@@ -34,7 +34,8 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export function ActionFormHOC<I extends InputAction>(
-    FormComponent: React.FunctionComponent<FormComponentProps<Partial<I>>>
+    FormComponent: React.FunctionComponent<FormComponentProps<Partial<I>>>,
+    changeActionKey: keyof ChangeSetAction
 ) {
     function ActionForm(props: ActionFormProps) {
         const classes = useStyles(props);
@@ -86,7 +87,9 @@ export function ActionFormHOC<I extends InputAction>(
                     variables: {
                         changeSet: {
                             id: props.changeSetId,
-                            action: value
+                            action: {
+                                [changeActionKey]: value
+                            }
                         }
                     }
                 }
@@ -110,6 +113,17 @@ export function ActionFormHOC<I extends InputAction>(
                           handleDefaultChange={handleDefaultChange}
                           handleVersionChange={handleVersionChange}
                         />
+                    </FormControl>
+                    <FormControl>
+                        <TextField
+                            id="changeLog"
+                            label="Description of change"
+                            value={value.changeLog}
+                            onChange={handleChange('changeLog')}
+                            margin="normal"
+                        />
+                    </FormControl>
+                    <FormControl>
                         <Button 
                           variant="contained" 
                           color="primary" 

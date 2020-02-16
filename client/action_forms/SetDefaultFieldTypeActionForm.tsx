@@ -26,7 +26,8 @@ const SetDefaultFieldTypeActionForm = ActionFormHOC(
         />
       </React.Fragment>
     );
-  }
+  },
+  'setDefault'
 );
 
 export default SetDefaultFieldTypeActionForm;

@@ -38,7 +38,8 @@ const useStyles = makeStyles(theme => ({
 type ActionFormProps = {
   logType: string,
   types: TypeFieldsFragment[],
-  services: ServiceFieldsFragment[]
+  services: ServiceFieldsFragment[],
+  changeSetId: string
 };
 
 const ActionForm = (props: ActionFormProps) => {
@@ -48,38 +49,43 @@ const ActionForm = (props: ActionFormProps) => {
       <RenameFieldTypeActionForm 
         types={props.types} 
         services={props.services} 
+        changeSetId={props.changeSetId}
       />
     );
   case "RequiredFieldTypeAction":
-    let RequiredFieldTypeActionForm = FieldTypeActionFormHOC<RequiredFieldTypeInputAction>();
+    let RequiredFieldTypeActionForm = FieldTypeActionFormHOC<RequiredFieldTypeInputAction>('requiredField');
     return (
       <RequiredFieldTypeActionForm 
         types={props.types}
         services={props.services}
+        changeSetId={props.changeSetId}
       />
     );
   case "OptionalFieldTypeAction":
-    let OptionalFieldTypeActionForm = FieldTypeActionFormHOC<OptionalFieldTypeInputAction>();
+    let OptionalFieldTypeActionForm = FieldTypeActionFormHOC<OptionalFieldTypeInputAction>('optionalField');
     return (
       <OptionalFieldTypeActionForm 
         types={props.types}
         services={props.services}
+        changeSetId={props.changeSetId}
       />
     );
   case "DeleteFieldTypeAction":
-    let DeleteFieldTypeActionForm = FieldTypeActionFormHOC<DeleteFieldTypeInputAction>();
+    let DeleteFieldTypeActionForm = FieldTypeActionFormHOC<DeleteFieldTypeInputAction>('deleteField');
     return (
       <DeleteFieldTypeActionForm 
         types={props.types}
         services={props.services}
+        changeSetId={props.changeSetId}
       />
     );
   case "RemoveDefaultFieldTypeAction":
-    let RemoveDefaultFieldTypeActionForm = FieldTypeActionFormHOC<RemoveDefaultFieldTypeInputAction>();
+    let RemoveDefaultFieldTypeActionForm = FieldTypeActionFormHOC<RemoveDefaultFieldTypeInputAction>('removeDefault');
     return (
       <RemoveDefaultFieldTypeActionForm 
         types={props.types}
         services={props.services}
+        changeSetId={props.changeSetId}
       />
     );
   case "SetDefaultFieldTypeAction":
@@ -87,6 +93,7 @@ const ActionForm = (props: ActionFormProps) => {
       <SetDefaultFieldTypeActionForm
         types={props.types}
         services={props.services}
+        changeSetId={props.changeSetId}
       />
     );
   case "AddFieldTypeAction":
@@ -94,6 +101,7 @@ const ActionForm = (props: ActionFormProps) => {
     <AddFieldTypeActionForm
         types={props.types}
         services={props.services}
+        changeSetId={props.changeSetId}
       />
     );
   case "UpdateDescriptionTypeAction":
@@ -101,6 +109,7 @@ const ActionForm = (props: ActionFormProps) => {
     <UpdateDescriptionTypeActionForm
         types={props.types}
         services={props.services}
+        changeSetId={props.changeSetId}
       />
     );
   case "ReferenceFieldTypeAction":
@@ -108,6 +117,7 @@ const ActionForm = (props: ActionFormProps) => {
     <ReferenceFieldTypeActionForm
         types={props.types}
         services={props.services}
+        changeSetId={props.changeSetId}
       />
     );
   case "NewTypeAction":
@@ -115,6 +125,7 @@ const ActionForm = (props: ActionFormProps) => {
     <NewTypeActionForm
         types={props.types}
         services={props.services}
+        changeSetId={props.changeSetId}
       />
     );
   case "UpdateDescriptionServiceAction":
@@ -122,6 +133,7 @@ const ActionForm = (props: ActionFormProps) => {
     <UpdateDescriptionServiceActionForm
         types={props.types}
         services={props.services}
+        changeSetId={props.changeSetId}
       />
     );
   case "AddVersionServiceAction":
@@ -129,6 +141,7 @@ const ActionForm = (props: ActionFormProps) => {
     <AddVersionServiceActionForm
         types={props.types}
         services={props.services}
+        changeSetId={props.changeSetId}
       />
     );
   case "NewServiceAction":
@@ -136,6 +149,7 @@ const ActionForm = (props: ActionFormProps) => {
     <NewServiceActionForm
         types={props.types}
         services={props.services}
+        changeSetId={props.changeSetId}
       />
     );
     default:
@@ -145,7 +159,8 @@ const ActionForm = (props: ActionFormProps) => {
 
 type ActionCreatorModalProps = {
   types: TypeFieldsFragment[],
-  services: ServiceFieldsFragment[]
+  services: ServiceFieldsFragment[],
+  changeSetId: string
 }
 
 const ActionCreatorModal = (props: ActionCreatorModalProps) => {
@@ -177,12 +192,15 @@ const ActionCreatorModal = (props: ActionCreatorModalProps) => {
             logType={actionType}
           />
           {
-            actionType && (<ActionForm 
-              logType={actionType} 
-              types={props.types} 
-              services={props.services} 
-            />
-          )}
+            actionType && (
+              <ActionForm 
+                logType={actionType} 
+                types={props.types} 
+                services={props.services} 
+                changeSetId={props.changeSetId}
+              />
+            )
+          }
         </div>
       </Modal>
     </div> 

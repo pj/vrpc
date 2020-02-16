@@ -24,7 +24,8 @@ const UpdateDescriptionTypeActionForm = ActionFormHOC(
         </FormControl>
       </React.Fragment>
     );
-  }
+  },
+  'updateTypeDescription'
 );
 
 export default UpdateDescriptionTypeActionForm;

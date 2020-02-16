@@ -784,6 +784,9 @@ exports.ActionUnion = type_graphql_1.createUnionType({
         UpdateDescriptionTypeAction, ReferenceFieldTypeAction, NewServiceAction,
         UpdateDescriptionServiceAction, AddVersionServiceAction
     ],
+    resolveType: (value) => {
+        return value.actionType;
+    }
 });
 exports.ChangeActionUnion = type_graphql_1.createUnionType({
     name: "ChangeAction",
@@ -795,6 +798,38 @@ exports.ChangeActionUnion = type_graphql_1.createUnionType({
         NewServiceChangeAction, UpdateDescriptionServiceChangeAction,
         AddVersionServiceChangeAction
     ],
+    resolveType: (value) => {
+        switch (value.actionType) {
+            case 'AddVersionServiceAction':
+                return 'AddVersionServiceChangeAction';
+            case 'UpdateDescriptionServiceAction':
+                return 'UpdateDescriptionServiceChangeAction';
+            case 'NewServiceAction':
+                return 'NewServiceChangeAction';
+            case 'ReferenceFieldTypeAction':
+                return 'ReferenceFieldTypeChangeAction';
+            case 'UpdateDescriptionTypeAction':
+                return 'UpdateDescriptionTypeChangeAction';
+            case 'AddFieldTypeAction':
+                return 'AddFieldTypeChangeAction';
+            case 'RemoveDefaultFieldTypeAction':
+                return 'RemoveDefaultFieldTypeChangeAction';
+            case 'SetDefaultFieldTypeAction':
+                return 'SetDefaultFieldTypeChangeAction';
+            case 'DeleteFieldTypeAction':
+                return 'DeleteFieldTypeChangeAction';
+            case 'OptionalFieldTypeAction':
+                return 'OptionalFieldTypeChangeAction';
+            case 'RequiredFieldTypeAction':
+                return 'RequiredFieldTypeChangeAction';
+            case 'RenameFieldTypeAction':
+                return 'RenameFieldTypeChangeAction';
+            case 'NewTypeAction':
+                return 'NewTypeChangeAction';
+            default:
+                throw new Error(`Can't find change action type for ${JSON.stringify(value)}`);
+        }
+    }
 });
 let GroupAction = class GroupAction {
 };

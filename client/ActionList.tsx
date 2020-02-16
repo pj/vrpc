@@ -64,18 +64,19 @@ const MetaDataRow = (props: MetaDataRowProps) => {
 }
 
 type HeaderRowProps = {
-
+  includeVersion: boolean;
 }
 const HeaderRow = (props: HeaderRowProps) => {
   const classes = useStyles(props);
   return (
     <TableRow className={classes.headerRow}>
       <TableCell>
+        Service / Type
       </TableCell>
       <TableCell>Name</TableCell>
       <TableCell>Action</TableCell>
-      <TableCell>Version</TableCell>
-      <TableCell>Change</TableCell>
+      {props.includeVersion && <TableCell>Version</TableCell>}
+      <TableCell>Change Log</TableCell>
       <TableCell>Options</TableCell>
     </TableRow>
   );
@@ -180,7 +181,7 @@ export const ActionList = (props: ActionListProps) => {
   for (let groupAction of props.log) {
     for (let action of groupAction.actions) {
       tableRows.push(<MetaDataRow />);
-      tableRows.push(<HeaderRow />);
+      tableRows.push(<HeaderRow includeVersion={true} />);
       const [name, isService] = getTypeOrServiceName(action);
       const tableClasses = classNames({
         [`${classes.tableCell}`]: true,
@@ -238,7 +239,6 @@ export const ChangeSetActionList = (props: ChangeSetActionListProps) => {
         </TableCell>
         <TableCell className={tableClasses}>{name}</TableCell>
         <TableCell className={tableClasses}>{changeAction.__typename}</TableCell>
-        // @ts-ignore
         <TableCell className={tableClasses}>{changeAction.changeLog}</TableCell>
         <OptionsCell action={changeAction} />
       </TableRow>
@@ -249,7 +249,7 @@ export const ChangeSetActionList = (props: ChangeSetActionListProps) => {
     <Paper>
       <Table className={classes.table}>
         <TableBody>
-          {tableRows.reverse()}
+          {[<HeaderRow includeVersion={false} />, ...tableRows.reverse()]}
         </TableBody>
       </Table>
     </Paper>

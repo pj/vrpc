@@ -55,7 +55,8 @@ const AddFieldTypeActionForm = ActionFormHOC(
         </FormControl>
       </React.Fragment>
     );
-  }
+  },
+  'addField'
 );
 
 export default AddFieldTypeActionForm;

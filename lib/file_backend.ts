@@ -32,7 +32,6 @@ export class FileBackend implements Backend {
   private async doWithLock<A>(func: (data: StoredData) => Promise<A>): Promise<A> {
     // const release = await lockfile.lock(this.fileName);
     const rawData = await fs.readFile(this.fileName, {encoding: 'utf8'});
-    console.log(rawData);
     const storedData = JSON.parse(rawData) as StoredData;
     const result = await func(storedData);
     // await release();
@@ -154,8 +153,6 @@ export class FileBackend implements Backend {
     return await this.doWithLock(
       async (data: StoredData) => {
         const changeSetData = data.changeSets;
-        console.log(changeSetData);
-        console.log(typeof data);
         let userSets = changeSetData[userId];
         if (!userSets) {
           userSets = {};
@@ -163,8 +160,6 @@ export class FileBackend implements Backend {
         }
 
         userSets[changeSetId] = changeSet;
-        console.log(data);
-        console.log(JSON.stringify(data));
         await fs.writeFile(this.fileName, JSON.stringify(data));
       }
     );

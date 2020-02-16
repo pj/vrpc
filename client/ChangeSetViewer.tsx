@@ -85,6 +85,7 @@ const ChangeSetViewer = (props: ChangeSetViewerProps) => {
         selectedChangeSet && <ActionCreatorModal 
           types={props.types} 
           services={props.services}
+          changeSetId={changeSetId}
         />
       }
       {selectedChangeSet && selectedChangeSet.log.length > 0 && 
