@@ -7,6 +7,9 @@ import express from 'express';
 import * as typeidea from '../lib/typeidea';
 import * as action from '../lib/action';
 import * as generate from '../lib/generate';
+import { MemoryBackend } from "../lib/memory_backend";
+import { generateDefinitions } from "../lib/generate";
+import { generateTypescriptBoth } from "../lib/generate_typescript";
 
 const test_dirs = fs.readdirSync('./tests/test_data/services');
 
@@ -18,30 +21,40 @@ for (const dir of test_dirs) {
 
   it(dir, async () => {
     fs.mkdirSync(path.join('./runtest', dir), {recursive: true});
-    const actionLog = require('../tests/' + path.join('test_data', 'services', dir, 'actions.json'));
-    const actions = action.loadActionLogFromList(actionLog);
-    const hashes = typeidea.hashActions(actions);
-    const hashedActions = typeidea.addHashes(actions, hashes, null);
+    const changeSets = require('../tests/' + path.join('test_data', 'services', dir, 'actions.json'));
+    const memoryStore = new MemoryBackend(null, null);
+    for (let rawChangeSet of changeSets) {
+      const changeSet = {log: rawChangeSet, id: "test"};
+      await memoryStore.updateChangeSet("test", "test", changeSet);
+      await memoryStore.commitChangeSet("test", "test")
+    }
 
-    const [types, services] = generate.generateDefinitions(hashedActions);
-    const generatedTypes = generate.generateTypescript(types);
+    const newLog = await memoryStore.getLog();
+    const [typeDefinitions, serviceDefinitions] = generateDefinitions(
+      newLog, 
+      null
+    );
+    const [
+      generatedTypes, 
+      generatedServices, 
+      _] = 
+    generateTypescriptBoth(
+      typeDefinitions, 
+      serviceDefinitions
+    );
+
     expect(generatedTypes).toMatchSnapshot();
-    const typesFile = fs.writeFileSync(
+    fs.writeFileSync(
       path.join('runtest', dir, 'types.ts'),
       generatedTypes,
     );
-    //const [generatedTypes, generatedServices] = generate.generateTypescriptBoth(
-    //  types,
-    //  services
-    //);
-    const generatedServices = generate.generateTypescriptServices(services);
     expect(generatedServices).toMatchSnapshot();
-    const servicesFile = fs.writeFileSync(
+    fs.writeFileSync(
       path.join('runtest', dir, 'services.ts'),
       generatedServices,
     );
 
-    // import service functions file
+    // import service functions file to test that they've generated correctly
     const typesImport = require('../' + path.join('runtest', dir, 'types.ts'));
     const servicesImport = require('../' + path.join('runtest', dir, 'services.ts'));
 
@@ -55,9 +68,9 @@ for (const dir of test_dirs) {
         .post('/' + implementation[0])
         .send({
           'a_field': 'world',
-          'type': "TestInputType",
-          'version': "V1",
-          'hash': "716a611faeb9d2ddaa02e37a5d187183ff4d388f47c740bb2202109b3e3c8fc0"
+          '_type': "TestInputType",
+          'version': "0",
+          'hash': "c503f8a6a87dcd268e82e6cffa2e58db72866839a676faa2df84f470f889ae80"
         })
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)

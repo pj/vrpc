@@ -13,25 +13,29 @@ import { Request, Response } from \\"express\\";
  * 1. Need this for testing add field input
  */
 /**
-
-*
-* @sealed
-*/
+ * @param a_field An awesome field on the input type
+ *
+ * @sealed
+ */
 class TestInputType_V0 {
+  readonly _type: string;
   readonly version: number;
   readonly hash: string;
+  readonly a_field: string;
 
-  constructor() {
+  constructor(a_field: string) {
+    this._type = \\"TestInputType\\";
     this.version = 0;
     this.hash =
-      \\"a3ad8a8a6d0df732ef4eece7241c0f253b59ffe694f654f8def25b08d868d74a\\";
+      \\"c503f8a6a87dcd268e82e6cffa2e58db72866839a676faa2df84f470f889ae80\\";
+    this.a_field = a_field;
   }
 
   static deserialize(message: any): TestInputType_V0 {
     if (message.version === null || message.version === undefined) {
       throw new Error(\\"version not present: \\" + message);
     }
-    return new TestInputType_V0();
+    return new TestInputType_V0(message.a_field);
   }
 
   static serialize(message: TestInputType_V0): string {
@@ -44,59 +48,18 @@ class TestInputType_V0 {
 
 export {
   TestInputType_V0,
-  TestInputType_V0 as TestInputType_Ha3ad8a8a6d0df732ef4eece7241c0f253b59ffe694f654f8def25b08d868d74a
-};
-
-/**
- * @param a_field An awesome field on the input type
- *
- * @sealed
- */
-class TestInputType_V1 {
-  readonly version: number;
-  readonly hash: string;
-  readonly a_field: string;
-
-  constructor(a_field: string) {
-    this.version = 1;
-    this.hash =
-      \\"716a611faeb9d2ddaa02e37a5d187183ff4d388f47c740bb2202109b3e3c8fc0\\";
-    this.a_field = a_field;
-  }
-
-  static deserialize(message: any): TestInputType_V1 {
-    if (message.version === null || message.version === undefined) {
-      throw new Error(\\"version not present: \\" + message);
-    }
-    return new TestInputType_V1(message.a_field);
-  }
-
-  static serialize(message: TestInputType_V1): string {
-    if (message.version === null || message.version === undefined) {
-      throw new Error(\\"version not present: \\" + message);
-    }
-    return JSON.stringify(message);
-  }
-}
-
-export {
-  TestInputType_V1,
-  TestInputType_V1 as TestInputType_H716a611faeb9d2ddaa02e37a5d187183ff4d388f47c740bb2202109b3e3c8fc0
+  TestInputType_V0 as TestInputType_Hc503f8a6a87dcd268e82e6cffa2e58db72866839a676faa2df84f470f889ae80
 };
 
 export class TestInputType {
-  static deserialize(message: any): TestInputType_V0 | TestInputType_V1 {
+  static deserialize(message: any): TestInputType_V0 {
     if (message.version === null || message.version === undefined) {
       throw new Error(\\"version not present: \\" + message);
     }
     switch (message.version) {
       case \\"TestInputType_V0\\":
-      case \\"TestInputType_Ha3ad8a8a6d0df732ef4eece7241c0f253b59ffe694f654f8def25b08d868d74a\\":
-        return new TestInputType_V0();
-
-      case \\"TestInputType_V1\\":
-      case \\"TestInputType_H716a611faeb9d2ddaa02e37a5d187183ff4d388f47c740bb2202109b3e3c8fc0\\":
-        return new TestInputType_V1(message.a_field);
+      case \\"TestInputType_Hc503f8a6a87dcd268e82e6cffa2e58db72866839a676faa2df84f470f889ae80\\":
+        return new TestInputType_V0(message.a_field);
 
       default:
         throw new Error(
@@ -105,7 +68,7 @@ export class TestInputType {
     }
   }
 
-  static serialize(message: TestInputType_V0 | TestInputType_V1): string {
+  static serialize(message: TestInputType_V0): string {
     if (message.version === null || message.version === undefined) {
       throw new Error(\\"version not present: \\" + message);
     }
@@ -121,25 +84,29 @@ export class TestInputType {
  * 1. Need this field for testing new output type
  */
 /**
-
-*
-* @sealed
-*/
+ * @param a_field An awesome field on the output type
+ *
+ * @sealed
+ */
 class TestOutputType_V0 {
+  readonly _type: string;
   readonly version: number;
   readonly hash: string;
+  readonly a_field: string;
 
-  constructor() {
+  constructor(a_field: string) {
+    this._type = \\"TestOutputType\\";
     this.version = 0;
     this.hash =
-      \\"2eeed3cda6513d2557733ee19f52c10ab5114385b733468a9aff6c53ea6bf727\\";
+      \\"c503f8a6a87dcd268e82e6cffa2e58db72866839a676faa2df84f470f889ae80\\";
+    this.a_field = a_field;
   }
 
   static deserialize(message: any): TestOutputType_V0 {
     if (message.version === null || message.version === undefined) {
       throw new Error(\\"version not present: \\" + message);
     }
-    return new TestOutputType_V0();
+    return new TestOutputType_V0(message.a_field);
   }
 
   static serialize(message: TestOutputType_V0): string {
@@ -152,59 +119,18 @@ class TestOutputType_V0 {
 
 export {
   TestOutputType_V0,
-  TestOutputType_V0 as TestOutputType_H2eeed3cda6513d2557733ee19f52c10ab5114385b733468a9aff6c53ea6bf727
-};
-
-/**
- * @param a_field An awesome field on the output type
- *
- * @sealed
- */
-class TestOutputType_V1 {
-  readonly version: number;
-  readonly hash: string;
-  readonly a_field: string;
-
-  constructor(a_field: string) {
-    this.version = 1;
-    this.hash =
-      \\"c503f8a6a87dcd268e82e6cffa2e58db72866839a676faa2df84f470f889ae80\\";
-    this.a_field = a_field;
-  }
-
-  static deserialize(message: any): TestOutputType_V1 {
-    if (message.version === null || message.version === undefined) {
-      throw new Error(\\"version not present: \\" + message);
-    }
-    return new TestOutputType_V1(message.a_field);
-  }
-
-  static serialize(message: TestOutputType_V1): string {
-    if (message.version === null || message.version === undefined) {
-      throw new Error(\\"version not present: \\" + message);
-    }
-    return JSON.stringify(message);
-  }
-}
-
-export {
-  TestOutputType_V1,
-  TestOutputType_V1 as TestOutputType_Hc503f8a6a87dcd268e82e6cffa2e58db72866839a676faa2df84f470f889ae80
+  TestOutputType_V0 as TestOutputType_Hc503f8a6a87dcd268e82e6cffa2e58db72866839a676faa2df84f470f889ae80
 };
 
 export class TestOutputType {
-  static deserialize(message: any): TestOutputType_V0 | TestOutputType_V1 {
+  static deserialize(message: any): TestOutputType_V0 {
     if (message.version === null || message.version === undefined) {
       throw new Error(\\"version not present: \\" + message);
     }
     switch (message.version) {
       case \\"TestOutputType_V0\\":
-      case \\"TestOutputType_H2eeed3cda6513d2557733ee19f52c10ab5114385b733468a9aff6c53ea6bf727\\":
-        return new TestOutputType_V0();
-
-      case \\"TestOutputType_V1\\":
       case \\"TestOutputType_Hc503f8a6a87dcd268e82e6cffa2e58db72866839a676faa2df84f470f889ae80\\":
-        return new TestOutputType_V1(message.a_field);
+        return new TestOutputType_V0(message.a_field);
 
       default:
         throw new Error(
@@ -213,7 +139,7 @@ export class TestOutputType {
     }
   }
 
-  static serialize(message: TestOutputType_V0 | TestOutputType_V1): string {
+  static serialize(message: TestOutputType_V0): string {
     if (message.version === null || message.version === undefined) {
       throw new Error(\\"version not present: \\" + message);
     }
@@ -235,22 +161,22 @@ import { Request, Response } from \\"express\\";
  * An awesome service
  */
 import {
-  TestOutputType_V1,
+  TestOutputType_V0,
   TestOutputType,
-  TestInputType_V1,
+  TestInputType_V0,
   TestInputType
 } from \\"./types\\";
 
 const AwesomeServiceDefinitions = new Map();
 
 function AwesomeService(
-  func: (input: TestInputType_V1) => TestOutputType_V1
+  func: (input: TestInputType_V0) => TestOutputType_V0
 ): void {
-  AwesomeServiceDefinitions.set(\\"TestInputType_V1\\", func);
+  AwesomeServiceDefinitions.set(\\"TestInputType_V0\\", func);
 }
 
 function AwesomeServiceExpress(app: any): void {
-  for (let inputVersion of [\\"TestInputType_V1\\"]) {
+  for (let inputVersion of [\\"TestInputType_V0\\"]) {
     if (!AwesomeServiceDefinitions.has(inputVersion)) {
       throw new Error(
         \\"Service definition required for input version: \\" + inputVersion
@@ -260,10 +186,10 @@ function AwesomeServiceExpress(app: any): void {
 
   app.post(\\"/AwesomeService\\", (req: Request, res: Response) => {
     const body = req.body;
-    switch (body[\\"type\\"] + \\"_\\" + body[\\"version\\"]) {
-      case \\"TestInputType_V1\\":
-        const inputMessage = TestInputType_V1.deserialize(body);
-        const func = AwesomeServiceDefinitions.get(\\"TestInputType_V1\\");
+    switch (body[\\"_type\\"] + \\"_V\\" + body[\\"version\\"]) {
+      case \\"TestInputType_V0\\":
+        const inputMessage = TestInputType_V0.deserialize(body);
+        const func = AwesomeServiceDefinitions.get(\\"TestInputType_V0\\");
         const response = func(inputMessage);
         const outputMessage = TestOutputType.serialize(response);
         res.json(outputMessage);
@@ -283,4 +209,4 @@ export {
 "
 `;
 
-exports[`simple_service 3`] = `"\\"{\\\\\\"version\\\\\\":1,\\\\\\"hash\\\\\\":\\\\\\"c503f8a6a87dcd268e82e6cffa2e58db72866839a676faa2df84f470f889ae80\\\\\\",\\\\\\"a_field\\\\\\":\\\\\\"hello world\\\\\\"}\\""`;
+exports[`simple_service 3`] = `"\\"{\\\\\\"_type\\\\\\":\\\\\\"TestOutputType\\\\\\",\\\\\\"version\\\\\\":0,\\\\\\"hash\\\\\\":\\\\\\"c503f8a6a87dcd268e82e6cffa2e58db72866839a676faa2df84f470f889ae80\\\\\\",\\\\\\"a_field\\\\\\":\\\\\\"hello world\\\\\\"}\\""`;

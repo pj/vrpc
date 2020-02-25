@@ -1,59 +1,53 @@
 [
-  {
-    "_action_type": "NewTypeAction",
-    "typeName": "TestInputType",
-    "description": "An awesome input type",
-    "changeLog": "Needs this for testing new type",
-    "hash": "a3ad8a8a6d0df732ef4eece7241c0f253b59ffe694f654f8def25b08d868d74a",
-    "version": 0
-  },
-  {
-    "_action_type": "AddFieldTypeAction",
-    "typeName": "TestInputType",
-    "name": "a_field",
-    "type": "string",
-    "optional": false,
-    "description": "An awesome field on the input type",
-    "changeLog": "Need this for testing add field input",
-    "hash": "716a611faeb9d2ddaa02e37a5d187183ff4d388f47c740bb2202109b3e3c8fc0",
-    "version": 1
-  },
-  {
-    "_action_type": "NewTypeAction",
-    "typeName": "TestOutputType",
-    "description": "An awesome output type",
-    "changeLog": "Needs this for testing new output type",
-    "hash": "2eeed3cda6513d2557733ee19f52c10ab5114385b733468a9aff6c53ea6bf727",
-    "version": 0
-  },
-  {
-    "_action_type": "AddFieldTypeAction",
-    "typeName": "TestOutputType",
-    "name": "a_field",
-    "type": "string",
-    "optional": false,
-    "description": "An awesome field on the output type",
-    "changeLog": "Need this field for testing new output type",
-    "hash": "c503f8a6a87dcd268e82e6cffa2e58db72866839a676faa2df84f470f889ae80",
-    "version": 1
-  },
-  {
-    "_action_type": "NewServiceAction",
-    "serviceName": "AwesomeService",
-    "description": "An awesome service",
-    "changeLog": "Services are good",
-    "hash": null
-  },
-  {
-    "_action_type": "AddVersionServiceAction",
-    "changeLog": "Add a version to awesome service.",
-    "hash": null,
-    "serviceName": "AwesomeService",
-    "inputType": "TestInputType",
-    "inputHash": "716a611faeb9d2ddaa02e37a5d187183ff4d388f47c740bb2202109b3e3c8fc0",
-    "inputVersion": 1,
-    "outputType": "TestOutputType",
-    "outputHash": "c503f8a6a87dcd268e82e6cffa2e58db72866839a676faa2df84f470f889ae80",
-    "outputVersion": 1
-  }
+  [
+    {
+      "actionType": "NewTypeAction",
+      "typeName": "TestInputType",
+      "description": "An awesome input type",
+      "changeLog": "Needs this for testing new type"
+    },
+    {
+      "actionType": "AddFieldTypeAction",
+      "typeName": "TestInputType",
+      "name": "a_field",
+      "_type": "string",
+      "optional": false,
+      "description": "An awesome field on the input type",
+      "changeLog": "Need this for testing add field input"
+    },
+    {
+      "actionType": "NewTypeAction",
+      "typeName": "TestOutputType",
+      "description": "An awesome output type",
+      "changeLog": "Needs this for testing new output type"
+    },
+    {
+      "actionType": "AddFieldTypeAction",
+      "typeName": "TestOutputType",
+      "name": "a_field",
+      "_type": "string",
+      "optional": false,
+      "description": "An awesome field on the output type",
+      "changeLog": "Need this field for testing new output type"
+    }
+  ],
+  [
+    {
+      "actionType": "NewServiceAction",
+      "serviceName": "AwesomeService",
+      "description": "An awesome service",
+      "changeLog": "Services are good"
+    },
+    {
+      "actionType": "AddVersionServiceAction",
+      "changeLog": "Add a version to awesome service.",
+      "serviceName": "AwesomeService",
+      "inputType": "TestInputType",
+      "inputHash": "c503f8a6a87dcd268e82e6cffa2e58db72866839a676faa2df84f470f889ae80",
+      "inputVersion": 0,
+      "outputType": "TestOutputType",
+      "outputHash": "c503f8a6a87dcd268e82e6cffa2e58db72866839a676faa2df84f470f889ae80",
+      "outputVersion": 0
+    }
+  ]
 ]

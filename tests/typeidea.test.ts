@@ -6,59 +6,6 @@ import {generateTypescript, generateTypescriptBoth} from '../lib/generate_typesc
 import {MemoryBackend} from '../lib/memory_backend';
 import { loadActions } from '../lib/typeidea';
 
-// it('hashActions generates hashes for types', () => {
-//   const addField = [
-//     new action.NewTypeAction(
-//       'Creating a new type',
-//       null,
-//       null,
-//       'Test',
-//       'A useful type'
-//     ),
-//     new action.AddFieldTypeAction(
-//       'Adding a field',
-//       null,
-//       null,
-//       'Test',
-//       'test_field',
-//       'string',
-//       'A field that helps testing',
-//       true,
-//       null
-//     ),
-//     new action.NewTypeAction(
-//       'Creating a new type',
-//       null,
-//       null,
-//       'Test2',
-//       'Another useful type'
-//     ),
-//     new action.AddFieldTypeAction(
-//       'asdf',
-//       null,
-//       null,
-//       'Test2',
-//       'test_field2',
-//       'string',
-//       'A field that helps testing',
-//       true,
-//       null
-//     )
-//   ];
-//   const memoryStore = new MemoryBackend();
-//   const changeSet = new action.ChangeSet(addField, null);
-//   memoryStore.updateChangeSet("test", "test", changeSet);
-//   const hashes = typeidea.hashActions(addField);
-//   expect(hashes).toHaveLength(4);
-
-//   const hashedAddField = typeidea.addHashes(addField, hashes, null);
-//   expect(hashedAddField).toHaveLength(4);
-
-//   for (const hashedAction of hashedAddField) {
-//     expect(hashedAction.hash).not.toBeNull();
-//   }
-// });
-
 it('Changing an action makes hashing invalid', async () => {
   const addField: ChangeAction[] = [
     {
@@ -81,8 +28,6 @@ it('Changing an action makes hashing invalid', async () => {
   const changeSet = {id: 'Test change set', log: addField};
   await memoryStore.updateChangeSet("test", "test", changeSet);
   await memoryStore.commitChangeSet("test", "test")
-
-  console.log(JSON.stringify(memoryStore.log));
 
   memoryStore.log[0].actions[0].changeLog = "Don't do this!";
   const valid = await memoryStore.validateLog();

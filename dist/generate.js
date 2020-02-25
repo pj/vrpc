@@ -202,12 +202,7 @@ let VersionType = class VersionType {
         this.version = version;
     }
     toString() {
-        if (this.version) {
-            return `${this._type}_V${this.version}`;
-        }
-        else {
-            return `${this._type}_H${this.hash}`;
-        }
+        return `${this._type}_V${this.version}`;
     }
 };
 __decorate([
