@@ -8,6 +8,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+require("reflect-metadata");
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
 const yargs = __importStar(require("yargs"));

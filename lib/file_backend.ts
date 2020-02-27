@@ -4,8 +4,6 @@ import {Action, ChangeSet, GroupAction} from './action';
 import {generateDefinitions, Type, Service} from './generate';
 import {commitChangeSet, validate, validateWithChangeSet} from './typeidea';
 import * as lockfile from 'proper-lockfile';
-import {JsonProperty, ObjectMapper} from 'json-object-mapper';
-import {MapDeserializer} from './utils';
 
 type StoredChangeSets = {
   [key: string]: {

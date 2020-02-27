@@ -1,7 +1,10 @@
-import { ApolloServer } from "apollo-server";
+const express = require('express');
+const { ApolloServer } = require('apollo-server');
 import {VRPCResolver} from "./resolvers";
 import {buildSchema} from 'type-graphql';
 import { Backend } from "./backend";
+import path from 'path';
+import cors from 'cors';
 
 const PORT = process.env.PORT || 4000;
 
@@ -17,10 +20,23 @@ export async function startServer(backend: Backend) {
     playground: true,
     context: {
         backend: backend
+    },
+    cors: {
+      origin: '*',
+      credentials: true
     }
   });
 
+  // const server = new ApolloServer({ schema });
+
+  const app = express();
+  app.use(cors())
+  // server.applyMiddleware({ app });
+  app.use('/static', express.static(path.join(__dirname, '..', 'dist', 'client')))
+
   // Start the server
-  const { url } = await server.listen(PORT);
-  console.log(`Server is running, GraphQL Playground available at ${url}`);
+  server.listen({port: 1234}).then(() => {
+    console.log(`🚀  Server ready at `);
+  });
+  app.listen(3000, () => console.log(`Example app listening on port ${3000}!`))
 }

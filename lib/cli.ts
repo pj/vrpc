@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import "reflect-metadata";
 import * as fs from 'fs';
 import * as path from 'path';
 import * as yargs from 'yargs';
