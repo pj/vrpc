@@ -75,7 +75,7 @@
     "server:start": "ts-node-dev --project tsconfig.server.json lib/test_server.ts",
     "client:validate": "tsc --project tsconfig.json --noEmit",
     "client:validate:watch": "tsc --project tsconfig.json --watch --noEmit",
-    "client:start": "parcel -d build_temp --public-url /static client/index.html",
+    "client:start": "parcel -d dist/client --public-url /static client/index.html",
     "client:build": "parcel build -d dist/client --public-url /static --no-minify client/index.html",
     "generate:schema": "ts-node lib/emit_schema.ts && graphql-codegen --config codegen.yml && cp lib/schema.gql dist"
   }

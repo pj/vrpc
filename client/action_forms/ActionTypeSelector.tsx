@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FormControl, InputLabel, Select, MenuItem } from "@material-ui/core";
+import { FormControl, InputLabel, Select, MenuItem, makeStyles } from "@material-ui/core";
 import React from "react";
 
 const ACTION_NAMES = [
@@ -17,6 +17,11 @@ const ACTION_NAMES = [
   "AddVersionServiceAction",
   "NewServiceAction"
 ]
+const useStyles = makeStyles(theme => ({
+  formControl: {
+    width: '200px'
+  },
+}));
 
 type ActionTypeSelectorProps = {
   logType: string,
@@ -24,14 +29,16 @@ type ActionTypeSelectorProps = {
 }
 
 const ActionTypeSelector = (props: ActionTypeSelectorProps) => {
+  const classes = useStyles(props);
   function handleChange(event: React.ChangeEvent<HTMLSelectElement>) {
     props.onChange(event.target.value);
   }
 
   return (
-    <FormControl>
-      <InputLabel htmlFor="action-type">Action Type</InputLabel>
+    <FormControl className={classes.formControl}>
+      <InputLabel id="action-type-label">Action Type</InputLabel>
       <Select
+        labelId="action-type-label"
         value={props.logType}
         onChange={handleChange}
         inputProps={{id: 'action-type'}}

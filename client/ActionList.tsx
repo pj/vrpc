@@ -26,6 +26,9 @@ const useStyles = makeStyles(theme => ({
   root: {
   },
   table: {
+    width: '100%',
+    tableLayout: 'fixed',
+    overflowWrap: 'break-word',
   },
   tableCell: {
     verticalAlign: 'top'
@@ -37,10 +40,14 @@ const useStyles = makeStyles(theme => ({
 
   },
   headerRow: {
-
+  },
+  tableRow: {
   },
   metadataRow: {
 
+  },
+  groupActionsPaper: {
+    padding: '20px'
   }
 
 }));
@@ -56,10 +63,13 @@ type MetaDataRowProps = {
 const MetaDataRow = (props: MetaDataRowProps) => {
   const classes = useStyles(props);
   return (
-    <TableRow className={classes.metadataRow}>
-      <TableCell>
-      </TableCell>
-    </TableRow>
+    <TableBody>
+      <TableRow className={classes.metadataRow}>
+        <TableCell>
+          Metadata here
+        </TableCell>
+      </TableRow>
+    </TableBody>
   );
 }
 
@@ -69,16 +79,18 @@ type HeaderRowProps = {
 const HeaderRow = (props: HeaderRowProps) => {
   const classes = useStyles(props);
   return (
-    <TableRow className={classes.headerRow}>
-      <TableCell>
-        Service / Type
-      </TableCell>
-      <TableCell>Name</TableCell>
-      <TableCell>Action</TableCell>
-      {props.includeVersion && <TableCell>Version</TableCell>}
-      <TableCell>Change Log</TableCell>
-      <TableCell>Options</TableCell>
-    </TableRow>
+    <TableHead className={classes.headerRow}>
+      <TableRow className={classes.tableRow}>
+        <TableCell>
+          Service / Type
+        </TableCell>
+        <TableCell>Name</TableCell>
+        <TableCell>Action</TableCell>
+        {props.includeVersion && <TableCell>Version</TableCell>}
+        <TableCell>Change Log</TableCell>
+        <TableCell>Options</TableCell>
+      </TableRow>
+    </TableHead>
   );
 }
 
@@ -88,10 +100,12 @@ type SpacerRowProps = {
 const SpacerRow = (props: SpacerRowProps) => {
   const classes = useStyles(props);
   return (
-    <TableRow className={classes.spacerRow}>
-      <TableCell>
-      </TableCell>
-    </TableRow>
+    <TableBody>
+      <TableRow className={classes.spacerRow}>
+        <TableCell>
+        </TableCell>
+      </TableRow>
+    </TableBody>
   );
 }
 
@@ -177,11 +191,12 @@ const OptionsCell = (props: OptionsCellProps) => {
 export const ActionList = (props: ActionListProps) => {
   const classes = useStyles(props);
 
-  const tableRows = [];
+  const allTables = [];
   for (let groupAction of props.log) {
+    allTables.push(<MetaDataRow />);
+    allTables.push(<HeaderRow includeVersion={true} />);
+    const tableRows = [];
     for (let action of groupAction.actions) {
-      tableRows.push(<MetaDataRow />);
-      tableRows.push(<HeaderRow includeVersion={true} />);
       const [name, isService] = getTypeOrServiceName(action);
       const tableClasses = classNames({
         [`${classes.tableCell}`]: true,
@@ -205,15 +220,23 @@ export const ActionList = (props: ActionListProps) => {
         </TableRow>
       );
     }
-    tableRows.push(<SpacerRow />);
+    allTables.push(
+      <TableBody>
+        {tableRows}
+      </TableBody>
+    )
+    allTables.push(<SpacerRow />);
   }
 
   return (
-    <Paper>
+    <Paper className={classes.groupActionsPaper}>
       <Table className={classes.table}>
-        <TableBody>
-          {tableRows.reverse()}
-        </TableBody>
+        <TableHead>
+          <TableRow>
+            <TableCell></TableCell>
+          </TableRow>
+        </TableHead>
+        {allTables}
       </Table>
     </Paper>
   );
@@ -246,12 +269,11 @@ export const ChangeSetActionList = (props: ChangeSetActionListProps) => {
   }
 
   return (
-    <Paper>
-      <Table className={classes.table}>
-        <TableBody>
-          {[<HeaderRow includeVersion={false} />, ...tableRows.reverse()]}
-        </TableBody>
-      </Table>
-    </Paper>
+    <Table className={classes.table}>
+      <HeaderRow includeVersion={false} />
+      <TableBody>
+        {tableRows.reverse()}
+      </TableBody>
+    </Table>
   );
 };

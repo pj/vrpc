@@ -15,24 +15,21 @@ import UpdateDescriptionTypeActionForm from './UpdateDescriptionTypeActionForm';
 import ReferenceFieldTypeActionForm from './ReferenceFieldTypeActionForm';
 import NewTypeActionForm from './NewTypeActionForm';
 import UpdateDescriptionServiceActionForm from './UpdateDescriptionServiceActionForm';
-import { Modal } from '@material-ui/core';
+import { Modal, Button, Box } from '@material-ui/core';
 
 const useStyles = makeStyles(theme => ({
-  root: {
-    display: "flex",
-    flexDirection: "column",
-    padding: "20px",
-    margin: "20px",
-    width: "20%"
+  modalStyle: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%'
   },
-  table: {
+  paper: {
+    backgroundColor: theme.palette.background.paper,
+    boxShadow: theme.shadows[5],
+    padding: '20px',
+    width: 400
   },
-  tableCell: {
-    verticalAlign: 'top'
-  },
-  modal: {
-    backgroundColor: 'white'
-  }
 }));
 
 type ActionFormProps = {
@@ -180,13 +177,16 @@ const ActionCreatorModal = (props: ActionCreatorModalProps) => {
 
   return (
     <div>
-      <button type="button" onClick={handleOpen}>
+      <Button onClick={handleOpen} color="primary" variant="contained">
         Add Action
-      </button>
+      </Button>
       <Modal
         open={open}
-        onClose={handleClose}> 
-        <div className={classes.modal}>
+        onClose={handleClose}
+        className={classes.modalStyle}
+        > 
+        <Box display="flex" flexDirection="column" className={classes.paper}>
+          <h2 id="simple-modal-title">Add Action</h2>
           <ActionTypeSelector 
             onChange={(actionType: string) => setActionType(actionType)}
             logType={actionType}
@@ -201,7 +201,7 @@ const ActionCreatorModal = (props: ActionCreatorModalProps) => {
               />
             )
           }
-        </div>
+        </Box>
       </Modal>
     </div> 
   );

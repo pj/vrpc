@@ -97,7 +97,7 @@ export function ActionFormHOC<I extends InputAction>(
         }
 
         return (
-            <Paper className={classes.root}>
+            <React.Fragment>
             {
                 loading ? <CircularProgress /> : 
                 error ? <div>{error.toString()}</div> :
@@ -134,7 +134,7 @@ export function ActionFormHOC<I extends InputAction>(
                     </FormControl>
                 </React.Fragment>
             }
-            </Paper>
+            </React.Fragment>
         );
     };
     return ActionForm;

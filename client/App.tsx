@@ -9,6 +9,7 @@ import {ActionList} from './ActionList';
 import ChangeSetViewer from './ChangeSetViewer'
 
 import { useAllDataQuery } from './hooks';
+import { FormHelperText } from '@material-ui/core';
 
 const drawerWidth = 240;
 
@@ -27,13 +28,10 @@ const useStyles = makeStyles(theme => ({
     width: drawerWidth,
   },
   content: {
-    flexGrow: 1,
-    padding: theme.spacing(3),
-  },
-  topSection: {
     display: 'flex',
-    flexDirection: 'row',
-    width: "100%"
+    flexDirection: 'column',
+    padding: theme.spacing(3),
+    marginTop: '74px'
   },
   toolbar: theme.mixins.toolbar,
 }));
@@ -55,7 +53,6 @@ const App = (props: any) => {
         </Toolbar>
       </AppBar>
       <main className={classes.content}>
-        <div className={classes.toolbar} />
         <ChangeSetViewer 
           changeSets={data.changeSets} 
           currentBaseHash={data.log.length > 0 ? data.log[0].hash : null}
