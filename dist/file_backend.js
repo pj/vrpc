@@ -1,25 +1,38 @@
 "use strict";
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = require("fs");
 const generate_1 = require("./generate");
 const typeidea_1 = require("./typeidea");
+const lockfile = __importStar(require("proper-lockfile"));
 class StoredData {
 }
 class FileBackend {
     constructor(fileName) {
         this.fileName = fileName;
-        // if (lockfile.checkSync(this.fileName)) {
-        //   console.log('asdfasdfasdf');
-        //   lockfile.unlockSync(this.fileName);
-        //   console.log('qewrqwerqwer');
-        // }
+        if (lockfile.checkSync(this.fileName)) {
+            console.log('asdfasdfasdf');
+            lockfile.unlockSync(this.fileName);
+            console.log('qewrqwerqwer');
+        }
     }
     async doWithLock(func) {
-        // const release = await lockfile.lock(this.fileName);
+        const release = await lockfile.lock(this.fileName, {
+            retries: {
+                retries: 10,
+                minTimeout: 1000,
+            },
+        });
         const rawData = await fs_1.promises.readFile(this.fileName, { encoding: 'utf8' });
         const storedData = JSON.parse(rawData);
         const result = await func(storedData);
-        // await release();
+        await release();
         return result;
     }
     async getLog() {

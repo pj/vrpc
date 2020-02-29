@@ -6,3 +6,5 @@ build_temp
 
 # exclude server test data for now
 test_data.json
+
+yarn-error.log

@@ -20,19 +20,24 @@ export class FileBackend implements Backend {
   fileName: string;
   constructor(fileName: string) {
     this.fileName = fileName;
-    // if (lockfile.checkSync(this.fileName)) {
-    //   console.log('asdfasdfasdf');
-    //   lockfile.unlockSync(this.fileName);
-    //   console.log('qewrqwerqwer');
-    // }
+    if (lockfile.checkSync(this.fileName)) {
+      console.log('asdfasdfasdf');
+      lockfile.unlockSync(this.fileName);
+      console.log('qewrqwerqwer');
+    }
   }
 
   private async doWithLock<A>(func: (data: StoredData) => Promise<A>): Promise<A> {
-    // const release = await lockfile.lock(this.fileName);
+    const release = await lockfile.lock(this.fileName, {
+      retries: {
+        retries: 10,
+        minTimeout: 1000,
+      },
+    });
     const rawData = await fs.readFile(this.fileName, {encoding: 'utf8'});
     const storedData = JSON.parse(rawData) as StoredData;
     const result = await func(storedData);
-    // await release();
+    await release();
     return result;
   }
 

@@ -8,6 +8,21 @@ import cors from 'cors';
 
 const PORT = process.env.PORT || 4000;
 
+const loggingPlugin = {
+
+  // Fires whenever a GraphQL request is received from a client.
+  requestDidStart(requestContext: any) {
+    // console.log('Request started! Query:\n' +
+    //   requestContext.request.query);
+
+    return {
+      didEncounterErrors(requestContext: any) {
+        console.dir(requestContext.errors, {depth: null});
+      }
+    }
+  },
+};
+
 export async function startServer(backend: Backend) {
   // ... Building schema here
   const schema = await buildSchema({
@@ -24,7 +39,10 @@ export async function startServer(backend: Backend) {
     cors: {
       origin: '*',
       credentials: true
-    }
+    },
+    plugins: [
+      loggingPlugin
+    ]
   });
 
   // const server = new ApolloServer({ schema });

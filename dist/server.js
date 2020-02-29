@@ -10,6 +10,18 @@ const type_graphql_1 = require("type-graphql");
 const path_1 = __importDefault(require("path"));
 const cors_1 = __importDefault(require("cors"));
 const PORT = process.env.PORT || 4000;
+const loggingPlugin = {
+    // Fires whenever a GraphQL request is received from a client.
+    requestDidStart(requestContext) {
+        // console.log('Request started! Query:\n' +
+        //   requestContext.request.query);
+        return {
+            didEncounterErrors(requestContext) {
+                console.dir(requestContext.errors, { depth: null });
+            }
+        };
+    },
+};
 async function startServer(backend) {
     // ... Building schema here
     const schema = await type_graphql_1.buildSchema({
@@ -25,7 +37,10 @@ async function startServer(backend) {
         cors: {
             origin: '*',
             credentials: true
-        }
+        },
+        plugins: [
+            loggingPlugin
+        ]
     });
     // const server = new ApolloServer({ schema });
     const app = express();
