@@ -236,7 +236,7 @@ fragment ActionsFragment on Action {
     }
   }
 
-  ... on UpdateDescriptionTypeAction {
+  ... on UpdateFieldDescriptionTypeAction {
     __typename
     changeLog
     hash
@@ -359,7 +359,7 @@ fragment ChangeActionsFragment on ChangeAction {
     }
   }
 
-  ... on UpdateDescriptionTypeChangeAction {
+  ... on UpdateFieldDescriptionTypeChangeAction {
     __typename
     changeLog
     typeName

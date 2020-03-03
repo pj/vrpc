@@ -11,7 +11,7 @@ export type Scalars = {
   Float: number,
 };
 
-export type Action = NewTypeAction | RenameFieldTypeAction | RequiredFieldTypeAction | OptionalFieldTypeAction | DeleteFieldTypeAction | SetDefaultFieldTypeAction | RemoveDefaultFieldTypeAction | AddFieldTypeAction | UpdateDescriptionTypeAction | ReferenceFieldTypeAction | NewServiceAction | UpdateDescriptionServiceAction | AddVersionServiceAction;
+export type Action = NewTypeAction | RenameFieldTypeAction | RequiredFieldTypeAction | OptionalFieldTypeAction | DeleteFieldTypeAction | SetDefaultFieldTypeAction | RemoveDefaultFieldTypeAction | AddFieldTypeAction | UpdateFieldDescriptionTypeAction | ReferenceFieldTypeAction | NewServiceAction | UpdateDescriptionServiceAction | AddVersionServiceAction;
 
 export type AddFieldTypeAction = {
    __typename: 'AddFieldTypeAction',
@@ -96,7 +96,7 @@ export type BooleanField = {
   value: Scalars['Boolean'],
 };
 
-export type ChangeAction = NewTypeChangeAction | RenameFieldTypeChangeAction | RequiredFieldTypeChangeAction | OptionalFieldTypeChangeAction | DeleteFieldTypeChangeAction | SetDefaultFieldTypeChangeAction | RemoveDefaultFieldTypeChangeAction | AddFieldTypeChangeAction | UpdateDescriptionTypeChangeAction | ReferenceFieldTypeChangeAction | NewServiceChangeAction | UpdateDescriptionServiceChangeAction | AddVersionServiceChangeAction;
+export type ChangeAction = NewTypeChangeAction | RenameFieldTypeChangeAction | RequiredFieldTypeChangeAction | OptionalFieldTypeChangeAction | DeleteFieldTypeChangeAction | SetDefaultFieldTypeChangeAction | RemoveDefaultFieldTypeChangeAction | AddFieldTypeChangeAction | UpdateFieldDescriptionTypeChangeAction | ReferenceFieldTypeChangeAction | NewServiceChangeAction | UpdateDescriptionServiceChangeAction | AddVersionServiceChangeAction;
 
 export type ChangeSet = {
    __typename: 'ChangeSet',
@@ -116,7 +116,7 @@ export type ChangeSetAction = {
   setDefault?: Maybe<SetDefaultFieldTypeInputAction>,
   removeDefault?: Maybe<RemoveDefaultFieldTypeInputAction>,
   addField?: Maybe<AddFieldTypeInputAction>,
-  updateTypeDescription?: Maybe<UpdateDescriptionTypeInputAction>,
+  updateTypeDescription?: Maybe<UpdateFieldDescriptionTypeInputAction>,
   referenceField?: Maybe<ReferenceFieldTypeInputAction>,
   newType?: Maybe<NewTypeInputAction>,
 };
@@ -508,8 +508,8 @@ export type UpdateDescriptionServiceInputAction = {
   description: Scalars['String'],
 };
 
-export type UpdateDescriptionTypeAction = {
-   __typename: 'UpdateDescriptionTypeAction',
+export type UpdateFieldDescriptionTypeAction = {
+   __typename: 'UpdateFieldDescriptionTypeAction',
   hash: Scalars['String'],
   version: Scalars['Float'],
   changeLog: Scalars['String'],
@@ -518,15 +518,15 @@ export type UpdateDescriptionTypeAction = {
   description: Scalars['String'],
 };
 
-export type UpdateDescriptionTypeChangeAction = {
-   __typename: 'UpdateDescriptionTypeChangeAction',
+export type UpdateFieldDescriptionTypeChangeAction = {
+   __typename: 'UpdateFieldDescriptionTypeChangeAction',
   changeLog: Scalars['String'],
   typeName: Scalars['String'],
   name: Scalars['String'],
   description: Scalars['String'],
 };
 
-export type UpdateDescriptionTypeInputAction = {
+export type UpdateFieldDescriptionTypeInputAction = {
   changeLog: Scalars['String'],
   typeName: Scalars['String'],
   name: Scalars['String'],
@@ -576,8 +576,8 @@ export type LogFieldsFragment = (
     { __typename: 'AddFieldTypeAction' }
     & ActionsFragment_AddFieldTypeAction_Fragment
   ) | (
-    { __typename: 'UpdateDescriptionTypeAction' }
-    & ActionsFragment_UpdateDescriptionTypeAction_Fragment
+    { __typename: 'UpdateFieldDescriptionTypeAction' }
+    & ActionsFragment_UpdateFieldDescriptionTypeAction_Fragment
   ) | (
     { __typename: 'ReferenceFieldTypeAction' }
     & ActionsFragment_ReferenceFieldTypeAction_Fragment
@@ -670,8 +670,8 @@ export type ChangeSetFieldsFragment = (
     { __typename: 'AddFieldTypeChangeAction' }
     & ChangeActionsFragment_AddFieldTypeChangeAction_Fragment
   ) | (
-    { __typename: 'UpdateDescriptionTypeChangeAction' }
-    & ChangeActionsFragment_UpdateDescriptionTypeChangeAction_Fragment
+    { __typename: 'UpdateFieldDescriptionTypeChangeAction' }
+    & ChangeActionsFragment_UpdateFieldDescriptionTypeChangeAction_Fragment
   ) | (
     { __typename: 'ReferenceFieldTypeChangeAction' }
     & ChangeActionsFragment_ReferenceFieldTypeChangeAction_Fragment
@@ -803,10 +803,10 @@ type ActionsFragment_AddFieldTypeAction_Fragment = (
   )> }
 );
 
-type ActionsFragment_UpdateDescriptionTypeAction_Fragment = (
-  { __typename: 'UpdateDescriptionTypeAction' }
-  & Pick<UpdateDescriptionTypeAction, 'changeLog' | 'hash' | 'version' | 'typeName' | 'name' | 'description'>
-  & { _id: UpdateDescriptionTypeAction['hash'] }
+type ActionsFragment_UpdateFieldDescriptionTypeAction_Fragment = (
+  { __typename: 'UpdateFieldDescriptionTypeAction' }
+  & Pick<UpdateFieldDescriptionTypeAction, 'changeLog' | 'hash' | 'version' | 'typeName' | 'name' | 'description'>
+  & { _id: UpdateFieldDescriptionTypeAction['hash'] }
 );
 
 type ActionsFragment_ReferenceFieldTypeAction_Fragment = (
@@ -833,7 +833,7 @@ type ActionsFragment_AddVersionServiceAction_Fragment = (
   & { _id: AddVersionServiceAction['hash'] }
 );
 
-export type ActionsFragmentFragment = ActionsFragment_NewTypeAction_Fragment | ActionsFragment_RenameFieldTypeAction_Fragment | ActionsFragment_RequiredFieldTypeAction_Fragment | ActionsFragment_OptionalFieldTypeAction_Fragment | ActionsFragment_DeleteFieldTypeAction_Fragment | ActionsFragment_SetDefaultFieldTypeAction_Fragment | ActionsFragment_RemoveDefaultFieldTypeAction_Fragment | ActionsFragment_AddFieldTypeAction_Fragment | ActionsFragment_UpdateDescriptionTypeAction_Fragment | ActionsFragment_ReferenceFieldTypeAction_Fragment | ActionsFragment_NewServiceAction_Fragment | ActionsFragment_UpdateDescriptionServiceAction_Fragment | ActionsFragment_AddVersionServiceAction_Fragment;
+export type ActionsFragmentFragment = ActionsFragment_NewTypeAction_Fragment | ActionsFragment_RenameFieldTypeAction_Fragment | ActionsFragment_RequiredFieldTypeAction_Fragment | ActionsFragment_OptionalFieldTypeAction_Fragment | ActionsFragment_DeleteFieldTypeAction_Fragment | ActionsFragment_SetDefaultFieldTypeAction_Fragment | ActionsFragment_RemoveDefaultFieldTypeAction_Fragment | ActionsFragment_AddFieldTypeAction_Fragment | ActionsFragment_UpdateFieldDescriptionTypeAction_Fragment | ActionsFragment_ReferenceFieldTypeAction_Fragment | ActionsFragment_NewServiceAction_Fragment | ActionsFragment_UpdateDescriptionServiceAction_Fragment | ActionsFragment_AddVersionServiceAction_Fragment;
 
 type ChangeActionsFragment_NewTypeChangeAction_Fragment = (
   { __typename: 'NewTypeChangeAction' }
@@ -901,9 +901,9 @@ type ChangeActionsFragment_AddFieldTypeChangeAction_Fragment = (
   )> }
 );
 
-type ChangeActionsFragment_UpdateDescriptionTypeChangeAction_Fragment = (
-  { __typename: 'UpdateDescriptionTypeChangeAction' }
-  & Pick<UpdateDescriptionTypeChangeAction, 'changeLog' | 'typeName' | 'name' | 'description'>
+type ChangeActionsFragment_UpdateFieldDescriptionTypeChangeAction_Fragment = (
+  { __typename: 'UpdateFieldDescriptionTypeChangeAction' }
+  & Pick<UpdateFieldDescriptionTypeChangeAction, 'changeLog' | 'typeName' | 'name' | 'description'>
 );
 
 type ChangeActionsFragment_ReferenceFieldTypeChangeAction_Fragment = (
@@ -926,7 +926,7 @@ type ChangeActionsFragment_AddVersionServiceChangeAction_Fragment = (
   & Pick<AddVersionServiceChangeAction, 'changeLog' | 'serviceName' | 'inputType' | 'outputType' | 'inputVersion' | 'inputHash' | 'outputVersion' | 'outputHash'>
 );
 
-export type ChangeActionsFragmentFragment = ChangeActionsFragment_NewTypeChangeAction_Fragment | ChangeActionsFragment_RenameFieldTypeChangeAction_Fragment | ChangeActionsFragment_RequiredFieldTypeChangeAction_Fragment | ChangeActionsFragment_OptionalFieldTypeChangeAction_Fragment | ChangeActionsFragment_DeleteFieldTypeChangeAction_Fragment | ChangeActionsFragment_SetDefaultFieldTypeChangeAction_Fragment | ChangeActionsFragment_RemoveDefaultFieldTypeChangeAction_Fragment | ChangeActionsFragment_AddFieldTypeChangeAction_Fragment | ChangeActionsFragment_UpdateDescriptionTypeChangeAction_Fragment | ChangeActionsFragment_ReferenceFieldTypeChangeAction_Fragment | ChangeActionsFragment_NewServiceChangeAction_Fragment | ChangeActionsFragment_UpdateDescriptionServiceChangeAction_Fragment | ChangeActionsFragment_AddVersionServiceChangeAction_Fragment;
+export type ChangeActionsFragmentFragment = ChangeActionsFragment_NewTypeChangeAction_Fragment | ChangeActionsFragment_RenameFieldTypeChangeAction_Fragment | ChangeActionsFragment_RequiredFieldTypeChangeAction_Fragment | ChangeActionsFragment_OptionalFieldTypeChangeAction_Fragment | ChangeActionsFragment_DeleteFieldTypeChangeAction_Fragment | ChangeActionsFragment_SetDefaultFieldTypeChangeAction_Fragment | ChangeActionsFragment_RemoveDefaultFieldTypeChangeAction_Fragment | ChangeActionsFragment_AddFieldTypeChangeAction_Fragment | ChangeActionsFragment_UpdateFieldDescriptionTypeChangeAction_Fragment | ChangeActionsFragment_ReferenceFieldTypeChangeAction_Fragment | ChangeActionsFragment_NewServiceChangeAction_Fragment | ChangeActionsFragment_UpdateDescriptionServiceChangeAction_Fragment | ChangeActionsFragment_AddVersionServiceChangeAction_Fragment;
 
 export type UpdateChangeSetMutationVariables = {
   changeSet: ChangeSetInput
@@ -1106,7 +1106,7 @@ export const ActionsFragmentFragmentDoc = gql`
       ...DataFragment
     }
   }
-  ... on UpdateDescriptionTypeAction {
+  ... on UpdateFieldDescriptionTypeAction {
     __typename
     changeLog
     hash
@@ -1294,7 +1294,7 @@ export const ChangeActionsFragmentFragmentDoc = gql`
       ...DataFragment
     }
   }
-  ... on UpdateDescriptionTypeChangeAction {
+  ... on UpdateFieldDescriptionTypeChangeAction {
     __typename
     changeLog
     typeName

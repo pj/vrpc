@@ -466,58 +466,58 @@ AddFieldTypeChangeAction = __decorate([
     type_graphql_1.ObjectType()
 ], AddFieldTypeChangeAction);
 exports.AddFieldTypeChangeAction = AddFieldTypeChangeAction;
-let UpdateDescriptionTypeAction = class UpdateDescriptionTypeAction {
+let UpdateFieldDescriptionTypeAction = class UpdateFieldDescriptionTypeAction {
 };
 __decorate([
     type_graphql_1.Field(),
     __metadata("design:type", String)
-], UpdateDescriptionTypeAction.prototype, "hash", void 0);
+], UpdateFieldDescriptionTypeAction.prototype, "hash", void 0);
 __decorate([
     type_graphql_1.Field(),
     __metadata("design:type", Number)
-], UpdateDescriptionTypeAction.prototype, "version", void 0);
+], UpdateFieldDescriptionTypeAction.prototype, "version", void 0);
 __decorate([
     type_graphql_1.Field(),
     __metadata("design:type", String)
-], UpdateDescriptionTypeAction.prototype, "changeLog", void 0);
+], UpdateFieldDescriptionTypeAction.prototype, "changeLog", void 0);
 __decorate([
     type_graphql_1.Field(),
     __metadata("design:type", String)
-], UpdateDescriptionTypeAction.prototype, "typeName", void 0);
+], UpdateFieldDescriptionTypeAction.prototype, "typeName", void 0);
 __decorate([
     type_graphql_1.Field(),
     __metadata("design:type", String)
-], UpdateDescriptionTypeAction.prototype, "name", void 0);
+], UpdateFieldDescriptionTypeAction.prototype, "name", void 0);
 __decorate([
     type_graphql_1.Field(),
     __metadata("design:type", String)
-], UpdateDescriptionTypeAction.prototype, "description", void 0);
-UpdateDescriptionTypeAction = __decorate([
+], UpdateFieldDescriptionTypeAction.prototype, "description", void 0);
+UpdateFieldDescriptionTypeAction = __decorate([
     type_graphql_1.ObjectType()
-], UpdateDescriptionTypeAction);
-exports.UpdateDescriptionTypeAction = UpdateDescriptionTypeAction;
-let UpdateDescriptionTypeChangeAction = class UpdateDescriptionTypeChangeAction {
+], UpdateFieldDescriptionTypeAction);
+exports.UpdateFieldDescriptionTypeAction = UpdateFieldDescriptionTypeAction;
+let UpdateFieldDescriptionTypeChangeAction = class UpdateFieldDescriptionTypeChangeAction {
 };
 __decorate([
     type_graphql_1.Field(),
     __metadata("design:type", String)
-], UpdateDescriptionTypeChangeAction.prototype, "changeLog", void 0);
+], UpdateFieldDescriptionTypeChangeAction.prototype, "changeLog", void 0);
 __decorate([
     type_graphql_1.Field(),
     __metadata("design:type", String)
-], UpdateDescriptionTypeChangeAction.prototype, "typeName", void 0);
+], UpdateFieldDescriptionTypeChangeAction.prototype, "typeName", void 0);
 __decorate([
     type_graphql_1.Field(),
     __metadata("design:type", String)
-], UpdateDescriptionTypeChangeAction.prototype, "name", void 0);
+], UpdateFieldDescriptionTypeChangeAction.prototype, "name", void 0);
 __decorate([
     type_graphql_1.Field(),
     __metadata("design:type", String)
-], UpdateDescriptionTypeChangeAction.prototype, "description", void 0);
-UpdateDescriptionTypeChangeAction = __decorate([
+], UpdateFieldDescriptionTypeChangeAction.prototype, "description", void 0);
+UpdateFieldDescriptionTypeChangeAction = __decorate([
     type_graphql_1.ObjectType()
-], UpdateDescriptionTypeChangeAction);
-exports.UpdateDescriptionTypeChangeAction = UpdateDescriptionTypeChangeAction;
+], UpdateFieldDescriptionTypeChangeAction);
+exports.UpdateFieldDescriptionTypeChangeAction = UpdateFieldDescriptionTypeChangeAction;
 let ReferenceFieldTypeAction = class ReferenceFieldTypeAction {
 };
 __decorate([
@@ -781,7 +781,7 @@ exports.ActionUnion = type_graphql_1.createUnionType({
     types: () => [NewTypeAction, RenameFieldTypeAction, RequiredFieldTypeAction,
         OptionalFieldTypeAction, DeleteFieldTypeAction, SetDefaultFieldTypeAction,
         RemoveDefaultFieldTypeAction, AddFieldTypeAction,
-        UpdateDescriptionTypeAction, ReferenceFieldTypeAction, NewServiceAction,
+        UpdateFieldDescriptionTypeAction, ReferenceFieldTypeAction, NewServiceAction,
         UpdateDescriptionServiceAction, AddVersionServiceAction
     ],
     resolveType: (value) => {
@@ -794,7 +794,7 @@ exports.ChangeActionUnion = type_graphql_1.createUnionType({
         RequiredFieldTypeChangeAction, OptionalFieldTypeChangeAction,
         DeleteFieldTypeChangeAction, SetDefaultFieldTypeChangeAction,
         RemoveDefaultFieldTypeChangeAction, AddFieldTypeChangeAction,
-        UpdateDescriptionTypeChangeAction, ReferenceFieldTypeChangeAction,
+        UpdateFieldDescriptionTypeChangeAction, ReferenceFieldTypeChangeAction,
         NewServiceChangeAction, UpdateDescriptionServiceChangeAction,
         AddVersionServiceChangeAction
     ],
@@ -808,8 +808,8 @@ exports.ChangeActionUnion = type_graphql_1.createUnionType({
                 return 'NewServiceChangeAction';
             case 'ReferenceFieldTypeAction':
                 return 'ReferenceFieldTypeChangeAction';
-            case 'UpdateDescriptionTypeAction':
-                return 'UpdateDescriptionTypeChangeAction';
+            case 'UpdateFieldDescriptionTypeAction':
+                return 'UpdateFieldDescriptionTypeChangeAction';
             case 'AddFieldTypeAction':
                 return 'AddFieldTypeChangeAction';
             case 'RemoveDefaultFieldTypeAction':
@@ -866,8 +866,8 @@ function fieldsToHash(action) {
             return `${action.changeLog}_${action.serviceName}_${action.description}`;
         case 'ReferenceFieldTypeAction':
             return `${action.changeLog}_${action.typeName}_${action.name}_${action.description}_${action.optional}_${action.referenceType}_${action.referenceHash}_${action.referenceVersion}`;
-        case 'UpdateDescriptionTypeAction':
-            return `${action.changeLog}_${action.typeName}_${action.description}`;
+        case 'UpdateFieldDescriptionTypeAction':
+            return `${action.changeLog}_${action.typeName}_${action.name}_${action.description}`;
         case 'AddFieldTypeAction':
             return `${action.changeLog}_${action.typeName}_${action.name}_${action._type}_${action.description}_${action.optional}_${action._default}`;
         case 'RemoveDefaultFieldTypeAction':

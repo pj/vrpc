@@ -1,11 +1,12 @@
 import { FormComponentProps, ActionFormHOC } from "./ActionForm"
-import { UpdateDescriptionTypeInputAction } from "../hooks";
+import { UpdateFieldDescriptionTypeInputAction } from "../hooks";
 import TypeSelector from "./TypeSelector";
 import { FormControl, TextField } from "@material-ui/core";
 import React from "react";
+import FieldSelector from "./FieldSelector";
 
-const UpdateDescriptionTypeActionForm = ActionFormHOC(
-  function (props: FormComponentProps<UpdateDescriptionTypeInputAction>) {
+const UpdateFieldDescriptionTypeActionForm = ActionFormHOC(
+  function (props: FormComponentProps<UpdateFieldDescriptionTypeInputAction>) {
     return (
       <React.Fragment>
         <TypeSelector
@@ -13,10 +14,16 @@ const UpdateDescriptionTypeActionForm = ActionFormHOC(
           handleChange={props.handleChange('typeName')}
           value={props.value.typeName}
         />
+        <FieldSelector
+          types={props.types}
+          handleChange={props.handleChange('name')}
+          value={props.value.name}
+          selectedType={props.value.name}
+        />
         <FormControl>
           <TextField
             id="description"
-            label="Type Description"
+            label="Field Description"
             value={props.value.description}
             onChange={props.handleChange('description')}
             margin="normal"
@@ -28,4 +35,4 @@ const UpdateDescriptionTypeActionForm = ActionFormHOC(
   'updateTypeDescription'
 );
 
-export default UpdateDescriptionTypeActionForm;
+export default UpdateFieldDescriptionTypeActionForm;

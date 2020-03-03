@@ -55,7 +55,7 @@ export function getActionType(logAction: Action | ChangeAction): string {
     logAction.actionType === 'SetDefaultFieldTypeAction' ||
     logAction.actionType === 'RemoveDefaultFieldTypeAction' ||
     logAction.actionType === 'AddFieldTypeAction' ||
-    logAction.actionType === 'UpdateDescriptionTypeAction' ||
+    logAction.actionType === 'UpdateFieldDescriptionTypeAction' ||
     logAction.actionType === 'ReferenceFieldTypeAction' ||
     logAction.actionType === 'NewTypeAction'
   ) {
@@ -304,9 +304,9 @@ function loadAction(rawAction: any): Action {
       _default: rawAction._default,
       ...commonFields
     });
-  case 'UpdateDescriptionTypeAction':
+  case 'UpdateFieldDescriptionTypeAction':
     return ({
-      actionType: 'UpdateDescriptionTypeAction',
+      actionType: 'UpdateFieldDescriptionTypeAction',
       typeName: stringNotNull(rawAction, 'typeName'),
       name: stringNotNull(rawAction, 'name'),
       description: stringNotNull(rawAction, 'description'),

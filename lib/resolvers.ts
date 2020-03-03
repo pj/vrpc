@@ -12,7 +12,7 @@ import {
     createUnionType
 } from 'type-graphql';
 import {Type, Service, VersionType, Version, ReferenceField, ScalarField, BaseField} from './generate';
-import {ActionUnion, ChangeSet, GroupAction, NewServiceChangeAction, UpdateDescriptionServiceChangeAction, AddVersionServiceChangeAction, RenameFieldTypeChangeAction, RequiredFieldTypeChangeAction, OptionalFieldTypeChangeAction, DeleteFieldTypeChangeAction, SetDefaultFieldTypeChangeAction, RemoveDefaultFieldTypeChangeAction, AddFieldTypeChangeAction, UpdateDescriptionTypeChangeAction, ReferenceFieldTypeChangeAction, NewTypeChangeAction, ChangeAction, FieldDefaultsUnion, FieldDefaults, FieldTypes, StringField, BooleanField, FloatField, IntegerField, SetDefaultFieldTypeAction, AddFieldTypeAction } from './action';
+import {ActionUnion, ChangeSet, GroupAction, NewServiceChangeAction, UpdateDescriptionServiceChangeAction, AddVersionServiceChangeAction, RenameFieldTypeChangeAction, RequiredFieldTypeChangeAction, OptionalFieldTypeChangeAction, DeleteFieldTypeChangeAction, SetDefaultFieldTypeChangeAction, RemoveDefaultFieldTypeChangeAction, AddFieldTypeChangeAction, UpdateFieldDescriptionTypeChangeAction, ReferenceFieldTypeChangeAction, NewTypeChangeAction, ChangeAction, FieldDefaultsUnion, FieldDefaults, FieldTypes, StringField, BooleanField, FloatField, IntegerField, SetDefaultFieldTypeAction, AddFieldTypeAction } from './action';
 import { Backend } from './backend';
 import { version } from 'punycode';
 
@@ -157,11 +157,11 @@ export class AddFieldTypeInputAction {
 }
 
 @InputType()
-export class UpdateDescriptionTypeInputAction {
+export class UpdateFieldDescriptionTypeInputAction {
   @Field()
   changeLog: string;
 
-  actionType: 'UpdateDescriptionTypeAction';
+  actionType: 'UpdateFieldDescriptionTypeAction';
 
   @Field()
   typeName: string;
@@ -292,8 +292,8 @@ class ChangeSetAction {
   @Field(type => AddFieldTypeInputAction, { nullable: true })
   addField?: AddFieldTypeInputAction;
 
-  @Field(type => UpdateDescriptionTypeInputAction, { nullable: true })
-  updateTypeDescription?: UpdateDescriptionTypeInputAction;
+  @Field(type => UpdateFieldDescriptionTypeInputAction, { nullable: true })
+  updateTypeDescription?: UpdateFieldDescriptionTypeInputAction;
 
   @Field(type => ReferenceFieldTypeInputAction, { nullable: true })
   referenceField?: ReferenceFieldTypeInputAction;
@@ -436,7 +436,7 @@ export function actionInputToChangeAction(
     });
   } else if (logAction.updateTypeDescription) {
     return ({
-      actionType: 'UpdateDescriptionTypeAction',
+      actionType: 'UpdateFieldDescriptionTypeAction',
       changeLog: logAction.updateTypeDescription.changeLog,
       typeName: logAction.updateTypeDescription.typeName,
       name: logAction.updateTypeDescription.name,

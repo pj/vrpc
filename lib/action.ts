@@ -361,7 +361,7 @@ export class AddFieldTypeChangeAction implements ActionDefaults {
 }
 
 @ObjectType()
-export class UpdateDescriptionTypeAction implements HashedAction, ActionDefaults {
+export class UpdateFieldDescriptionTypeAction implements HashedAction, ActionDefaults {
   @Field()
   hash: string;
 
@@ -370,7 +370,7 @@ export class UpdateDescriptionTypeAction implements HashedAction, ActionDefaults
 
   @Field()
   changeLog: string;
-  actionType: 'UpdateDescriptionTypeAction';
+  actionType: 'UpdateFieldDescriptionTypeAction';
 
   @Field()
   typeName: string;
@@ -383,11 +383,11 @@ export class UpdateDescriptionTypeAction implements HashedAction, ActionDefaults
 }
 
 @ObjectType()
-export class UpdateDescriptionTypeChangeAction implements ActionDefaults {
+export class UpdateFieldDescriptionTypeChangeAction implements ActionDefaults {
   @Field()
   changeLog: string;
 
-  actionType: 'UpdateDescriptionTypeAction';
+  actionType: 'UpdateFieldDescriptionTypeAction';
 
   @Field()
   typeName: string;
@@ -595,7 +595,7 @@ export class AddVersionServiceChangeAction implements ActionDefaults {
 export type Action = NewTypeAction | RenameFieldTypeAction 
   | RequiredFieldTypeAction | OptionalFieldTypeAction | DeleteFieldTypeAction 
   | SetDefaultFieldTypeAction | RemoveDefaultFieldTypeAction | AddFieldTypeAction 
-  | UpdateDescriptionTypeAction | ReferenceFieldTypeAction | NewServiceAction
+  | UpdateFieldDescriptionTypeAction | ReferenceFieldTypeAction | NewServiceAction
   | UpdateDescriptionServiceAction | AddVersionServiceAction;
 
 export const ActionUnion = createUnionType({
@@ -603,7 +603,7 @@ export const ActionUnion = createUnionType({
   types: () => [NewTypeAction, RenameFieldTypeAction, RequiredFieldTypeAction, 
     OptionalFieldTypeAction, DeleteFieldTypeAction , SetDefaultFieldTypeAction, 
     RemoveDefaultFieldTypeAction, AddFieldTypeAction, 
-    UpdateDescriptionTypeAction, ReferenceFieldTypeAction, NewServiceAction, 
+    UpdateFieldDescriptionTypeAction, ReferenceFieldTypeAction, NewServiceAction, 
     UpdateDescriptionServiceAction, AddVersionServiceAction
   ],
   resolveType: (value: Action) => {
@@ -615,7 +615,7 @@ export type ChangeAction = NewTypeChangeAction | RenameFieldTypeChangeAction
   | RequiredFieldTypeChangeAction | OptionalFieldTypeChangeAction 
   | DeleteFieldTypeChangeAction | SetDefaultFieldTypeChangeAction 
   | RemoveDefaultFieldTypeChangeAction | AddFieldTypeChangeAction 
-  | UpdateDescriptionTypeChangeAction | ReferenceFieldTypeChangeAction 
+  | UpdateFieldDescriptionTypeChangeAction | ReferenceFieldTypeChangeAction 
   | NewServiceChangeAction | UpdateDescriptionServiceChangeAction 
   | AddVersionServiceChangeAction;
 
@@ -625,7 +625,7 @@ export const ChangeActionUnion = createUnionType({
     RequiredFieldTypeChangeAction, OptionalFieldTypeChangeAction, 
     DeleteFieldTypeChangeAction, SetDefaultFieldTypeChangeAction, 
     RemoveDefaultFieldTypeChangeAction, AddFieldTypeChangeAction, 
-    UpdateDescriptionTypeChangeAction, ReferenceFieldTypeChangeAction, 
+    UpdateFieldDescriptionTypeChangeAction, ReferenceFieldTypeChangeAction, 
     NewServiceChangeAction , UpdateDescriptionServiceChangeAction, 
     AddVersionServiceChangeAction
   ],
@@ -639,8 +639,8 @@ export const ChangeActionUnion = createUnionType({
       return 'NewServiceChangeAction';
     case 'ReferenceFieldTypeAction':
       return 'ReferenceFieldTypeChangeAction';
-    case 'UpdateDescriptionTypeAction':
-      return 'UpdateDescriptionTypeChangeAction';
+    case 'UpdateFieldDescriptionTypeAction':
+      return 'UpdateFieldDescriptionTypeChangeAction';
     case 'AddFieldTypeAction':
       return 'AddFieldTypeChangeAction';
     case 'RemoveDefaultFieldTypeAction':
@@ -701,8 +701,8 @@ export function fieldsToHash(action: ChangeAction | GroupChangeAction) {
     return `${action.changeLog}_${action.serviceName}_${action.description}`;
   case 'ReferenceFieldTypeAction':
     return `${action.changeLog}_${action.typeName}_${action.name}_${action.description}_${action.optional}_${action.referenceType}_${action.referenceHash}_${action.referenceVersion}`;
-  case 'UpdateDescriptionTypeAction':
-    return `${action.changeLog}_${action.typeName}_${action.description}`;
+  case 'UpdateFieldDescriptionTypeAction':
+    return `${action.changeLog}_${action.typeName}_${action.name}_${action.description}`;
   case 'AddFieldTypeAction':
     return `${action.changeLog}_${action.typeName}_${action.name}_${action._type}_${action.description}_${action.optional}_${action._default}`;
   case 'RemoveDefaultFieldTypeAction':

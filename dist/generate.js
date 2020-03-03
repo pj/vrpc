@@ -322,7 +322,7 @@ function updateVersion(newVersion, logAction) {
         const newField = new ScalarField(logAction.name, logAction.changeLog, logAction.description, logAction.optional, logAction._type, logAction._default = logAction._default);
         newVersion.fields[newField.name] = newField;
     }
-    else if (logAction.actionType === 'UpdateDescriptionTypeAction') {
+    else if (logAction.actionType === 'UpdateFieldDescriptionTypeAction') {
         const currentField = newVersion.fields[logAction.name];
         const newField = currentField.copy();
         newField.description = logAction.description;
@@ -346,7 +346,7 @@ function typeOrServiceName(logAction) {
         || logAction.actionType === 'SetDefaultFieldTypeAction'
         || logAction.actionType === 'RemoveDefaultFieldTypeAction'
         || logAction.actionType === 'AddFieldTypeAction'
-        || logAction.actionType === 'UpdateDescriptionTypeAction'
+        || logAction.actionType === 'UpdateFieldDescriptionTypeAction'
         || logAction.actionType === 'ReferenceFieldTypeAction'
         || logAction.actionType === 'NewTypeAction') {
         return [logAction.typeName, null];
@@ -359,81 +359,6 @@ function typeOrServiceName(logAction) {
     throw new Error('Satisfying typescript');
 }
 exports.typeOrServiceName = typeOrServiceName;
-// function groupActions(
-//   logAction: Action, 
-//   types: Map<string, Action[]>, 
-//   services: Map<string, Action[]>
-// ) {
-//   const [typeName, serviceName] = typeOrServiceName(logAction);
-//   if (typeName !== null) {
-//     const existingType = types.get(typeName);
-//     if (existingType !== null && existingType !== undefined) {
-//       existingType.push(logAction);
-//     } else {
-//       types.set(typeName, [logAction]);
-//     }
-//   } else if (serviceName !== null) {
-//     const existingService = services.get(serviceName);
-//     if (existingService !== null && existingService !== undefined) {
-//       existingService.push(logAction);
-//     } else {
-//       services.set(serviceName, [logAction]);
-//     }
-//   }
-// }
-// function groupByTypeAndService(log: GroupAction[]): [
-//   Map<string, Action[]>,
-//   Map<string, Action[]>
-// ] {
-//   const types = new Map();
-//   const services = new Map();
-//   for (let logAction of log) {
-//       const [groupTypes, groupServices] = groupByTypeAndService(
-//         logAction.actions
-//       );
-//       for (let [key, subActions] of groupTypes) {
-//         const fakeGroupAction = new GroupAction(
-//           logAction.changeLog,
-//           logAction.hash,
-//           logAction.typeOrServiceName,
-//           subActions,
-//           logAction.versions
-//         );
-//         const existingType = types.get(key);
-//         if (existingType !== null && existingType !== undefined) {
-//           existingType.push(fakeGroupAction);
-//         } else {
-//           types.set(key, [fakeGroupAction]);
-//         }
-//       }
-//       for (let [key, subActions] of groupServices) {
-//         const fakeGroupAction = new GroupAction(
-//           logAction.changeLog,
-//           logAction.hash,
-//           logAction.typeOrServiceName,
-//           subActions,
-//           logAction.versions
-//         );
-//         const existingService = services.get(key);
-//         if (existingService !== null && existingService !== undefined) {
-//           existingService.push(fakeGroupAction);
-//         } else {
-//           services.set(key, [fakeGroupAction]);
-//         }
-//       }
-//   }
-//   return [types, services];
-// }
-// function getVersionForType(_type: Type, logAction: Action): Version {
-//   const newVersion = new Version(_type.name, logAction.hash, logAction.version, {});
-//   if (logAction instanceof GroupAction) {
-//     newVersion.version = logAction.versions[_type.name];
-//   }
-//   if (_type.versions.length > 0) {
-//     newVersion.fields = {..._type.versions[_type.versions.length-1].fields};
-//   }
-//   return newVersion;
-// }
 function generateDefinitions(log, changeSet) {
     if (changeSet) {
         log = typeidea.commitChangeSet(log, changeSet);
@@ -441,9 +366,6 @@ function generateDefinitions(log, changeSet) {
     else {
         typeidea.validate(log);
     }
-    // const [logTypes, logServices] = groupByTypeAndService(log);
-    // const types = [];
-    // const services = [];
     const types = new Map();
     const services = new Map();
     for (const groupAction of log) {
@@ -452,6 +374,10 @@ function generateDefinitions(log, changeSet) {
             if (action.actionType === 'NewTypeAction') {
                 const _type = new Type(action.typeName, action.description);
                 _type.changeLog.push(action.changeLog);
+                const newVersion = new Version(action.typeName, groupAction.hash, 0, {});
+                versionsForTypes.set(action.typeName, newVersion);
+                newVersion.fields = {};
+                _type.versions.push(newVersion);
                 types.set(action.typeName, _type);
             }
             else if (action.actionType === 'NewServiceAction') {

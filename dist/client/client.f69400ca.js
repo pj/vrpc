@@ -64890,7 +64890,7 @@ function _templateObject8() {
 }
 
 function _templateObject7() {
-  var data = _taggedTemplateLiteral(["\n    fragment ChangeActionsFragment on ChangeAction {\n  ... on NewServiceChangeAction {\n    __typename\n    changeLog\n    serviceName\n    description\n  }\n  ... on UpdateDescriptionServiceChangeAction {\n    __typename\n    changeLog\n    serviceName\n    description\n  }\n  ... on AddVersionServiceChangeAction {\n    __typename\n    changeLog\n    serviceName\n    inputType\n    outputType\n    inputVersion\n    inputHash\n    outputVersion\n    outputHash\n  }\n  ... on RenameFieldTypeChangeAction {\n    __typename\n    changeLog\n    typeName\n    _from\n    to\n  }\n  ... on RequiredFieldTypeChangeAction {\n    __typename\n    changeLog\n    typeName\n    name\n  }\n  ... on OptionalFieldTypeChangeAction {\n    __typename\n    changeLog\n    typeName\n    name\n  }\n  ... on DeleteFieldTypeChangeAction {\n    __typename\n    changeLog\n    typeName\n    name\n  }\n  ... on SetDefaultFieldTypeChangeAction {\n    __typename\n    changeLog\n    typeName\n    name\n    newDefault: _default {\n      ...DataFragment\n    }\n  }\n  ... on RemoveDefaultFieldTypeChangeAction {\n    __typename\n    changeLog\n    typeName\n    name\n  }\n  ... on AddFieldTypeChangeAction {\n    __typename\n    changeLog\n    typeName\n    name\n    _type\n    description\n    optional\n    _default {\n      ...DataFragment\n    }\n  }\n  ... on UpdateDescriptionTypeChangeAction {\n    __typename\n    changeLog\n    typeName\n    name\n    description\n  }\n  ... on ReferenceFieldTypeChangeAction {\n    __typename\n    changeLog\n    typeName\n    name\n    description\n    optional\n    referenceType\n    referenceHash\n    referenceVersion\n  }\n  ... on NewTypeChangeAction {\n    __typename\n    changeLog\n    typeName\n    description\n  }\n}\n    ", ""]);
+  var data = _taggedTemplateLiteral(["\n    fragment ChangeActionsFragment on ChangeAction {\n  ... on NewServiceChangeAction {\n    __typename\n    changeLog\n    serviceName\n    description\n  }\n  ... on UpdateDescriptionServiceChangeAction {\n    __typename\n    changeLog\n    serviceName\n    description\n  }\n  ... on AddVersionServiceChangeAction {\n    __typename\n    changeLog\n    serviceName\n    inputType\n    outputType\n    inputVersion\n    inputHash\n    outputVersion\n    outputHash\n  }\n  ... on RenameFieldTypeChangeAction {\n    __typename\n    changeLog\n    typeName\n    _from\n    to\n  }\n  ... on RequiredFieldTypeChangeAction {\n    __typename\n    changeLog\n    typeName\n    name\n  }\n  ... on OptionalFieldTypeChangeAction {\n    __typename\n    changeLog\n    typeName\n    name\n  }\n  ... on DeleteFieldTypeChangeAction {\n    __typename\n    changeLog\n    typeName\n    name\n  }\n  ... on SetDefaultFieldTypeChangeAction {\n    __typename\n    changeLog\n    typeName\n    name\n    newDefault: _default {\n      ...DataFragment\n    }\n  }\n  ... on RemoveDefaultFieldTypeChangeAction {\n    __typename\n    changeLog\n    typeName\n    name\n  }\n  ... on AddFieldTypeChangeAction {\n    __typename\n    changeLog\n    typeName\n    name\n    _type\n    description\n    optional\n    _default {\n      ...DataFragment\n    }\n  }\n  ... on UpdateFieldDescriptionTypeChangeAction {\n    __typename\n    changeLog\n    typeName\n    name\n    description\n  }\n  ... on ReferenceFieldTypeChangeAction {\n    __typename\n    changeLog\n    typeName\n    name\n    description\n    optional\n    referenceType\n    referenceHash\n    referenceVersion\n  }\n  ... on NewTypeChangeAction {\n    __typename\n    changeLog\n    typeName\n    description\n  }\n}\n    ", ""]);
 
   _templateObject7 = function _templateObject7() {
     return data;
@@ -64940,7 +64940,7 @@ function _templateObject3() {
 }
 
 function _templateObject2() {
-  var data = _taggedTemplateLiteral(["\n    fragment ActionsFragment on Action {\n  ... on NewServiceAction {\n    __typename\n    changeLog\n    hash\n    _id: hash\n    version\n    serviceName\n    description\n  }\n  ... on UpdateDescriptionServiceAction {\n    __typename\n    changeLog\n    hash\n    _id: hash\n    version\n    serviceName\n    description\n  }\n  ... on AddVersionServiceAction {\n    __typename\n    changeLog\n    hash\n    _id: hash\n    version\n    serviceName\n    inputType\n    outputType\n    inputVersion\n    inputHash\n    outputVersion\n    outputHash\n  }\n  ... on RenameFieldTypeAction {\n    __typename\n    changeLog\n    hash\n    _id: hash\n    version\n    typeName\n    _from\n    to\n  }\n  ... on RequiredFieldTypeAction {\n    __typename\n    changeLog\n    hash\n    _id: hash\n    version\n    typeName\n    name\n  }\n  ... on OptionalFieldTypeAction {\n    __typename\n    changeLog\n    hash\n    _id: hash\n    version\n    typeName\n    name\n  }\n  ... on DeleteFieldTypeAction {\n    __typename\n    changeLog\n    hash\n    _id: hash\n    version\n    typeName\n    name\n  }\n  ... on SetDefaultFieldTypeAction {\n    __typename\n    changeLog\n    hash\n    _id: hash\n    version\n    typeName\n    name\n    newDefault: _default {\n      ...DataFragment\n    }\n  }\n  ... on RemoveDefaultFieldTypeAction {\n    __typename\n    changeLog\n    hash\n    _id: hash\n    version\n    typeName\n    name\n  }\n  ... on AddFieldTypeAction {\n    __typename\n    changeLog\n    hash\n    _id: hash\n    version\n    typeName\n    name\n    _type\n    description\n    optional\n    _default {\n      ...DataFragment\n    }\n  }\n  ... on UpdateDescriptionTypeAction {\n    __typename\n    changeLog\n    hash\n    _id: hash\n    version\n    typeName\n    name\n    description\n  }\n  ... on ReferenceFieldTypeAction {\n    __typename\n    changeLog\n    hash\n    _id: hash\n    version\n    typeName\n    name\n    description\n    optional\n    referenceType\n    referenceHash\n    referenceVersion\n  }\n  ... on NewTypeAction {\n    __typename\n    changeLog\n    hash\n    _id: hash\n    version\n    typeName\n    description\n  }\n}\n    ", ""]);
+  var data = _taggedTemplateLiteral(["\n    fragment ActionsFragment on Action {\n  ... on NewServiceAction {\n    __typename\n    changeLog\n    hash\n    _id: hash\n    version\n    serviceName\n    description\n  }\n  ... on UpdateDescriptionServiceAction {\n    __typename\n    changeLog\n    hash\n    _id: hash\n    version\n    serviceName\n    description\n  }\n  ... on AddVersionServiceAction {\n    __typename\n    changeLog\n    hash\n    _id: hash\n    version\n    serviceName\n    inputType\n    outputType\n    inputVersion\n    inputHash\n    outputVersion\n    outputHash\n  }\n  ... on RenameFieldTypeAction {\n    __typename\n    changeLog\n    hash\n    _id: hash\n    version\n    typeName\n    _from\n    to\n  }\n  ... on RequiredFieldTypeAction {\n    __typename\n    changeLog\n    hash\n    _id: hash\n    version\n    typeName\n    name\n  }\n  ... on OptionalFieldTypeAction {\n    __typename\n    changeLog\n    hash\n    _id: hash\n    version\n    typeName\n    name\n  }\n  ... on DeleteFieldTypeAction {\n    __typename\n    changeLog\n    hash\n    _id: hash\n    version\n    typeName\n    name\n  }\n  ... on SetDefaultFieldTypeAction {\n    __typename\n    changeLog\n    hash\n    _id: hash\n    version\n    typeName\n    name\n    newDefault: _default {\n      ...DataFragment\n    }\n  }\n  ... on RemoveDefaultFieldTypeAction {\n    __typename\n    changeLog\n    hash\n    _id: hash\n    version\n    typeName\n    name\n  }\n  ... on AddFieldTypeAction {\n    __typename\n    changeLog\n    hash\n    _id: hash\n    version\n    typeName\n    name\n    _type\n    description\n    optional\n    _default {\n      ...DataFragment\n    }\n  }\n  ... on UpdateFieldDescriptionTypeAction {\n    __typename\n    changeLog\n    hash\n    _id: hash\n    version\n    typeName\n    name\n    description\n  }\n  ... on ReferenceFieldTypeAction {\n    __typename\n    changeLog\n    hash\n    _id: hash\n    version\n    typeName\n    name\n    description\n    optional\n    referenceType\n    referenceHash\n    referenceVersion\n  }\n  ... on NewTypeAction {\n    __typename\n    changeLog\n    hash\n    _id: hash\n    version\n    typeName\n    description\n  }\n}\n    ", ""]);
 
   _templateObject2 = function _templateObject2() {
     return data;
@@ -96044,21 +96044,20 @@ var AddChangeSetModal = function AddChangeSetModal(props) {
     // @ts-ignore
     update: function update(cache, _ref) {
       var updateChangeSet = _ref.data.updateChangeSet;
-
-      // @ts-ignore
-      var _cache$readQuery = cache.readQuery({
-        query: hooks_1.ChangeSetFieldsFragmentDoc
-      }),
-          changeSets = _cache$readQuery.changeSets;
-
-      cache.writeQuery({
-        query: hooks_1.ChangeSetFieldsFragmentDoc,
-        data: {
-          changeSets: changeSets.concat([updateChangeSet])
-        }
+      var data = cache.readQuery({
+        query: hooks_1.AllDataDocument
       });
+      cache.writeQuery({
+        query: hooks_1.AllDataDocument,
+        data: Object.assign(Object.assign({}, data), {
+          changeSets: data.changeSets.concat([updateChangeSet])
+        })
+      });
+    },
+    onCompleted: function onCompleted() {
       setOpen(false);
       setName("");
+      props.setChangeSetId(name);
     }
   }),
       _hooks_1$useUpdateCha2 = _slicedToArray(_hooks_1$useUpdateCha, 2),
@@ -98220,21 +98219,28 @@ var core_1 = require("@material-ui/core");
 
 var react_1 = __importDefault(require("react"));
 
+var FieldSelector_1 = __importDefault(require("./FieldSelector"));
+
 var UpdateDescriptionTypeActionForm = ActionForm_1.ActionFormHOC(function (props) {
   return react_1.default.createElement(react_1.default.Fragment, null, react_1.default.createElement(TypeSelector_1.default, {
     types: props.types,
     handleChange: props.handleChange('typeName'),
     value: props.value.typeName
+  }), react_1.default.createElement(FieldSelector_1.default, {
+    types: props.types,
+    handleChange: props.handleChange('name'),
+    value: props.value.name,
+    selectedType: props.value.name
   }), react_1.default.createElement(core_1.FormControl, null, react_1.default.createElement(core_1.TextField, {
     id: "description",
-    label: "Type Description",
+    label: "Field Description",
     value: props.value.description,
     onChange: props.handleChange('description'),
     margin: "normal"
   })));
 }, 'updateTypeDescription');
 exports.default = UpdateDescriptionTypeActionForm;
-},{"./ActionForm":"action_forms/ActionForm.tsx","./TypeSelector":"action_forms/TypeSelector.tsx","@material-ui/core":"../node_modules/@material-ui/core/esm/index.js","react":"../node_modules/react/index.js"}],"action_forms/ReferenceFieldTypeActionForm.tsx":[function(require,module,exports) {
+},{"./ActionForm":"action_forms/ActionForm.tsx","./TypeSelector":"action_forms/TypeSelector.tsx","@material-ui/core":"../node_modules/@material-ui/core/esm/index.js","react":"../node_modules/react/index.js","./FieldSelector":"action_forms/FieldSelector.tsx"}],"action_forms/ReferenceFieldTypeActionForm.tsx":[function(require,module,exports) {
 "use strict";
 
 var __importDefault = this && this.__importDefault || function (mod) {
@@ -98788,7 +98794,8 @@ var ChangeSetViewer = function ChangeSetViewer(props) {
     }
   }, changeSetSelectorItems)), react_1.default.createElement(AddChangeSetModal_1.default, {
     currentBaseHash: props.currentBaseHash,
-    changeSets: props.changeSets
+    changeSets: props.changeSets,
+    setChangeSetId: setChangeSetId
   })), selectedChangeSet && react_1.default.createElement(ActionList_1.ChangeSetActionList, {
     actions: selectedChangeSet.log
   }), react_1.default.createElement(core_1.Box, {
@@ -98924,7 +98931,7 @@ var result = {
       }, {
         "name": "AddFieldTypeAction"
       }, {
-        "name": "UpdateDescriptionTypeAction"
+        "name": "UpdateFieldDescriptionTypeAction"
       }, {
         "name": "ReferenceFieldTypeAction"
       }, {
@@ -98982,7 +98989,7 @@ var result = {
       }, {
         "name": "AddFieldTypeChangeAction"
       }, {
-        "name": "UpdateDescriptionTypeChangeAction"
+        "name": "UpdateFieldDescriptionTypeChangeAction"
       }, {
         "name": "ReferenceFieldTypeChangeAction"
       }, {
@@ -99043,7 +99050,7 @@ var cache = new apollo_cache_inmemory_1.InMemoryCache({
 });
 var client = new apollo_boost_1.default({
   cache: cache,
-  uri: 'http://localhost:1234'
+  uri: 'http://localhost:2000'
 });
 ReactDOM.render(react_1.default.createElement(react_hooks_1.ApolloProvider, {
   client: client
@@ -99076,7 +99083,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55213" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56826" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

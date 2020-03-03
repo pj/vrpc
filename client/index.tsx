@@ -15,7 +15,7 @@ const cache = new InMemoryCache({ fragmentMatcher });
 
 const client = new ApolloClient({
   cache,
-  uri: 'http://localhost:1234',
+  uri: 'http://localhost:2000',
 });
 
 ReactDOM.render(

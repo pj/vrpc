@@ -10,7 +10,7 @@ const ACTION_NAMES = [
   "SetDefaultFieldTypeAction",
   "RemoveDefaultFieldTypeAction",
   "AddFieldTypeAction",
-  "UpdateDescriptionTypeAction",
+  "UpdateFieldDescriptionTypeAction",
   "ReferenceFieldTypeAction",
   "NewTypeAction",
   "UpdateDescriptionServiceAction",

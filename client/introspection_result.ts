@@ -42,7 +42,7 @@
             "name": "AddFieldTypeAction"
           },
           {
-            "name": "UpdateDescriptionTypeAction"
+            "name": "UpdateFieldDescriptionTypeAction"
           },
           {
             "name": "ReferenceFieldTypeAction"
@@ -129,7 +129,7 @@
             "name": "AddFieldTypeChangeAction"
           },
           {
-            "name": "UpdateDescriptionTypeChangeAction"
+            "name": "UpdateFieldDescriptionTypeChangeAction"
           },
           {
             "name": "ReferenceFieldTypeChangeAction"

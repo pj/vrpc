@@ -39,7 +39,7 @@ function getActionType(logAction) {
         logAction.actionType === 'SetDefaultFieldTypeAction' ||
         logAction.actionType === 'RemoveDefaultFieldTypeAction' ||
         logAction.actionType === 'AddFieldTypeAction' ||
-        logAction.actionType === 'UpdateDescriptionTypeAction' ||
+        logAction.actionType === 'UpdateFieldDescriptionTypeAction' ||
         logAction.actionType === 'ReferenceFieldTypeAction' ||
         logAction.actionType === 'NewTypeAction') {
         return logAction.typeName;
@@ -200,8 +200,8 @@ function loadAction(rawAction) {
                 throw new ValidationError('Unknown field type ${rawAction.type} in action ${rawAction}');
             }
             return (Object.assign({ actionType: 'AddFieldTypeAction', typeName: stringNotNull(rawAction, 'typeName'), name: stringNotNull(rawAction, 'name'), _type: rawAction._type, description: stringNotNull(rawAction, 'description'), optional: booleanNotNull(rawAction, 'optional'), _default: rawAction._default }, commonFields));
-        case 'UpdateDescriptionTypeAction':
-            return (Object.assign({ actionType: 'UpdateDescriptionTypeAction', typeName: stringNotNull(rawAction, 'typeName'), name: stringNotNull(rawAction, 'name'), description: stringNotNull(rawAction, 'description') }, commonFields));
+        case 'UpdateFieldDescriptionTypeAction':
+            return (Object.assign({ actionType: 'UpdateFieldDescriptionTypeAction', typeName: stringNotNull(rawAction, 'typeName'), name: stringNotNull(rawAction, 'name'), description: stringNotNull(rawAction, 'description') }, commonFields));
         case 'ReferenceFieldTypeAction':
             return (Object.assign({ actionType: 'ReferenceFieldTypeAction', typeName: stringNotNull(rawAction, 'typeName'), name: stringNotNull(rawAction, 'name'), description: stringNotNull(rawAction, 'description'), optional: booleanNotNull(rawAction, 'optional'), referenceType: stringNotNull(rawAction, 'referenceType'), referenceHash: stringNotNull(rawAction, 'referenceHash'), referenceVersion: integerNotNull(rawAction, 'referenceVersion') }, commonFields));
         case 'NewTypeAction':

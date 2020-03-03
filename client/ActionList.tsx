@@ -120,7 +120,7 @@ function getTypeOrServiceName(
     || action.__typename === "SetDefaultFieldTypeAction"
     || action.__typename === "RemoveDefaultFieldTypeAction"
     || action.__typename === "AddFieldTypeAction"
-    || action.__typename === "UpdateDescriptionTypeAction"
+    || action.__typename === "UpdateFieldDescriptionTypeAction"
     || action.__typename === "ReferenceFieldTypeAction"
     || action.__typename === "NewTypeAction"
     || action.__typename === "RenameFieldTypeChangeAction"
@@ -130,7 +130,7 @@ function getTypeOrServiceName(
     || action.__typename === "SetDefaultFieldTypeChangeAction"
     || action.__typename === "RemoveDefaultFieldTypeChangeAction"
     || action.__typename === "AddFieldTypeChangeAction"
-    || action.__typename === "UpdateDescriptionTypeChangeAction"
+    || action.__typename === "UpdateFieldDescriptionTypeChangeAction"
     || action.__typename === "ReferenceFieldTypeChangeAction"
     || action.__typename === "NewTypeChangeAction"
   ) {

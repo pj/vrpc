@@ -205,28 +205,28 @@ AddFieldTypeInputAction = __decorate([
     type_graphql_1.InputType()
 ], AddFieldTypeInputAction);
 exports.AddFieldTypeInputAction = AddFieldTypeInputAction;
-let UpdateDescriptionTypeInputAction = class UpdateDescriptionTypeInputAction {
+let UpdateFieldDescriptionTypeInputAction = class UpdateFieldDescriptionTypeInputAction {
 };
 __decorate([
     type_graphql_1.Field(),
     __metadata("design:type", String)
-], UpdateDescriptionTypeInputAction.prototype, "changeLog", void 0);
+], UpdateFieldDescriptionTypeInputAction.prototype, "changeLog", void 0);
 __decorate([
     type_graphql_1.Field(),
     __metadata("design:type", String)
-], UpdateDescriptionTypeInputAction.prototype, "typeName", void 0);
+], UpdateFieldDescriptionTypeInputAction.prototype, "typeName", void 0);
 __decorate([
     type_graphql_1.Field(),
     __metadata("design:type", String)
-], UpdateDescriptionTypeInputAction.prototype, "name", void 0);
+], UpdateFieldDescriptionTypeInputAction.prototype, "name", void 0);
 __decorate([
     type_graphql_1.Field(),
     __metadata("design:type", String)
-], UpdateDescriptionTypeInputAction.prototype, "description", void 0);
-UpdateDescriptionTypeInputAction = __decorate([
+], UpdateFieldDescriptionTypeInputAction.prototype, "description", void 0);
+UpdateFieldDescriptionTypeInputAction = __decorate([
     type_graphql_1.InputType()
-], UpdateDescriptionTypeInputAction);
-exports.UpdateDescriptionTypeInputAction = UpdateDescriptionTypeInputAction;
+], UpdateFieldDescriptionTypeInputAction);
+exports.UpdateFieldDescriptionTypeInputAction = UpdateFieldDescriptionTypeInputAction;
 let ReferenceFieldTypeInputAction = class ReferenceFieldTypeInputAction {
 };
 __decorate([
@@ -384,8 +384,8 @@ __decorate([
     __metadata("design:type", AddFieldTypeInputAction)
 ], ChangeSetAction.prototype, "addField", void 0);
 __decorate([
-    type_graphql_1.Field(type => UpdateDescriptionTypeInputAction, { nullable: true }),
-    __metadata("design:type", UpdateDescriptionTypeInputAction)
+    type_graphql_1.Field(type => UpdateFieldDescriptionTypeInputAction, { nullable: true }),
+    __metadata("design:type", UpdateFieldDescriptionTypeInputAction)
 ], ChangeSetAction.prototype, "updateTypeDescription", void 0);
 __decorate([
     type_graphql_1.Field(type => ReferenceFieldTypeInputAction, { nullable: true }),
@@ -550,7 +550,7 @@ function actionInputToChangeAction(logAction) {
     }
     else if (logAction.updateTypeDescription) {
         return ({
-            actionType: 'UpdateDescriptionTypeAction',
+            actionType: 'UpdateFieldDescriptionTypeAction',
             changeLog: logAction.updateTypeDescription.changeLog,
             typeName: logAction.updateTypeDescription.typeName,
             name: logAction.updateTypeDescription.name,

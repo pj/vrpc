@@ -48,7 +48,7 @@ async function startServer(backend) {
     // server.applyMiddleware({ app });
     app.use('/static', express.static(path_1.default.join(__dirname, '..', 'dist', 'client')));
     // Start the server
-    server.listen({ port: 1234 }).then(() => {
+    server.listen({ port: 2000 }).then(() => {
         console.log(`🚀  Server ready at `);
     });
     app.listen(3000, () => console.log(`Example app listening on port ${3000}!`));

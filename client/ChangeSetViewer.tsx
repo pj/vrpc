@@ -90,6 +90,7 @@ const ChangeSetViewer = (props: ChangeSetViewerProps) => {
         <AddChangeSetModal 
           currentBaseHash={props.currentBaseHash} 
           changeSets={props.changeSets}
+          setChangeSetId={setChangeSetId}
         />
       </Box>
       {selectedChangeSet && <ChangeSetActionList actions={selectedChangeSet.log} />}

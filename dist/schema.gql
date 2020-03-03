@@ -3,7 +3,7 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
-union Action = NewTypeAction | RenameFieldTypeAction | RequiredFieldTypeAction | OptionalFieldTypeAction | DeleteFieldTypeAction | SetDefaultFieldTypeAction | RemoveDefaultFieldTypeAction | AddFieldTypeAction | UpdateDescriptionTypeAction | ReferenceFieldTypeAction | NewServiceAction | UpdateDescriptionServiceAction | AddVersionServiceAction
+union Action = NewTypeAction | RenameFieldTypeAction | RequiredFieldTypeAction | OptionalFieldTypeAction | DeleteFieldTypeAction | SetDefaultFieldTypeAction | RemoveDefaultFieldTypeAction | AddFieldTypeAction | UpdateFieldDescriptionTypeAction | ReferenceFieldTypeAction | NewServiceAction | UpdateDescriptionServiceAction | AddVersionServiceAction
 
 type AddFieldTypeAction {
   hash: String!
@@ -83,7 +83,7 @@ type BooleanField {
   value: Boolean!
 }
 
-union ChangeAction = NewTypeChangeAction | RenameFieldTypeChangeAction | RequiredFieldTypeChangeAction | OptionalFieldTypeChangeAction | DeleteFieldTypeChangeAction | SetDefaultFieldTypeChangeAction | RemoveDefaultFieldTypeChangeAction | AddFieldTypeChangeAction | UpdateDescriptionTypeChangeAction | ReferenceFieldTypeChangeAction | NewServiceChangeAction | UpdateDescriptionServiceChangeAction | AddVersionServiceChangeAction
+union ChangeAction = NewTypeChangeAction | RenameFieldTypeChangeAction | RequiredFieldTypeChangeAction | OptionalFieldTypeChangeAction | DeleteFieldTypeChangeAction | SetDefaultFieldTypeChangeAction | RemoveDefaultFieldTypeChangeAction | AddFieldTypeChangeAction | UpdateFieldDescriptionTypeChangeAction | ReferenceFieldTypeChangeAction | NewServiceChangeAction | UpdateDescriptionServiceChangeAction | AddVersionServiceChangeAction
 
 type ChangeSet {
   id: String!
@@ -102,7 +102,7 @@ input ChangeSetAction {
   setDefault: SetDefaultFieldTypeInputAction
   removeDefault: RemoveDefaultFieldTypeInputAction
   addField: AddFieldTypeInputAction
-  updateTypeDescription: UpdateDescriptionTypeInputAction
+  updateTypeDescription: UpdateFieldDescriptionTypeInputAction
   referenceField: ReferenceFieldTypeInputAction
   newType: NewTypeInputAction
 }
@@ -437,7 +437,7 @@ input UpdateDescriptionServiceInputAction {
   description: String!
 }
 
-type UpdateDescriptionTypeAction {
+type UpdateFieldDescriptionTypeAction {
   hash: String!
   version: Float!
   changeLog: String!
@@ -446,14 +446,14 @@ type UpdateDescriptionTypeAction {
   description: String!
 }
 
-type UpdateDescriptionTypeChangeAction {
+type UpdateFieldDescriptionTypeChangeAction {
   changeLog: String!
   typeName: String!
   name: String!
   description: String!
 }
 
-input UpdateDescriptionTypeInputAction {
+input UpdateFieldDescriptionTypeInputAction {
   changeLog: String!
   typeName: String!
   name: String!

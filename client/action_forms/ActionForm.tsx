@@ -1,4 +1,4 @@
-import { useUpdateChangeSetMutation, TypeFieldsFragment, ServiceFieldsFragment, NewServiceInputAction, UpdateDescriptionServiceInputAction, AddVersionServiceInputAction, RenameFieldTypeInputAction, RequiredFieldTypeInputAction, OptionalFieldTypeInputAction, DeleteFieldTypeInputAction, SetDefaultFieldTypeInputAction, RemoveDefaultFieldTypeInputAction, AddFieldTypeInputAction, UpdateDescriptionTypeInputAction, ReferenceFieldTypeInputAction, NewTypeInputAction, FieldDataInput, useAppendChangeSetMutation, ChangeSetAction } from "../hooks";
+import { useUpdateChangeSetMutation, TypeFieldsFragment, ServiceFieldsFragment, NewServiceInputAction, UpdateDescriptionServiceInputAction, AddVersionServiceInputAction, RenameFieldTypeInputAction, RequiredFieldTypeInputAction, OptionalFieldTypeInputAction, DeleteFieldTypeInputAction, SetDefaultFieldTypeInputAction, RemoveDefaultFieldTypeInputAction, AddFieldTypeInputAction, UpdateFieldDescriptionTypeInputAction, ReferenceFieldTypeInputAction, NewTypeInputAction, FieldDataInput, useAppendChangeSetMutation, ChangeSetAction } from "../hooks";
 import { useState } from "react";
 import { makeStyles, Paper, CircularProgress, FormControl, Button, TextField } from "@material-ui/core";
 import React from "react";
@@ -8,7 +8,7 @@ type InputAction = NewServiceInputAction | UpdateDescriptionServiceInputAction
 | RequiredFieldTypeInputAction | OptionalFieldTypeInputAction 
 | DeleteFieldTypeInputAction | SetDefaultFieldTypeInputAction 
 | RemoveDefaultFieldTypeInputAction | AddFieldTypeInputAction 
-| UpdateDescriptionTypeInputAction | ReferenceFieldTypeInputAction 
+| UpdateFieldDescriptionTypeInputAction | ReferenceFieldTypeInputAction 
 | NewTypeInputAction;
 
 export type ActionFormProps = {

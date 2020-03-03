@@ -24,7 +24,8 @@ const useStyles = makeStyles(theme => ({
 
 type AddChangeSetModalProps = {
   currentBaseHash: string | null,
-  changeSets: ChangeSetFieldsFragment[]
+  changeSets: ChangeSetFieldsFragment[],
+  setChangeSetId: (id: string) => void
 }
 
 const AddChangeSetModal = (props: AddChangeSetModalProps) => {
@@ -48,14 +49,19 @@ const AddChangeSetModal = (props: AddChangeSetModalProps) => {
     {
       // @ts-ignore
       update(cache, { data: { updateChangeSet } }) {
-        // @ts-ignore
-        const { changeSets } = cache.readQuery({ query: ChangeSetFieldsFragmentDoc });
+        const data = cache.readQuery({ query: AllDataDocument });
         cache.writeQuery({
-          query: ChangeSetFieldsFragmentDoc,
-          data: { changeSets: changeSets.concat([updateChangeSet]) },
+          query: AllDataDocument,
+          data: {
+            // @ts-ignore
+            ...data, 
+            changeSets: data.changeSets.concat([updateChangeSet]) },
         });
+      },
+      onCompleted() {
         setOpen(false);
         setName("");
+        props.setChangeSetId(name);
       }
     }
   );
@@ -70,6 +76,9 @@ const AddChangeSetModal = (props: AddChangeSetModalProps) => {
             log: []
           }
         }, 
+        
+
+
       }
     );
   };

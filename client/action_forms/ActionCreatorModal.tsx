@@ -11,7 +11,7 @@ import NewServiceActionForm from './NewServiceActionForm';
 import RenameFieldTypeActionForm from './RenameFieldTypeActionForm';
 import FieldTypeActionFormHOC from './FieldTypeActionFormHOC';
 import SetDefaultFieldTypeActionForm from './SetDefaultFieldTypeActionForm';
-import UpdateDescriptionTypeActionForm from './UpdateDescriptionTypeActionForm';
+import UpdateFieldDescriptionTypeActionForm from './UpdateFieldDescriptionTypeActionForm';
 import ReferenceFieldTypeActionForm from './ReferenceFieldTypeActionForm';
 import NewTypeActionForm from './NewTypeActionForm';
 import UpdateDescriptionServiceActionForm from './UpdateDescriptionServiceActionForm';
@@ -101,9 +101,9 @@ const ActionForm = (props: ActionFormProps) => {
         changeSetId={props.changeSetId}
       />
     );
-  case "UpdateDescriptionTypeAction":
+  case "UpdateFieldDescriptionTypeAction":
     return (
-    <UpdateDescriptionTypeActionForm
+    <UpdateFieldDescriptionTypeActionForm
         types={props.types}
         services={props.services}
         changeSetId={props.changeSetId}

@@ -53,7 +53,7 @@ export async function startServer(backend: Backend) {
   app.use('/static', express.static(path.join(__dirname, '..', 'dist', 'client')))
 
   // Start the server
-  server.listen({port: 1234}).then(() => {
+  server.listen({port: 2000}).then(() => {
     console.log(`🚀  Server ready at `);
   });
   app.listen(3000, () => console.log(`Example app listening on port ${3000}!`))
