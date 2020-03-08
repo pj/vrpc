@@ -36,7 +36,8 @@ type ActionFormProps = {
   logType: string,
   types: TypeFieldsFragment[],
   services: ServiceFieldsFragment[],
-  changeSetId: string
+  changeSetId: string,
+  handleClose: () => void
 };
 
 const ActionForm = (props: ActionFormProps) => {
@@ -47,6 +48,7 @@ const ActionForm = (props: ActionFormProps) => {
         types={props.types} 
         services={props.services} 
         changeSetId={props.changeSetId}
+        handleClose={props.handleClose}
       />
     );
   case "RequiredFieldTypeAction":
@@ -56,6 +58,7 @@ const ActionForm = (props: ActionFormProps) => {
         types={props.types}
         services={props.services}
         changeSetId={props.changeSetId}
+        handleClose={props.handleClose}
       />
     );
   case "OptionalFieldTypeAction":
@@ -65,6 +68,7 @@ const ActionForm = (props: ActionFormProps) => {
         types={props.types}
         services={props.services}
         changeSetId={props.changeSetId}
+        handleClose={props.handleClose}
       />
     );
   case "DeleteFieldTypeAction":
@@ -74,6 +78,7 @@ const ActionForm = (props: ActionFormProps) => {
         types={props.types}
         services={props.services}
         changeSetId={props.changeSetId}
+        handleClose={props.handleClose}
       />
     );
   case "RemoveDefaultFieldTypeAction":
@@ -83,6 +88,7 @@ const ActionForm = (props: ActionFormProps) => {
         types={props.types}
         services={props.services}
         changeSetId={props.changeSetId}
+        handleClose={props.handleClose}
       />
     );
   case "SetDefaultFieldTypeAction":
@@ -91,62 +97,70 @@ const ActionForm = (props: ActionFormProps) => {
         types={props.types}
         services={props.services}
         changeSetId={props.changeSetId}
+        handleClose={props.handleClose}
       />
     );
   case "AddFieldTypeAction":
     return (
-    <AddFieldTypeActionForm
+      <AddFieldTypeActionForm
         types={props.types}
         services={props.services}
         changeSetId={props.changeSetId}
+        handleClose={props.handleClose}
       />
     );
   case "UpdateFieldDescriptionTypeAction":
     return (
-    <UpdateFieldDescriptionTypeActionForm
+      <UpdateFieldDescriptionTypeActionForm
         types={props.types}
         services={props.services}
         changeSetId={props.changeSetId}
+        handleClose={props.handleClose}
       />
     );
   case "ReferenceFieldTypeAction":
     return (
-    <ReferenceFieldTypeActionForm
+      <ReferenceFieldTypeActionForm
         types={props.types}
         services={props.services}
         changeSetId={props.changeSetId}
+        handleClose={props.handleClose}
       />
     );
   case "NewTypeAction":
     return (
-    <NewTypeActionForm
+      <NewTypeActionForm
         types={props.types}
         services={props.services}
         changeSetId={props.changeSetId}
+        handleClose={props.handleClose}
       />
     );
   case "UpdateDescriptionServiceAction":
     return (
-    <UpdateDescriptionServiceActionForm
+      <UpdateDescriptionServiceActionForm
         types={props.types}
         services={props.services}
         changeSetId={props.changeSetId}
+        handleClose={props.handleClose}
       />
     );
   case "AddVersionServiceAction":
     return (
-    <AddVersionServiceActionForm
+      <AddVersionServiceActionForm
         types={props.types}
         services={props.services}
         changeSetId={props.changeSetId}
+        handleClose={props.handleClose}
       />
     );
   case "NewServiceAction":
     return (
-    <NewServiceActionForm
+      <NewServiceActionForm
         types={props.types}
         services={props.services}
         changeSetId={props.changeSetId}
+        handleClose={props.handleClose}
       />
     );
     default:
@@ -198,6 +212,7 @@ const ActionCreatorModal = (props: ActionCreatorModalProps) => {
                 types={props.types} 
                 services={props.services} 
                 changeSetId={props.changeSetId}
+                handleClose={handleClose}
               />
             )
           }

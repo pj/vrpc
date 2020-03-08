@@ -93,7 +93,12 @@ const ChangeSetViewer = (props: ChangeSetViewerProps) => {
           setChangeSetId={setChangeSetId}
         />
       </Box>
-      {selectedChangeSet && <ChangeSetActionList actions={selectedChangeSet.log} />}
+      {
+        selectedChangeSet && 
+        <ChangeSetActionList 
+          actions={selectedChangeSet.log} 
+        />
+      }
       <Box display="flex" alignItems="center" flexDirection="row">
         {
           selectedChangeSet && <ActionCreatorModal 

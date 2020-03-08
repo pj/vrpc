@@ -367,7 +367,7 @@ type ScalarField implements BaseField {
   description: String!
   optional: Boolean!
   type: FieldTypes!
-  _default: [FieldDefaults!]
+  _default: FieldDefaults
 }
 
 type Service {

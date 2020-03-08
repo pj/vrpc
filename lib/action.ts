@@ -25,24 +25,40 @@ export type FieldDefaults = string | boolean | number;
 
 @ObjectType()
 export class StringField {
+  constructor(value: string) {
+    this.value = value;
+  }
+
   @Field()
   value: string
 }
 
 @ObjectType()
 export class BooleanField {
+  constructor(value: boolean) {
+    this.value = value;
+  }
+
   @Field()
   value: boolean
 }
 
 @ObjectType()
 export class FloatField {
+  constructor(value: number) {
+    this.value = value;
+  }
+
   @Field(type => Float)
   value: number
 }
 
 @ObjectType()
 export class IntegerField {
+  constructor(value: number) {
+    this.value = value;
+  }
+
   @Field(type => Int)
   value: number
 }

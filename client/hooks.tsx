@@ -430,7 +430,7 @@ export type ScalarField = BaseField & {
   description: Scalars['String'],
   optional: Scalars['Boolean'],
   type: FieldTypes,
-  _default?: Maybe<Array<FieldDefaults>>,
+  _default?: Maybe<FieldDefaults>,
 };
 
 export type Service = {
@@ -602,7 +602,7 @@ export type VersionQueryFragment = (
   ) | (
     { __typename: 'ScalarField' }
     & Pick<ScalarField, 'name' | 'description' | 'changeLog' | 'optional' | 'type'>
-    & { _default: Maybe<Array<(
+    & { _default: Maybe<(
       { __typename: 'StringField' }
       & { stringValue: StringField['value'] }
     ) | (
@@ -614,7 +614,7 @@ export type VersionQueryFragment = (
     ) | (
       { __typename: 'IntegerField' }
       & { intValue: IntegerField['value'] }
-    )>> }
+    )> }
   )> }
 );
 

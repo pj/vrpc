@@ -4,7 +4,7 @@ import { AddFieldTypeInputAction } from "../hooks";
 import TypeSelector from "./TypeSelector";
 import VersionSelector from "./VersionSelector";
 import DefaultSelector from "./DefaultSelector";
-import { FormControl, TextField, Checkbox } from "@material-ui/core";
+import { FormControl, TextField, Checkbox, InputLabel, FormControlLabel } from "@material-ui/core";
 
 const AddFieldTypeActionForm = ActionFormHOC(
   function (props: FormComponentProps<AddFieldTypeInputAction>) {
@@ -13,7 +13,7 @@ const AddFieldTypeActionForm = ActionFormHOC(
         <TypeSelector
           types={props.types}
           handleChange={props.handleChange('typeName')}
-          value={props.value.typeName}
+          value={props.value.typeName || ''}
         />
         <FormControl>
           <TextField
@@ -33,30 +33,27 @@ const AddFieldTypeActionForm = ActionFormHOC(
             margin="normal"
           />
         </FormControl>
-        <FormControl>
-          <Checkbox
-            id="optional"
-            checked={props.value.optional}
-            onChange={props.handleBooleanChange('optional')}
-          />
-        </FormControl>
+        <FormControlLabel
+          control={
+            <Checkbox
+              id="add-field-is-optional"
+              checked={props.value.optional}
+              onChange={props.handleBooleanChange('optional')}
+            />
+          } 
+          label="Is Optional"
+        />
         <DefaultSelector
           _default={props.value._default}
           handleChange={props.handleDefaultChange('_default')}
         />
-        <FormControl>
-          <TextField
-              id="standard-name"
-              label="Change Log"
-              value={props.value.changeLog}
-              onChange={props.handleChange('changeLog')}
-              margin="normal"
-          />
-        </FormControl>
       </React.Fragment>
     );
   },
-  'addField'
+  'addField',
+  {
+    optional: false
+  }
 );
 
 export default AddFieldTypeActionForm;

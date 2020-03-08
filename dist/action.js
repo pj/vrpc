@@ -22,43 +22,59 @@ type_graphql_1.registerEnumType(FieldTypes, {
 });
 exports.FieldTypeValues = ['string', 'boolean', 'integer', 'float'];
 let StringField = class StringField {
+    constructor(value) {
+        this.value = value;
+    }
 };
 __decorate([
     type_graphql_1.Field(),
     __metadata("design:type", String)
 ], StringField.prototype, "value", void 0);
 StringField = __decorate([
-    type_graphql_1.ObjectType()
+    type_graphql_1.ObjectType(),
+    __metadata("design:paramtypes", [String])
 ], StringField);
 exports.StringField = StringField;
 let BooleanField = class BooleanField {
+    constructor(value) {
+        this.value = value;
+    }
 };
 __decorate([
     type_graphql_1.Field(),
     __metadata("design:type", Boolean)
 ], BooleanField.prototype, "value", void 0);
 BooleanField = __decorate([
-    type_graphql_1.ObjectType()
+    type_graphql_1.ObjectType(),
+    __metadata("design:paramtypes", [Boolean])
 ], BooleanField);
 exports.BooleanField = BooleanField;
 let FloatField = class FloatField {
+    constructor(value) {
+        this.value = value;
+    }
 };
 __decorate([
     type_graphql_1.Field(type => type_graphql_1.Float),
     __metadata("design:type", Number)
 ], FloatField.prototype, "value", void 0);
 FloatField = __decorate([
-    type_graphql_1.ObjectType()
+    type_graphql_1.ObjectType(),
+    __metadata("design:paramtypes", [Number])
 ], FloatField);
 exports.FloatField = FloatField;
 let IntegerField = class IntegerField {
+    constructor(value) {
+        this.value = value;
+    }
 };
 __decorate([
     type_graphql_1.Field(type => type_graphql_1.Int),
     __metadata("design:type", Number)
 ], IntegerField.prototype, "value", void 0);
 IntegerField = __decorate([
-    type_graphql_1.ObjectType()
+    type_graphql_1.ObjectType(),
+    __metadata("design:paramtypes", [Number])
 ], IntegerField);
 exports.IntegerField = IntegerField;
 exports.FieldDefaultsUnion = type_graphql_1.createUnionType({

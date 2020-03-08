@@ -432,20 +432,20 @@ function fieldInputToDefault(inputDefault) {
     if (!inputDefault) {
         return undefined;
     }
-    if (inputDefault.booleanValue) {
+    if (inputDefault.booleanValue != null) {
         return inputDefault.booleanValue;
     }
-    else if (inputDefault.stringValue) {
+    else if (inputDefault.stringValue != null) {
         return inputDefault.stringValue;
     }
-    else if (inputDefault.integerValue) {
+    else if (inputDefault.integerValue != null) {
         return inputDefault.integerValue;
     }
-    else if (inputDefault.floatValue) {
+    else if (inputDefault.floatValue != null) {
         return inputDefault.floatValue;
     }
     else {
-        throw new Error(`Unknown field data input ${inputDefault}`);
+        throw new Error(`Unknown field data input ${JSON.stringify(inputDefault)}`);
     }
 }
 function actionInputToChangeAction(logAction) {
@@ -649,58 +649,34 @@ ServiceResolver = __decorate([
     type_graphql_1.Resolver(of => generate_1.Service)
 ], ServiceResolver);
 exports.ServiceResolver = ServiceResolver;
-exports.FieldUnion = type_graphql_1.createUnionType({
-    name: "FieldUnion",
-    types: () => [generate_1.ReferenceField, generate_1.ScalarField]
-});
-let VersionResolver = class VersionResolver {
-    fields(version) {
-        const fields = [];
-        for (let field of Object.values(version.fields)) {
-            fields.push(field);
-        }
-        return fields;
-    }
-};
-__decorate([
-    type_graphql_1.FieldResolver(type => [exports.FieldUnion]),
-    __param(0, type_graphql_1.Root()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [generate_1.Version]),
-    __metadata("design:returntype", Array)
-], VersionResolver.prototype, "fields", null);
-VersionResolver = __decorate([
-    type_graphql_1.Resolver(of => generate_1.Version)
-], VersionResolver);
-exports.VersionResolver = VersionResolver;
 function defaultToField(_default) {
     if (_default === undefined) {
         return undefined;
     }
     else if (typeof _default === 'string') {
-        return ({
-            value: _default
-        });
+        return (new action_1.StringField(_default));
     }
     else if (typeof _default === 'number') {
-        return ({
-            value: _default
-        });
+        if (parseInt(_default.toString())) {
+            return (new action_1.IntegerField(_default));
+        }
+        else {
+            return (new action_1.FloatField(_default));
+        }
     }
     else if (typeof _default === 'boolean') {
-        return ({
-            value: _default
-        });
+        return (new action_1.BooleanField(_default));
     }
     throw new Error(`Unknown type of _default ${_default}`);
 }
 let ScalarFieldResolver = class ScalarFieldResolver {
     _default(scalarField) {
+        console.log(JSON.stringify(scalarField));
         return defaultToField(scalarField._default);
     }
 };
 __decorate([
-    type_graphql_1.FieldResolver(type => [action_1.FieldDefaultsUnion], { nullable: true }),
+    type_graphql_1.FieldResolver(type => action_1.FieldDefaultsUnion, { nullable: true }),
     __param(0, type_graphql_1.Root()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [generate_1.ScalarField]),
@@ -774,6 +750,31 @@ AddFieldTypeChangeActionResolver = __decorate([
     type_graphql_1.Resolver(of => action_1.AddFieldTypeChangeAction)
 ], AddFieldTypeChangeActionResolver);
 exports.AddFieldTypeChangeActionResolver = AddFieldTypeChangeActionResolver;
+exports.FieldUnion = type_graphql_1.createUnionType({
+    name: "FieldUnion",
+    types: () => [generate_1.ReferenceField, generate_1.ScalarField]
+});
+let VersionResolver = class VersionResolver {
+    fields(version) {
+        const fields = [];
+        console.log(JSON.stringify(version));
+        for (let field of Object.values(version.fields)) {
+            fields.push(field);
+        }
+        return fields;
+    }
+};
+__decorate([
+    type_graphql_1.FieldResolver(type => [exports.FieldUnion]),
+    __param(0, type_graphql_1.Root()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [generate_1.Version]),
+    __metadata("design:returntype", Array)
+], VersionResolver.prototype, "fields", null);
+VersionResolver = __decorate([
+    type_graphql_1.Resolver(of => generate_1.Version)
+], VersionResolver);
+exports.VersionResolver = VersionResolver;
 let VRPCResolver = class VRPCResolver {
     async log(context) {
         return (await context.backend.getLog());

@@ -329,16 +329,16 @@ function fieldInputToDefault(
   if (!inputDefault) {
     return undefined;
   }
-  if (inputDefault.booleanValue) {
+  if (inputDefault.booleanValue != null) {
     return inputDefault.booleanValue;
-  } else if (inputDefault.stringValue) {
+  } else if (inputDefault.stringValue != null) {
     return inputDefault.stringValue;
-  } else if (inputDefault.integerValue) {
+  } else if (inputDefault.integerValue != null) {
     return inputDefault.integerValue;
-  } else if (inputDefault.floatValue) {
+  } else if (inputDefault.floatValue != null) {
     return inputDefault.floatValue;
   } else {
-    throw new Error(`Unknown field data input ${inputDefault}`);
+    throw new Error(`Unknown field data input ${JSON.stringify(inputDefault)}`);
   }
 }
 
@@ -517,41 +517,21 @@ export class ServiceResolver {
   }
 }
 
-export const FieldUnion = createUnionType({
-  name: "FieldUnion",
-  types: () => [ReferenceField, ScalarField]
-});
-
-@Resolver(of => Version)
-export class VersionResolver {
-  @FieldResolver(type => [FieldUnion])
-  fields(@Root() version: Version): Array<BaseField> {
-    const fields = [];
-    for (let field of Object.values(version.fields)) {
-      fields.push(field);
-    }
-
-    return fields;
-  }
-}
-
 function defaultToField(
   _default?: FieldDefaults
 ): StringField | BooleanField | FloatField | IntegerField | undefined  {
   if (_default === undefined) {
     return undefined;
   } else if (typeof _default === 'string') {
-      return ({
-        value: _default
-      });
+      return (new StringField(_default));
   } else if (typeof _default === 'number') {
-      return ({
-        value: _default
-      });
+    if (parseInt(_default.toString())) {
+      return (new IntegerField(_default));
+    } else {
+      return (new FloatField(_default));
+    }
   } else if (typeof _default === 'boolean') {
-      return ({
-        value: _default
-      });
+      return (new BooleanField(_default));
   }
 
   throw new Error(`Unknown type of _default ${_default}`);
@@ -559,10 +539,11 @@ function defaultToField(
 
 @Resolver(of => ScalarField)
 export class ScalarFieldResolver {
-  @FieldResolver(type => [FieldDefaultsUnion], {nullable: true})
+  @FieldResolver(type => FieldDefaultsUnion, {nullable: true})
   _default(
     @Root() scalarField: ScalarField
   ): StringField | BooleanField | FloatField | IntegerField | undefined {
+    console.log(JSON.stringify(scalarField));
     return defaultToField(scalarField._default);
   }
 }
@@ -606,6 +587,26 @@ export class AddFieldTypeChangeActionResolver {
     return defaultToField(action._default);
   }
 }
+
+export const FieldUnion = createUnionType({
+  name: "FieldUnion",
+  types: () => [ReferenceField, ScalarField]
+});
+
+@Resolver(of => Version)
+export class VersionResolver {
+  @FieldResolver(type => [FieldUnion])
+  fields(@Root() version: Version): Array<BaseField> {
+    const fields = [];
+    console.log(JSON.stringify(version));
+    for (let field of Object.values(version.fields)) {
+      fields.push(field);
+    }
+
+    return fields;
+  }
+}
+
 export type VRPCContext = {
     backend: Backend;
 }

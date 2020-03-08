@@ -63527,7 +63527,7 @@ var SpacerRow = function SpacerRow(props) {
 };
 
 function getTypeOrServiceName(action) {
-  if (action.__typename === "RenameFieldTypeAction" || action.__typename === "RequiredFieldTypeAction" || action.__typename === "OptionalFieldTypeAction" || action.__typename === "DeleteFieldTypeAction" || action.__typename === "SetDefaultFieldTypeAction" || action.__typename === "RemoveDefaultFieldTypeAction" || action.__typename === "AddFieldTypeAction" || action.__typename === "UpdateDescriptionTypeAction" || action.__typename === "ReferenceFieldTypeAction" || action.__typename === "NewTypeAction" || action.__typename === "RenameFieldTypeChangeAction" || action.__typename === "RequiredFieldTypeChangeAction" || action.__typename === "OptionalFieldTypeChangeAction" || action.__typename === "DeleteFieldTypeChangeAction" || action.__typename === "SetDefaultFieldTypeChangeAction" || action.__typename === "RemoveDefaultFieldTypeChangeAction" || action.__typename === "AddFieldTypeChangeAction" || action.__typename === "UpdateDescriptionTypeChangeAction" || action.__typename === "ReferenceFieldTypeChangeAction" || action.__typename === "NewTypeChangeAction") {
+  if (action.__typename === "RenameFieldTypeAction" || action.__typename === "RequiredFieldTypeAction" || action.__typename === "OptionalFieldTypeAction" || action.__typename === "DeleteFieldTypeAction" || action.__typename === "SetDefaultFieldTypeAction" || action.__typename === "RemoveDefaultFieldTypeAction" || action.__typename === "AddFieldTypeAction" || action.__typename === "UpdateFieldDescriptionTypeAction" || action.__typename === "ReferenceFieldTypeAction" || action.__typename === "NewTypeAction" || action.__typename === "RenameFieldTypeChangeAction" || action.__typename === "RequiredFieldTypeChangeAction" || action.__typename === "OptionalFieldTypeChangeAction" || action.__typename === "DeleteFieldTypeChangeAction" || action.__typename === "SetDefaultFieldTypeChangeAction" || action.__typename === "RemoveDefaultFieldTypeChangeAction" || action.__typename === "AddFieldTypeChangeAction" || action.__typename === "UpdateFieldDescriptionTypeChangeAction" || action.__typename === "ReferenceFieldTypeChangeAction" || action.__typename === "NewTypeChangeAction") {
     return [action.typeName, false];
   } else if (action.__typename === "UpdateDescriptionServiceAction" || action.__typename === "AddVersionServiceAction" || action.__typename === "NewServiceAction" || action.__typename === "UpdateDescriptionServiceChangeAction" || action.__typename === "AddVersionServiceChangeAction" || action.__typename === "NewServiceChangeAction") {
     return [action.serviceName, true];
@@ -63552,7 +63552,7 @@ var OptionsCell = function OptionsCell(props) {
       }, react_1.default.createElement(ListItemText_1.default, {
         primary: key
       }), react_1.default.createElement(ListItemText_1.default, {
-        primary: value
+        primary: JSON.stringify(value)
       })));
     }
   }
@@ -96145,11 +96145,15 @@ var useStyles = core_1.makeStyles(function (theme) {
   };
 });
 
-function ActionFormHOC(FormComponent, changeActionKey) {
+function ActionFormHOC(FormComponent, changeActionKey, defaults) {
   function ActionForm(props) {
     var classes = useStyles(props);
 
-    var _hooks_1$useAppendCha = hooks_1.useAppendChangeSetMutation(),
+    var _hooks_1$useAppendCha = hooks_1.useAppendChangeSetMutation({
+      onCompleted: function onCompleted() {
+        props.handleClose();
+      }
+    }),
         _hooks_1$useAppendCha2 = _slicedToArray(_hooks_1$useAppendCha, 2),
         appendChangeSetMutation = _hooks_1$useAppendCha2[0],
         _hooks_1$useAppendCha3 = _hooks_1$useAppendCha2[1],
@@ -96178,8 +96182,10 @@ function ActionFormHOC(FormComponent, changeActionKey) {
     }
 
     function handleDefaultChange(key) {
-      function innerHandleChange(_default) {
-        setValue(Object.assign(Object.assign({}, value), _defineProperty({}, key, _default)));
+      function innerHandleChange(_default, _type) {
+        var _Object$assign3;
+
+        setValue(Object.assign(Object.assign({}, value), (_Object$assign3 = {}, _defineProperty(_Object$assign3, key, _default), _defineProperty(_Object$assign3, "_type", _type), _Object$assign3)));
       }
 
       return innerHandleChange;
@@ -96201,11 +96207,12 @@ function ActionFormHOC(FormComponent, changeActionKey) {
     }
 
     function handleAppendChangeSet() {
+      var appendValue = defaults ? Object.assign(Object.assign({}, value), defaults) : value;
       appendChangeSetMutation({
         variables: {
           changeSet: {
             id: props.changeSetId,
-            action: _defineProperty({}, changeActionKey, value)
+            action: _defineProperty({}, changeActionKey, appendValue)
           }
         }
       });
@@ -97656,6 +97663,8 @@ var react_1 = __importDefault(require("react"));
 
 var core_1 = require("@material-ui/core");
 
+var hooks_1 = require("../hooks");
+
 var react_number_format_1 = __importDefault(require("react-number-format"));
 
 var DEFAULT_TYPES = ["integer", "float", "string", "boolean"];
@@ -97666,23 +97675,24 @@ var DefaultSelector = function DefaultSelector(props) {
 
   if (!props._default) {
     valueEditor = null;
-  } else if (props._default.stringValue) {
+  } else if (props._default.stringValue != null) {
     defaultType = "string";
     valueEditor = react_1.default.createElement(core_1.TextField, {
       id: "defaultValue",
-      label: "Value of default",
+      label: "Default",
       value: props._default.stringValue,
       onChange: function onChange(event) {
         props.handleChange({
           stringValue: event.target.value
-        });
+        }, hooks_1.FieldTypes.String);
       },
       margin: "normal"
     });
-  } else if (props._default.integerValue) {
+  } else if (props._default.integerValue != null) {
     defaultType = "integer";
     valueEditor = react_1.default.createElement(react_number_format_1.default, {
       decimalScale: 0,
+      label: "Default",
       inputRef: function inputRef(el) {
         return _this.inputElem = el;
       },
@@ -97690,34 +97700,38 @@ var DefaultSelector = function DefaultSelector(props) {
       onValueChange: function onValueChange(values) {
         props.handleChange({
           integerValue: values.floatValue
-        });
+        }, hooks_1.FieldTypes.Integer);
       },
       value: props._default.integerValue
     });
-  } else if (props._default.floatValue) {
+  } else if (props._default.floatValue != null) {
     defaultType = "float";
     valueEditor = react_1.default.createElement(react_number_format_1.default, {
       inputRef: function inputRef(el) {
         return _this.inputElem = el;
       },
+      label: "Default",
       customInput: core_1.TextField,
       onValueChange: function onValueChange(values) {
         props.handleChange({
           integerValue: values.floatValue
-        });
+        }, hooks_1.FieldTypes.Float);
       },
       value: props._default.floatValue
     });
-  } else if (props._default.booleanValue) {
+  } else if (props._default.booleanValue != null) {
     defaultType = "boolean";
-    valueEditor = react_1.default.createElement(core_1.Checkbox, {
-      id: "optional",
-      onChange: function onChange(event) {
-        props.handleChange({
-          booleanValue: !event.target.value
-        });
-      },
-      checked: props._default.booleanValue
+    valueEditor = react_1.default.createElement(core_1.FormControlLabel, {
+      control: react_1.default.createElement(core_1.Checkbox, {
+        id: "optional",
+        onChange: function onChange(event) {
+          props.handleChange({
+            booleanValue: !event.target.value
+          }, hooks_1.FieldTypes.String);
+        },
+        checked: props._default.booleanValue
+      }),
+      label: "Default"
     });
   }
 
@@ -97725,28 +97739,27 @@ var DefaultSelector = function DefaultSelector(props) {
     if (event.target.value === "string") {
       props.handleChange({
         stringValue: ""
-      });
+      }, hooks_1.FieldTypes.String);
     } else if (event.target.value === "integer") {
       props.handleChange({
         integerValue: 0
-      });
+      }, hooks_1.FieldTypes.Integer);
     } else if (event.target.value === "float") {
       props.handleChange({
         floatValue: 0
-      });
+      }, hooks_1.FieldTypes.Float);
     } else if (event.target.value === "boolean") {
       props.handleChange({
         booleanValue: true
-      });
-    } else {
-      props.handleChange({});
+      }, hooks_1.FieldTypes.Boolean);
     }
   }
 
   return react_1.default.createElement(react_1.default.Fragment, null, react_1.default.createElement(core_1.FormControl, null, react_1.default.createElement(core_1.InputLabel, {
-    htmlFor: "select-field"
-  }, "Default Type"), react_1.default.createElement(core_1.Select, {
+    id: "type-selector"
+  }, "Type"), react_1.default.createElement(core_1.Select, {
     value: defaultType,
+    labelId: "type-selector",
     onChange: changeType,
     inputProps: {
       id: 'select-field'
@@ -97760,7 +97773,7 @@ var DefaultSelector = function DefaultSelector(props) {
 };
 
 exports.default = DefaultSelector;
-},{"react":"../node_modules/react/index.js","@material-ui/core":"../node_modules/@material-ui/core/esm/index.js","react-number-format":"../node_modules/react-number-format/dist/react-number-format.es.js"}],"action_forms/AddFieldTypeActionForm.tsx":[function(require,module,exports) {
+},{"react":"../node_modules/react/index.js","@material-ui/core":"../node_modules/@material-ui/core/esm/index.js","../hooks":"hooks.tsx","react-number-format":"../node_modules/react-number-format/dist/react-number-format.es.js"}],"action_forms/AddFieldTypeActionForm.tsx":[function(require,module,exports) {
 "use strict";
 
 var __importDefault = this && this.__importDefault || function (mod) {
@@ -97787,7 +97800,7 @@ var AddFieldTypeActionForm = ActionForm_1.ActionFormHOC(function (props) {
   return react_1.default.createElement(react_1.default.Fragment, null, react_1.default.createElement(TypeSelector_1.default, {
     types: props.types,
     handleChange: props.handleChange('typeName'),
-    value: props.value.typeName
+    value: props.value.typeName || ''
   }), react_1.default.createElement(core_1.FormControl, null, react_1.default.createElement(core_1.TextField, {
     id: "fieldName",
     label: "New field name",
@@ -97800,21 +97813,20 @@ var AddFieldTypeActionForm = ActionForm_1.ActionFormHOC(function (props) {
     value: props.value.description,
     onChange: props.handleChange('description'),
     margin: "normal"
-  })), react_1.default.createElement(core_1.FormControl, null, react_1.default.createElement(core_1.Checkbox, {
-    id: "optional",
-    checked: props.value.optional,
-    onChange: props.handleBooleanChange('optional')
-  })), react_1.default.createElement(DefaultSelector_1.default, {
+  })), react_1.default.createElement(core_1.FormControlLabel, {
+    control: react_1.default.createElement(core_1.Checkbox, {
+      id: "add-field-is-optional",
+      checked: props.value.optional,
+      onChange: props.handleBooleanChange('optional')
+    }),
+    label: "Is Optional"
+  }), react_1.default.createElement(DefaultSelector_1.default, {
     _default: props.value._default,
     handleChange: props.handleDefaultChange('_default')
-  }), react_1.default.createElement(core_1.FormControl, null, react_1.default.createElement(core_1.TextField, {
-    id: "standard-name",
-    label: "Change Log",
-    value: props.value.changeLog,
-    onChange: props.handleChange('changeLog'),
-    margin: "normal"
-  })));
-}, 'addField');
+  }));
+}, 'addField', {
+  optional: false
+});
 exports.default = AddFieldTypeActionForm;
 },{"./ActionForm":"action_forms/ActionForm.tsx","react":"../node_modules/react/index.js","./TypeSelector":"action_forms/TypeSelector.tsx","./DefaultSelector":"action_forms/DefaultSelector.tsx","@material-ui/core":"../node_modules/@material-ui/core/esm/index.js"}],"action_forms/ActionTypeSelector.tsx":[function(require,module,exports) {
 "use strict";
@@ -97833,7 +97845,7 @@ var core_1 = require("@material-ui/core");
 
 var react_1 = __importDefault(require("react"));
 
-var ACTION_NAMES = ["RenameFieldTypeAction", "RequiredFieldTypeAction", "OptionalFieldTypeAction", "DeleteFieldTypeAction", "SetDefaultFieldTypeAction", "RemoveDefaultFieldTypeAction", "AddFieldTypeAction", "UpdateDescriptionTypeAction", "ReferenceFieldTypeAction", "NewTypeAction", "UpdateDescriptionServiceAction", "AddVersionServiceAction", "NewServiceAction"];
+var ACTION_NAMES = ["RenameFieldTypeAction", "RequiredFieldTypeAction", "OptionalFieldTypeAction", "DeleteFieldTypeAction", "SetDefaultFieldTypeAction", "RemoveDefaultFieldTypeAction", "AddFieldTypeAction", "UpdateFieldDescriptionTypeAction", "ReferenceFieldTypeAction", "NewTypeAction", "UpdateDescriptionServiceAction", "AddVersionServiceAction", "NewServiceAction"];
 var useStyles = core_1.makeStyles(function (theme) {
   return {
     formControl: {
@@ -98198,7 +98210,7 @@ var SetDefaultFieldTypeActionForm = ActionForm_1.ActionFormHOC(function (props) 
   }));
 }, 'setDefault');
 exports.default = SetDefaultFieldTypeActionForm;
-},{"./ActionForm":"action_forms/ActionForm.tsx","react":"../node_modules/react/index.js","./TypeSelector":"action_forms/TypeSelector.tsx","./DefaultSelector":"action_forms/DefaultSelector.tsx","./FieldSelector":"action_forms/FieldSelector.tsx"}],"action_forms/UpdateDescriptionTypeActionForm.tsx":[function(require,module,exports) {
+},{"./ActionForm":"action_forms/ActionForm.tsx","react":"../node_modules/react/index.js","./TypeSelector":"action_forms/TypeSelector.tsx","./DefaultSelector":"action_forms/DefaultSelector.tsx","./FieldSelector":"action_forms/FieldSelector.tsx"}],"action_forms/UpdateFieldDescriptionTypeActionForm.tsx":[function(require,module,exports) {
 "use strict";
 
 var __importDefault = this && this.__importDefault || function (mod) {
@@ -98221,7 +98233,7 @@ var react_1 = __importDefault(require("react"));
 
 var FieldSelector_1 = __importDefault(require("./FieldSelector"));
 
-var UpdateDescriptionTypeActionForm = ActionForm_1.ActionFormHOC(function (props) {
+var UpdateFieldDescriptionTypeActionForm = ActionForm_1.ActionFormHOC(function (props) {
   return react_1.default.createElement(react_1.default.Fragment, null, react_1.default.createElement(TypeSelector_1.default, {
     types: props.types,
     handleChange: props.handleChange('typeName'),
@@ -98239,7 +98251,7 @@ var UpdateDescriptionTypeActionForm = ActionForm_1.ActionFormHOC(function (props
     margin: "normal"
   })));
 }, 'updateTypeDescription');
-exports.default = UpdateDescriptionTypeActionForm;
+exports.default = UpdateFieldDescriptionTypeActionForm;
 },{"./ActionForm":"action_forms/ActionForm.tsx","./TypeSelector":"action_forms/TypeSelector.tsx","@material-ui/core":"../node_modules/@material-ui/core/esm/index.js","react":"../node_modules/react/index.js","./FieldSelector":"action_forms/FieldSelector.tsx"}],"action_forms/ReferenceFieldTypeActionForm.tsx":[function(require,module,exports) {
 "use strict";
 
@@ -98445,7 +98457,7 @@ var FieldTypeActionFormHOC_1 = __importDefault(require("./FieldTypeActionFormHOC
 
 var SetDefaultFieldTypeActionForm_1 = __importDefault(require("./SetDefaultFieldTypeActionForm"));
 
-var UpdateDescriptionTypeActionForm_1 = __importDefault(require("./UpdateDescriptionTypeActionForm"));
+var UpdateFieldDescriptionTypeActionForm_1 = __importDefault(require("./UpdateFieldDescriptionTypeActionForm"));
 
 var ReferenceFieldTypeActionForm_1 = __importDefault(require("./ReferenceFieldTypeActionForm"));
 
@@ -98478,7 +98490,8 @@ var ActionForm = function ActionForm(props) {
       return react_1.default.createElement(RenameFieldTypeActionForm_1.default, {
         types: props.types,
         services: props.services,
-        changeSetId: props.changeSetId
+        changeSetId: props.changeSetId,
+        handleClose: props.handleClose
       });
 
     case "RequiredFieldTypeAction":
@@ -98486,7 +98499,8 @@ var ActionForm = function ActionForm(props) {
       return react_1.default.createElement(RequiredFieldTypeActionForm, {
         types: props.types,
         services: props.services,
-        changeSetId: props.changeSetId
+        changeSetId: props.changeSetId,
+        handleClose: props.handleClose
       });
 
     case "OptionalFieldTypeAction":
@@ -98494,7 +98508,8 @@ var ActionForm = function ActionForm(props) {
       return react_1.default.createElement(OptionalFieldTypeActionForm, {
         types: props.types,
         services: props.services,
-        changeSetId: props.changeSetId
+        changeSetId: props.changeSetId,
+        handleClose: props.handleClose
       });
 
     case "DeleteFieldTypeAction":
@@ -98502,7 +98517,8 @@ var ActionForm = function ActionForm(props) {
       return react_1.default.createElement(DeleteFieldTypeActionForm, {
         types: props.types,
         services: props.services,
-        changeSetId: props.changeSetId
+        changeSetId: props.changeSetId,
+        handleClose: props.handleClose
       });
 
     case "RemoveDefaultFieldTypeAction":
@@ -98510,63 +98526,72 @@ var ActionForm = function ActionForm(props) {
       return react_1.default.createElement(RemoveDefaultFieldTypeActionForm, {
         types: props.types,
         services: props.services,
-        changeSetId: props.changeSetId
+        changeSetId: props.changeSetId,
+        handleClose: props.handleClose
       });
 
     case "SetDefaultFieldTypeAction":
       return react_1.default.createElement(SetDefaultFieldTypeActionForm_1.default, {
         types: props.types,
         services: props.services,
-        changeSetId: props.changeSetId
+        changeSetId: props.changeSetId,
+        handleClose: props.handleClose
       });
 
     case "AddFieldTypeAction":
       return react_1.default.createElement(AddFieldTypeActionForm_1.default, {
         types: props.types,
         services: props.services,
-        changeSetId: props.changeSetId
+        changeSetId: props.changeSetId,
+        handleClose: props.handleClose
       });
 
-    case "UpdateDescriptionTypeAction":
-      return react_1.default.createElement(UpdateDescriptionTypeActionForm_1.default, {
+    case "UpdateFieldDescriptionTypeAction":
+      return react_1.default.createElement(UpdateFieldDescriptionTypeActionForm_1.default, {
         types: props.types,
         services: props.services,
-        changeSetId: props.changeSetId
+        changeSetId: props.changeSetId,
+        handleClose: props.handleClose
       });
 
     case "ReferenceFieldTypeAction":
       return react_1.default.createElement(ReferenceFieldTypeActionForm_1.default, {
         types: props.types,
         services: props.services,
-        changeSetId: props.changeSetId
+        changeSetId: props.changeSetId,
+        handleClose: props.handleClose
       });
 
     case "NewTypeAction":
       return react_1.default.createElement(NewTypeActionForm_1.default, {
         types: props.types,
         services: props.services,
-        changeSetId: props.changeSetId
+        changeSetId: props.changeSetId,
+        handleClose: props.handleClose
       });
 
     case "UpdateDescriptionServiceAction":
       return react_1.default.createElement(UpdateDescriptionServiceActionForm_1.default, {
         types: props.types,
         services: props.services,
-        changeSetId: props.changeSetId
+        changeSetId: props.changeSetId,
+        handleClose: props.handleClose
       });
 
     case "AddVersionServiceAction":
       return react_1.default.createElement(AddVersionServiceActionForm_1.default, {
         types: props.types,
         services: props.services,
-        changeSetId: props.changeSetId
+        changeSetId: props.changeSetId,
+        handleClose: props.handleClose
       });
 
     case "NewServiceAction":
       return react_1.default.createElement(NewServiceActionForm_1.default, {
         types: props.types,
         services: props.services,
-        changeSetId: props.changeSetId
+        changeSetId: props.changeSetId,
+        handleClose: props.handleClose
       });
 
     default:
@@ -98620,12 +98645,13 @@ var ActionCreatorModal = function ActionCreatorModal(props) {
     logType: actionType,
     types: props.types,
     services: props.services,
-    changeSetId: props.changeSetId
+    changeSetId: props.changeSetId,
+    handleClose: handleClose
   }))));
 };
 
 exports.default = ActionCreatorModal;
-},{"react":"../node_modules/react/index.js","@material-ui/core/styles":"../node_modules/@material-ui/core/esm/styles/index.js","./AddFieldTypeActionForm":"action_forms/AddFieldTypeActionForm.tsx","./ActionTypeSelector":"action_forms/ActionTypeSelector.tsx","./AddVersionServiceActionForm":"action_forms/AddVersionServiceActionForm.tsx","./NewServiceActionForm":"action_forms/NewServiceActionForm.tsx","./RenameFieldTypeActionForm":"action_forms/RenameFieldTypeActionForm.tsx","./FieldTypeActionFormHOC":"action_forms/FieldTypeActionFormHOC.tsx","./SetDefaultFieldTypeActionForm":"action_forms/SetDefaultFieldTypeActionForm.tsx","./UpdateDescriptionTypeActionForm":"action_forms/UpdateDescriptionTypeActionForm.tsx","./ReferenceFieldTypeActionForm":"action_forms/ReferenceFieldTypeActionForm.tsx","./NewTypeActionForm":"action_forms/NewTypeActionForm.tsx","./UpdateDescriptionServiceActionForm":"action_forms/UpdateDescriptionServiceActionForm.tsx","@material-ui/core":"../node_modules/@material-ui/core/esm/index.js"}],"ChangeSetViewer.tsx":[function(require,module,exports) {
+},{"react":"../node_modules/react/index.js","@material-ui/core/styles":"../node_modules/@material-ui/core/esm/styles/index.js","./AddFieldTypeActionForm":"action_forms/AddFieldTypeActionForm.tsx","./ActionTypeSelector":"action_forms/ActionTypeSelector.tsx","./AddVersionServiceActionForm":"action_forms/AddVersionServiceActionForm.tsx","./NewServiceActionForm":"action_forms/NewServiceActionForm.tsx","./RenameFieldTypeActionForm":"action_forms/RenameFieldTypeActionForm.tsx","./FieldTypeActionFormHOC":"action_forms/FieldTypeActionFormHOC.tsx","./SetDefaultFieldTypeActionForm":"action_forms/SetDefaultFieldTypeActionForm.tsx","./UpdateFieldDescriptionTypeActionForm":"action_forms/UpdateFieldDescriptionTypeActionForm.tsx","./ReferenceFieldTypeActionForm":"action_forms/ReferenceFieldTypeActionForm.tsx","./NewTypeActionForm":"action_forms/NewTypeActionForm.tsx","./UpdateDescriptionServiceActionForm":"action_forms/UpdateDescriptionServiceActionForm.tsx","@material-ui/core":"../node_modules/@material-ui/core/esm/index.js"}],"ChangeSetViewer.tsx":[function(require,module,exports) {
 "use strict";
 
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
@@ -99083,7 +99109,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56826" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "59708" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

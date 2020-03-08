@@ -171,7 +171,7 @@ const OptionsCell = (props: OptionsCellProps) => {
       options.push(
         <ListItem key={key} alignItems="flex-start">
           <ListItemText primary={key}/>
-          <ListItemText primary={value as any}/>
+          <ListItemText primary={JSON.stringify(value)}/>
         </ListItem>
       );
     }
