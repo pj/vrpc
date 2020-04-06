@@ -21,9 +21,7 @@ export class FileBackend implements Backend {
   constructor(fileName: string) {
     this.fileName = fileName;
     if (lockfile.checkSync(this.fileName)) {
-      console.log('asdfasdfasdf');
       lockfile.unlockSync(this.fileName);
-      console.log('qewrqwerqwer');
     }
   }
 
