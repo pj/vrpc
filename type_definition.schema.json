@@ -1,0 +1,113 @@
+{
+    "type": "array",
+    "definitions": { 
+        "field": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "reference": {
+                    "type": "object",
+                    "properties": {
+                        "_type": {"type": "string"},
+                        "version": {"type": "number"}
+                    },
+                    "required": ["_type", "version"],
+                    "additionalProperties": false
+                },
+                "_type": {
+                    "type": "string",
+                    "enum": ["integer", "float", "string", "boolean"]
+                },
+                "changeLog": {
+                    "type": "string"
+                },
+                "optional": {
+                    "type": "boolean"
+                },
+                "_default": {
+                    "anyOf": [
+                        {"type": "boolean"},
+                        {"type": "string"},
+                        {"type": "number"}
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "name",
+                "description",
+                "changeLog"
+            ],
+            "oneOf": [
+                {"required": ["reference"]},
+                {"required": ["_type"]}
+            ]
+        },
+        "version": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "name", 
+                "version"
+            ]
+        },
+        "definition": {
+            "type": "object",
+            "properties": {
+                "name": {"type": "string"},
+                "description": {"type": "string"},
+                "fields": {
+                    "type": "array",
+                    "items": {
+                        "allOf": [
+                            {
+                                "$ref": "#/definitions/field"
+                            }
+                        ]
+                    }
+                },
+                "versions": { 
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "_from": {"$ref": "#/definitions/version"},
+                            "to": {"$ref": "#/definitions/version"},
+                            "changeLog": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "changeLog",
+                            "_from",
+                            "to"
+                        ]
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "required": ["name", "description"],
+            "oneOf": [
+                {"required": ["fields"]},
+                {"required": ["versions"]}
+            ]
+        }
+    },
+    "items": {
+        "allOf": [ 
+            {"$ref": "#/definitions/definition"}
+         ]
+    }
+}

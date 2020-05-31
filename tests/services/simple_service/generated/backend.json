@@ -1,0 +1,55 @@
+{"log": [{"actions":[{"actionType":"NewTypeAction","name":"Test","changeLog":"TODO add changelog","hash":"c3053aba8c7d99190db21428da60383be2dc9a5581a0ae4e028b2d2102ec4b4d","version":0,"description":"A type to test with"},{"actionType":"AddFieldTypeAction","name":"Test","changeLog":"This is a good field to add","hash":"3a4bfc3a140449a4f1da32f6dd6ca87657243f96ab59befd8ab800f60a989515","version":0,"fieldName":"field1","_type":"string","description":"A cool field","optional":false},{"actionType":"AddFieldTypeAction","name":"Test","changeLog":"This is a good field to add","hash":"efc0453d6cab2063d953a055f046ec892e423167f09de18494a57ccb3ca3d4ea","version":0,"fieldName":"field2","_type":"integer","description":"Another cool field","optional":false},{"actionType":"NewTypeAction","name":"AnotherTest","changeLog":"TODO add changelog","hash":"c4021c5108e2d894351aa4b12265626cb2ad799be7e059fa1569fd23d86e82ec","version":0,"description":"Another type of test"},{"actionType":"AddFieldTypeAction","name":"AnotherTest","changeLog":"This is a good field to add","hash":"b42b66ad910a001be3f844dfc7c370152562f01d5bf96cfdd41850c2ed6df4a0","version":0,"fieldName":"another_field","_type":"boolean","description":"this is a field","optional":false},{"actionType":"AddFieldTypeAction","name":"AnotherTest","changeLog":"This is a good field to add","hash":"325c6bda9b2b4f6608eb2604a775f368ee15220bed390a475950a9db3d426508","version":0,"fieldName":"yet_another_field","_type":"float","description":"asdf","optional":false}],"hash":"325c6bda9b2b4f6608eb2604a775f368ee15220bed390a475950a9db3d426508"},{"actions":[{"actionType":"NewServiceAction","name":"TestService","changeLog":"FIXME","hash":"f89b51e1c899ede22ae7f49eb1110070c4aad21288fd1c8bc80f46f1602021db","version":0,"description":"An awesome service"},{"actionType":"AddVersionServiceAction","name":"TestService","changeLog":"This is an awesome service","hash":"9f6aa58332d78cfd9ae3e4fb76e71d07851c32d519ae3e9a56eb9f8639ddf887","version":0,"inputType":"AnotherTest","outputType":"Test","inputVersion":0,"inputHash":"325c6bda9b2b4f6608eb2604a775f368ee15220bed390a475950a9db3d426508","outputVersion":0,"outputHash":"325c6bda9b2b4f6608eb2604a775f368ee15220bed390a475950a9db3d426508"}],"hash":"9f6aa58332d78cfd9ae3e4fb76e71d07851c32d519ae3e9a56eb9f8639ddf887"}], "currentTypeDefinition": [
+  {
+    "description": "A type to test with",
+    "fields": [
+      {
+        "_type": "string",
+        "changeLog": "This is a good field to add",
+        "description": "A cool field",
+        "name": "field1"
+      },
+      {
+        "_type": "integer",
+        "changeLog": "This is a good field to add",
+        "description": "Another cool field",
+        "name": "field2"
+      }
+    ],
+    "name": "Test"
+  },
+  {
+    "description": "Another type of test",
+    "fields": [
+      {
+        "_type": "boolean",
+        "changeLog": "This is a good field to add",
+        "description": "this is a field",
+        "name": "another_field"
+      },
+      {
+        "_type": "float",
+        "changeLog": "This is a good field to add",
+        "description": "asdf",
+        "name": "yet_another_field"
+      }
+    ],
+    "name": "AnotherTest"
+  },
+  {
+    "description": "An awesome service",
+    "name": "TestService",
+    "versions": [
+      {
+        "_from": {
+          "name": "Test",
+          "version": 0
+        },
+        "changeLog": "This is an awesome service",
+        "to": {
+          "name": "AnotherTest",
+          "version": 0
+        }
+      }
+    ]
+  }
+]}

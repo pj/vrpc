@@ -6,8 +6,9 @@ import * as yargs from 'yargs';
 
 import * as generate from './generate';
 import * as generate_typescript from './generate_typescript';
-import {startServer} from './server';
 import {FileBackend} from './file_backend';
+import { generateTypescript } from "./generate_typescript";
+import { Convert } from "./generated/type_definition";
 
 const args = yargs
   .command(
@@ -15,7 +16,7 @@ const args = yargs
     'generate type and service definitions',
     (yargs: any): any => {
       yargs.positional('source', {
-        describe: 'name of log file',
+        describe: 'name of backend file',
         type: 'string'
       });
       yargs.positional('dest', {
@@ -25,13 +26,14 @@ const args = yargs
     },
     async (argv: any) => {
       const backend = new FileBackend(argv.source);
-      const log = await backend.getLog();
-      const [types, services] = generate.generateDefinitions(log, null);
+      const types = await backend.getCurrentTypes();
+      const services = await backend.getCurrentServices();
+
       const [
-        generatedTypes,
-        generatedServices,
-        generatedClient,
-      ] = generate_typescript.generateTypescriptBoth(types, services);
+          generatedTypes,
+          generatedServices,
+          generatedClient
+      ] = generateTypescript(types, services);
 
       fs.mkdirSync(argv.dest, {recursive: true});
       fs.writeFileSync(path.join(argv.dest, 'types.ts'), generatedTypes);
@@ -40,30 +42,26 @@ const args = yargs
     }
   )
   .command(
-    'serve <backend_type>',
-    'start graphql server for type interface',
+    'update <backend> <definition>',
+    'update backend with changes',
     (yargs: any): any => {
-      yargs.positional('backend_type', {
-        describe: 'backend_type to serve',
+      yargs.positional('source', {
+        describe: 'name of backend file',
         type: 'string'
-      })
-      .option('l',
-        {
-            alias: 'log-file',
-            type: 'string',
-            describe: 'filename for file backend'
-        }
-      );
+      });
+      yargs.positional('definition', {
+        describe: 'type definition file to use to update the backend',
+        type: 'string'
+      });
     },
-    (argv: any) => {
-      let backend = null;
-      console.log(argv);
-      if (argv.backend_type === 'file') {
-        backend = new FileBackend(argv.logFile);
-      } else {
-        throw new Error('Only file backends are valid at the moment.');
-      }
-      startServer(backend);
+    async (argv: any) => {
+      const backend = new FileBackend(argv.source);
+      const typeDefinitionRaw = fs.readFileSync(
+        argv.definition, 
+        {encoding: 'utf8'}
+      );
+      const typeDefinition = Convert.toTypeDefinition(typeDefinitionRaw)
+      await backend.commitTypeDefinition(typeDefinition);
     }
   )
   .argv;

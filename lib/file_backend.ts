@@ -1,25 +1,36 @@
 import {promises as fs} from 'fs';
-import { Backend } from './backend';
-import {Action, ChangeSet, GroupAction} from './action';
-import {generateDefinitions, Type, Service} from './generate';
-import {commitChangeSet, validate, validateWithChangeSet} from './typeidea';
+import * as fsSync from 'fs';
+import { Backend, changeSetFromTypeDefintion } from './backend';
+import {ChangeSet, GroupAction} from './action';
+import {
+    commitChangeSet, 
+    validate, 
+    validateWithChangeSet, 
+    services, 
+    types
+} from './vrpc';
 import * as lockfile from 'proper-lockfile';
-
-type StoredChangeSets = {
-  [key: string]: {
-    [key: string]: ChangeSet
-  }
-};
+import { Service, Type } from './generate';
+import { TypeDefinition, Convert } from './generated/type_definition';
+import { deserialize, serialize } from './serialization';
 
 class StoredData {
-  changeSets: StoredChangeSets;
   log: GroupAction[];
+  currentTypeDefinition: TypeDefinition[];
 }
 
 export class FileBackend implements Backend {
   fileName: string;
   constructor(fileName: string) {
     this.fileName = fileName;
+    if (!fsSync.existsSync(fileName)) {
+        const defaultStoredData = {
+            log: [],
+            currentTypeDefinition: []
+        }
+        fsSync.writeFileSync(fileName, JSON.stringify(defaultStoredData));
+    }
+
     if (lockfile.checkSync(this.fileName)) {
       lockfile.unlockSync(this.fileName);
     }
@@ -33,8 +44,12 @@ export class FileBackend implements Backend {
       },
     });
     const rawData = await fs.readFile(this.fileName, {encoding: 'utf8'});
-    const storedData = JSON.parse(rawData) as StoredData;
-    const result = await func(storedData);
+    const jsonData = JSON.parse(rawData);
+    const log = deserialize(jsonData.log);
+    const currentTypeDefinition = Convert.toTypeDefinition(
+      JSON.stringify(jsonData.currentTypeDefinition)
+    );
+    const result = await func({log, currentTypeDefinition});
     await release();
     return result;
   }
@@ -47,41 +62,10 @@ export class FileBackend implements Backend {
     );
   }
 
-  async validateLog(): Promise<string | null> {
-    return await this.doWithLock(
-      async (data: StoredData) => {
-        return validate(data.log);
-      }
-    )
-  }
-
   async getCurrentServices(): Promise<Service[]> {
     return await this.doWithLock(
       async (data: StoredData) => {
-        const [_, services] = generateDefinitions(data.log, null);
-        return services;
-      }
-    );
-  }
-
-  async getCurrentServicesWithChangeSet(userId: string, changeSetId: string): Promise<Service[]> {
-    return await this.doWithLock(
-      async (data: StoredData) => {
-        const changeSetData = data.changeSets;
-        const userSets = changeSetData[userId];
-        if (!userSets) {
-          throw new Error(`No changesets found for user: ${userId}`)
-        }
-
-        const changeSet = userSets[changeSetId];
-        if (!changeSet) {
-          throw new Error(`Changeset not found for id: ${changeSet}`)
-        }
-        
-        const newLog = commitChangeSet(data.log, changeSet);
-        
-        const [_, services] = generateDefinitions(newLog, changeSet);
-        return services;
+        return services(data.log, null);
       }
     );
   }
@@ -89,140 +73,33 @@ export class FileBackend implements Backend {
   async getCurrentTypes(): Promise<Type[]> {
     return await this.doWithLock(
       async (data: StoredData) => {
-        const [types, _] = generateDefinitions(data.log, null);
-        return types;
+        return types(data.log, null);
       }
     );
   }
 
-  async getCurrentTypesWithChangeSet(userId: string, changeSetId: string): Promise<Type[]> {
+  async commitTypeDefinition(definitions: TypeDefinition[]): Promise<void> {
     return await this.doWithLock(
       async (data: StoredData) => {
-        const changeSetData = data.changeSets;
-        const userSets = changeSetData[userId];
-        if (!userSets) {
-          throw new Error(`No changesets found for user: ${userId}`)
-        }
-
-        const changeSet = userSets[changeSetId];
-        if (!changeSet) {
-          throw new Error(`Changeset not found for id: ${changeSet}`)
-        }
-        
-        const newLog = commitChangeSet(data.log, changeSet);
-        
-        const [types, _] = generateDefinitions(newLog, changeSet);
-        return types;
-      }
-    );
-  }
-
-  async getChangeSets(userId: string): Promise<ChangeSet[]> {
-    return await this.doWithLock(
-      async (data: StoredData) => {
-        const changeSetData = data.changeSets;
-        const userSets = changeSetData[userId];
-        if (!userSets) {
-          return [];
-        }
-
-        return Object.values(userSets);
-      }
-    );
-  }
-
-  async getChangeSet(userId: string, changeSetId: string): Promise<ChangeSet> {
-    return await this.doWithLock(
-      async (data: StoredData) => {
-        const changeSetData = data.changeSets;
-        const userSets = changeSetData[userId];
-        if (!userSets) {
-          throw new Error(`No changesets found for user: ${userId}`)
-        }
-
-        const changeSet = userSets[changeSetId];
-        if (!changeSet) {
-          throw new Error(`Changeset not found for id: ${changeSet}`)
-        }
-
-        return changeSet;
-      }
-    );
-  }
-
-  async updateChangeSet(userId: string, changeSetId: string, changeSet: ChangeSet): Promise<void> {
-    return await this.doWithLock(
-      async (data: StoredData) => {
-        const changeSetData = data.changeSets;
-        let userSets = changeSetData[userId];
-        if (!userSets) {
-          userSets = {};
-          changeSetData[userId] = userSets;
-        }
-
-        userSets[changeSetId] = changeSet;
-        await fs.writeFile(this.fileName, JSON.stringify(data));
-      }
-    );
-  }
-
-  async validateChangeSet(userId: string, changeSetId: string): Promise<string | null> {
-    return await this.doWithLock(
-      async (data: StoredData) => {
-        const changeSetData = data.changeSets;
-        const userSets = changeSetData[userId];
-        if (!userSets) {
-          throw new Error(`No changesets found for user: ${userId}`)
-        }
-
-        const changeSet = userSets[changeSetId];
-        if (!changeSet) {
-          throw new Error(`Changeset not found for id: ${changeSet}`)
-        }
-
-        return validateWithChangeSet(data.log, changeSet);
-      }
-    );
-  }
-
-  async commitChangeSet(userId: string, changeSetId: string): Promise<void> {
-    return await this.doWithLock(
-      async (data: StoredData) => {
-        const changeSetData = data.changeSets;
-        const userSets = changeSetData[userId];
-        if (!userSets) {
-          throw new Error(`No changesets found for user: ${userId}`)
-        }
-
-        const changeSet = userSets[changeSetId];
-        if (!changeSet) {
-          throw new Error(`Changeset not found for id: ${changeSet}`)
-        }
-
-        const result = commitChangeSet(data.log, changeSet);
-        data.log = result;
-        delete userSets[changeSetId];
-        await fs.writeFile(this.fileName, JSON.stringify(data));
-      }
-    );
-  }
-
-  async deleteChangeSet(userId: string, changeSetId: string): Promise<void> {
-    return await this.doWithLock(
-      async (data: StoredData) => {
-        const changeSetData = data.changeSets;
-        const userSets = changeSetData[userId];
-        if (!userSets) {
-          throw new Error(`No changesets found for user: ${userId}`)
-        }
-
-        const changeSet = userSets[changeSetId];
-        if (!changeSet) {
-          throw new Error(`Changeset not found for id: ${changeSet}`)
-        }
-
-        delete userSets[changeSetId];
-        await fs.writeFile(this.fileName, JSON.stringify(data));
+        const generatedTypes = types(data.log, null);
+        const changeSet = changeSetFromTypeDefintion(
+            generatedTypes,
+            data.currentTypeDefinition,
+            definitions
+        );
+        const log = JSON.stringify(
+          serialize(
+            commitChangeSet(
+              data.log, 
+              changeSet
+            )
+          )
+        );
+        const currentTypeDefinition = Convert.typeDefinitionToJson(definitions);
+        await fs.writeFile(
+          this.fileName, 
+          `{"log": ${log}, "currentTypeDefinition": ${currentTypeDefinition}}`
+        );
       }
     );
   }
