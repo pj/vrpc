@@ -1,7 +1,8 @@
-import { Backend } from './backend';
+import { Backend, changeSetFromTypeDefintion } from './backend';
 import {Action, ChangeSet, GroupAction} from './action';
 import {generateDefinitions, Type, Service} from './generate';
 import {validate, commitChangeSet, validateWithChangeSet} from './typeidea';
+import { TypeDefinition } from './generated/type_definition';
 
 type StoredChangeSets = {
   [key: string]: {
@@ -12,13 +13,16 @@ type StoredChangeSets = {
 export class MemoryBackend implements Backend {
   log: GroupAction[];
   changeSets: StoredChangeSets;
+  currentTypeDefinition: TypeDefinition[]; 
 
   constructor(
       log: GroupAction[] | null, 
-      changeSets: StoredChangeSets | null
+      changeSets: StoredChangeSets | null,
+      currentTypeDefintion: TypeDefinition[] | null
     ) {
       this.log = log || [];
       this.changeSets = changeSets || {};
+      this.currentTypeDefinition = currentTypeDefintion || [];
   }
 
   async getLog(): Promise<GroupAction[]> {
@@ -167,6 +171,50 @@ export class MemoryBackend implements Backend {
     if (!changeSet) {
         throw new Error(`Changeset not found for id: ${changeSet}`)
     }
+    delete userSets[changeSetId];
+  }
+
+  async updateDefinitionChangeSet(
+    userId: string, 
+    changeSetId: string, 
+    definition: TypeDefinition[]
+  ): Promise<void> {
+    const changeSetData = this.changeSets;
+    let userSets = changeSetData[userId];
+    if (!userSets) {
+      userSets = {}
+      changeSetData[userId] = userSets;
+    }
+
+    const changeSet = changeSetFromTypeDefintion(
+      this.currentTypeDefinition,
+      definition
+    );
+
+    userSets[changeSetId] = changeSet;
+  }
+
+  async commitDefinitionChangeSet(
+    userId: string, 
+    changeSetId: string
+  ): Promise<void> {
+    const changeSetData = this.changeSets;
+    const userSets = changeSetData[userId];
+    if (!userSets) {
+        throw new Error(`No changesets found for user: ${userId}`)
+    }
+
+    const changeSet = userSets[changeSetId];
+    if (!changeSet) {
+        throw new Error(`Changeset not found for id: ${changeSet}`)
+    }
+
+    const result = commitChangeSet(this.log, changeSet);
+    this.log = result;
+    if (!changeSet.typeDefinition) {
+      throw new Error('Should not happen');
+    }
+    this.currentTypeDefinition = changeSet.typeDefinition;
     delete userSets[changeSetId];
   }
 }

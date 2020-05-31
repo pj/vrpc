@@ -1,34 +1,83 @@
 {
     "type": "array",
-    "items": {
-        "anyOf": [ 
-            {
-                "type": "object",
-                "properties": {
-                    "_type": {
-                        "type": "string",
-                        "enum": ["Type"]
-                    },
-                    "name": {"type": "string"},
-                    "description": {"type": "string"},
-                    "fields": {
-                        "type": "array",
-                        "items": {
-                            "anyOf": [
-                                {
-                                    "type": "object",
-
-                                },
-                                {
-
-                                }
-                            ]
-                        }
+    "definitions": { 
+        "field": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "reference": {
+                    "type": "string"
+                },
+                "_type": {
+                    "type": "string",
+                    "enum": ["integer", "float", "string", "boolean"]
+                }
+            },
+            "additionalProperties": false,
+            "required": ["name", "description"]
+        },
+        "definition": {
+            "type": "object",
+            "properties": {
+                "name": {"type": "string"},
+                "description": {"type": "string"},
+                "fields": {
+                    "type": "array",
+                    "items": {
+                        "allOf": [
+                            {
+                                "$ref": "#/definitions/field"
+                            }
+                        ]
                     }
                 },
-                "additionalProperties": false,
-                "required": ["_type", "name", "description"]
-            }
+                "services": { 
+                    "type": "array",
+                    "items": {
+                        "allOf": [
+                            {
+                                "type": "object",
+                                "properties": {
+                                    "_from": {
+                                        "type": "object",
+                                        "properties": {
+                                            "name": {
+                                                "type": "string"
+                                            },
+                                            "version": {
+                                                "type": "number"
+                                            }
+                                        }
+                                    },
+                                    "to": {
+                                        "type": "object",
+                                        "properties": {
+                                            "name": {
+                                                "type": "string"
+                                            },
+                                            "version": {
+                                                "type": "number"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "required": ["name", "description"]
+        }
+    },
+    "items": {
+        "allOf": [ 
+            {"$ref": "#/definitions/definition"}
          ]
     }
 }

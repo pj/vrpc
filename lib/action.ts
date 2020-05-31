@@ -7,6 +7,7 @@ import {
   registerEnumType
 } from 'type-graphql';
 import { isObjectType } from 'graphql';
+import { TypeDefinition } from './generated/type_definition';
 
 export enum FieldTypes {
   STRING = 'string',
@@ -756,4 +757,6 @@ export class ChangeSet {
 
   @Field({nullable: true})
   baseHash?: string 
+
+  typeDefinition?: TypeDefinition[]
 };

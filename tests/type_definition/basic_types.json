@@ -1,0 +1,34 @@
+[
+    {
+        "name": "Test",
+        "description": "A type to test with",
+        "fields": [
+            {
+                "name": "field1",
+                "description": "A cool field",
+                "_type": "string"
+            },
+            {
+                "name": "field2",
+                "description": "Another cool field",
+                "_type": "integer"
+            }
+        ]
+    },
+    {
+        "name": "AnotherTest",
+        "description": "Another type of test",
+        "fields": [
+            {
+                "name": "another_field",
+                "description": "this is a field",
+                "_type": "boolean"
+            },
+            {
+                "name": "yet_another_field",
+                "description": "asdf",
+                "_type": "float"
+            }
+        ]
+    }
+]
