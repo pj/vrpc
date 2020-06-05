@@ -22,7 +22,7 @@ for (const dir of test_dirs) {
   it(dir, async () => {
     fs.mkdirSync(path.join('./runtest', dir), {recursive: true});
     const changeSets = require('../tests/' + path.join('test_data', 'services', dir, 'actions.json'));
-    const memoryStore = new MemoryBackend(null, null);
+    const memoryStore = new MemoryBackend(null, null, null);
     for (let rawChangeSet of changeSets) {
       const changeSet = {log: rawChangeSet, id: "test"};
       await memoryStore.updateChangeSet("test", "test", changeSet);

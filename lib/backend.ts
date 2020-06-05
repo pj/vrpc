@@ -1,6 +1,6 @@
-import {Action, ChangeSet, GroupAction} from './action';
-import {Type, Service} from './generate';
-import { TypeDefinition } from './generated/type_definition';
+import {Action, ChangeSet, GroupAction, NewTypeAction, NewTypeChangeAction, AddFieldTypeChangeAction, ReferenceFieldTypeChangeAction, OptionalFieldTypeChangeAction, RequiredFieldTypeChangeAction, RemoveDefaultFieldTypeChangeAction, SetDefaultFieldTypeChangeAction, UpdateFieldDescriptionTypeChangeAction, ChangeAction, DeleteFieldTypeChangeAction} from './action';
+import {Type, Service, Version} from './generate';
+import { TypeDefinition, Field } from './generated/type_definition';
 
 export interface Backend {
   getLog(): Promise<GroupAction[]>;
@@ -24,11 +24,60 @@ export interface Backend {
   commitDefinitionChangeSet(userId: string, changeSetId: string): Promise<void>;
 };
 
+function addField(
+  versionsByType: Map<string, Map<number, Version>>, 
+  newLog: ChangeAction[], 
+  newTypeName: string, 
+  newField: Field
+) {
+  if (newField._type) {
+    newLog.push(
+      new AddFieldTypeChangeAction(
+        newField.changeLog,
+        newTypeName,
+        newField.name,
+        newField._type,
+        newField.description,
+        newField.optional,
+        newField._default
+      )
+    );
+  } else if (newField.reference) {
+    const hash = versionsByType.get(newTypeName)?.get(newField.reference.version)?.hash;
+    if (!hash) {
+      throw new Error(`Version ${newField.reference.version} doesn't exist for type ${newTypeName}`)
+    }
+    newLog.push(
+      new ReferenceFieldTypeChangeAction(
+        newField.changeLog,
+        newTypeName,
+        newField.name,
+        newField.description,
+        newField.optional,
+        newField.reference._type,
+        hash,
+        newField.reference.version
+      )
+    );
+  } else {
+    throw new Error("No type or reference");
+  }
+}
+
 // Generate a change set from an old and new type definition
 export function changeSetFromTypeDefintion(
+  types: Type[],
   old: TypeDefinition[], 
   _new: TypeDefinition[]
 ): ChangeSet {
+  const versionsByType = new Map<string, Map<number, Version>>();
+  for (let _type of types) {
+    const versions = new Map<number, Version>();
+    for (let version of _type.versions) {
+      versions.set(version.version, version);
+    }
+    versionsByType.set(_type.name, versions);
+  }
   const oldTypes = new Map<string, TypeDefinition>();
   const newTypes = new Map<string, TypeDefinition>();
   const oldServices = new Map<string, TypeDefinition>();
@@ -37,8 +86,7 @@ export function changeSetFromTypeDefintion(
   for (let existingDefintion of old) {
     if (existingDefintion.fields) {
       oldTypes.set(existingDefintion.name, existingDefintion);
-    }
-    if (existingDefintion.services) {
+    } else {
       oldServices.set(existingDefintion.name, existingDefintion);
     }
   }
@@ -52,5 +100,117 @@ export function changeSetFromTypeDefintion(
     }
   }
 
-  const 
+  const newLog = [];
+
+  for (let [newTypeName, newTypeDefinition] of newTypes.entries()) {
+    if (!oldTypes.has(newTypeName)) {
+      newLog.push(
+        new NewTypeChangeAction(
+          "TODO add changelog", 
+          newTypeName, 
+          newTypeDefinition.description
+        )
+      );
+
+      if (newTypeDefinition && newTypeDefinition.fields) {
+        for (let field of newTypeDefinition.fields) {
+          addField(versionsByType, newLog, newTypeName, field);
+        }
+      }
+    } else {
+      const oldFields = new Map<string, Field>();
+      const newFields = new Map<string, Field>();
+
+      const oldTypeDefinition = oldTypes.get(newTypeName);
+
+      if (oldTypeDefinition && oldTypeDefinition.fields) {
+        for (let field of oldTypeDefinition.fields) {
+          oldFields.set(field.name, field);
+        }
+      }
+
+      if (newTypeDefinition && newTypeDefinition.fields) {
+        for (let field of newTypeDefinition.fields) {
+          newFields.set(field.name, field);
+        }
+      }
+
+      for (let [name, newField] of newFields) {
+        if (!oldFields.has(name)) {
+          addField(versionsByType, newLog, newTypeName, newField);
+        } else {
+          const oldField = oldFields.get(name);
+          if (!oldField) {
+            throw new Error("Satisfying typescript");
+          }
+
+          if (newField.optional !== oldField.optional) {
+            if (newField.optional) {
+              newLog.push(
+                new OptionalFieldTypeChangeAction(
+                  newField.changeLog,
+                  newTypeName,
+                  name
+                )
+              );
+            } else {
+              newLog.push(
+                new RequiredFieldTypeChangeAction(
+                  newField.changeLog,
+                  newTypeName,
+                  name
+                )
+              );
+            }
+          }
+
+          if (newField._default !== oldField._default) {
+            if (!newField._default) {
+              newLog.push(
+                new RemoveDefaultFieldTypeChangeAction(
+                  newField.changeLog,
+                  newTypeName,
+                  name
+                )
+              );
+            } else {
+              newLog.push(
+                new SetDefaultFieldTypeChangeAction(
+                  newField.changeLog,
+                  newTypeName,
+                  name,
+                  newField._default
+                )
+              );
+            }
+          }
+
+          if (newField.description !== oldField.description) {
+            newLog.push(
+              new UpdateFieldDescriptionTypeChangeAction(
+                newField.changeLog,
+                newTypeName,
+                name,
+                newField.description
+              )
+            );
+          }
+        }
+      }
+
+      for (let [name, oldField] of oldFields) {
+        if (!newFields.has(name)) {
+          newLog.push(
+            new DeleteFieldTypeChangeAction(
+              "Field deleted",
+              newTypeName,
+              name
+            )
+          )
+        }
+      }
+    }
+  }
+
+  return new ChangeSet("TODO: remove?", newLog, undefined, _new);
 }

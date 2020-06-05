@@ -6,7 +6,6 @@ import * as yargs from 'yargs';
 
 import * as generate from './generate';
 import * as generate_typescript from './generate_typescript';
-import {startServer} from './server';
 import {FileBackend} from './file_backend';
 
 const args = yargs
@@ -39,31 +38,31 @@ const args = yargs
       fs.writeFileSync(path.join(argv.dest, 'client.ts'), generatedClient);
     }
   )
-  .command(
-    'serve <backend_type>',
-    'start graphql server for type interface',
-    (yargs: any): any => {
-      yargs.positional('backend_type', {
-        describe: 'backend_type to serve',
-        type: 'string'
-      })
-      .option('l',
-        {
-            alias: 'log-file',
-            type: 'string',
-            describe: 'filename for file backend'
-        }
-      );
-    },
-    (argv: any) => {
-      let backend = null;
-      console.log(argv);
-      if (argv.backend_type === 'file') {
-        backend = new FileBackend(argv.logFile);
-      } else {
-        throw new Error('Only file backends are valid at the moment.');
-      }
-      startServer(backend);
-    }
-  )
+  // .command(
+  //   'serve <backend_type>',
+  //   'start graphql server for type interface',
+  //   (yargs: any): any => {
+  //     yargs.positional('backend_type', {
+  //       describe: 'backend_type to serve',
+  //       type: 'string'
+  //     })
+  //     .option('l',
+  //       {
+  //           alias: 'log-file',
+  //           type: 'string',
+  //           describe: 'filename for file backend'
+  //       }
+  //     );
+  //   },
+  //   (argv: any) => {
+  //     let backend = null;
+  //     console.log(argv);
+  //     if (argv.backend_type === 'file') {
+  //       backend = new FileBackend(argv.logFile);
+  //     } else {
+  //       throw new Error('Only file backends are valid at the moment.');
+  //     }
+  //     startServer(backend);
+  //   }
+  // )
   .argv;

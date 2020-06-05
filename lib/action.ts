@@ -1,73 +1,13 @@
-import {
-  createUnionType, 
-  ObjectType, 
-  Field, 
-  Int, 
-  Float, 
-  registerEnumType
-} from 'type-graphql';
-import { isObjectType } from 'graphql';
-import { TypeDefinition } from './generated/type_definition';
+import { TypeDefinition, Type } from './generated/type_definition';
 
-export enum FieldTypes {
-  STRING = 'string',
-  BOOLEAN = 'boolean',
-  INTEGER = 'integer',
-  FLOAT = 'float'
-} 
-
-registerEnumType(FieldTypes, {
-  name: "FieldTypes"
-});
-
-export const FieldTypeValues = ['string', 'boolean', 'integer', 'float'];
+// export enum FieldTypes {
+//   Boolean = 'boolean',
+//   Float = 'float',
+//   Integer = 'integer',
+//   String = 'string',
+// }
 
 export type FieldDefaults = string | boolean | number;
-
-@ObjectType()
-export class StringField {
-  constructor(value: string) {
-    this.value = value;
-  }
-
-  @Field()
-  value: string
-}
-
-@ObjectType()
-export class BooleanField {
-  constructor(value: boolean) {
-    this.value = value;
-  }
-
-  @Field()
-  value: boolean
-}
-
-@ObjectType()
-export class FloatField {
-  constructor(value: number) {
-    this.value = value;
-  }
-
-  @Field(type => Float)
-  value: number
-}
-
-@ObjectType()
-export class IntegerField {
-  constructor(value: number) {
-    this.value = value;
-  }
-
-  @Field(type => Int)
-  value: number
-}
-
-export const FieldDefaultsUnion = createUnionType({
-  name: "FieldDefaults",
-  types: () => [StringField, BooleanField, FloatField, IntegerField], 
-});
 
 export interface HashedAction {
   hash: string;
@@ -75,688 +15,741 @@ export interface HashedAction {
 }
 
 export interface ActionDefaults {
-  actionType: string;
   changeLog: string;
 }
 
 // Types
-@ObjectType()
 export class NewTypeAction implements HashedAction, ActionDefaults {
-  @Field()
   hash: string;
-
-  @Field()
   version: number;
-
-  actionType: 'NewTypeAction';
-
-  @Field()
   changeLog: string;
-
-  @Field()
   typeName: string;
-
-  @Field()
   description: string;
+  constructor(hash: string, version: number, changeLog: string, typeName: string, description: string) {
+    this.hash = hash;
+    this.version = version;
+    this.changeLog = changeLog;
+    this.typeName = typeName;
+    this.description = description;
+  }
 }
 
-@ObjectType()
 export class NewTypeChangeAction implements ActionDefaults {
-  actionType: 'NewTypeAction';
-  @Field()
   changeLog: string;
-
-  @Field()
   typeName: string;
-
-  @Field()
   description: string;
+  constructor(changeLog: string, typeName: string, description: string, ) {
+
+    this.changeLog = changeLog;
+    this.typeName = typeName;
+    this.description = description;
+  }
 }
 
-@ObjectType()
 export class RenameFieldTypeAction implements HashedAction, ActionDefaults {
-  @Field()
   hash: string;
-
-  @Field()
   version: number;
-
-  @Field()
   changeLog: string;
-
-  actionType: 'RenameFieldTypeAction';
-
-  @Field()
   typeName: string;
-
-  @Field()
   _from: string;
-
-  @Field()
   to: string;
+  constructor(
+
+    hash: string,
+    version: number,
+    changeLog: string,
+    typeName: string,
+    _from: string,
+    to: string,
+  ) {
+
+    this.hash = hash;
+    this.version = version;
+    this.changeLog = changeLog;
+    this.typeName = typeName;
+    this._from = _from;
+    this.to = to;
+  }
 }
 
-@ObjectType()
 export class RenameFieldTypeChangeAction implements ActionDefaults {
-  @Field()
   changeLog: string;
-
-  actionType: 'RenameFieldTypeAction';
-
-  @Field()
   typeName: string;
-
-  @Field()
   _from: string;
-
-  @Field()
   to: string;
+  constructor(
+    changeLog: string,
+    typeName: string,
+    _from: string,
+    to: string,
+  ) {
+
+
+    this.changeLog = changeLog;
+    this.typeName = typeName;
+    this._from = _from;
+    this.to = to;
+  }
 }
 
-@ObjectType()
 export class RequiredFieldTypeAction implements HashedAction, ActionDefaults {
-  @Field()
   hash: string;
-
-  @Field()
   version: number;
-
-  @Field()
   changeLog: string;
-  actionType: 'RequiredFieldTypeAction';
-
-  @Field()
   typeName: string;
-
-  @Field()
   name: string;
+
+  constructor(
+
+    hash: string,
+    version: number,
+    changeLog: string,
+    typeName: string,
+    name: string,
+  ) {
+
+    this.hash = hash;
+    this.version = version;
+    this.changeLog = changeLog;
+    this.typeName = typeName;
+    this.name = name;
+  }
 }
 
-@ObjectType()
 export class RequiredFieldTypeChangeAction implements ActionDefaults {
-  @Field()
   changeLog: string;
-  actionType: 'RequiredFieldTypeAction';
-
-  @Field()
   typeName: string;
-
-  @Field()
   name: string;
+
+  constructor(
+
+    changeLog: string,
+    typeName: string,
+    name: string,
+  ) {
+
+    this.changeLog = changeLog;
+    this.typeName = typeName;
+    this.name = name;
+  }
 }
 
-@ObjectType()
 export class OptionalFieldTypeAction implements HashedAction, ActionDefaults {
-  @Field()
   hash: string;
-
-  @Field()
   version: number;
-
-  @Field()
   changeLog: string;
-  actionType: 'OptionalFieldTypeAction';
-
-  @Field()
   typeName: string;
-
-  @Field()
   name: string;
+
+  constructor(
+
+    hash: string,
+    version: number,
+    changeLog: string,
+    typeName: string,
+    name: string,
+  ) {
+
+    this.hash = hash;
+    this.version = version;
+    this.changeLog = changeLog;
+    this.typeName = typeName;
+    this.name = name;
+  }
 }
 
-@ObjectType()
 export class OptionalFieldTypeChangeAction implements ActionDefaults {
-  @Field()
   changeLog: string;
-  actionType: 'OptionalFieldTypeAction';
-
-  @Field()
   typeName: string;
-
-  @Field()
   name: string;
+
+  constructor(
+
+    changeLog: string,
+    typeName: string,
+    name: string,
+  ) {
+
+    this.changeLog = changeLog;
+    this.typeName = typeName;
+    this.name = name;
+  }
 }
 
-@ObjectType()
 export class DeleteFieldTypeAction implements HashedAction, ActionDefaults {
-  @Field()
   hash: string;
-
-  @Field()
   version: number;
-
-  @Field()
   changeLog: string;
-  actionType: 'DeleteFieldTypeAction';
-
-  @Field()
   typeName: string;
-
-  @Field()
   name: string;
+
+  constructor(
+
+    hash: string,
+    version: number,
+    changeLog: string,
+    typeName: string,
+    name: string,
+  ) {
+
+    this.hash = hash;
+    this.version = version;
+    this.changeLog = changeLog;
+    this.typeName = typeName;
+    this.name = name;
+  }
 }
 
-@ObjectType()
+
 export class DeleteFieldTypeChangeAction implements ActionDefaults {
-  @Field()
   changeLog: string;
-  actionType: 'DeleteFieldTypeAction';
-
-  @Field()
   typeName: string;
-
-  @Field()
   name: string;
+
+  constructor(
+
+    changeLog: string,
+    typeName: string,
+    name: string,
+  ) {
+
+    this.changeLog = changeLog;
+    this.typeName = typeName;
+    this.name = name;
+  }
 }
 
-@ObjectType()
+
 export class SetDefaultFieldTypeAction implements HashedAction, ActionDefaults {
-  @Field()
   hash: string;
-
-  @Field()
   version: number;
-
-  @Field()
   changeLog: string;
-  actionType: 'SetDefaultFieldTypeAction';
-
-  @Field()
   typeName: string;
-
-  @Field()
   name: string;
-
-  @Field(type => FieldDefaultsUnion)
   _default: FieldDefaults;
+
+  constructor(
+
+    hash: string,
+    version: number,
+    changeLog: string,
+    typeName: string,
+    name: string,
+    _default: FieldDefaults,
+  ) {
+
+    this.hash = hash;
+    this.version = version;
+    this.changeLog = changeLog;
+    this.typeName = typeName;
+    this.name = name;
+    this._default = _default;
+  }
 }
 
-@ObjectType()
+
 export class SetDefaultFieldTypeChangeAction implements ActionDefaults {
-  @Field()
   changeLog: string;
-
-  actionType: 'SetDefaultFieldTypeAction';
-
-  @Field()
   typeName: string;
-
-  @Field()
   name: string;
-
-  @Field(type => FieldDefaultsUnion)
   _default: FieldDefaults;
+
+  constructor(
+
+    changeLog: string,
+    typeName: string,
+    name: string,
+    _default: FieldDefaults,
+  ) {
+
+    this.changeLog = changeLog;
+    this.typeName = typeName;
+    this.name = name;
+    this._default = _default;
+  }
 }
 
-@ObjectType()
+
 export class RemoveDefaultFieldTypeAction implements HashedAction, ActionDefaults {
-  @Field()
   hash: string;
-
-  @Field()
   version: number;
-
-  @Field()
   changeLog: string;
-  actionType: 'RemoveDefaultFieldTypeAction';
-
-  @Field()
   typeName: string;
-
-  @Field()
   name: string;
+
+  constructor(
+
+    hash: string,
+    version: number,
+    changeLog: string,
+    typeName: string,
+    name: string,
+  ) {
+
+    this.hash = hash;
+    this.version = version;
+    this.changeLog = changeLog;
+    this.typeName = typeName;
+    this.name = name;
+  }
 }
 
-@ObjectType()
+
 export class RemoveDefaultFieldTypeChangeAction implements ActionDefaults {
-  @Field()
   changeLog: string;
-
-  actionType: 'RemoveDefaultFieldTypeAction';
-
-  @Field()
   typeName: string;
-
-  @Field()
   name: string;
+
+  constructor(
+
+    changeLog: string,
+    typeName: string,
+    name: string,
+  ) {
+
+    this.changeLog = changeLog;
+    this.typeName = typeName;
+    this.name = name;
+  }
 }
 
-@ObjectType()
+
 export class AddFieldTypeAction implements HashedAction, ActionDefaults {
-  @Field()
   hash: string;
-
-  @Field()
   version: number;
-
-  @Field()
   changeLog: string;
-  actionType: 'AddFieldTypeAction';
-  
-  @Field()
   typeName: string;
-
-  @Field()
   name: string;
-
-  @Field(type => FieldTypes)
-  _type: FieldTypes;
-  
-  @Field()
+  _type: Type;
   description: string;
-
-  @Field()
   optional: boolean;
-
-  @Field(type => FieldDefaultsUnion, {nullable: true})
   _default?: FieldDefaults;
+
+  constructor(
+
+    hash: string,
+    version: number,
+    changeLog: string,
+    typeName: string,
+    name: string,
+    _type: Type,
+    description: string,
+    optional: boolean,
+    _default?: FieldDefaults,
+  ) {
+
+    this.hash = hash;
+    this.version = version;
+    this.changeLog = changeLog;
+    this.typeName = typeName;
+    this.name = name;
+    this._type = _type;
+    this.description = description;
+    this.optional = optional;
+    this._default = _default;
+  }
 }
 
-@ObjectType()
+
 export class AddFieldTypeChangeAction implements ActionDefaults {
-  @Field()
   changeLog: string;
-  actionType: 'AddFieldTypeAction';
-
-  @Field()
   typeName: string;
-
-  @Field()
   name: string;
-
-  @Field(type => FieldTypes)
-  _type: FieldTypes;
-
-  @Field()
+  _type: Type;
   description: string;
-
-  @Field()
   optional: boolean;
-
-  @Field(type => FieldDefaultsUnion, {nullable: true})
   _default?: FieldDefaults;
+
+  constructor(
+
+    changeLog: string,
+    typeName: string,
+    name: string,
+    _type: Type,
+    description: string,
+    optional: boolean,
+    _default?: FieldDefaults,
+  ) {
+
+    this.changeLog = changeLog;
+    this.typeName = typeName;
+    this.name = name;
+    this._type = _type;
+    this.description = description;
+    this.optional = optional;
+    this._default = _default;
+  }
 }
 
-@ObjectType()
+
 export class UpdateFieldDescriptionTypeAction implements HashedAction, ActionDefaults {
-  @Field()
   hash: string;
-
-  @Field()
   version: number;
-
-  @Field()
   changeLog: string;
-  actionType: 'UpdateFieldDescriptionTypeAction';
-
-  @Field()
   typeName: string;
-
-  @Field()
   name: string;
-
-  @Field()
   description: string;
+
+  constructor(
+
+    hash: string,
+    version: number,
+    changeLog: string,
+    typeName: string,
+    name: string,
+    description: string,
+  ) {
+
+    this.hash = hash;
+    this.version = version;
+    this.changeLog = changeLog;
+    this.typeName = typeName;
+    this.name = name;
+    this.description = description;
+  }
 }
 
-@ObjectType()
+
 export class UpdateFieldDescriptionTypeChangeAction implements ActionDefaults {
-  @Field()
   changeLog: string;
-
-  actionType: 'UpdateFieldDescriptionTypeAction';
-
-  @Field()
   typeName: string;
-
-  @Field()
   name: string;
-
-  @Field()
   description: string;
+
+  constructor(
+
+    changeLog: string,
+    typeName: string,
+    name: string,
+    description: string,
+  ) {
+
+    this.changeLog = changeLog;
+    this.typeName = typeName;
+    this.name = name;
+    this.description = description;
+  }
 }
 
-@ObjectType()
+
 export class ReferenceFieldTypeAction implements HashedAction, ActionDefaults {
-  @Field()
   hash: string;
-
-  @Field()
   version: number;
-
-  @Field()
   changeLog: string;
-  actionType: 'ReferenceFieldTypeAction';
-
-  @Field()
   typeName: string;
-
-  @Field()
   name: string;
-
-  @Field()
   description: string;
-
-  @Field()
   optional: boolean;
-
-  @Field()
   referenceType: string;
-
-  @Field()
   referenceHash: string;
-
-  @Field()
   referenceVersion: number;
+
+  constructor(
+
+    hash: string,
+    version: number,
+    changeLog: string,
+    typeName: string,
+    name: string,
+    description: string,
+    optional: boolean,
+    referenceType: string,
+    referenceHash: string,
+    referenceVersion: number,
+  ) {
+
+    this.hash = hash;
+    this.version = version;
+    this.changeLog = changeLog;
+    this.typeName = typeName;
+    this.name = name;
+    this.description = description;
+    this.optional = optional;
+    this.referenceType = referenceType;
+    this.referenceHash = referenceHash;
+    this.referenceVersion = referenceVersion;
+  }
 }
 
-@ObjectType()
+
 export class ReferenceFieldTypeChangeAction implements ActionDefaults {
-  @Field()
   changeLog: string;
-
-  actionType: 'ReferenceFieldTypeAction';
-
-  @Field()
   typeName: string;
-
-  @Field()
   name: string;
-
-  @Field()
   description: string;
-
-  @Field()
   optional: boolean;
-
-  @Field()
   referenceType: string;
-
-  @Field()
   referenceHash: string;
-
-  @Field()
   referenceVersion: number;
+
+  constructor(
+
+    changeLog: string,
+    typeName: string,
+    name: string,
+    description: string,
+    optional: boolean,
+    referenceType: string,
+    referenceHash: string,
+    referenceVersion: number,
+  ) {
+
+    this.changeLog = changeLog;
+    this.typeName = typeName;
+    this.name = name;
+    this.description = description;
+    this.optional = optional;
+    this.referenceType = referenceType;
+    this.referenceHash = referenceHash;
+    this.referenceVersion = referenceVersion;
+  }
 }
 
 // Service Definitions
-@ObjectType()
+
 export class NewServiceAction implements HashedAction, ActionDefaults {
-  @Field()
   hash: string;
-
-  @Field()
   version: number;
-  actionType: 'NewServiceAction';
-
-  @Field()
   changeLog: string;
-
-  @Field()
   serviceName: string;
-
-  @Field()
   description: string;
+
+  constructor(
+
+    hash: string,
+    version: number,
+    changeLog: string,
+    serviceName: string,
+    description: string,
+
+  ) {
+
+    this.hash = hash;
+    this.version = version;
+    this.changeLog = changeLog;
+    this.serviceName = serviceName;
+    this.description = description;
+  }
 }
 
-@ObjectType()
+
 export class NewServiceChangeAction implements ActionDefaults {
-  actionType: 'NewServiceAction';
-
-  @Field()
   changeLog: string;
-
-  @Field()
   serviceName: string;
-
-  @Field()
   description: string;
+
+  constructor(
+
+    changeLog: string,
+    serviceName: string,
+    description: string,
+  ) {
+
+    this.changeLog = changeLog;
+    this.serviceName = serviceName;
+    this.description = description;
+  }
 }
 
-@ObjectType()
+
+
 export class UpdateDescriptionServiceAction implements HashedAction, ActionDefaults {
-  @Field()
   hash: string;
-
-  @Field()
   version: number;
-
-  @Field()
   changeLog: string;
-  actionType: 'UpdateDescriptionServiceAction';
-
-  @Field()
   serviceName: string;
-
-  @Field()
   description: string;
+
+  constructor(
+
+    hash: string,
+    version: number,
+    changeLog: string,
+    serviceName: string,
+    description: string,
+  ) {
+
+    this.hash = hash;
+    this.version = version;
+    this.changeLog = changeLog;
+    this.serviceName = serviceName;
+    this.description = description;
+  }
 }
 
-@ObjectType()
+
 export class UpdateDescriptionServiceChangeAction implements ActionDefaults {
-  @Field()
   changeLog: string;
-
-  actionType: 'UpdateDescriptionServiceAction';
-
-  @Field()
   serviceName: string;
-
-  @Field()
   description: string;
+
+  constructor(
+
+    changeLog: string,
+    serviceName: string,
+    description: string,
+  ) {
+
+    this.changeLog = changeLog;
+    this.serviceName = serviceName;
+    this.description = description;
+  }
 }
 
-@ObjectType()
+
 export class AddVersionServiceAction implements HashedAction, ActionDefaults {
-  @Field()
   hash: string;
-
-  @Field()
   version: number;
-
-  @Field()
   changeLog: string;
-  actionType: 'AddVersionServiceAction';
-
-  @Field()
   serviceName: string;
-
-  @Field()
   inputType: string;
-
-  @Field()
   outputType: string;
-
-  @Field()
   inputVersion: number;
-
-  @Field()
   inputHash: string;
-
-  @Field()
   outputVersion: number;
-
-  @Field()
   outputHash: string;
+
+  constructor(
+
+    hash: string,
+    version: number,
+    changeLog: string,
+    serviceName: string,
+    inputType: string,
+    outputType: string,
+    inputVersion: number,
+    inputHash: string,
+    outputVersion: number,
+    outputHash: string,
+  ) {
+
+    this.hash = hash;
+    this.version = version;
+    this.changeLog = changeLog;
+    this.serviceName = serviceName;
+    this.inputType = inputType;
+    this.outputType = outputType;
+    this.inputVersion = inputVersion;
+    this.inputHash = inputHash;
+    this.outputVersion = outputVersion;
+    this.outputHash = outputHash;
+  }
 }
 
-@ObjectType()
+
 export class AddVersionServiceChangeAction implements ActionDefaults {
-  @Field()
   changeLog: string;
-
-  actionType: 'AddVersionServiceAction';
-
-  @Field()
   serviceName: string;
-
-  @Field()
   inputType: string;
-  
-  @Field()
   outputType: string;
-
-  @Field()
   inputVersion: number;
-
-  @Field()
   inputHash: string;
-
-  @Field()
   outputVersion: number;
-
-  @Field()
   outputHash: string;
+
+  constructor(
+
+    changeLog: string,
+    serviceName: string,
+    inputType: string,
+    outputType: string,
+    inputVersion: number,
+    inputHash: string,
+    outputVersion: number,
+    outputHash: string,
+  ) {
+
+    this.changeLog = changeLog;
+    this.serviceName = serviceName;
+    this.inputType = inputType;
+    this.outputType = outputType;
+    this.inputVersion = inputVersion;
+    this.inputHash = inputHash;
+    this.outputVersion = outputVersion;
+    this.outputHash = outputHash;
+  }
 };
 
-export type Action = NewTypeAction | RenameFieldTypeAction 
-  | RequiredFieldTypeAction | OptionalFieldTypeAction | DeleteFieldTypeAction 
-  | SetDefaultFieldTypeAction | RemoveDefaultFieldTypeAction | AddFieldTypeAction 
+export type Action = NewTypeAction | RenameFieldTypeAction
+  | RequiredFieldTypeAction | OptionalFieldTypeAction | DeleteFieldTypeAction
+  | SetDefaultFieldTypeAction | RemoveDefaultFieldTypeAction | AddFieldTypeAction
   | UpdateFieldDescriptionTypeAction | ReferenceFieldTypeAction | NewServiceAction
   | UpdateDescriptionServiceAction | AddVersionServiceAction;
 
-export const ActionUnion = createUnionType({
-  name: "Action",
-  types: () => [NewTypeAction, RenameFieldTypeAction, RequiredFieldTypeAction, 
-    OptionalFieldTypeAction, DeleteFieldTypeAction , SetDefaultFieldTypeAction, 
-    RemoveDefaultFieldTypeAction, AddFieldTypeAction, 
-    UpdateFieldDescriptionTypeAction, ReferenceFieldTypeAction, NewServiceAction, 
-    UpdateDescriptionServiceAction, AddVersionServiceAction
-  ],
-  resolveType: (value: Action) => {
-    return value.actionType;
-  }
-});
-
-export type ChangeAction = NewTypeChangeAction | RenameFieldTypeChangeAction 
-  | RequiredFieldTypeChangeAction | OptionalFieldTypeChangeAction 
-  | DeleteFieldTypeChangeAction | SetDefaultFieldTypeChangeAction 
-  | RemoveDefaultFieldTypeChangeAction | AddFieldTypeChangeAction 
-  | UpdateFieldDescriptionTypeChangeAction | ReferenceFieldTypeChangeAction 
-  | NewServiceChangeAction | UpdateDescriptionServiceChangeAction 
+export type ChangeAction = NewTypeChangeAction | RenameFieldTypeChangeAction
+  | RequiredFieldTypeChangeAction | OptionalFieldTypeChangeAction
+  | DeleteFieldTypeChangeAction | SetDefaultFieldTypeChangeAction
+  | RemoveDefaultFieldTypeChangeAction | AddFieldTypeChangeAction
+  | UpdateFieldDescriptionTypeChangeAction | ReferenceFieldTypeChangeAction
+  | NewServiceChangeAction | UpdateDescriptionServiceChangeAction
   | AddVersionServiceChangeAction;
 
-export const ChangeActionUnion = createUnionType({
-  name: "ChangeAction",
-  types: () => [NewTypeChangeAction, RenameFieldTypeChangeAction, 
-    RequiredFieldTypeChangeAction, OptionalFieldTypeChangeAction, 
-    DeleteFieldTypeChangeAction, SetDefaultFieldTypeChangeAction, 
-    RemoveDefaultFieldTypeChangeAction, AddFieldTypeChangeAction, 
-    UpdateFieldDescriptionTypeChangeAction, ReferenceFieldTypeChangeAction, 
-    NewServiceChangeAction , UpdateDescriptionServiceChangeAction, 
-    AddVersionServiceChangeAction
-  ],
-  resolveType: (value: ChangeAction) => {
-    switch (value.actionType) {
-    case 'AddVersionServiceAction':
-      return 'AddVersionServiceChangeAction';
-    case 'UpdateDescriptionServiceAction':
-      return 'UpdateDescriptionServiceChangeAction';
-    case 'NewServiceAction':
-      return 'NewServiceChangeAction';
-    case 'ReferenceFieldTypeAction':
-      return 'ReferenceFieldTypeChangeAction';
-    case 'UpdateFieldDescriptionTypeAction':
-      return 'UpdateFieldDescriptionTypeChangeAction';
-    case 'AddFieldTypeAction':
-      return 'AddFieldTypeChangeAction';
-    case 'RemoveDefaultFieldTypeAction':
-      return 'RemoveDefaultFieldTypeChangeAction';
-    case 'SetDefaultFieldTypeAction':
-      return 'SetDefaultFieldTypeChangeAction';
-    case 'DeleteFieldTypeAction':
-      return 'DeleteFieldTypeChangeAction';
-    case 'OptionalFieldTypeAction':
-      return 'OptionalFieldTypeChangeAction';
-    case 'RequiredFieldTypeAction':
-      return 'RequiredFieldTypeChangeAction';
-    case 'RenameFieldTypeAction':
-      return 'RenameFieldTypeChangeAction';
-    case 'NewTypeAction':
-      return 'NewTypeChangeAction';
-    default:
-      throw new Error(
-        `Can't find change action type for ${JSON.stringify(value)}`
-      );
-    }
-  }
-});
 
 export type GroupVersions = {
   [key: string]: number;
 };
 
-@ObjectType()
+
 export class GroupAction implements HashedAction {
-  @Field()
   hash: string;
-
-  @Field()
   version: number;
-
-  @Field()
-  actionType: 'GroupAction';
-
-  @Field(type => [ActionUnion])
   actions: Action[];
-
   versions: GroupVersions;
 }
 export class GroupChangeAction {
-  actionType: 'GroupAction';
   actions: Action[];
   versions: GroupVersions;
 }
 
 export function fieldsToHash(action: ChangeAction | GroupChangeAction) {
-  switch (action.actionType) {
-  case 'AddVersionServiceAction':
-    return `${action.changeLog}_${action.serviceName}_${action.inputType}_${action.outputType}_${action.inputVersion}_${action.outputVersion}`;
-  case 'UpdateDescriptionServiceAction':
-    return `${action.changeLog}_${action.serviceName}_${action.description}`;
-  case 'NewServiceAction':
-    return `${action.changeLog}_${action.serviceName}_${action.description}`;
-  case 'ReferenceFieldTypeAction':
-    return `${action.changeLog}_${action.typeName}_${action.name}_${action.description}_${action.optional}_${action.referenceType}_${action.referenceHash}_${action.referenceVersion}`;
-  case 'UpdateFieldDescriptionTypeAction':
-    return `${action.changeLog}_${action.typeName}_${action.name}_${action.description}`;
-  case 'AddFieldTypeAction':
-    return `${action.changeLog}_${action.typeName}_${action.name}_${action._type}_${action.description}_${action.optional}_${action._default}`;
-  case 'RemoveDefaultFieldTypeAction':
-    return `${action.changeLog}_${action.typeName}_${action.name}`;
-  case 'SetDefaultFieldTypeAction':
-    return `${action.changeLog}_${action.typeName}_${action.name}_${action._default}`;
-  case 'DeleteFieldTypeAction':
-    return `${action.changeLog}_${action.typeName}_${action.name}`; 
-  case 'OptionalFieldTypeAction':
-    return `${action.changeLog}_${action.typeName}_${action.name}`;
-  case 'RequiredFieldTypeAction':
-    return `${action.changeLog}_${action.typeName}_${action.name}`;
-  case 'RenameFieldTypeAction':
-    return `${action.changeLog}_${action.typeName}_${action._from}_${action.to}`;
-  case 'NewTypeAction':
-    return `${action.changeLog}_${action.typeName}_${action.description}`;
-  case 'GroupAction':
-    const subHashes: string[] = [];
-    for (const subAction of action.actions) {
-      subHashes.push(fieldsToHash(subAction));
+    if (action instanceof AddVersionServiceAction) {
+      return `${action.changeLog}_${action.serviceName}_${action.inputType}_${action.outputType}_${action.inputVersion}_${action.outputVersion}`;
+    } else if (action instanceof UpdateDescriptionServiceAction) {
+      return `${action.changeLog}_${action.serviceName}_${action.description}`;
+    } else if (action instanceof NewServiceAction) {
+      return `${action.changeLog}_${action.serviceName}_${action.description}`;
+    } else if (action instanceof ReferenceFieldTypeAction) {
+      return `${action.changeLog}_${action.typeName}_${action.name}_${action.description}_${action.optional}_${action.referenceType}_${action.referenceHash}_${action.referenceVersion}`;
+    } else if (action instanceof UpdateFieldDescriptionTypeAction) {
+      return `${action.changeLog}_${action.typeName}_${action.name}_${action.description}`;
+    } else if (action instanceof AddFieldTypeAction) {
+      return `${action.changeLog}_${action.typeName}_${action.name}_${action._type}_${action.description}_${action.optional}_${action._default}`;
+    } else if (action instanceof RemoveDefaultFieldTypeAction) {
+      return `${action.changeLog}_${action.typeName}_${action.name}`;
+    } else if (action instanceof SetDefaultFieldTypeAction) {
+      return `${action.changeLog}_${action.typeName}_${action.name}_${action._default}`;
+    } else if (action instanceof DeleteFieldTypeAction) {
+      return `${action.changeLog}_${action.typeName}_${action.name}`;
+    } else if (action instanceof OptionalFieldTypeAction) {
+      return `${action.changeLog}_${action.typeName}_${action.name}`;
+    } else if (action instanceof RequiredFieldTypeAction) {
+      return `${action.changeLog}_${action.typeName}_${action.name}`;
+    } else if (action instanceof RenameFieldTypeAction) {
+      return `${action.changeLog}_${action.typeName}_${action._from}_${action.to}`;
+    } else if (action instanceof NewTypeAction) {
+      return `${action.changeLog}_${action.typeName}_${action.description}`;
+    } else if (action instanceof GroupAction) {
+      const subHashes: string[] = [];
+      for (const subAction of action.actions) {
+        subHashes.push(fieldsToHash(subAction));
+      }
+      return subHashes.join('_');
+    } else {
+      throw new Error(`Can't hash ${JSON.stringify(action, null, 4)}`)
     }
-    return subHashes.join('_');
-  default:
-    throw new Error(`Can't hash ${JSON.stringify(action, null, 4)}`)
-  }
 };
 
-@ObjectType()
+
 export class ChangeSet {
-  @Field()
   id: string;
-
-  @Field(type => [ChangeActionUnion])
   log: ChangeAction[];
-
-  @Field({nullable: true})
-  baseHash?: string 
-
+  baseHash?: string
   typeDefinition?: TypeDefinition[]
+
+  constructor(id: string, log: ChangeAction[], baseHash?: string, typeDefinition?: TypeDefinition[]) {
+    this.id = id;
+    this.log = log;
+    this.baseHash = baseHash;
+    this.typeDefinition = typeDefinition;
+  }
 };

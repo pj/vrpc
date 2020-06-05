@@ -1,32 +1,34 @@
 import {
-    Field,
-    ObjectType,
-    InterfaceType,
-    createUnionType
-} from 'type-graphql';
-import {
   Action, 
   ChangeAction,
   GroupAction, 
-  FieldTypes, 
   FieldDefaults, 
   ChangeSet,
-  FieldDefaultsUnion
+  AddVersionServiceAction,
+  AddVersionServiceChangeAction,
+  RenameFieldTypeAction,
+  RequiredFieldTypeAction,
+  OptionalFieldTypeAction,
+  DeleteFieldTypeAction,
+  SetDefaultFieldTypeAction,
+  RemoveDefaultFieldTypeAction,
+  AddFieldTypeAction,
+  UpdateFieldDescriptionTypeAction,
+  ReferenceFieldTypeAction,
+  NewTypeAction,
+  UpdateDescriptionServiceAction,
+  NewServiceAction
 } from './action';
 import * as typeidea from './typeidea';
+import {Type as FieldTypes} from './generated/type_definition';
 
-@InterfaceType()
 export abstract class BaseField {
-  @Field()
   name: string;
 
-  @Field()
   changeLog: string;
 
-  @Field()
   description: string;
 
-  @Field()
   optional: boolean;
 
   constructor(
@@ -54,9 +56,7 @@ export abstract class BaseField {
   }
 }
 
-@ObjectType({implements: BaseField})
 export class ScalarField extends BaseField {
-  @Field(type => FieldTypes)
   type: FieldTypes;
 
   // Handled by ScalarFieldResolver in resolvers.ts
@@ -101,15 +101,14 @@ export class ScalarField extends BaseField {
   }
 }
 
-@ObjectType({implements: BaseField})
 export class ReferenceField extends BaseField {
-  @Field()
+  
   referenceType: string;
 
-  @Field({nullable: true})
+  
   referenceHash?: string;
 
-  @Field({nullable: true})
+  
   referenceVersion?: number;
 
   constructor(
@@ -152,15 +151,15 @@ export type FieldObject = {
   [key: string]: BaseField;
 };
 
-@ObjectType()
+
 export class Version {
-  @Field()
+  
   _type: string;
 
-  @Field()
+  
   version: number;
 
-  @Field()
+  
   hash: string;
 
   // Handled by VersionResolver in resolvers.ts
@@ -195,21 +194,19 @@ export class Version {
   }
 }
 
-@ObjectType()
+
 export class Type {
-  @Field()
+  
   name: string;
 
-  @Field(type => [Version])
   versions: Version[];
 
-  @Field({nullable: true})
+  
   changeSetName?: string;
 
-  @Field(type => [String])
   changeLog: string[];
 
-  @Field()
+  
   description: string;
 
   constructor(name: string, description: string) {
@@ -220,15 +217,15 @@ export class Type {
   }
 }
 
-@ObjectType()
+
 export class VersionType {
-  @Field()
+  
   _type: string;
 
-  @Field()
+  
   version: number;
 
-  @Field()
+  
   hash: string;
 
   constructor(
@@ -253,15 +250,14 @@ export type ServiceVersions = {
   }
 };
 
-@ObjectType()
+
 export class Service {
-  @Field()
+  
   name: string;
 
-  @Field(type => [String])
   changeLog: string[];
 
-  @Field()
+  
   description: string;
 
   // Handled by field resolver in resolvers.ts
@@ -285,7 +281,10 @@ function updateServiceVersion(
   service: Service,
   logAction: Action | ChangeAction
 ): void {
-  if (logAction.actionType === 'AddVersionServiceAction') {
+  if (
+    logAction instanceof AddVersionServiceAction || 
+    logAction instanceof AddVersionServiceChangeAction
+  ) {
     const inputVersion = `${logAction.inputType}_${logAction.inputVersion}`;
     const outputVersion = `${logAction.outputType}_${logAction.outputVersion}`;
 
@@ -310,30 +309,30 @@ function updateServiceVersion(
 }
 
 function updateVersion(newVersion: Version, logAction: Action | ChangeAction) {
-  if (logAction.actionType === 'RenameFieldTypeAction') {
+  if (logAction instanceof RenameFieldTypeAction) {
     const currentField = newVersion.fields[logAction._from];
     const newField = currentField.copy();
     newField.name = logAction.to;
     newField.changeLog = logAction.changeLog;
     delete newVersion.fields[logAction._from];
     newVersion.fields[logAction.to] = newField;
-  } else if (logAction.actionType === 'RequiredFieldTypeAction') {
+  } else if (logAction instanceof RequiredFieldTypeAction) {
     const currentField = newVersion.fields[logAction.name];
     const newField = currentField.copy();
     newField.optional = false;
     newField.changeLog = logAction.changeLog;
     newVersion.fields[newField.name] = newField;
-  } else if (logAction.actionType === 'OptionalFieldTypeAction') {
+  } else if (logAction instanceof OptionalFieldTypeAction) {
     const currentField = newVersion.fields[logAction.name];
     const newField = currentField.copy();
     newField.optional = true;
     newField.changeLog = logAction.changeLog;
     newVersion.fields[newField.name] = newField;
-  } else if (logAction.actionType === 'DeleteFieldTypeAction') {
+  } else if (logAction instanceof DeleteFieldTypeAction) {
     const currentField = newVersion.fields[logAction.name];
     const newField = currentField.copy();
     delete newVersion.fields[currentField.name];
-  } else if (logAction.actionType === 'SetDefaultFieldTypeAction') {
+  } else if (logAction instanceof SetDefaultFieldTypeAction) {
     const currentField = newVersion.fields[logAction.name];
     const newField = currentField.copy();
     if (newField instanceof ScalarField) {
@@ -341,7 +340,7 @@ function updateVersion(newVersion: Version, logAction: Action | ChangeAction) {
     }
     newField.changeLog = logAction.changeLog;
     newVersion.fields[newField.name] = newField;
-  } else if (logAction.actionType === 'RemoveDefaultFieldTypeAction') {
+  } else if (logAction instanceof RemoveDefaultFieldTypeAction) {
     const currentField = newVersion.fields[logAction.name];
     const newField = currentField.copy();
     if (newField instanceof ScalarField) {
@@ -349,7 +348,7 @@ function updateVersion(newVersion: Version, logAction: Action | ChangeAction) {
     }
     newField.changeLog = logAction.changeLog;
     newVersion.fields[newField.name] = newField;
-  } else if (logAction.actionType === 'AddFieldTypeAction') {
+  } else if (logAction instanceof AddFieldTypeAction) {
     const currentField = newVersion.fields[logAction.name];
     const newField = new ScalarField(
       logAction.name,
@@ -360,13 +359,13 @@ function updateVersion(newVersion: Version, logAction: Action | ChangeAction) {
       logAction._default = logAction._default
     );
     newVersion.fields[newField.name] = newField;
-  } else if (logAction.actionType === 'UpdateFieldDescriptionTypeAction') {
+  } else if (logAction instanceof UpdateFieldDescriptionTypeAction) {
     const currentField = newVersion.fields[logAction.name];
     const newField = currentField.copy();
     newField.description = logAction.description;
     newField.changeLog = logAction.changeLog;
     newVersion.fields[newField.name] = newField;
-  } else if (logAction.actionType === 'ReferenceFieldTypeAction') {
+  } else if (logAction instanceof ReferenceFieldTypeAction) {
     const currentField = newVersion.fields[logAction.name];
     const newField = new ReferenceField(
       logAction.name,
@@ -387,22 +386,22 @@ export function typeOrServiceName(
   logAction: Action | ChangeAction
 ): [string | null, string | null] {
   if (
-    logAction.actionType === 'RenameFieldTypeAction'
-    || logAction.actionType === 'RequiredFieldTypeAction'
-    || logAction.actionType === 'OptionalFieldTypeAction'
-    || logAction.actionType === 'DeleteFieldTypeAction'
-    || logAction.actionType === 'SetDefaultFieldTypeAction'
-    || logAction.actionType === 'RemoveDefaultFieldTypeAction'
-    || logAction.actionType === 'AddFieldTypeAction'
-    || logAction.actionType === 'UpdateFieldDescriptionTypeAction'
-    || logAction.actionType === 'ReferenceFieldTypeAction'
-    || logAction.actionType === 'NewTypeAction'
+    logAction instanceof RenameFieldTypeAction
+    || logAction instanceof RequiredFieldTypeAction
+    || logAction instanceof OptionalFieldTypeAction
+    || logAction instanceof DeleteFieldTypeAction
+    || logAction instanceof SetDefaultFieldTypeAction
+    || logAction instanceof RemoveDefaultFieldTypeAction
+    || logAction instanceof AddFieldTypeAction
+    || logAction instanceof UpdateFieldDescriptionTypeAction
+    || logAction instanceof ReferenceFieldTypeAction
+    || logAction instanceof NewTypeAction
   ) {
     return [logAction.typeName, null];
   } else if (
-    logAction.actionType === 'UpdateDescriptionServiceAction'
-    || logAction.actionType === 'AddVersionServiceAction'
-    || logAction.actionType === 'NewServiceAction'
+    logAction instanceof UpdateDescriptionServiceAction
+    || logAction instanceof AddVersionServiceAction
+    || logAction instanceof NewServiceAction
   ) {
     return [null, logAction.serviceName];
   }
@@ -426,7 +425,7 @@ export function generateDefinitions(
   for (const groupAction of log) {
     const versionsForTypes = new Map<string, Version>();
     for (const action of groupAction.actions) {
-      if (action.actionType === 'NewTypeAction') {
+      if (action instanceof NewTypeAction) {
         const _type = new Type(action.typeName, action.description);
         _type.changeLog.push(action.changeLog);
         const newVersion = new Version(action.typeName, groupAction.hash, 0, {});
@@ -434,7 +433,7 @@ export function generateDefinitions(
         newVersion.fields = {};
         _type.versions.push(newVersion);
         types.set(action.typeName, _type);
-      } else if (action.actionType === 'NewServiceAction') {
+      } else if (action instanceof NewServiceAction) {
         const service = new Service(action.serviceName, action.description);
         service.changeLog.push(action.changeLog);
         services.set(action.serviceName, service);
@@ -463,7 +462,7 @@ export function generateDefinitions(
             throw new Error('Should not happen');
           }
           service.changeLog.push(action.changeLog);
-          if (action.actionType === 'UpdateDescriptionServiceAction') {
+          if (action instanceof UpdateDescriptionServiceAction) {
             service.description = action.description;
           }
           updateServiceVersion(service, action);

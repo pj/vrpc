@@ -15,10 +15,13 @@ export interface TypeDefinition {
 }
 
 export interface Field {
+    _default?:   boolean | number | string;
     _type?:      Type;
+    changeLog:   string;
     description: string;
     name:        string;
-    reference?:  string;
+    optional:    boolean;
+    reference?:  Reference;
 }
 
 export enum Type {
@@ -26,6 +29,11 @@ export enum Type {
     Float = "float",
     Integer = "integer",
     String = "string",
+}
+
+export interface Reference {
+    _type:   string;
+    version: number;
 }
 
 export interface Service {
@@ -192,10 +200,17 @@ const typeMap: any = {
         { json: "services", js: "services", typ: u(undefined, a(r("Service"))) },
     ], false),
     "Field": o([
+        { json: "_default", js: "_default", typ: u(undefined, u(true, 3.14, "")) },
         { json: "_type", js: "_type", typ: u(undefined, r("Type")) },
+        { json: "changeLog", js: "changeLog", typ: "" },
         { json: "description", js: "description", typ: "" },
         { json: "name", js: "name", typ: "" },
-        { json: "reference", js: "reference", typ: u(undefined, "") },
+        { json: "optional", js: "optional", typ: true },
+        { json: "reference", js: "reference", typ: u(undefined, r("Reference")) },
+    ], false),
+    "Reference": o([
+        { json: "_type", js: "_type", typ: "" },
+        { json: "version", js: "version", typ: 3.14 },
     ], false),
     "Service": o([
         { json: "_from", js: "_from", typ: u(undefined, r("From")) },

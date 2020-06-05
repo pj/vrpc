@@ -11,15 +11,39 @@
                     "type": "string"
                 },
                 "reference": {
-                    "type": "string"
+                    "type": "object",
+                    "properties": {
+                        "_type": {"type": "string"},
+                        "version": {"type": "number"}
+                    },
+                    "required": ["_type", "version"],
+                    "additionalProperties": false
                 },
                 "_type": {
                     "type": "string",
                     "enum": ["integer", "float", "string", "boolean"]
+                },
+                "changeLog": {
+                    "type": "string"
+                },
+                "optional": {
+                    "type": "boolean"
+                },
+                "_default": {
+                    "anyOf": [
+                        {"type": "boolean"},
+                        {"type": "string"},
+                        {"type": "number"}
+                    ]
                 }
             },
             "additionalProperties": false,
-            "required": ["name", "description"]
+            "required": [
+                "name",
+                "description",
+                "changeLog",
+                "optional"
+            ]
         },
         "definition": {
             "type": "object",
