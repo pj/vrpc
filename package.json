@@ -28,7 +28,7 @@
     "@types/tmp": "^0.1.0",
     "@types/yargs": "^15.0.0",
     "apollo-boost": "^0.4.4",
-    "apollo-server": "^2.9.3",
+    "apollo-server": "^2.14.2",
     "apollo-server-types": "^0.2.10",
     "classnames": "^2.2.6",
     "cors": "^2.8.5",
