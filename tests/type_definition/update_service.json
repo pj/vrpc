@@ -6,12 +6,14 @@
             {
                 "name": "field1",
                 "description": "A cool field",
-                "_type": "string"
+                "_type": "string",
+                "changeLog": "This is a good field to add"
             },
             {
                 "name": "field2",
                 "description": "Another cool field",
-                "_type": "integer"
+                "_type": "integer",
+                "changeLog": "This is a good field to add"
             }
         ]
     },
@@ -22,17 +24,20 @@
             {
                 "name": "another_field",
                 "description": "this is a field",
-                "_type": "boolean"
+                "_type": "boolean",
+                "changeLog": "This is a good field to add"
             },
             {
                 "name": "yet_another_field",
                 "description": "asdf",
-                "_type": "float"
+                "_type": "float",
+                "changeLog": "This is a good field to add"
             },
             {
                 "name": "field_again",
                 "description": "This will work better",
-                "_type": "string"
+                "_type": "string",
+                "changeLog": "This is a good field to add"
             }
         ]
     },
@@ -43,14 +48,15 @@
             {
                 "name": "better_field",
                 "description": "this is a better field",
-                "_type": "string"
+                "_type": "string",
+                "changeLog": "This is a good field to add"
             }
         ]
     },
     {
         "name": "TestService",
         "description": "An awesome service",
-        "services": [
+        "versions": [
             {
                 "_from": {
                     "name": "Test",
@@ -59,7 +65,8 @@
                 "to": {
                     "name": "AnotherTest",
                     "version": 0
-                }
+                },
+                "changeLog": "This is an awesome service"
             },
             {
                 "_from": {
@@ -67,9 +74,10 @@
                     "version": 0
                 },
                 "to": {
-                    "name": "AnotherTest",
-                    "version": 1
-                }
+                    "name": "Test",
+                    "version": 0
+                },
+                "changeLog": "This is another version of an awesome service"
             }
         ]
     }

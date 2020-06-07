@@ -9,6 +9,8 @@ import { TypeDefinition, Type } from './generated/type_definition';
 
 export type FieldDefaults = string | boolean | number;
 
+export const FieldTypeValues = ['string', 'boolean', 'integer', 'float'];
+
 export interface HashedAction {
   hash: string;
   version: number;
@@ -695,6 +697,18 @@ export class GroupAction implements HashedAction {
   version: number;
   actions: Action[];
   versions: GroupVersions;
+
+  constructor(
+    hash: string,
+    version: number,
+    actions: Action[],
+    versions: GroupVersions
+  ) {
+    this.hash = hash;
+    this.version = version;
+    this.actions = actions;
+    this.versions = versions;
+  }
 }
 export class GroupChangeAction {
   actions: Action[];
@@ -702,33 +716,74 @@ export class GroupChangeAction {
 }
 
 export function fieldsToHash(action: ChangeAction | GroupChangeAction) {
-    if (action instanceof AddVersionServiceAction) {
+    if (
+      action instanceof AddVersionServiceAction ||
+      action instanceof AddVersionServiceChangeAction
+    ) {
       return `${action.changeLog}_${action.serviceName}_${action.inputType}_${action.outputType}_${action.inputVersion}_${action.outputVersion}`;
-    } else if (action instanceof UpdateDescriptionServiceAction) {
+    } else if (
+      action instanceof UpdateDescriptionServiceAction ||
+      action instanceof UpdateDescriptionServiceChangeAction
+    ) {
       return `${action.changeLog}_${action.serviceName}_${action.description}`;
-    } else if (action instanceof NewServiceAction) {
+    } else if (
+      action instanceof NewServiceAction ||
+      action instanceof NewServiceChangeAction
+    ) {
       return `${action.changeLog}_${action.serviceName}_${action.description}`;
-    } else if (action instanceof ReferenceFieldTypeAction) {
+    } else if (
+      action instanceof ReferenceFieldTypeAction ||
+      action instanceof ReferenceFieldTypeChangeAction
+    ) {
       return `${action.changeLog}_${action.typeName}_${action.name}_${action.description}_${action.optional}_${action.referenceType}_${action.referenceHash}_${action.referenceVersion}`;
-    } else if (action instanceof UpdateFieldDescriptionTypeAction) {
+    } else if (
+      action instanceof UpdateFieldDescriptionTypeAction ||
+      action instanceof UpdateFieldDescriptionTypeChangeAction
+    ) {
       return `${action.changeLog}_${action.typeName}_${action.name}_${action.description}`;
-    } else if (action instanceof AddFieldTypeAction) {
+    } else if (
+      action instanceof AddFieldTypeAction ||
+      action instanceof AddFieldTypeChangeAction
+    ) {
       return `${action.changeLog}_${action.typeName}_${action.name}_${action._type}_${action.description}_${action.optional}_${action._default}`;
-    } else if (action instanceof RemoveDefaultFieldTypeAction) {
+    } else if (
+      action instanceof RemoveDefaultFieldTypeAction ||
+      action instanceof RemoveDefaultFieldTypeChangeAction
+    ) {
       return `${action.changeLog}_${action.typeName}_${action.name}`;
-    } else if (action instanceof SetDefaultFieldTypeAction) {
+    } else if (
+      action instanceof SetDefaultFieldTypeAction ||
+      action instanceof SetDefaultFieldTypeChangeAction
+    ) {
       return `${action.changeLog}_${action.typeName}_${action.name}_${action._default}`;
-    } else if (action instanceof DeleteFieldTypeAction) {
+    } else if (
+      action instanceof DeleteFieldTypeAction ||
+      action instanceof DeleteFieldTypeChangeAction
+    ) {
       return `${action.changeLog}_${action.typeName}_${action.name}`;
-    } else if (action instanceof OptionalFieldTypeAction) {
+    } else if (
+      action instanceof OptionalFieldTypeAction ||
+      action instanceof OptionalFieldTypeChangeAction
+    ) {
       return `${action.changeLog}_${action.typeName}_${action.name}`;
-    } else if (action instanceof RequiredFieldTypeAction) {
+    } else if (
+      action instanceof RequiredFieldTypeAction ||
+      action instanceof RequiredFieldTypeChangeAction
+    ) {
       return `${action.changeLog}_${action.typeName}_${action.name}`;
-    } else if (action instanceof RenameFieldTypeAction) {
+    } else if (
+      action instanceof RenameFieldTypeAction ||
+      action instanceof RenameFieldTypeChangeAction
+    ) {
       return `${action.changeLog}_${action.typeName}_${action._from}_${action.to}`;
-    } else if (action instanceof NewTypeAction) {
+    } else if (
+      action instanceof NewTypeAction ||
+      action instanceof NewTypeChangeAction
+    ) {
       return `${action.changeLog}_${action.typeName}_${action.description}`;
-    } else if (action instanceof GroupAction) {
+    } else if (
+      action instanceof GroupAction
+    ) {
       const subHashes: string[] = [];
       for (const subAction of action.actions) {
         subHashes.push(fieldsToHash(subAction));

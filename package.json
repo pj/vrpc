@@ -17,6 +17,7 @@
     "@types/supertest": "^2.0.7",
     "@types/tmp": "^0.1.0",
     "@types/yargs": "^15.0.0",
+    "express": "^4.17.1",
     "json-object-mapper": "^1.6.0",
     "lodash": "^4.17.13",
     "prettier": "^1.15.3",
@@ -40,11 +41,6 @@
   "scripts": {
     "test": "jest",
     "test:watch": "chokidar \"lib/**/*.ejs\" \"lib/**/*.ts\" \"tests/**/*.ts\" \"tests/**/*.json\" -c \"yarn run test\" --ignore runtest --ignore tests/snapshots",
-    "server:build": "tsc --project tsconfig.server.json && cp lib/schema.gql dist",
-    "server:watch": "chokidar \"lib/**/*.ejs\" \"lib/**/*.ts\" \"tests/**/*.ts\" \"server/**/*.ts\" -c \"graphql-codegen --config codegen.yml && tsc --outDir dist --rootDir lib && cp lib/server/schema.graphql dist/server\" --ignore runtest --ignore tests/snapshots",
-    "server:validate": "tsc --project tsconfig.server.json --noEmit",
-    "server:validate:watch": "tsc --project tsconfig.server.json --noEmit --watch",
-    "server:start": "ts-node-dev --project tsconfig.server.json lib/test_server.ts",
     "generate:type_definition": "yarn quicktype -s schema type_definition.schema.json -o lib/generated/type_definition.ts"
   }
 }

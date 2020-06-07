@@ -11,7 +11,7 @@ export interface TypeDefinition {
     description: string;
     fields?:     Field[];
     name:        string;
-    services?:   Service[];
+    versions?:   VersionElement[];
 }
 
 export interface Field {
@@ -20,7 +20,7 @@ export interface Field {
     changeLog:   string;
     description: string;
     name:        string;
-    optional:    boolean;
+    optional?:   boolean;
     reference?:  Reference;
 }
 
@@ -36,19 +36,15 @@ export interface Reference {
     version: number;
 }
 
-export interface Service {
-    _from?: From;
-    to?:    To;
+export interface VersionElement {
+    _from:      FromObject;
+    changeLog?: string;
+    to:         FromObject;
 }
 
-export interface From {
-    name?:    string;
-    version?: number;
-}
-
-export interface To {
-    name?:    string;
-    version?: number;
+export interface FromObject {
+    name:    string;
+    version: number;
 }
 
 // Converts JSON strings to/from your types
@@ -197,7 +193,7 @@ const typeMap: any = {
         { json: "description", js: "description", typ: "" },
         { json: "fields", js: "fields", typ: u(undefined, a(r("Field"))) },
         { json: "name", js: "name", typ: "" },
-        { json: "services", js: "services", typ: u(undefined, a(r("Service"))) },
+        { json: "versions", js: "versions", typ: u(undefined, a(r("VersionElement"))) },
     ], false),
     "Field": o([
         { json: "_default", js: "_default", typ: u(undefined, u(true, 3.14, "")) },
@@ -205,24 +201,21 @@ const typeMap: any = {
         { json: "changeLog", js: "changeLog", typ: "" },
         { json: "description", js: "description", typ: "" },
         { json: "name", js: "name", typ: "" },
-        { json: "optional", js: "optional", typ: true },
+        { json: "optional", js: "optional", typ: u(undefined, true) },
         { json: "reference", js: "reference", typ: u(undefined, r("Reference")) },
     ], false),
     "Reference": o([
         { json: "_type", js: "_type", typ: "" },
         { json: "version", js: "version", typ: 3.14 },
     ], false),
-    "Service": o([
-        { json: "_from", js: "_from", typ: u(undefined, r("From")) },
-        { json: "to", js: "to", typ: u(undefined, r("To")) },
+    "VersionElement": o([
+        { json: "_from", js: "_from", typ: r("FromObject") },
+        { json: "changeLog", js: "changeLog", typ: u(undefined, "") },
+        { json: "to", js: "to", typ: r("FromObject") },
     ], "any"),
-    "From": o([
-        { json: "name", js: "name", typ: u(undefined, "") },
-        { json: "version", js: "version", typ: u(undefined, 3.14) },
-    ], "any"),
-    "To": o([
-        { json: "name", js: "name", typ: u(undefined, "") },
-        { json: "version", js: "version", typ: u(undefined, 3.14) },
+    "FromObject": o([
+        { json: "name", js: "name", typ: "" },
+        { json: "version", js: "version", typ: 3.14 },
     ], "any"),
     "Type": [
         "boolean",

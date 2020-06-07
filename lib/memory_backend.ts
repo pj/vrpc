@@ -177,7 +177,7 @@ export class MemoryBackend implements Backend {
   async updateDefinitionChangeSet(
     userId: string, 
     changeSetId: string, 
-    definition: TypeDefinition[]
+    definitions: TypeDefinition[]
   ): Promise<void> {
     const changeSetData = this.changeSets;
     let userSets = changeSetData[userId];
@@ -186,9 +186,11 @@ export class MemoryBackend implements Backend {
       changeSetData[userId] = userSets;
     }
 
+    const types = await this.getCurrentTypes();
     const changeSet = changeSetFromTypeDefintion(
+      types,
       this.currentTypeDefinition,
-      definition
+      definitions
     );
 
     userSets[changeSetId] = changeSet;

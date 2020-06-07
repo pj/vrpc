@@ -41,8 +41,26 @@
             "required": [
                 "name",
                 "description",
-                "changeLog",
-                "optional"
+                "changeLog"
+            ],
+            "oneOf": [
+                {"required": ["reference"]},
+                {"required": ["_type"]}
+            ]
+        },
+        "version": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "name", 
+                "version"
             ]
         },
         "definition": {
@@ -60,43 +78,31 @@
                         ]
                     }
                 },
-                "services": { 
+                "versions": { 
                     "type": "array",
                     "items": {
-                        "allOf": [
-                            {
-                                "type": "object",
-                                "properties": {
-                                    "_from": {
-                                        "type": "object",
-                                        "properties": {
-                                            "name": {
-                                                "type": "string"
-                                            },
-                                            "version": {
-                                                "type": "number"
-                                            }
-                                        }
-                                    },
-                                    "to": {
-                                        "type": "object",
-                                        "properties": {
-                                            "name": {
-                                                "type": "string"
-                                            },
-                                            "version": {
-                                                "type": "number"
-                                            }
-                                        }
-                                    }
-                                }
+                        "type": "object",
+                        "properties": {
+                            "_from": {"$ref": "#/definitions/version"},
+                            "to": {"$ref": "#/definitions/version"},
+                            "changeLog": {
+                                "type": "string"
                             }
+                        },
+                        "required": [
+                            "changeLog",
+                            "_from",
+                            "to"
                         ]
                     }
                 }
             },
             "additionalProperties": false,
-            "required": ["name", "description"]
+            "required": ["name", "description"],
+            "oneOf": [
+                {"required": ["fields"]},
+                {"required": ["versions"]}
+            ]
         }
     },
     "items": {

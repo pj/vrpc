@@ -1,13 +1,8 @@
-import "reflect-metadata";
-import * as typeidea from '../lib/typeidea';
-import {Action, ChangeAction, ReferenceFieldTypeAction, FieldTypes} from '../lib/action';
 import {generateDefinitions} from '../lib/generate';
-import {generateTypescript, generateTypescriptBoth} from '../lib/generate_typescript';
+import {generateTypescriptBoth} from '../lib/generate_typescript';
 import {MemoryBackend} from '../lib/memory_backend';
-import { loadActions } from '../lib/typeidea';
 import { promises as fs} from 'fs';
 import { Convert } from "../lib/generated/type_definition";
-import { memo } from "react";
 
 const type_definition_tests = ([
   ['Basic Types', './tests/type_definition/basic_types.json'],
@@ -22,8 +17,8 @@ for (const [name, path] of type_definition_tests) {
     const rawDefinition = await fs.readFile(path, {encoding: "utf8"});
 
     const definition = Convert.toTypeDefinition(rawDefinition);
-    memoryStore.updateDefinitionChangeSet("test", name, definition);
-    memoryStore.commitDefinitionChangeSet("test", name);
+    await memoryStore.updateDefinitionChangeSet("test", name, definition);
+    await memoryStore.commitDefinitionChangeSet("test", name);
 
     const newLog = await memoryStore.getLog();
     const [generatedTypes, generatedServices] = generateDefinitions(

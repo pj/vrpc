@@ -1,6 +1,7 @@
-import {Action, ChangeSet, GroupAction, NewTypeAction, NewTypeChangeAction, AddFieldTypeChangeAction, ReferenceFieldTypeChangeAction, OptionalFieldTypeChangeAction, RequiredFieldTypeChangeAction, RemoveDefaultFieldTypeChangeAction, SetDefaultFieldTypeChangeAction, UpdateFieldDescriptionTypeChangeAction, ChangeAction, DeleteFieldTypeChangeAction} from './action';
+import {Action, ChangeSet, GroupAction, NewTypeAction, NewTypeChangeAction, AddFieldTypeChangeAction, ReferenceFieldTypeChangeAction, OptionalFieldTypeChangeAction, RequiredFieldTypeChangeAction, RemoveDefaultFieldTypeChangeAction, SetDefaultFieldTypeChangeAction, UpdateFieldDescriptionTypeChangeAction, ChangeAction, DeleteFieldTypeChangeAction, NewServiceChangeAction, AddVersionServiceChangeAction, UpdateDescriptionServiceChangeAction} from './action';
 import {Type, Service, Version} from './generate';
 import { TypeDefinition, Field } from './generated/type_definition';
+import assert from 'assert';
 
 export interface Backend {
   getLog(): Promise<GroupAction[]>;
@@ -64,44 +65,12 @@ function addField(
   }
 }
 
-// Generate a change set from an old and new type definition
-export function changeSetFromTypeDefintion(
-  types: Type[],
-  old: TypeDefinition[], 
-  _new: TypeDefinition[]
-): ChangeSet {
-  const versionsByType = new Map<string, Map<number, Version>>();
-  for (let _type of types) {
-    const versions = new Map<number, Version>();
-    for (let version of _type.versions) {
-      versions.set(version.version, version);
-    }
-    versionsByType.set(_type.name, versions);
-  }
-  const oldTypes = new Map<string, TypeDefinition>();
-  const newTypes = new Map<string, TypeDefinition>();
-  const oldServices = new Map<string, TypeDefinition>();
-  const newServices = new Map<string, TypeDefinition>();
-
-  for (let existingDefintion of old) {
-    if (existingDefintion.fields) {
-      oldTypes.set(existingDefintion.name, existingDefintion);
-    } else {
-      oldServices.set(existingDefintion.name, existingDefintion);
-    }
-  }
-
-  for (let existingDefintion of _new) {
-    if (existingDefintion.fields) {
-      newTypes.set(existingDefintion.name, existingDefintion);
-    }
-    if (existingDefintion.services) {
-      newServices.set(existingDefintion.name, existingDefintion);
-    }
-  }
-
-  const newLog = [];
-
+function generateTypes(
+  versionsByType: Map<string, Map<number, Version>>, 
+  newLog: ChangeAction[], 
+  oldTypes: Map<string, TypeDefinition>,
+  newTypes: Map<string, TypeDefinition>
+) {
   for (let [newTypeName, newTypeDefinition] of newTypes.entries()) {
     if (!oldTypes.has(newTypeName)) {
       newLog.push(
@@ -211,6 +180,153 @@ export function changeSetFromTypeDefintion(
       }
     }
   }
+}
+
+function generateServices(
+  versionsByType: Map<string, Map<number, Version>>,
+  newLog: ChangeAction[], 
+  oldServices: Map<string, TypeDefinition>,
+  newServices: Map<string, TypeDefinition>
+) {
+  for (let [newServiceName, newService] of newServices) {
+    if (!oldServices.has(newServiceName)) {
+      newLog.push(
+        new NewServiceChangeAction(
+          "FIXME",
+          newServiceName,
+          newService.description
+        )
+      );
+      assert(newService.versions);
+
+      for (let version of newService.versions) {
+        const inputHash = versionsByType
+          .get(version._from.name)?.get(version._from.version)?.hash;
+        assert(inputHash);
+
+        const outputHash = versionsByType
+          .get(version.to.name)?.get(version.to.version)?.hash;
+        assert(outputHash);
+
+        newLog.push(
+          new AddVersionServiceChangeAction(
+            version.changeLog,
+            newService.name,
+            version.to.name,
+            version._from.name,
+            version._from.version,
+            inputHash,
+            version.to.version,
+            outputHash
+          )
+        );
+      }
+    } else {
+      const oldService = oldServices.get(newServiceName);
+      assert(oldService);
+      assert(newService.versions)
+      assert(oldService.versions)
+
+      if (newService.description !== oldService.description) {
+        newLog.push(
+          new UpdateDescriptionServiceChangeAction(
+            "FIXME",
+            newServiceName,
+            newService.description
+          )
+        );
+      }
+
+      // TODO: Service deprecation, renaming and hard delete.
+      const oldFromTo = new Set<string>();
+
+      for (let version of oldService.versions) {
+        oldFromTo.add(
+          `${version._from.name}_${version._from.version}_${version.to.name}_ ${version.to.version}`
+        );
+      }
+
+      for (let version of newService.versions) {
+        if (!oldFromTo.has(
+          `${version._from.name}_${version._from.version}_${version.to.name}_ ${version.to.version}`
+        )) {
+          const inputHash = versionsByType
+            .get(version._from.name)?.get(version._from.version)?.hash;
+          assert(inputHash);
+
+          const outputHash = versionsByType
+            .get(version.to.name)?.get(version.to.version)?.hash;
+          assert(outputHash);
+
+          newLog.push(
+            new AddVersionServiceChangeAction(
+              version.changeLog,
+              newService.name,
+              version.to.name,
+              version._from.name,
+              version._from.version,
+              inputHash,
+              version.to.version,
+              outputHash
+            )
+          );
+        }
+      }
+    }
+  }
+}
+
+// Generate a change set from an old and new type definition
+export function changeSetFromTypeDefintion(
+  types: Type[],
+  old: TypeDefinition[], 
+  _new: TypeDefinition[]
+): ChangeSet {
+  const versionsByType = new Map<string, Map<number, Version>>();
+  for (let _type of types) {
+    const versions = new Map<number, Version>();
+    for (let version of _type.versions) {
+      versions.set(version.version, version);
+    }
+    versionsByType.set(_type.name, versions);
+  }
+  const oldTypes = new Map<string, TypeDefinition>();
+  const newTypes = new Map<string, TypeDefinition>();
+  const oldServices = new Map<string, TypeDefinition>();
+  const newServices = new Map<string, TypeDefinition>();
+
+  for (let existingDefintion of old) {
+    if (existingDefintion.fields) {
+      oldTypes.set(existingDefintion.name, existingDefintion);
+    } else {
+      oldServices.set(existingDefintion.name, existingDefintion);
+    }
+  }
+
+  for (let existingDefintion of _new) {
+    if (existingDefintion.fields) {
+      newTypes.set(existingDefintion.name, existingDefintion);
+    }
+    if (existingDefintion.versions) {
+      newServices.set(existingDefintion.name, existingDefintion);
+    }
+  }
+
+  const newLog: ChangeAction[] = [];
+
+  generateTypes(
+    versionsByType,
+    newLog, 
+    oldTypes, 
+    newTypes
+  );
+
+  generateServices(
+    versionsByType,
+    newLog, 
+    oldServices, 
+    newServices
+  );
 
   return new ChangeSet("TODO: remove?", newLog, undefined, _new);
 }
