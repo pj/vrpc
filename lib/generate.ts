@@ -1,25 +1,6 @@
 import {
-  Action, 
-  ChangeAction,
-  GroupAction, 
   FieldDefaults, 
-  ChangeSet,
-  AddVersionServiceAction,
-  AddVersionServiceChangeAction,
-  RenameFieldTypeAction,
-  RequiredFieldTypeAction,
-  OptionalFieldTypeAction,
-  DeleteFieldTypeAction,
-  SetDefaultFieldTypeAction,
-  RemoveDefaultFieldTypeAction,
-  AddFieldTypeAction,
-  UpdateFieldDescriptionTypeAction,
-  ReferenceFieldTypeAction,
-  NewTypeAction,
-  UpdateDescriptionServiceAction,
-  NewServiceAction
 } from './action';
-import * as typeidea from './typeidea';
 import {Type as FieldTypes} from './generated/type_definition';
 
 export abstract class BaseField {
@@ -153,15 +134,9 @@ export type FieldObject = {
 
 
 export class Version {
-  
   _type: string;
-
-  
   version: number;
-
-  
   hash: string;
-
   // Handled by VersionResolver in resolvers.ts
   fields: FieldObject;
 
@@ -194,38 +169,35 @@ export class Version {
   }
 }
 
-
-export class Type {
-  
+export class BaseGeneratable {
   name: string;
-
-  versions: Version[];
-
-  
-  changeSetName?: string;
-
   changeLog: string[];
-
-  
   description: string;
+  currentVersion: number | null;
 
   constructor(name: string, description: string) {
     this.name = name;
     this.description = description;
-    this.versions = [];
+    this.currentVersion = null;
     this.changeLog = [];
   }
 }
 
 
+export class Type extends BaseGeneratable{
+  versions: Version[];
+  changeSetName?: string;
+
+  constructor(name: string, description: string) {
+    super(name, description);
+    this.versions = [];
+  }
+}
+
+
 export class VersionType {
-  
   _type: string;
-
-  
   version: number;
-
-  
   hash: string;
 
   constructor(
@@ -243,235 +215,105 @@ export class VersionType {
   }
 }
 
-export type ServiceVersions = {
-  [key: string]: {
-    output: VersionType,
-    inputs: VersionType[]
-  }
-};
-
-
-export class Service {
-  
+export class ServiceTriple {
   name: string;
+  version: number;
+  _from: VersionType;
+  to: VersionType;
 
+  constructor(
+    name: string,
+    version: number,
+    _from: VersionType,
+    to: VersionType
+  ) {
+    this.name = name;
+    this.version = version;
+    this._from = _from;
+    this.to = to;
+  }
+}
+
+export class Service extends BaseGeneratable {
+  name: string;
   changeLog: string[];
-
-  
   description: string;
-
-  // Handled by field resolver in resolvers.ts
-  versions: ServiceVersions; // Map<string, [VersionType, VersionType[]]>;
-
-  seenInputVersions: Set<string>;
+  versions: ServiceTriple[];
 
   constructor(
     name: string,
     description: string,
   ) {
-    this.name = name;
-    this.description = description;
-    this.changeLog = [];
-    this.versions = {};
-    this.seenInputVersions = new Set();
+    super(name, description);
+    this.versions = [];
   }
 }
 
-function updateServiceVersion(
-  service: Service,
-  logAction: Action | ChangeAction
-): void {
-  if (
-    logAction instanceof AddVersionServiceAction || 
-    logAction instanceof AddVersionServiceChangeAction
-  ) {
-    const inputVersion = `${logAction.inputType}_${logAction.inputVersion}`;
-    const outputVersion = `${logAction.outputType}_${logAction.outputVersion}`;
 
-    if (service.seenInputVersions.has(inputVersion)) {
-      throw new Error(`Input version ${inputVersion} used elsewhere`);
-    }
-    service.seenInputVersions.add(inputVersion);
-    const existingVersion = service.versions[outputVersion];
-    if (existingVersion) {
-      existingVersion.inputs.push(
-        new VersionType(logAction.inputType, logAction.inputHash, logAction.inputVersion),
-      );
-    } else {
-      service.versions[outputVersion] = ({
-        output: new VersionType(logAction.outputType, logAction.outputHash, logAction.outputVersion),
-        inputs: [new VersionType(logAction.inputType, logAction.inputHash, logAction.inputVersion)],
-      });
-    }
-  } else {
-    throw new Error('Should not happen');
-  }
-}
+// export function generateDefinitions(
+//   log: GroupAction[],
+//   changeSet: ChangeSet | null
+// ): [Type[], Service[]] {
+//   if (changeSet) {
+//     log = typeidea.commitChangeSet(log, changeSet);
+//   } else {
+//     typeidea.validate(log);
+//   }
 
-function updateVersion(newVersion: Version, logAction: Action | ChangeAction) {
-  if (logAction instanceof RenameFieldTypeAction) {
-    const currentField = newVersion.fields[logAction._from];
-    const newField = currentField.copy();
-    newField.name = logAction.to;
-    newField.changeLog = logAction.changeLog;
-    delete newVersion.fields[logAction._from];
-    newVersion.fields[logAction.to] = newField;
-  } else if (logAction instanceof RequiredFieldTypeAction) {
-    const currentField = newVersion.fields[logAction.name];
-    const newField = currentField.copy();
-    newField.optional = false;
-    newField.changeLog = logAction.changeLog;
-    newVersion.fields[newField.name] = newField;
-  } else if (logAction instanceof OptionalFieldTypeAction) {
-    const currentField = newVersion.fields[logAction.name];
-    const newField = currentField.copy();
-    newField.optional = true;
-    newField.changeLog = logAction.changeLog;
-    newVersion.fields[newField.name] = newField;
-  } else if (logAction instanceof DeleteFieldTypeAction) {
-    const currentField = newVersion.fields[logAction.name];
-    const newField = currentField.copy();
-    delete newVersion.fields[currentField.name];
-  } else if (logAction instanceof SetDefaultFieldTypeAction) {
-    const currentField = newVersion.fields[logAction.name];
-    const newField = currentField.copy();
-    if (newField instanceof ScalarField) {
-      newField._default = logAction._default;
-    }
-    newField.changeLog = logAction.changeLog;
-    newVersion.fields[newField.name] = newField;
-  } else if (logAction instanceof RemoveDefaultFieldTypeAction) {
-    const currentField = newVersion.fields[logAction.name];
-    const newField = currentField.copy();
-    if (newField instanceof ScalarField) {
-      newField._default = undefined;
-    }
-    newField.changeLog = logAction.changeLog;
-    newVersion.fields[newField.name] = newField;
-  } else if (logAction instanceof AddFieldTypeAction) {
-    const currentField = newVersion.fields[logAction.name];
-    const newField = new ScalarField(
-      logAction.name,
-      logAction.changeLog,
-      logAction.description,
-      logAction.optional,
-      logAction._type,
-      logAction._default = logAction._default
-    );
-    newVersion.fields[newField.name] = newField;
-  } else if (logAction instanceof UpdateFieldDescriptionTypeAction) {
-    const currentField = newVersion.fields[logAction.name];
-    const newField = currentField.copy();
-    newField.description = logAction.description;
-    newField.changeLog = logAction.changeLog;
-    newVersion.fields[newField.name] = newField;
-  } else if (logAction instanceof ReferenceFieldTypeAction) {
-    const currentField = newVersion.fields[logAction.name];
-    const newField = new ReferenceField(
-      logAction.name,
-      logAction.changeLog,
-      logAction.description,
-      logAction.optional,
-      logAction.referenceType,
-      logAction.referenceHash,
-      logAction.referenceVersion
-    );
-    newVersion.fields[newField.name] = newField;
-  } else {
-    throw new Error('Should not happen');
-  }
-}
+//   const types = new Map<string, Type>();
+//   const services = new Map<string, Service>();
 
-export function typeOrServiceName(
-  logAction: Action | ChangeAction
-): [string | null, string | null] {
-  if (
-    logAction instanceof RenameFieldTypeAction
-    || logAction instanceof RequiredFieldTypeAction
-    || logAction instanceof OptionalFieldTypeAction
-    || logAction instanceof DeleteFieldTypeAction
-    || logAction instanceof SetDefaultFieldTypeAction
-    || logAction instanceof RemoveDefaultFieldTypeAction
-    || logAction instanceof AddFieldTypeAction
-    || logAction instanceof UpdateFieldDescriptionTypeAction
-    || logAction instanceof ReferenceFieldTypeAction
-    || logAction instanceof NewTypeAction
-  ) {
-    return [logAction.typeName, null];
-  } else if (
-    logAction instanceof UpdateDescriptionServiceAction
-    || logAction instanceof AddVersionServiceAction
-    || logAction instanceof NewServiceAction
-  ) {
-    return [null, logAction.serviceName];
-  }
+//   for (const groupAction of log) {
+//     const versionsForTypes = new Map<string, Version>();
+//     for (const action of groupAction.actions) {
+//       if (action instanceof NewTypeAction) {
+//         const _type = new Type(action.typeName, action.description);
+//         _type.changeLog.push(action.changeLog);
+//         const newVersion = new Version(action.typeName, groupAction.hash, 0, {});
+//         versionsForTypes.set(action.typeName, newVersion);
+//         newVersion.fields = {};
+//         _type.versions.push(newVersion);
+//         types.set(action.typeName, _type);
+//       } else if (action instanceof NewServiceAction) {
+//         const service = new Service(action.serviceName, action.description);
+//         service.changeLog.push(action.changeLog);
+//         services.set(action.serviceName, service);
+//       } else {
+//         const [typeName, serviceName] = typeOrServiceName(action);
+//         if (typeName) {
+//           const _type = types.get(typeName);
+//           if (!_type) {
+//             throw new Error('Should not happen');
+//           }
+//           _type.changeLog.push(action.changeLog);
+//           const versionNumber = groupAction.versions.get(typeName);
+//           assert(versionNumber);
+//           let newVersion = versionsForTypes.get(typeName);
+//           if (newVersion === undefined) {
+//             newVersion = new Version(typeName, groupAction.hash, versionNumber, {});
+//             versionsForTypes.set(typeName, newVersion);
+//             if (_type.versions.length > 0) {
+//               newVersion.fields = {..._type.versions[_type.versions.length-1].fields};
+//             }
+//             _type.versions.push(newVersion);
+//           }
+//           updateVersion(newVersion, action);
+//         } else if (serviceName) {
+//           const service = services.get(serviceName);
+//           if (!service) {
+//             throw new Error('Should not happen');
+//           }
+//           service.changeLog.push(action.changeLog);
+//           if (action instanceof UpdateDescriptionServiceAction) {
+//             service.description = action.description;
+//           }
+//           updateServiceVersion(service, action);
+//         } else {
+//           throw new Error('Should not happen');
+//         }
+//       }
+//     }
+//   }
 
-  throw new Error('Satisfying typescript');
-}
-
-export function generateDefinitions(
-  log: GroupAction[],
-  changeSet: ChangeSet | null
-): [Type[], Service[]] {
-  if (changeSet) {
-    log = typeidea.commitChangeSet(log, changeSet);
-  } else {
-    typeidea.validate(log);
-  }
-
-  const types = new Map<string, Type>();
-  const services = new Map<string, Service>();
-
-  for (const groupAction of log) {
-    const versionsForTypes = new Map<string, Version>();
-    for (const action of groupAction.actions) {
-      if (action instanceof NewTypeAction) {
-        const _type = new Type(action.typeName, action.description);
-        _type.changeLog.push(action.changeLog);
-        const newVersion = new Version(action.typeName, groupAction.hash, 0, {});
-        versionsForTypes.set(action.typeName, newVersion);
-        newVersion.fields = {};
-        _type.versions.push(newVersion);
-        types.set(action.typeName, _type);
-      } else if (action instanceof NewServiceAction) {
-        const service = new Service(action.serviceName, action.description);
-        service.changeLog.push(action.changeLog);
-        services.set(action.serviceName, service);
-      } else {
-        const [typeName, serviceName] = typeOrServiceName(action);
-        if (typeName) {
-          const _type = types.get(typeName);
-          if (!_type) {
-            throw new Error('Should not happen');
-          }
-          _type.changeLog.push(action.changeLog);
-          const versionNumber = groupAction.versions[typeName];
-          let newVersion = versionsForTypes.get(typeName);
-          if (newVersion === undefined) {
-            newVersion = new Version(typeName, groupAction.hash, versionNumber, {});
-            versionsForTypes.set(typeName, newVersion);
-            if (_type.versions.length > 0) {
-              newVersion.fields = {..._type.versions[_type.versions.length-1].fields};
-            }
-            _type.versions.push(newVersion);
-          }
-          updateVersion(newVersion, action);
-        } else if (serviceName) {
-          const service = services.get(serviceName);
-          if (!service) {
-            throw new Error('Should not happen');
-          }
-          service.changeLog.push(action.changeLog);
-          if (action instanceof UpdateDescriptionServiceAction) {
-            service.description = action.description;
-          }
-          updateServiceVersion(service, action);
-        } else {
-          throw new Error('Should not happen');
-        }
-      }
-    }
-  }
-
-  return [Array.from(types.values()), Array.from(services.values())];
-}
+//   return [Array.from(types.values()), Array.from(services.values())];
+// }

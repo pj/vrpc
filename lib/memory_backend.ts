@@ -1,8 +1,9 @@
 import { Backend, changeSetFromTypeDefintion } from './backend';
-import {Action, ChangeSet, GroupAction} from './action';
-import {generateDefinitions, Type, Service} from './generate';
-import {validate, commitChangeSet, validateWithChangeSet} from './typeidea';
+import { ChangeSet, GroupAction } from './action';
+import { validate, commitChangeSet, validateWithChangeSet, services, types } from './vrpc';
 import { TypeDefinition } from './generated/type_definition';
+import assert from 'assert';
+import { Service, Type } from './generate';
 
 type StoredChangeSets = {
   [key: string]: {
@@ -34,8 +35,7 @@ export class MemoryBackend implements Backend {
   }
 
   async getCurrentServices(): Promise<Service[]> {
-    const [_, services] = generateDefinitions(this.log, null);
-    return services;
+    return services(this.log, null);
   }
 
   async getCurrentServicesWithChangeSet(
@@ -55,13 +55,11 @@ export class MemoryBackend implements Backend {
     
     const newLog = commitChangeSet(this.log, changeSet);
     
-    const [_, services] = generateDefinitions(newLog, changeSet);
-    return services;
+    return services(this.log, changeSet);
   }
 
   async getCurrentTypes(): Promise<Type[]> {
-    const [types, _] = generateDefinitions(this.log, null);
-    return types;
+    return types(this.log, null);
   }
 
   async getCurrentTypesWithChangeSet(
@@ -81,8 +79,7 @@ export class MemoryBackend implements Backend {
     
     const newLog = commitChangeSet(this.log, changeSet);
     
-    const [types, _] = generateDefinitions(newLog, changeSet);
-    return types;
+    return types(this.log, changeSet);
   }
 
   async getChangeSets(userId: string): Promise<ChangeSet[]> {
@@ -108,21 +105,6 @@ export class MemoryBackend implements Backend {
     }
 
     return changeSet;
-  }
-
-  async updateChangeSet(
-      userId: string,
-      changeSetId: string, 
-      changeSet: ChangeSet
-    ): Promise<void> {
-    const changeSetData = this.changeSets;
-    let userSets = changeSetData[userId];
-    if (!userSets) {
-      userSets = {}
-      changeSetData[userId] = userSets;
-    }
-
-    userSets[changeSetId] = changeSet;
   }
 
   async validateChangeSet(
@@ -156,6 +138,8 @@ export class MemoryBackend implements Backend {
     }
 
     const result = commitChangeSet(this.log, changeSet);
+    assert(changeSet.typeDefinition);
+    this.currentTypeDefinition = changeSet.typeDefinition;
     this.log = result;
     delete userSets[changeSetId];
   }
@@ -174,7 +158,7 @@ export class MemoryBackend implements Backend {
     delete userSets[changeSetId];
   }
 
-  async updateDefinitionChangeSet(
+  async updateChangeSet(
     userId: string, 
     changeSetId: string, 
     definitions: TypeDefinition[]
@@ -194,29 +178,5 @@ export class MemoryBackend implements Backend {
     );
 
     userSets[changeSetId] = changeSet;
-  }
-
-  async commitDefinitionChangeSet(
-    userId: string, 
-    changeSetId: string
-  ): Promise<void> {
-    const changeSetData = this.changeSets;
-    const userSets = changeSetData[userId];
-    if (!userSets) {
-        throw new Error(`No changesets found for user: ${userId}`)
-    }
-
-    const changeSet = userSets[changeSetId];
-    if (!changeSet) {
-        throw new Error(`Changeset not found for id: ${changeSet}`)
-    }
-
-    const result = commitChangeSet(this.log, changeSet);
-    this.log = result;
-    if (!changeSet.typeDefinition) {
-      throw new Error('Should not happen');
-    }
-    this.currentTypeDefinition = changeSet.typeDefinition;
-    delete userSets[changeSetId];
   }
 }
