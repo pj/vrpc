@@ -34,10 +34,11 @@ import {
   BaseChangeAction,
   BaseAction,
   changeActionToAction,
-  TypeAction
+  TypeAction,
+  DeleteMappingServiceAction
 } from './action';
 import assert from 'assert';
-import { Service, Type, BaseGeneratable, Version, VersionType, ScalarField, ReferenceField } from './generate';
+import { Service, Type, BaseGeneratable, Version, VersionType, ScalarField, ReferenceField, ServiceVersion, ServiceMapping } from './generate';
 
 export class ValidationError extends Error {
 
@@ -70,44 +71,6 @@ export function hashAction(
   return hash.digest('hex');
 }
 
-// export function getActionType(logAction: Action | BaseChangeAction): string {
-//   if (
-//     logAction instanceof RenameFieldTypeAction ||
-//     logAction instanceof RequiredFieldTypeAction ||
-//     logAction instanceof OptionalFieldTypeAction ||
-//     logAction instanceof DeleteFieldTypeAction ||
-//     logAction instanceof SetDefaultFieldTypeAction ||
-//     logAction instanceof RemoveDefaultFieldTypeAction ||
-//     logAction instanceof AddFieldTypeAction ||
-//     logAction instanceof UpdateFieldDescriptionTypeAction ||
-//     logAction instanceof ReferenceFieldTypeAction ||
-//     logAction instanceof NewTypeAction ||
-//     logAction instanceof RenameFieldTypeChangeAction ||
-//     logAction instanceof RequiredFieldTypeChangeAction ||
-//     logAction instanceof OptionalFieldTypeChangeAction ||
-//     logAction instanceof DeleteFieldTypeChangeAction ||
-//     logAction instanceof SetDefaultFieldTypeChangeAction ||
-//     logAction instanceof RemoveDefaultFieldTypeChangeAction ||
-//     logAction instanceof AddFieldTypeChangeAction ||
-//     logAction instanceof UpdateFieldDescriptionTypeChangeAction ||
-//     logAction instanceof ReferenceFieldTypeChangeAction ||
-//     logAction instanceof NewTypeChangeAction
-//   ) {
-//     return logAction.typeName;
-//   } else if (
-//     logAction instanceof NewServiceAction ||
-//     logAction instanceof UpdateDescriptionServiceAction ||
-//     logAction instanceof AddVersionServiceAction ||
-
-//     logAction instanceof NewServiceChangeAction ||
-//     logAction instanceof UpdateDescriptionServiceChangeAction ||
-//     logAction instanceof AddVersionServiceChangeAction
-//   ) {
-//     return logAction.serviceName;
-//   }
-//   throw new ValidationError(`Unknown log action ${logAction}`);
-// }
-
 function isNewAction(hashable: Action) {
   return (
     hashable instanceof NewTypeAction || 
@@ -117,39 +80,67 @@ function isNewAction(hashable: Action) {
   );
 }
 
-
 function updateServiceVersion(
-  service: Service,
+  service: ServiceVersion,
   logAction: Action
   ): void {
   if (
-    logAction instanceof AddVersionServiceAction || 
-    logAction instanceof AddVersionServiceChangeAction
+    logAction instanceof AddVersionServiceAction
   ) {
-    const inputVersion = `${logAction.inputType}_${logAction.inputVersion}`;
-    const outputVersion = `${logAction.outputType}_${logAction.outputVersion}`;
-
-    if (service.seenInputVersions.has(inputVersion)) {
-      throw new Error(`Input version ${inputVersion} used elsewhere`);
+    const inputKey = `${logAction.inputType}_${logAction.inputVersion}`;
+    const outputKey = `${logAction.outputType}_${logAction.outputVersion}`;
+    // check that input isn't mapped to another output.
+    for (let [otherOutput, otherInputs] of service.mappings.entries()) {
+      if (otherOutput !== outputKey && otherInputs.has(inputKey)) {
+        throw new ValidationError(`Input type already mapped to a different output ${inputKey} -> ${otherOutput} for service ${service.name} version ${service.version}`)
+      }
     }
-    service.seenInputVersions.add(inputVersion);
-    const existingVersion = service.versions[outputVersion];
-    if (existingVersion) {
-      existingVersion.inputs.push(
-        new VersionType(logAction.inputType, logAction.inputHash, logAction.inputVersion),
-      );
+
+    let inputs = service.mappings.get(outputKey);
+    if (inputs && inputs.has(inputKey)) {
+      throw new ValidationError(`Mapping already exists between ${inputKey} and ${outputKey} for service ${service.name} version ${service.version}`);
     } else {
-      service.versions[outputVersion] = ({
-        output: new VersionType(logAction.outputType, logAction.outputHash, logAction.outputVersion),
-        inputs: [new VersionType(logAction.inputType, logAction.inputHash, logAction.inputVersion)],
-      });
+      inputs = new Map();
+    }
+    inputs.set(
+      inputKey, 
+      new ServiceMapping(
+        service.name,
+        service.version,
+        logAction.inputType,
+        logAction.inputVersion,
+        logAction.inputHash,
+        logAction.outputType,
+        logAction.outputVersion,
+        logAction.outputHash
+      )
+    );
+    service.mappings.set(outputKey, inputs);
+  } else if (logAction instanceof DeleteMappingServiceAction) {
+    const inputKey = `${logAction.inputType}_${logAction.inputVersion}`;
+    const outputKey = `${logAction.outputType}_${logAction.outputVersion}`;
+
+    if (!service.mappings.has(outputKey)) {
+      throw new ValidationError(`Trying to delete service mapping that doesn't exist ${inputKey} -> ${outputKey} for service ${service.name} version ${service.version}`)
+    }
+
+    let inputs = service.mappings.get(outputKey);
+    assert(inputs);
+    
+    if (!inputs.has(inputKey)) {
+      throw new ValidationError(`Trying to delete service mapping that doesn't exist ${inputKey} -> ${outputKey} for service ${service.name} version ${service.version}`)
+    }
+
+    inputs.delete(inputKey);
+    if (inputs.size === 0) {
+      service.mappings.delete(outputKey);
     }
   } else {
     throw new Error('Should not happen');
   }
 }
 
-function updateVersion(newVersion: Version, logAction: Action) {
+function updateTypeVersion(newVersion: Version, logAction: Action) {
   if (logAction instanceof RenameFieldTypeAction) {
     const currentField = newVersion.fields[logAction._from];
     const newField = currentField.copy();
@@ -380,7 +371,7 @@ export function superLoop(
     }
 
     // Generate Types and services
-    const currentVersions = new Map<string, Version>();
+    const currentVersions = new Map<string, Version | ServiceVersion>();
     for (const newAction of newGroupActions) {
       if (newAction instanceof NewTypeAction) {
         const _type = new Type(newAction.name, newAction.description);
@@ -398,13 +389,21 @@ export function superLoop(
       } else if (newAction instanceof NewServiceAction) {
         const service = new Service(newAction.name, newAction.description);
         service.changeLog.push(newAction.changeLog);
+        const newVersion = new ServiceVersion(
+          newAction.name, 
+          0, 
+          newCommitGroup.hash, 
+          new Map()
+        );
+        currentVersions.set(newAction.name, newVersion);
+        service.versions.push(newVersion);
         result.generatables.set(newAction.name, service);
       } else {
         if (newAction instanceof TypeAction) {
           const _type = result.generatables.get(newAction.name);
-          if (!_type || !(_type instanceof Type)) {
-            throw new Error('Should not happen');
-          }
+          assert(_type);
+          assert(_type instanceof Type);
+
           _type.changeLog.push(newAction.changeLog);
           const versionNumber = newCommitGroup.versions.get(newAction.name);
           assert(versionNumber);
@@ -417,17 +416,45 @@ export function superLoop(
             }
             _type.versions.push(newVersion);
           }
-          updateVersion(newVersion, newAction);
+          assert(newVersion instanceof Version);
+          updateTypeVersion(newVersion, newAction);
         } else {
           const service = result.generatables.get(newAction.name);
-          if (!service || !(service instanceof Service)) {
-            throw new Error('Should not happen');
+          assert(service);
+          assert(service instanceof Service);
+
+          service.changeLog.push(newAction.changeLog);
+          const versionNumber = newCommitGroup.versions.get(newAction.name);
+          assert(versionNumber);
+
+          let newVersion = currentVersions.get(newAction.name);
+          if (newVersion === undefined) {
+            newVersion = new ServiceVersion(
+              newAction.name, 
+              versionNumber, 
+              newCommitGroup.hash, new Map
+            );
+            currentVersions.set(newAction.name, newVersion);
+            if (service.versions.length > 0) {
+              const copiedMappings = new Map();
+              for (let [outputKey, inputs] of newVersion.mappings.entries()) {
+                const copiedInputs = new Map();
+                for (let [inputKey, input] of inputs.entries()) {
+                  copiedInputs.set(inputKey, input);
+                }
+                copiedMappings.set(outputKey, copiedInputs);
+              }
+              newVersion.mappings = copiedMappings;
+            }
+            service.versions.push(newVersion);
           }
+
           service.changeLog.push(newAction.changeLog);
           if (newAction instanceof UpdateDescriptionServiceAction) {
             service.description = newAction.description;
           }
-          updateServiceVersion(service, newAction);
+          assert(newVersion instanceof ServiceVersion);
+          updateServiceVersion(newVersion, newAction);
         }
       }
     }

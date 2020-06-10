@@ -677,6 +677,69 @@ export class AddVersionServiceChangeAction extends ServiceChangeAction implement
   }
 };
 
+export class DeleteMappingServiceAction extends ServiceAction implements HashedAction, ActionDefaults {
+  hash: string;
+  version: number;
+  changeLog: string;
+  name: string;
+  description: string;
+  inputType: string;
+  outputType: string;
+  inputVersion: number;
+  outputVersion: number;
+
+  constructor(
+    hash: string,
+    version: number,
+    changeLog: string,
+    name: string,
+    description: string,
+    inputType: string,
+    outputType: string,
+    inputVersion: number,
+    outputVersion: number,
+  ) {
+    super(name, changeLog);
+    this.hash = hash;
+    this.version = version;
+    this.changeLog = changeLog;
+    this.name = name;
+    this.description = description;
+    this.inputType = inputType;
+    this.outputType = outputType;
+    this.inputVersion = inputVersion;
+    this.outputVersion = outputVersion;
+  }
+}
+
+export class DeleteMappingServiceChangeAction extends ServiceAction implements HashedAction, ActionDefaults {
+  changeLog: string;
+  name: string;
+  description: string;
+  inputType: string;
+  outputType: string;
+  inputVersion: number;
+  outputVersion: number;
+
+  constructor(
+    changeLog: string,
+    name: string,
+    description: string,
+    inputType: string,
+    outputType: string,
+    inputVersion: number,
+    outputVersion: number,
+  ) {
+    super(name, changeLog);
+    this.changeLog = changeLog;
+    this.name = name;
+    this.description = description;
+    this.inputType = inputType;
+    this.outputType = outputType;
+    this.inputVersion = inputVersion;
+    this.outputVersion = outputVersion;
+  }
+}
 
 export type GroupVersions = {
   [key: string]: number;

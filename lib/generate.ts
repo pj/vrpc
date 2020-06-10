@@ -83,13 +83,8 @@ export class ScalarField extends BaseField {
 }
 
 export class ReferenceField extends BaseField {
-  
   referenceType: string;
-
-  
   referenceHash?: string;
-
-  
   referenceVersion?: number;
 
   constructor(
@@ -183,7 +178,6 @@ export class BaseGeneratable {
   }
 }
 
-
 export class Type extends BaseGeneratable{
   versions: Version[];
   changeSetName?: string;
@@ -194,43 +188,73 @@ export class Type extends BaseGeneratable{
   }
 }
 
+// export class VersionType {
+//   _type: string;
+//   version: number;
+//   hash: string;
 
-export class VersionType {
-  _type: string;
-  version: number;
-  hash: string;
+//   constructor(
+//     _type: string,
+//     hash: string,
+//     version: number,
+//   ) {
+//     this._type = _type;
+//     this.hash = hash;
+//     this.version = version;
+//   }
 
-  constructor(
-    _type: string,
-    hash: string,
-    version: number,
-  ) {
-    this._type = _type;
-    this.hash = hash;
-    this.version = version;
-  }
+//   toString(): string {
+//     return `${this._type}_V${this.version}`;
+//   }
+// }
 
-  toString(): string {
-    return `${this._type}_V${this.version}`;
-  }
-}
-
-export class ServiceTriple {
+export class ServiceMapping {
   name: string;
   version: number;
-  _from: VersionType;
-  to: VersionType;
+  inputType: string;
+  inputVersion: number;
+  inputHash: string;
+  outputType: string;
+  outputVersion: number;
+  outputHash: string;
 
   constructor(
     name: string,
     version: number,
-    _from: VersionType,
-    to: VersionType
+    inputType: string,
+    inputVersion: number,
+    inputHash: string,
+    outputType: string,
+    outputVersion: number,
+    outputHash: string,
   ) {
     this.name = name;
     this.version = version;
-    this._from = _from;
-    this.to = to;
+    this.inputType = inputType;
+    this.inputVersion = inputVersion;
+    this.inputHash = inputHash;
+    this.outputType = outputType;
+    this.outputVersion = outputVersion;
+    this.outputHash = outputHash;
+  }
+}
+
+export class ServiceVersion {
+  name: string;
+  version: number;
+  hash: string;
+  mappings: Map<string, Map<string, ServiceMapping>>;
+
+  constructor(
+    name: string,
+    version: number,
+    hash: string,
+    mappings: Map<string, Map<string, ServiceMapping>>
+  ) {
+    this.name = name;
+    this.version = version;
+    this.hash = hash;
+    this.mappings = mappings;
   }
 }
 
@@ -238,7 +262,7 @@ export class Service extends BaseGeneratable {
   name: string;
   changeLog: string[];
   description: string;
-  versions: ServiceTriple[];
+  versions: ServiceVersion[];
 
   constructor(
     name: string,
