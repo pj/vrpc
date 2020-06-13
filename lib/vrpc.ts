@@ -18,27 +18,15 @@ import {
   NewServiceAction,
   UpdateDescriptionServiceAction,
   AddVersionServiceAction,
-  RenameFieldTypeChangeAction,
-  RequiredFieldTypeChangeAction,
-  OptionalFieldTypeChangeAction,
-  DeleteFieldTypeChangeAction,
-  SetDefaultFieldTypeChangeAction,
-  RemoveDefaultFieldTypeChangeAction,
-  AddFieldTypeChangeAction,
-  UpdateFieldDescriptionTypeChangeAction,
-  ReferenceFieldTypeChangeAction,
   NewTypeChangeAction,
   NewServiceChangeAction,
-  UpdateDescriptionServiceChangeAction,
-  AddVersionServiceChangeAction,
   BaseChangeAction,
   BaseAction,
   changeActionToAction,
   TypeAction,
   DeleteMappingServiceAction
 } from './action';
-import assert from 'assert';
-import { Service, Type, BaseGeneratable, Version, VersionType, ScalarField, ReferenceField, ServiceVersion, ServiceMapping } from './generate';
+import assert from 'assert'; import { Service, Type, BaseGeneratable, Version, ScalarField, ReferenceField, ServiceVersion, ServiceMapping } from './generate';
 
 export class ValidationError extends Error {
 
@@ -282,8 +270,10 @@ export function superLoop(
 
   let afterHashed = false;
 
+  // Current version number for a type.
+  const currentVersionNumbers = new Map<string, number>();
   for (const commitGroup of commitLog) {
-    const generatablesIncremented = new Map<string, number>();
+    const incrementedTypes = new Set();
     const newGroupActions = [];
 
     // Validate log and create 
@@ -304,29 +294,32 @@ export function superLoop(
       }
       result.previousHash = expectedHash;
 
-      const existingGeneratable = result.generatables.get(commitAction.name);
+      const existingVersionNumber = currentVersionNumbers.get(
+        commitAction.name
+      );
       let currentVersion;
-      if (!existingGeneratable) {
+      if (existingVersionNumber === undefined) {
         if (!isNewAction(commitAction)) {
           throw new ValidationError(
             `Action is for type or service ${commitAction.name}, but no type or service exists for that name`
           );
         } 
-        generatablesIncremented.set(commitAction.name, 0);
+        currentVersionNumbers.set(commitAction.name, 0);
         currentVersion = 0;
+        incrementedTypes.add(commitAction.name);
       } else {
         if (isNewAction(commitAction)) {
           throw new ValidationError(
             `Type or service ${commitAction.name} already exists.`
           );
         } 
-        assert(existingGeneratable.currentVersion);
-        if (generatablesIncremented.has(commitAction.name)) {
-          currentVersion = generatablesIncremented.get(commitAction.name);
-          assert(currentVersion);
+        if (incrementedTypes.has(commitAction.name)) {
+          currentVersion = currentVersionNumbers.get(commitAction.name);
+          assert(currentVersion !== undefined);
         } else {
-          currentVersion = existingGeneratable.currentVersion + 1
-          generatablesIncremented.set(commitAction.name, currentVersion);
+          currentVersion = existingVersionNumber + 1
+          currentVersionNumbers.set(commitAction.name, currentVersion);
+          incrementedTypes.add(commitAction.name);
         }
       }
 
@@ -339,10 +332,9 @@ export function superLoop(
         );
       } else {
         newAction = commitAction;
-        const actionVersion = commitGroup.versions.get(commitAction.name);
-        if (actionVersion !== currentVersion) {
+        if (commitAction.version !== currentVersion) {
           throw new ValidationError(
-            `Group Version doesn't match expected ${currentVersion} got ${actionVersion} for type ${generatablesIncremented} object: ${JSON.stringify(commitAction, null, 4)}`
+            `Group Version doesn't match expected ${currentVersion} got ${commitAction.version} for type ${currentVersionNumbers} object: ${JSON.stringify(commitAction, null, 4)}`
           );
         }
       }
@@ -361,11 +353,10 @@ export function superLoop(
       result.newLog.push(commitGroup);
       newCommitGroup = commitGroup;
     } else {
-      assert(result.previousHash);
+      assert(result.previousHash !== null);
       newCommitGroup = new GroupAction(
           result.previousHash,
-          newGroupActions,
-          generatablesIncremented
+          newGroupActions
         );
       result.newLog.push(newCommitGroup);
     }
@@ -401,12 +392,12 @@ export function superLoop(
       } else {
         if (newAction instanceof TypeAction) {
           const _type = result.generatables.get(newAction.name);
-          assert(_type);
+          assert(_type !== undefined);
           assert(_type instanceof Type);
 
           _type.changeLog.push(newAction.changeLog);
-          const versionNumber = newCommitGroup.versions.get(newAction.name);
-          assert(versionNumber);
+          const versionNumber = currentVersionNumbers.get(newAction.name);
+          assert(versionNumber !== undefined);
           let newVersion = currentVersions.get(newAction.name);
           if (newVersion === undefined) {
             newVersion = new Version(newAction.name, newCommitGroup.hash, versionNumber, {});
@@ -420,12 +411,12 @@ export function superLoop(
           updateTypeVersion(newVersion, newAction);
         } else {
           const service = result.generatables.get(newAction.name);
-          assert(service);
+          assert(service !== undefined);
           assert(service instanceof Service);
 
           service.changeLog.push(newAction.changeLog);
-          const versionNumber = newCommitGroup.versions.get(newAction.name);
-          assert(versionNumber);
+          const versionNumber = currentVersionNumbers.get(newAction.name);
+          assert(versionNumber !== undefined);
 
           let newVersion = currentVersions.get(newAction.name);
           if (newVersion === undefined) {
@@ -522,7 +513,7 @@ export function types(
 ): Type[] {
   const result = superLoop(log, changeSet);
   const types = [];
-  for (let generatable of result.generatables) {
+  for (let generatable of result.generatables.values()) {
     if (generatable instanceof Type) {
       types.push(generatable);
     }

@@ -37,9 +37,9 @@ export interface Reference {
 }
 
 export interface VersionElement {
-    _from:      FromObject;
-    changeLog?: string;
-    to:         FromObject;
+    _from:     FromObject;
+    changeLog: string;
+    to:        FromObject;
 }
 
 export interface FromObject {
@@ -210,7 +210,7 @@ const typeMap: any = {
     ], false),
     "VersionElement": o([
         { json: "_from", js: "_from", typ: r("FromObject") },
-        { json: "changeLog", js: "changeLog", typ: u(undefined, "") },
+        { json: "changeLog", js: "changeLog", typ: "" },
         { json: "to", js: "to", typ: r("FromObject") },
     ], "any"),
     "FromObject": o([

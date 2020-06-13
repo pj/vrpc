@@ -741,35 +741,35 @@ export class DeleteMappingServiceChangeAction extends ServiceAction implements H
   }
 }
 
-export type GroupVersions = {
-  [key: string]: number;
-};
+// export type GroupVersions = {
+//   [key: string]: number;
+// };
 
 
 export class GroupAction {
   hash: string;
   actions: BaseAction[];
-  versions: Map<string, number>;
+  // versions: Map<string, number>;
 
   constructor(
     hash: string,
     actions: BaseAction[],
-    versions: Map<string, number>
+    // versions: Map<string, number>
   ) {
     this.hash = hash;
     this.actions = actions;
-    this.versions = versions;
+    // this.versions = versions;
   }
 }
 export class GroupChangeAction {
   actions: BaseChangeAction[];
-  versions: Map<string, number>;
+  // versions: Map<string, number>;
 
   constructor(
     actions: BaseChangeAction[],
   ) {
     this.actions = actions;
-    this.versions = new Map();
+    // this.versions = new Map();
   }
 }
 

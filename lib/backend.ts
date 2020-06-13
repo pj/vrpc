@@ -1,4 +1,4 @@
-import {Action, ChangeSet, GroupAction, NewTypeAction, NewTypeChangeAction, AddFieldTypeChangeAction, ReferenceFieldTypeChangeAction, OptionalFieldTypeChangeAction, RequiredFieldTypeChangeAction, RemoveDefaultFieldTypeChangeAction, SetDefaultFieldTypeChangeAction, UpdateFieldDescriptionTypeChangeAction, ChangeAction, DeleteFieldTypeChangeAction, NewServiceChangeAction, AddVersionServiceChangeAction, UpdateDescriptionServiceChangeAction} from './action';
+import {BaseChangeAction, ChangeSet, GroupAction, NewTypeAction, NewTypeChangeAction, AddFieldTypeChangeAction, ReferenceFieldTypeChangeAction, OptionalFieldTypeChangeAction, RequiredFieldTypeChangeAction, RemoveDefaultFieldTypeChangeAction, SetDefaultFieldTypeChangeAction, UpdateFieldDescriptionTypeChangeAction, DeleteFieldTypeChangeAction, NewServiceChangeAction, AddVersionServiceChangeAction, UpdateDescriptionServiceChangeAction} from './action';
 import {Type, Service, Version} from './generate';
 import { TypeDefinition, Field } from './generated/type_definition';
 import assert from 'assert';
@@ -35,7 +35,7 @@ export interface Backend {
 
 function addField(
   versionsByType: Map<string, Map<number, Version>>, 
-  newLog: ChangeAction[], 
+  newLog: BaseChangeAction[], 
   newTypeName: string, 
   newField: Field
 ) {
@@ -47,7 +47,7 @@ function addField(
         newField.name,
         newField._type,
         newField.description,
-        newField.optional,
+        newField.optional === undefined ? false : newField.optional,
         newField._default
       )
     );
@@ -62,7 +62,7 @@ function addField(
         newTypeName,
         newField.name,
         newField.description,
-        newField.optional,
+        newField.optional === undefined ? false : newField.optional,
         newField.reference._type,
         hash,
         newField.reference.version
@@ -75,7 +75,7 @@ function addField(
 
 function generateTypes(
   versionsByType: Map<string, Map<number, Version>>, 
-  newLog: ChangeAction[], 
+  newLog: BaseChangeAction[], 
   oldTypes: Map<string, TypeDefinition>,
   newTypes: Map<string, TypeDefinition>
 ) {
@@ -192,7 +192,7 @@ function generateTypes(
 
 function generateServices(
   versionsByType: Map<string, Map<number, Version>>,
-  newLog: ChangeAction[], 
+  newLog: BaseChangeAction[], 
   oldServices: Map<string, TypeDefinition>,
   newServices: Map<string, TypeDefinition>
 ) {
@@ -320,7 +320,7 @@ export function changeSetFromTypeDefintion(
     }
   }
 
-  const newLog: ChangeAction[] = [];
+  const newLog: BaseChangeAction[] = [];
 
   generateTypes(
     versionsByType,
