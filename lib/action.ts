@@ -644,7 +644,6 @@ export class AddVersionServiceAction extends ServiceAction implements HashedActi
   }
 }
 
-
 export class AddVersionServiceChangeAction extends ServiceChangeAction implements ActionDefaults {
   changeLog: string;
   name: string;
@@ -682,7 +681,6 @@ export class DeleteMappingServiceAction extends ServiceAction implements HashedA
   version: number;
   changeLog: string;
   name: string;
-  description: string;
   inputType: string;
   outputType: string;
   inputVersion: number;
@@ -693,7 +691,6 @@ export class DeleteMappingServiceAction extends ServiceAction implements HashedA
     version: number,
     changeLog: string,
     name: string,
-    description: string,
     inputType: string,
     outputType: string,
     inputVersion: number,
@@ -704,7 +701,6 @@ export class DeleteMappingServiceAction extends ServiceAction implements HashedA
     this.version = version;
     this.changeLog = changeLog;
     this.name = name;
-    this.description = description;
     this.inputType = inputType;
     this.outputType = outputType;
     this.inputVersion = inputVersion;
@@ -715,7 +711,6 @@ export class DeleteMappingServiceAction extends ServiceAction implements HashedA
 export class DeleteMappingServiceChangeAction extends ServiceAction implements HashedAction, ActionDefaults {
   changeLog: string;
   name: string;
-  description: string;
   inputType: string;
   outputType: string;
   inputVersion: number;
@@ -724,7 +719,6 @@ export class DeleteMappingServiceChangeAction extends ServiceAction implements H
   constructor(
     changeLog: string,
     name: string,
-    description: string,
     inputType: string,
     outputType: string,
     inputVersion: number,
@@ -733,7 +727,6 @@ export class DeleteMappingServiceChangeAction extends ServiceAction implements H
     super(name, changeLog);
     this.changeLog = changeLog;
     this.name = name;
-    this.description = description;
     this.inputType = inputType;
     this.outputType = outputType;
     this.inputVersion = inputVersion;
@@ -741,35 +734,25 @@ export class DeleteMappingServiceChangeAction extends ServiceAction implements H
   }
 }
 
-// export type GroupVersions = {
-//   [key: string]: number;
-// };
-
-
 export class GroupAction {
   hash: string;
   actions: BaseAction[];
-  // versions: Map<string, number>;
 
   constructor(
     hash: string,
     actions: BaseAction[],
-    // versions: Map<string, number>
   ) {
     this.hash = hash;
     this.actions = actions;
-    // this.versions = versions;
   }
 }
 export class GroupChangeAction {
   actions: BaseChangeAction[];
-  // versions: Map<string, number>;
 
   constructor(
     actions: BaseChangeAction[],
   ) {
     this.actions = actions;
-    // this.versions = new Map();
   }
 }
 
@@ -839,6 +822,11 @@ export function fieldsToHash(action: BaseChangeAction | GroupChangeAction) {
       action instanceof NewTypeChangeAction
     ) {
       return `${action.changeLog}_${action.name}_${action.description}`;
+    } else if (
+      action instanceof DeleteMappingServiceAction ||
+      action instanceof DeleteMappingServiceChangeAction
+    ) {
+      return `${action.changeLog}_${action.name}_${action.inputType}_${action.outputType}_${action.inputVersion}_${action.outputVersion}`;
     } else if (
       action instanceof GroupAction
     ) {
@@ -998,197 +986,18 @@ export function changeActionToAction(
         action.name,
         action.description
       );
+    } else if (action instanceof DeleteMappingServiceChangeAction) {
+      return new DeleteMappingServiceAction(
+        hash,
+        version,
+        action.changeLog,
+        action.name,
+        action.inputType,
+        action.outputType,
+        action.inputVersion,
+        action.outputVersion,
+      );
     } else {
       throw new Error(`Can't hash ${JSON.stringify(action, null, 4)}`)
     }
 };
-
-function stringNotNull(action: any, name: string): string {
-  const field = action[name];
-
-  if (field === null || field === undefined) {
-    throw new ValidationError(`Field ${name} must not be null or undefined. ${action}`);
-  }
-
-  if (typeof field === 'string') {
-    return field;
-  }
-
-  throw new ValidationError(`Field ${name} must be a string. ${action}`);
-}
-
-function integerNotNull(action: any, name: string): number {
-  const field = action[name];
-
-  if (field === null || field === undefined) {
-    throw new ValidationError(`Field ${name} must not be null or undefined. ${action}`);
-  }
-
-  if (typeof field === 'number' && parseInt(field.toString())) {
-    return field;
-  }
-
-  throw new ValidationError(`Field ${name} must be an integer. ${action}`);
-}
-
-function booleanNotNull(action: any, name: string): boolean {
-  const field = action[name];
-
-  if (field === null || field === undefined) {
-    throw new ValidationError(`Field ${name} must not be null or undefined. ${action}`);
-  }
-
-  if (typeof field === 'boolean') {
-    return field;
-  }
-
-  throw new ValidationError(`Field ${name} must be a boolean. ${action}`);
-}
-
-// function loadAction(rawAction: any): Action {
-//   const commonFields = {
-//     changeLog: stringNotNull(rawAction, 'changeLog'),
-//     hash: stringNotNull(rawAction, 'hash'),
-//     version: integerNotNull(rawAction, 'version'),
-//   };
-//   switch(rawAction.actionType) {
-//   // Services
-//   case 'NewServiceAction':
-//     return ({
-//       name: stringNotNull(rawAction, 'name'),
-//       description: stringNotNull(rawAction, 'description'),
-//       ...commonFields
-//     });
-//   case 'UpdateDescriptionServiceAction':
-//     return ({
-//       name: stringNotNull(rawAction, 'name'),
-//       description: stringNotNull(rawAction, 'description'),
-//       ...commonFields
-//     });
-//   case 'AddVersionServiceAction':
-//     return ({
-//       name: stringNotNull(rawAction, 'name'),
-//       inputType: stringNotNull(rawAction, 'inputType'),
-//       outputType: stringNotNull(rawAction, 'outputType'),
-//       inputVersion: integerNotNull(rawAction, 'inputVersion'),
-//       inputHash: stringNotNull(rawAction, 'inputHash'),
-//       outputVersion: integerNotNull(rawAction, 'outputVersion'),
-//       outputHash: stringNotNull(rawAction, 'outputHash'),
-//       ...commonFields
-//     });
-//   // Types
-//   case 'RenameFieldTypeAction':
-//     return ({
-//       name: stringNotNull(rawAction, 'name'),
-//       _from: stringNotNull(rawAction, '_from'),
-//       to: stringNotNull(rawAction, 'to'),
-//       ...commonFields
-//     });
-//   case 'RequiredFieldTypeAction':
-//     return ({
-//       name: stringNotNull(rawAction, 'name'),
-//       fieldName: stringNotNull(rawAction, 'fieldName'),
-//       ...commonFields
-//     });
-//   case 'OptionalFieldTypeAction':
-//     return ({
-//       name: stringNotNull(rawAction, 'name'),
-//       fieldName: stringNotNull(rawAction, 'fieldName'),
-//       ...commonFields
-//     });
-//   case 'DeleteFieldTypeAction':
-//     return ({
-//       name: stringNotNull(rawAction, 'name'),
-//       fieldName: stringNotNull(rawAction, 'fieldName'),
-//       ...commonFields
-//     });
-//   case 'SetDefaultFieldTypeAction':
-//     return ({
-//       name: stringNotNull(rawAction, 'name'),
-//       fieldName: stringNotNull(rawAction, 'fieldName'),
-//       _default: stringNotNull(rawAction, '_default'),
-//       ...commonFields
-//     });
-//   case 'RemoveDefaultFieldTypeAction':
-//     return ({
-//       name: stringNotNull(rawAction, 'name'),
-//       fieldName: stringNotNull(rawAction, 'fieldName'),
-//       ...commonFields
-//     });
-//   case 'AddFieldTypeAction':
-//     if (FieldTypeValues.indexOf(rawAction.type) === -1) {
-//       throw new ValidationError(
-//         'Unknown field type ${rawAction.type} in action ${rawAction}'
-//       );
-//     }
-//     return ({
-//       name: stringNotNull(rawAction, 'name'),
-//       fieldName: stringNotNull(rawAction, 'fieldName'),
-//       _type: rawAction._type,
-//       description: stringNotNull(rawAction, 'description'),
-//       optional: booleanNotNull(rawAction, 'optional'),
-//       _default: rawAction._default,
-//       ...commonFields
-//     });
-//   case 'UpdateFieldDescriptionTypeAction':
-//     return ({
-//       name: stringNotNull(rawAction, 'name'),
-//       fieldName: stringNotNull(rawAction, 'fieldName'),
-//       description: stringNotNull(rawAction, 'description'),
-//       ...commonFields
-//     });
-//   case 'ReferenceFieldTypeAction':
-//     return ({
-//       name: stringNotNull(rawAction, 'name'),
-//       fieldName: stringNotNull(rawAction, 'fieldName'),
-//       description: stringNotNull(rawAction, 'description'),
-//       optional: booleanNotNull(rawAction, 'optional'),
-//       referenceType: stringNotNull(rawAction, 'referenceType'),
-//       referenceHash: stringNotNull(rawAction, 'referenceHash'),
-//       referenceVersion: integerNotNull(rawAction, 'referenceVersion'),
-//       ...commonFields
-//     });
-//   case 'NewTypeAction':
-//     return ({
-//       name: stringNotNull(rawAction, 'name'),
-//       description: rawAction.description,
-//       ...commonFields
-//     });
-//   default:
-//     throw new ValidationError(`Unknown Action: ${rawAction}`)
-//   }
-// }
-
-// export function loadActions(log: any[]): GroupAction[] {
-//   const loadedActions: GroupAction[] = [];
-//   for (let rawAction of log) {
-//     if (rawAction.actionType !== 'GroupAction') {
-//       throw new ValidationError(`Log entry must be GroupAction ${rawAction}`);
-//     }
-//     const groupedActions = [];
-//     for (const subAction of rawAction.actions) {
-//       groupedActions.push(loadAction(subAction));
-//     }
-//     const versions: GroupVersions = {};
-//     Object.keys(rawAction.versions).forEach(key => {
-//       if (!(typeof key === 'string')) {
-//         throw new ValidationError(`version key must be a string key: ${key}, action: ${rawAction}`);
-//       }
-
-//       const version = rawAction.versions[key];
-//       if (!(typeof version !== 'number')) {
-//         throw new ValidationError(`version must be a number: key: ${key} version: ${version}, action: ${rawAction}`);
-//       }
-
-//       versions[key] = version;
-//     })
-//     loadedActions.push({
-//       actions: groupedActions,
-//       versions: versions,
-//       hash: stringNotNull(rawAction, 'hash'),
-//       version: integerNotNull(rawAction, 'version')
-//     });
-//   }
-
-//   return loadedActions;
-// }

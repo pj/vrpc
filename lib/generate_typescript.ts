@@ -1,16 +1,12 @@
-import * as generate_typescript from './generate_typescript';
 import * as prettier from 'prettier';
 
 import {
   Service,
-  VersionType,
   Type,
   Version,
   BaseField,
-  ScalarField,
-  ReferenceField,
   FieldObject,
-  ServiceVersions,
+  ServiceVersion,
 } from './generate';
 
 // Stuff to generate express js stuff.
@@ -28,23 +24,22 @@ const serviceHeader = (service: Service) => `/*
 const changeLog =
   (changeLog: string[]) => changeLog.map((log, index) => `* ${index}. ${log}`).join('\n');
 
-function imports(versions: ServiceVersions) {
-  let allImports = [];
+function imports(versions: ServiceVersion[]) {
+  let allImports = new Set();
 
-  for (let version of Object.values(versions)) {
-    let versionImports = [];
-    versionImports.push(version.output);
-    versionImports.push(version.output._type);
-    for (let inputVersion of version.inputs) {
-      versionImports.push(inputVersion);
-      versionImports.push(inputVersion._type);
+  for (let version of versions) {
+    for (let outputs of version.mappings.values()) {
+      for (let mapping of outputs.values()) {
+        allImports.add(mapping.inputType);
+        allImports.add(`${mapping.inputType}_${mapping.inputVersion}`);
+        allImports.add(mapping.outputType);
+        allImports.add(`${mapping.outputType}_${mapping.outputVersion}`);
+      }
     }
-
-    allImports.push(versionImports.join(',\n'));
   }
 
   return `import {
-  ${allImports.join(',\n')}
+  ${Array.from(allImports).join(',\n')}
 } from './types';`
 }
 

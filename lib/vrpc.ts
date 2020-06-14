@@ -202,46 +202,6 @@ function updateTypeVersion(newVersion: Version, logAction: Action) {
   }
 }
 
-// export function typeOrServiceName(
-//   logAction: Action
-// ): string {
-//   if (
-//     logAction instanceof RenameFieldTypeAction || 
-//     logAction instanceof RequiredFieldTypeAction || 
-//     logAction instanceof OptionalFieldTypeAction || 
-//     logAction instanceof DeleteFieldTypeAction || 
-//     logAction instanceof SetDefaultFieldTypeAction || 
-//     logAction instanceof RemoveDefaultFieldTypeAction || 
-//     logAction instanceof AddFieldTypeAction || 
-//     logAction instanceof UpdateFieldDescriptionTypeAction || 
-//     logAction instanceof ReferenceFieldTypeAction || 
-//     logAction instanceof NewTypeAction ||
-//     logAction instanceof RenameFieldTypeChangeAction || 
-//     logAction instanceof RequiredFieldTypeChangeAction || 
-//     logAction instanceof OptionalFieldTypeChangeAction || 
-//     logAction instanceof DeleteFieldTypeChangeAction || 
-//     logAction instanceof SetDefaultFieldTypeChangeAction || 
-//     logAction instanceof RemoveDefaultFieldTypeChangeAction || 
-//     logAction instanceof AddFieldTypeChangeAction || 
-//     logAction instanceof UpdateFieldDescriptionTypeChangeAction || 
-//     logAction instanceof ReferenceFieldTypeChangeAction || 
-//     logAction instanceof NewTypeChangeAction
-//   ) {
-//     return logAction.typeName;
-//   } else if (
-//     logAction instanceof UpdateDescriptionServiceAction || 
-//     logAction instanceof AddVersionServiceAction || 
-//     logAction instanceof NewServiceAction ||
-//     logAction instanceof UpdateDescriptionServiceChangeAction || 
-//     logAction instanceof AddVersionServiceChangeAction || 
-//     logAction instanceof NewServiceChangeAction
-//   ) {
-//     return logAction.serviceName;
-//   }
-
-//   throw new Error('Satisfying typescript');
-// }
-
 // Validation, commit and generation are all kind of part of the same process 
 // and are hard to separate. This is basically the function of superLoop.
 export class SuperLoopResult {

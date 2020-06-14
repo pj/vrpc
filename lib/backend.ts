@@ -1,4 +1,4 @@
-import {BaseChangeAction, ChangeSet, GroupAction, NewTypeAction, NewTypeChangeAction, AddFieldTypeChangeAction, ReferenceFieldTypeChangeAction, OptionalFieldTypeChangeAction, RequiredFieldTypeChangeAction, RemoveDefaultFieldTypeChangeAction, SetDefaultFieldTypeChangeAction, UpdateFieldDescriptionTypeChangeAction, DeleteFieldTypeChangeAction, NewServiceChangeAction, AddVersionServiceChangeAction, UpdateDescriptionServiceChangeAction} from './action';
+import {BaseChangeAction, ChangeSet, GroupAction, NewTypeAction, NewTypeChangeAction, AddFieldTypeChangeAction, ReferenceFieldTypeChangeAction, OptionalFieldTypeChangeAction, RequiredFieldTypeChangeAction, RemoveDefaultFieldTypeChangeAction, SetDefaultFieldTypeChangeAction, UpdateFieldDescriptionTypeChangeAction, DeleteFieldTypeChangeAction, NewServiceChangeAction, AddVersionServiceChangeAction, UpdateDescriptionServiceChangeAction, DeleteMappingServiceChangeAction} from './action';
 import {Type, Service, Version} from './generate';
 import { TypeDefinition, Field } from './generated/type_definition';
 import assert from 'assert';
@@ -247,9 +247,16 @@ function generateServices(
 
       // TODO: Service deprecation, renaming and hard delete.
       const oldFromTo = new Set<string>();
+      const newFromTo = new Set<string>();
 
       for (let version of oldService.versions) {
         oldFromTo.add(
+          `${version._from.name}_${version._from.version}_${version.to.name}_ ${version.to.version}`
+        );
+      }
+
+      for (let version of newService.versions) {
+        newFromTo.add(
           `${version._from.name}_${version._from.version}_${version.to.name}_ ${version.to.version}`
         );
       }
@@ -276,6 +283,23 @@ function generateServices(
               inputHash,
               version.to.version,
               outputHash
+            )
+          );
+        }
+      }
+
+      for (let version of oldService.versions) {
+        if (!newFromTo.has(
+          `${version._from.name}_${version._from.version}_${version.to.name}_ ${version.to.version}`
+        )) {
+          newLog.push(
+            new DeleteMappingServiceChangeAction(
+              version.changeLog,
+              newService.name,
+              version.to.name,
+              version._from.name,
+              version._from.version,
+              version.to.version,
             )
           );
         }
