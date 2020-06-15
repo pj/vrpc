@@ -7,6 +7,7 @@ import {
   BaseField,
   FieldObject,
   ServiceVersion,
+  ServiceMapping,
 } from './generate';
 
 // Stuff to generate express js stuff.
@@ -31,93 +32,178 @@ function imports(versions: ServiceVersion[]) {
     for (let outputs of version.mappings.values()) {
       for (let mapping of outputs.values()) {
         allImports.add(mapping.inputType);
-        allImports.add(`${mapping.inputType}_${mapping.inputVersion}`);
+        allImports.add(`${mapping.inputType}_V${mapping.inputVersion}`);
         allImports.add(mapping.outputType);
-        allImports.add(`${mapping.outputType}_${mapping.outputVersion}`);
+        allImports.add(`${mapping.outputType}_V${mapping.outputVersion}`);
       }
     }
   }
 
   return `import {
   ${Array.from(allImports).join(',\n')}
-} from './types';`
+} from './types';
+`
 }
 
-function serviceVersion(
-  service: Service,
-  inputs: VersionType[],
-  output: VersionType,
-) {
-  const allInputs = inputs.join(' | ');
-  const allDefines = [];
+function* rawMappings(mappings: Map<string, Map<string, ServiceMapping>>) {
+  for (let x of mappings.values()) {
+    for (let y of x.values()) {
+      yield y;
+    }
+  }
+}
 
-  for (let input of inputs) {
-    allDefines.push(`${service.name}Definitions.set("${input}", func);`);
+function mappingKey(mapping: ServiceMapping) {
+  return `${mapping.inputType}_${mapping.inputVersion}_${mapping.outputType}_${mapping.outputVersion}`;
+}
+
+function serviceExternalDefinition(service: Service) {
+  const allVersions = [];
+  const prevMappings = new Set();
+  for (let version of service.versions) {
+    const allMappings = [];
+    const versionMappings = new Set();
+    for (let mapping of rawMappings(version.mappings)) {
+      const key = mappingKey(mapping);
+      let optional = prevMappings.has(key) ? '?' : '';
+      versionMappings.add(key);
+      allMappings.push(
+        `${mapping.name}_V${mapping.version}${optional}: (input: ${mapping.inputType}_V${mapping.inputVersion}): ${mapping.outputType}_V${mapping.outputVersion};`
+      );
+    }
+
+    for (let key of versionMappings) {
+      if (!prevMappings.has(key)) {
+        prevMappings.add(key);
+      }
+    }
+
+    for (let key of prevMappings) {
+      if (!versionMappings.has(key)) {
+        prevMappings.delete(key);
+      }
+    }
+
+    allVersions.push(
+      `v${version.version}: {
+        ${allMappings.join('\n')}
+      }`
+    );
   }
 
-  return `
-function ${service.name}(
-  func: (input: ${allInputs}) => ${output}
-): void {
-  ${allDefines.join('n')}
+  return `export type ${service.name} = {
+    ${allVersions.join('\n')}
+};`;
 }
-`;
+
+function serviceInternalDefinitionMappings(mappings: Iterable<ServiceMapping>) {
+  const allMappings = [];
+  for (const mapping of mappings) {
+    allMappings.push(
+      `${mapping.inputType}_V${mapping.inputVersion}: (input: ${mapping.inputType}_V${mapping.inputVersion}): ${mapping.outputType}_V${mapping.outputVersion};`
+    );
+  }
+
+  return allMappings.join('\n');
+}
+
+function serviceInternalDefinition(service: Service) {
+  const allVersions = [];
+  for (let version of service.versions) {
+    allVersions.push(
+      `v${version.version}: {
+        ${serviceInternalDefinitionMappings(rawMappings(version.mappings))}
+      }`
+    );
+  }
+
+  return `type ${service.name}Internal = {
+    ${allVersions.join('\n')}
+};`;
+}
+
+function serviceTypeTable(service: Service) {
+  const allVersions = [];
+  for (let version of service.versions) {
+    const allMappings = [];
+    for (let mapping of rawMappings(version.mappings)) {
+      allMappings.push(
+        `"${mapping.inputType}_V${mapping.inputVersion}": [
+          ${mapping.inputType},
+          ${mapping.outputType}
+        ],`
+      );
+    }
+    allVersions.push(
+      `"v${version.version}": {
+        ${allMappings.join('\n')}
+      },`
+    );
+  }
+
+  return `const ${service.name}TypeMapping = {
+    ${allVersions.join('\n')}
+};`;
 }
 
 function serviceBody(service: Service) {
-  const allVersions = [];
-  const allResponses = [];
-  const allDefines = [];
-
-  for (let version of Object.values(service.versions)) {
-    //const allInputs = inputVersions.join(' | ');
-    allDefines.push(
-      serviceVersion(
-        service, 
-        version.inputs, 
-        version.output
-      )
-    );
-
-    for (let inputVersion of version.inputs) {
-      allResponses.push(
-`case '${inputVersion}':
-  const inputMessage = ${inputVersion}.deserialize(body);
-  const func = ${service.name}Definitions.get("${inputVersion}");
-  const response = func(inputMessage);
-  const outputMessage = ${version.output._type}.serialize(response);
-  res.json(outputMessage);
-  return;`);
-      allVersions.push(`"${inputVersion}"`);
-    }
-  }
 
   return `
 ${serviceHeader(service)}
 ${imports(service.versions)}
 
-const ${service.name}Definitions = new Map();
-
-${allDefines.join('\n')}
+${serviceExternalDefinition(service)}
+${serviceInternalDefinition(service)}
+${serviceTypeTable(service)}
 
 function ${service.name}Express(
-  app: any
+  app: any,
+  definition: ${service.name}
 ): void {
-  for (let inputVersion of [${allVersions.join(', ')}]) {
-    if (!${service.name}Definitions.has(inputVersion)) {
-      throw new Error(
-        "Service definition required for input version: " + inputVersion
-      );
-    }
-  }
-
+  // convert External definition
   app.post('/${service.name}', (req: Request, res: Response) => {
     const body = req.body;
-    switch (body['_type'] + '_V' + body['version']) {
-    ${allResponses.join('\n')}
-    default:
-      throw new Error("Unknown input type: " + body);
+
+    const serviceVersion = body['serviceVersion'];
+    if (!serviceVersion) {
+      throw new Error("Please provide service version");
     }
+    const serviceVersionDefinition = definition[serviceVersion];
+    if (!serviceVersionDefinition) {
+      throw new Error("Unknown service version, please use the client.");
+    }
+    
+    const inputType = body['inputType'];
+    if (!inputType) {
+      throw new Error("Please provide input type");
+    }
+    const inputVersion = body['inputVersion'];
+    if (!inputVersion) {
+      throw new Error("Please provide input version");
+    }
+    
+    const serviceFunction = serviceVersionDefinition[inputType + "_V" + inputVersion];
+    if (!serviceFunction) {
+      throw new Error('Unable to locate input type: ' + inputType + "_V" + inputVersion);
+    }
+
+    const mappingTableVersion = ${service.name}TypeMapping[serviceVersionDefinition];
+    if (!mappingTableVersion) {
+      throw new Error('Invalid service version');
+    }
+
+    const mappingClasses = mappingTableVersion[inputType + "_V" + inputVersion];
+    if (!mappingClasses) {
+      throw new Error('Invalid input type or version');
+    }
+
+    const [inputTypeClass, outputTypeClass] = mappingClasses;
+
+    const inputMessage = inputTypeClass.deserialize(body);
+    const response = serviceFunction(inputMessage);
+    const outputMessage = outputTypeClass.serialize(response);
+    res.json(outputMessage);
+    return;
   });
 }
 
