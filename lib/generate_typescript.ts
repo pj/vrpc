@@ -496,7 +496,6 @@ function generateClient(types: Type[], services: Service[]): string {
   const allClients = [];
 
   for (let service of services) {
-
     allClients.push(generateClientService(service));
   }
 
