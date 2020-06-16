@@ -41,8 +41,7 @@ function imports(versions: ServiceVersion[]) {
 
   return `import {
   ${Array.from(allImports).join(',\n')}
-} from './types';
-`
+} from './types';`
 }
 
 function* rawMappings(mappings: Map<string, Map<string, ServiceMapping>>) {
@@ -85,7 +84,7 @@ function serviceExternalDefinition(service: Service) {
     }
 
     allVersions.push(
-      `v${version.version}: {
+      `V${version.version}: {
         ${allMappings.join('\n')}
       }`
     );
@@ -111,7 +110,7 @@ function serviceInternalDefinition(service: Service) {
   const allVersions = [];
   for (let version of service.versions) {
     allVersions.push(
-      `v${version.version}: {
+      `V${version.version}: {
         ${serviceInternalDefinitionMappings(rawMappings(version.mappings))}
       }`
     );
@@ -135,7 +134,7 @@ function serviceTypeTable(service: Service) {
       );
     }
     allVersions.push(
-      `"v${version.version}": {
+      `"V${version.version}": {
         ${allMappings.join('\n')}
       },`
     );
@@ -147,7 +146,6 @@ function serviceTypeTable(service: Service) {
 }
 
 function serviceBody(service: Service) {
-
   return `
 ${serviceHeader(service)}
 ${imports(service.versions)}
@@ -161,6 +159,8 @@ function ${service.name}Express(
   definition: ${service.name}
 ): void {
   // convert External definition
+  const internalDefinition: ${service.name}Internal = convertInternalDefinition(definition);
+
   app.post('/${service.name}', (req: Request, res: Response) => {
     const body = req.body;
 
@@ -168,7 +168,7 @@ function ${service.name}Express(
     if (!serviceVersion) {
       throw new Error("Please provide service version");
     }
-    const serviceVersionDefinition = definition[serviceVersion];
+    const serviceVersionDefinition = internalDefinition[serviceVersion];
     if (!serviceVersionDefinition) {
       throw new Error("Unknown service version, please use the client.");
     }
@@ -199,7 +199,7 @@ function ${service.name}Express(
 
     const [inputTypeClass, outputTypeClass] = mappingClasses;
 
-    const inputMessage = inputTypeClass.deserialize(body);
+    const inputMessage = inputTypeClass.deserialize(body.input);
     const response = serviceFunction(inputMessage);
     const outputMessage = outputTypeClass.serialize(response);
     res.json(outputMessage);
@@ -224,6 +224,16 @@ export function generateExpress(services: Service[]) {
 
   return `
 ${header}
+
+function convertInternalDefinition<E, I>(definition: E): I {
+  const externalDefinition: any = {};
+  for (let [version, ] of Object.entries(definition)) {
+
+  }
+
+  return externalDefinition
+}
+
 ${allServices.join('\n')}`;
 }
 
@@ -421,85 +431,84 @@ ${allTypes.join('\n')}
 }
 
 // Generate Client
-function generateClientVersion(
-  service: Service,
-  inputVersions: VersionType[],
-  outputVersion: VersionType
-): string {
-  return `
-async ${service.name}(
-  input: ${inputVersions.join(" | ")}
-): Promise<${outputVersion}> {
-  const response = await request.post(
-    {
-      url: this.host + "/${service.name}",
-      json: true,
-      body: input,
-    }
-  );
+function generateClientMappings(version: ServiceVersion) {
+  const allMappings = [];
 
-  const body = JSON.parse(response);
+  for (let mapping of rawMappings(version.mappings)) {
+    allMappings.push(
+      `${mapping.inputType}_V${mapping.inputVersion}: async (input: ${mapping.inputType}_V${mapping.inputVersion}): Promise<${mapping.outputType}_V${mapping.outputVersion}> => {
+        const response = await request.post(
+          {
+            url: this.host + "/${version.name}",
+            json: true,
+            body: input,
+            serviceVersion: "V${version.version}",
+            inputType: "${mapping.inputType}",
+            inputVersion: "${mapping.inputVersion}",
+          }
+        );
 
-  return ${outputVersion}.deserialize(body);
-}`;
-}
+        const body = JSON.parse(response);
 
-function generateServiceClient(service: Service): string {
-  const allVersions = [];
-
-  for (let serviceVersion of Object.values(service.versions)) {
-    allVersions.push(
-      generateClientVersion(
-        service, 
-        serviceVersion.inputs, 
-        serviceVersion.output
-      )
+        return ${mapping.outputType}.deserialize(body);
+      },`
     );
   }
-
-  return `
-  ${allVersions.join('\n')}
-`;
+  
+  return `${allMappings.join('\n')}`;
 }
 
-function generateClientImports(types: Type[]): string {
-  const allTypes = [];
-  for (let _type of types) {
-    allTypes.push(_type.name);
-    for (let version of _type.versions) {
-      allTypes.push(version.formatVersion());
+function generateClientService(service: Service): string {
+  const allVersions = [];
+  for (let version of service.versions) {
+    allVersions.push(
+      `export const ${version.name}ClientV${version.version} = {
+        ${generateClientMappings(version)}
+      };
+      `
+    );
+  }
+  return `${allVersions.join('\n')}`;
+}
+
+function generateClientImports(services: Service[]): string {
+  let allImports = new Set();
+
+  for (let service of services) {
+    for (let version of service.versions) {
+      for (let outputs of version.mappings.values()) {
+        for (let mapping of outputs.values()) {
+          allImports.add(mapping.inputType);
+          allImports.add(`${mapping.inputType}_V${mapping.inputVersion}`);
+          allImports.add(mapping.outputType);
+          allImports.add(`${mapping.outputType}_V${mapping.outputVersion}`);
+        }
+      }
     }
   }
 
   return `import {
-  ${allTypes.join(',\n')}
-} from './types';`;
+  ${Array.from(allImports).join(',\n')}
+} from './types';`
 }
 
-export function generateClient(types: Type[], services: Service[]): string {
+function generateClient(types: Type[], services: Service[]): string {
   const allClients = [];
 
   for (let service of services) {
-    allClients.push(generateServiceClient(service));
+
+    allClients.push(generateClientService(service));
   }
 
   return `${header}
 import * as request from 'request-promise-native';
 
-${generateClientImports(types)}
+${generateClientImports(services)}
 
-export class Client {
-  host: string;
-  constructor(host: string) {
-    this.host = host;
-  }
-
-${allClients.join('\n')}
-}
-`;
+${allClients.join('\n')}`;
 }
 
-export function generateTypescript(types: Type[]): string {
+export function generateTypescriptTypes(types: Type[]): string {
   return (
     prettier.format(
       generateTypes(types),
@@ -531,11 +540,11 @@ export function generateTypescriptClient(
   );
 }
 
-export function generateTypescriptBoth(
+export function generateTypescript(
   types: Type[],
   services: Service[],
 ): [string, string, string] {
-  const generatedTypes = generateTypescript(types);
+  const generatedTypes = generateTypescriptTypes(types);
   const generatedServices = generateTypescriptServices(services);
   const generatedClient = generateTypescriptClient(types, services);
 
