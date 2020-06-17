@@ -1,5 +1,5 @@
 // import {generateDefinitions} from '../lib/generate';
-import { generateTypescriptBoth } from '../lib/generate_typescript';
+import { generateTypescriptTypes } from '../lib/generate_typescript';
 import { MemoryBackend } from '../lib/memory_backend';
 import { promises as fs} from 'fs';
 import { Convert } from "../lib/generated/type_definition";
@@ -25,7 +25,7 @@ for (const [name, path] of type_definition_tests) {
 
     const generatedTypes = await memoryStore.getCurrentTypes();
     const generatedServices = await memoryStore.getCurrentServices();
-    const [types, services, client] = generateTypescriptBoth(
+    const [types, services, client] = generateTypescriptTypes(
       generatedTypes, 
       generatedServices
     );

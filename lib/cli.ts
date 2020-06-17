@@ -30,7 +30,7 @@ const args = yargs
         generatedTypes,
         generatedServices,
         generatedClient,
-      ] = generate_typescript.generateTypescriptBoth(types, services);
+      ] = generate_typescript.generateTypescriptTypes(types, services);
 
       fs.mkdirSync(argv.dest, {recursive: true});
       fs.writeFileSync(path.join(argv.dest, 'types.ts'), generatedTypes);
