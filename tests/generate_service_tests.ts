@@ -7,12 +7,15 @@ async function generateServiceTests() {
         const definitionDirectory = `./tests/services/definitions/${directory}`;
         const generatedDirectory = `./tests/services/generated/${directory}`;
 
-        if (await fs.stat(generatedDirectory)) {
-            await fs.rmdir(generatedDirectory);
+        try {
+            await fs.stat(generatedDirectory);
+            await fs.rmdir(generatedDirectory, {recursive: true});
+        } catch {
         }
 
         await fs.mkdir(generatedDirectory, {recursive: true});
-        const backend = new FileBackend(generatedDirectory);
+        const backendFile = `${generatedDirectory}/backend.json`;
+        const backend = new FileBackend(backendFile);
 
         const definitionFiles = [];
         for (let definition of await fs.readdir(definitionDirectory)) {
@@ -26,8 +29,7 @@ async function generateServiceTests() {
                 {encoding: 'utf8'}
             );
             const definitionData = JSON.parse(definitionDataRaw) as TypeDefinition[];
-            await backend.updateChangeSet('test', definitionFile, definitionData);
-            await backend.commitChangeSet('test', definitionFile);
+            await backend.commitTypeDefinition(definitionData);
         }
     }
 }
