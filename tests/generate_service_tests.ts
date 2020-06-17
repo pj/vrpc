@@ -1,6 +1,6 @@
 import {promises as fs} from 'fs';
 import { FileBackend } from '../lib/file_backend';
-import { TypeDefinition } from '../lib/generated/type_definition';
+import { TypeDefinition, Convert } from '../lib/generated/type_definition';
 
 async function generateServiceTests() {
     for (let directory of await fs.readdir('./tests/services/definitions')) {
@@ -28,7 +28,7 @@ async function generateServiceTests() {
                 definitionFile, 
                 {encoding: 'utf8'}
             );
-            const definitionData = JSON.parse(definitionDataRaw) as TypeDefinition[];
+            const definitionData = Convert.toTypeDefinition(definitionDataRaw);
             await backend.commitTypeDefinition(definitionData);
         }
     }
