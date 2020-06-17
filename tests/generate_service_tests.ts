@@ -5,10 +5,14 @@ import { TypeDefinition } from '../lib/generated/type_definition';
 async function generateServiceTests() {
     for (let directory of await fs.readdir('./tests/services/definitions')) {
         const definitionDirectory = `./tests/services/definitions/${directory}`;
-        const testDirectory = `./tests/services/generated/${directory}`;
+        const generatedDirectory = `./tests/services/generated/${directory}`;
 
-        await fs.mkdir(testDirectory, {recursive: true});
-        const backend = new FileBackend(testDirectory);
+        if (await fs.stat(generatedDirectory)) {
+            await fs.rmdir(generatedDirectory);
+        }
+
+        await fs.mkdir(generatedDirectory, {recursive: true});
+        const backend = new FileBackend(generatedDirectory);
 
         const definitionFiles = [];
         for (let definition of await fs.readdir(definitionDirectory)) {
