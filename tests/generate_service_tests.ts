@@ -1,6 +1,8 @@
 import {promises as fs} from 'fs';
 import { FileBackend } from '../lib/file_backend';
 import { TypeDefinition, Convert } from '../lib/generated/type_definition';
+import rmfr from 'rmfr';
+import {generateTypescript} from '../lib/generate_typescript';
 
 async function generateServiceTests() {
     for (let directory of await fs.readdir('./tests/services/definitions')) {
@@ -9,8 +11,9 @@ async function generateServiceTests() {
 
         try {
             await fs.stat(generatedDirectory);
-            await fs.rmdir(generatedDirectory, {recursive: true});
-        } catch {
+            await rmfr(generatedDirectory, {recursive: true});
+        } catch (error) {
+            console.dir(error);
         }
 
         await fs.mkdir(generatedDirectory, {recursive: true});
@@ -31,6 +34,19 @@ async function generateServiceTests() {
             const definitionData = Convert.toTypeDefinition(definitionDataRaw);
             await backend.commitTypeDefinition(definitionData);
         }
+
+        const types = await backend.getCurrentTypes();
+        const services = await backend.getCurrentServices();
+
+        const [
+            generatedTypes,
+            generatedServices,
+            generatedClient
+        ] = generateTypescript(types, services);
+
+        await fs.writeFile(`${generatedDirectory}/types.ts`, generatedTypes);
+        await fs.writeFile(`${generatedDirectory}/services.ts`, generatedServices);
+        await fs.writeFile(`${generatedDirectory}/client.ts`, generatedClient);
     }
 }
 

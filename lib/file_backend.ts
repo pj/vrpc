@@ -11,7 +11,8 @@ import {
 } from './vrpc';
 import * as lockfile from 'proper-lockfile';
 import { Service, Type } from './generate';
-import { TypeDefinition } from './generated/type_definition';
+import { TypeDefinition, Convert } from './generated/type_definition';
+import { deserialize, serialize } from './serialization';
 
 class StoredData {
   log: GroupAction[];
@@ -24,7 +25,6 @@ export class FileBackend implements Backend {
     this.fileName = fileName;
     if (!fsSync.existsSync(fileName)) {
         const defaultStoredData = {
-            changeSets: {},
             log: [],
             currentTypeDefinition: []
         }
@@ -44,8 +44,12 @@ export class FileBackend implements Backend {
       },
     });
     const rawData = await fs.readFile(this.fileName, {encoding: 'utf8'});
-    const storedData = JSON.parse(rawData) as StoredData;
-    const result = await func(storedData);
+    const jsonData = JSON.parse(rawData);
+    const log = deserialize(jsonData.log);
+    const currentTypeDefinition = Convert.toTypeDefinition(
+      JSON.stringify(jsonData.currentTypeDefinition)
+    );
+    const result = await func({log, currentTypeDefinition});
     await release();
     return result;
   }
@@ -83,10 +87,19 @@ export class FileBackend implements Backend {
             data.currentTypeDefinition,
             definitions
         );
-        const result = commitChangeSet(data.log, changeSet);
-        data.log = result;
-        data.currentTypeDefinition = definitions;
-        await fs.writeFile(this.fileName, JSON.stringify(data));
+        const log = JSON.stringify(
+          serialize(
+            commitChangeSet(
+              data.log, 
+              changeSet
+            )
+          )
+        );
+        const currentTypeDefinition = Convert.typeDefinitionToJson(definitions);
+        await fs.writeFile(
+          this.fileName, 
+          `{"log": ${log}, "currentTypeDefinition": ${currentTypeDefinition}}`
+        );
       }
     );
   }
