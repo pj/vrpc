@@ -14,6 +14,7 @@
     "@types/proper-lockfile": "^4.1.1",
     "@types/react": "^16.9.2",
     "@types/react-dom": "^16.9.4",
+    "@types/rmfr": "^2.0.0",
     "@types/supertest": "^2.0.7",
     "@types/tmp": "^0.1.0",
     "@types/yargs": "^15.0.0",
@@ -42,6 +43,7 @@
   "scripts": {
     "test": "jest",
     "test:services": "yarn generate:service_test",
+    "test:integrated": "yarn generate:service_test && jest tests/services",
     "test:watch": "chokidar \"lib/**/*.ejs\" \"lib/**/*.ts\" \"tests/**/*.ts\" \"tests/**/*.json\" -c \"yarn run test\" --ignore runtest --ignore tests/snapshots",
     "generate:type_definition": "yarn quicktype -s schema type_definition.schema.json -o lib/generated/type_definition.ts",
     "generate:service_test": "ts-node tests/generate_service_tests.ts"

@@ -24,15 +24,7 @@ export abstract class BaseField {
     this.optional = optional;
   }
 
-  fieldType(): string {
-    throw new Error("Not implemented");
-  }
-
   copy(): BaseField {
-    throw new Error("Not implemented");
-  }
-
-  formattedDefault(): string {
     throw new Error("Not implemented");
   }
 }
@@ -67,19 +59,6 @@ export class ScalarField extends BaseField {
     );
   }
 
-  fieldType(): string {
-    return this.type + (this.optional ? " | null" : "");
-  }
-
-  formattedDefault(): string {
-    if (!this._default) {
-      return "";
-    }
-    if (this.type === 'string') {
-      return `"${this._default}"`;
-    }
-    return "" + this._default;
-  }
 }
 
 export class ReferenceField extends BaseField {
@@ -113,14 +92,6 @@ export class ReferenceField extends BaseField {
       this.referenceVersion
     );
   }
-
-  fieldType() {
-    return `${this.referenceType}.h_${this.referenceHash}`;
-  }
-
-  formattedDefault(): string {
-    return "";
-  }
 }
 
 export type FieldObject = {
@@ -132,7 +103,6 @@ export class Version {
   _type: string;
   version: number;
   hash: string;
-  // Handled by VersionResolver in resolvers.ts
   fields: FieldObject;
 
   constructor(
@@ -187,26 +157,6 @@ export class Type extends BaseGeneratable{
     this.versions = [];
   }
 }
-
-// export class VersionType {
-//   _type: string;
-//   version: number;
-//   hash: string;
-
-//   constructor(
-//     _type: string,
-//     hash: string,
-//     version: number,
-//   ) {
-//     this._type = _type;
-//     this.hash = hash;
-//     this.version = version;
-//   }
-
-//   toString(): string {
-//     return `${this._type}_V${this.version}`;
-//   }
-// }
 
 export class ServiceMapping {
   name: string;

@@ -8,12 +8,19 @@ import {
   FieldObject,
   ServiceVersion,
   ServiceMapping,
+  ReferenceField,
+  ScalarField,
 } from './generate';
+import { string } from 'yargs';
+import { ReferenceFieldTypeChangeAction } from './action';
+import assert from 'assert';
 
 // Stuff to generate express js stuff.
 const header = `/**
 * **GENERATED CODE DO NOT EDIT!**
-*/
+*/`;
+
+const serviceFileHeader = `${header}
 import {Request, Response} from "express";`;
 
 const serviceHeader = (service: Service) => `/*
@@ -223,7 +230,7 @@ export function generateExpress(services: Service[]) {
   }
 
   return `
-${header}
+${serviceFileHeader}
 
 function convertInternalDefinition<E, I>(definition: E): I {
   const externalDefinition: any = {};
@@ -266,18 +273,55 @@ function generateFieldDescription(fields: FieldObject): string {
   );
 }
 
+function getFieldType(field: BaseField): string {
+  if (field instanceof ReferenceField) {
+    return `${field.referenceType}_${field.referenceVersion}`;
+  } else if (field instanceof ScalarField) {
+    if (field.type === 'float' || field.type === 'integer') {
+      return 'number';
+    } else {
+      return field.type;
+    }
+  } else {
+    throw new Error('typescript');
+  }
+}
+
+function getOptional(field: BaseField): string {
+  if (field instanceof ScalarField && field.optional) {
+    return '?';
+  }
+
+  return '';
+}
+
 function generateFieldTypes(fields: FieldObject): string {
   return mapFields(
     fields,
-    (field) =>`  readonly ${field.name}: ${field.fieldType()};`,
+    (field) =>`  readonly ${field.name}: ${getFieldType(field)}${getOptional(field)};`,
   );
 }
 
 function generateFieldArgs(fields: FieldObject): string {
   return mapFields(
     fields,
-    (field) => `${field.name}: ${field.fieldType()},`,
+    (field) => `${field.name}: ${getFieldType(field)}${getOptional(field)},`,
   );
+}
+
+function formattedDefault(field: BaseField): string {
+  if (field instanceof ReferenceField) {
+    return '';
+  }
+  assert(field instanceof ScalarField);
+
+  if (!field._default) {
+    return "";
+  }
+  if (field.type === 'string') {
+    return `"${field._default}"`;
+  }
+  return "" + field._default;
 }
 
 function generateFieldSetters(fields: FieldObject): string {
@@ -285,8 +329,8 @@ function generateFieldSetters(fields: FieldObject): string {
     fields,
     (field) => {
       let setter = `this.${field.name} = ${field.name}`;
-      if (field.formattedDefault()) {
-        setter += ` || ${field.formattedDefault()}`;
+      if (formattedDefault(field)) {
+        setter += ` || ${formattedDefault(field)}`;
       }
       setter += ';';
       return setter;

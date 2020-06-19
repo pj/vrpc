@@ -5,13 +5,13 @@ import rmfr from 'rmfr';
 import {generateTypescript} from '../lib/generate_typescript';
 
 async function generateServiceTests() {
-    for (let directory of await fs.readdir('./tests/services/definitions')) {
-        const definitionDirectory = `./tests/services/definitions/${directory}`;
-        const generatedDirectory = `./tests/services/generated/${directory}`;
+    for (let directory of await fs.readdir('./tests/services')) {
+        const definitionDirectory = `./tests/services/${directory}/definitions`;
+        const generatedDirectory = `./tests/services/${directory}/generated`;
 
         try {
             await fs.stat(generatedDirectory);
-            await rmfr(generatedDirectory, {recursive: true});
+            await rmfr(generatedDirectory);
         } catch (error) {
             console.dir(error);
         }

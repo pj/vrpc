@@ -137,58 +137,57 @@ function updateTypeVersion(newVersion: Version, logAction: Action) {
     delete newVersion.fields[logAction._from];
     newVersion.fields[logAction.to] = newField;
   } else if (logAction instanceof RequiredFieldTypeAction) {
-    const currentField = newVersion.fields[logAction.name];
+    const currentField = newVersion.fields[logAction.fieldName];
     const newField = currentField.copy();
     newField.optional = false;
     newField.changeLog = logAction.changeLog;
-    newVersion.fields[newField.name] = newField;
+    newVersion.fields[logAction.fieldName] = newField;
   } else if (logAction instanceof OptionalFieldTypeAction) {
-    const currentField = newVersion.fields[logAction.name];
+    const currentField = newVersion.fields[logAction.fieldName];
     const newField = currentField.copy();
     newField.optional = true;
     newField.changeLog = logAction.changeLog;
-    newVersion.fields[newField.name] = newField;
+    newVersion.fields[logAction.fieldName] = newField;
   } else if (logAction instanceof DeleteFieldTypeAction) {
-    const currentField = newVersion.fields[logAction.name];
-    const newField = currentField.copy();
-    delete newVersion.fields[currentField.name];
+    const currentField = newVersion.fields[logAction.fieldName];
+    delete newVersion.fields[logAction.fieldName];
   } else if (logAction instanceof SetDefaultFieldTypeAction) {
-    const currentField = newVersion.fields[logAction.name];
+    const currentField = newVersion.fields[logAction.fieldName];
     const newField = currentField.copy();
     if (newField instanceof ScalarField) {
       newField._default = logAction._default;
     }
     newField.changeLog = logAction.changeLog;
-    newVersion.fields[newField.name] = newField;
+    newVersion.fields[logAction.fieldName] = newField;
   } else if (logAction instanceof RemoveDefaultFieldTypeAction) {
-    const currentField = newVersion.fields[logAction.name];
+    const currentField = newVersion.fields[logAction.fieldName];
     const newField = currentField.copy();
     if (newField instanceof ScalarField) {
       newField._default = undefined;
     }
     newField.changeLog = logAction.changeLog;
-    newVersion.fields[newField.name] = newField;
+    newVersion.fields[logAction.fieldName] = newField;
   } else if (logAction instanceof AddFieldTypeAction) {
-    const currentField = newVersion.fields[logAction.name];
+    const currentField = newVersion.fields[logAction.fieldName];
     const newField = new ScalarField(
-      logAction.name,
+      logAction.fieldName,
       logAction.changeLog,
       logAction.description,
       logAction.optional,
       logAction._type,
       logAction._default = logAction._default
     );
-    newVersion.fields[newField.name] = newField;
+    newVersion.fields[logAction.fieldName] = newField;
   } else if (logAction instanceof UpdateFieldDescriptionTypeAction) {
-    const currentField = newVersion.fields[logAction.name];
+    const currentField = newVersion.fields[logAction.fieldName];
     const newField = currentField.copy();
     newField.description = logAction.description;
     newField.changeLog = logAction.changeLog;
-    newVersion.fields[newField.name] = newField;
+    newVersion.fields[logAction.fieldName] = newField;
   } else if (logAction instanceof ReferenceFieldTypeAction) {
-    const currentField = newVersion.fields[logAction.name];
+    const currentField = newVersion.fields[logAction.fieldName];
     const newField = new ReferenceField(
-      logAction.name,
+      logAction.fieldName,
       logAction.changeLog,
       logAction.description,
       logAction.optional,
@@ -196,7 +195,7 @@ function updateTypeVersion(newVersion: Version, logAction: Action) {
       logAction.referenceHash,
       logAction.referenceVersion
     );
-    newVersion.fields[newField.name] = newField;
+    newVersion.fields[logAction.fieldName] = newField;
   } else {
     throw new Error('Should not happen');
   }
@@ -363,7 +362,9 @@ export function superLoop(
             newVersion = new Version(newAction.name, newCommitGroup.hash, versionNumber, {});
             currentVersions.set(newAction.name, newVersion);
             if (_type.versions.length > 0) {
-              newVersion.fields = {..._type.versions[_type.versions.length-1].fields};
+              newVersion.fields = {
+                ..._type.versions[_type.versions.length-1].fields
+              };
             }
             _type.versions.push(newVersion);
           }

@@ -1,7 +1,6 @@
 /**
  * **GENERATED CODE DO NOT EDIT!**
  */
-import { Request, Response } from "express";
 /*
  * Test
  * A type to test with
@@ -11,7 +10,8 @@ import { Request, Response } from "express";
  * 2. This is a good field to add
  */
 /**
- * @param Test Another cool field
+ * @param field1 A cool field
+ * @param field2 Another cool field
  *
  * @sealed
  */
@@ -19,21 +19,23 @@ class Test_V0 {
   readonly _type: string;
   readonly version: number;
   readonly hash: string;
-  readonly Test: integer;
+  readonly field1: string;
+  readonly field2: number;
 
-  constructor(Test: integer) {
+  constructor(field1: string, field2: number) {
     this._type = "Test";
     this.version = 0;
     this.hash =
       "325c6bda9b2b4f6608eb2604a775f368ee15220bed390a475950a9db3d426508";
-    this.Test = Test;
+    this.field1 = field1;
+    this.field2 = field2;
   }
 
   static deserialize(message: any): Test_V0 {
     if (message.version === null || message.version === undefined) {
       throw new Error("version not present: " + message);
     }
-    return new Test_V0(message.Test);
+    return new Test_V0(message.field1, message.field2);
   }
 
   static serialize(message: Test_V0): string {
@@ -57,7 +59,7 @@ export class Test {
     switch (message.version) {
       case "Test_V0":
       case "Test_H325c6bda9b2b4f6608eb2604a775f368ee15220bed390a475950a9db3d426508":
-        return new Test_V0(message.Test);
+        return new Test_V0(message.field1, message.field2);
 
       default:
         throw new Error(
@@ -83,7 +85,8 @@ export class Test {
  * 2. This is a good field to add
  */
 /**
- * @param AnotherTest asdf
+ * @param another_field this is a field
+ * @param yet_another_field asdf
  *
  * @sealed
  */
@@ -91,21 +94,23 @@ class AnotherTest_V0 {
   readonly _type: string;
   readonly version: number;
   readonly hash: string;
-  readonly AnotherTest: float;
+  readonly another_field: boolean;
+  readonly yet_another_field: number;
 
-  constructor(AnotherTest: float) {
+  constructor(another_field: boolean, yet_another_field: number) {
     this._type = "AnotherTest";
     this.version = 0;
     this.hash =
       "325c6bda9b2b4f6608eb2604a775f368ee15220bed390a475950a9db3d426508";
-    this.AnotherTest = AnotherTest;
+    this.another_field = another_field;
+    this.yet_another_field = yet_another_field;
   }
 
   static deserialize(message: any): AnotherTest_V0 {
     if (message.version === null || message.version === undefined) {
       throw new Error("version not present: " + message);
     }
-    return new AnotherTest_V0(message.AnotherTest);
+    return new AnotherTest_V0(message.another_field, message.yet_another_field);
   }
 
   static serialize(message: AnotherTest_V0): string {
@@ -129,7 +134,10 @@ export class AnotherTest {
     switch (message.version) {
       case "AnotherTest_V0":
       case "AnotherTest_H325c6bda9b2b4f6608eb2604a775f368ee15220bed390a475950a9db3d426508":
-        return new AnotherTest_V0(message.AnotherTest);
+        return new AnotherTest_V0(
+          message.another_field,
+          message.yet_another_field
+        );
 
       default:
         throw new Error(
