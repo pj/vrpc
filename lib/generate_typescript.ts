@@ -74,7 +74,7 @@ function serviceExternalDefinition(service: Service) {
       let optional = prevMappings.has(key) ? '?' : '';
       versionMappings.add(key);
       allMappings.push(
-        `${mapping.name}_V${mapping.version}${optional}: (input: ${mapping.inputType}_V${mapping.inputVersion}): ${mapping.outputType}_V${mapping.outputVersion};`
+        `${mapping.name}_V${mapping.version}${optional}: (input: ${mapping.inputType}_V${mapping.inputVersion}) => ${mapping.outputType}_V${mapping.outputVersion};`
       );
     }
 
@@ -106,7 +106,7 @@ function serviceInternalDefinitionMappings(mappings: Iterable<ServiceMapping>) {
   const allMappings = [];
   for (const mapping of mappings) {
     allMappings.push(
-      `${mapping.inputType}_V${mapping.inputVersion}: (input: ${mapping.inputType}_V${mapping.inputVersion}): ${mapping.outputType}_V${mapping.outputVersion};`
+      `${mapping.inputType}_V${mapping.inputVersion}: (input: ${mapping.inputType}_V${mapping.inputVersion}) => ${mapping.outputType}_V${mapping.outputVersion};`
     );
   }
 
@@ -161,7 +161,7 @@ ${serviceExternalDefinition(service)}
 ${serviceInternalDefinition(service)}
 ${serviceTypeTable(service)}
 
-function ${service.name}Express(
+export function ${service.name}Express(
   app: any,
   definition: ${service.name}
 ): void {
@@ -212,14 +212,7 @@ function ${service.name}Express(
     res.json(outputMessage);
     return;
   });
-}
-
-export {
-  ${service.name},
-  ${service.name}Express,
-  // <%= service.name %> as service,
-  // serviceName
-};`;
+}`;
 }
 
 export function generateExpress(services: Service[]) {

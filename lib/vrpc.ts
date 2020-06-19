@@ -460,7 +460,7 @@ export function services(
 ): Service[] {
   const result = superLoop(log, changeSet);
   const services = [];
-  for (let generatable of result.generatables) {
+  for (let generatable of result.generatables.values()) {
     if (generatable instanceof Service) {
       services.push(generatable);
     }
