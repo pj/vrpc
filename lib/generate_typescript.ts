@@ -468,20 +468,49 @@ ${allTypes.join('\n')}
 }
 
 // Generate Client
-function generateClientMappings(version: ServiceVersion) {
+function generateClientInputField(fields: FieldObject) {
+  return mapFields(fields, (field) => `${field.name},`);
+}
+
+function generateClientMappings(version: ServiceVersion, types: Type[]) {
   const allMappings = [];
 
   for (let mapping of rawMappings(version.mappings)) {
+    let inputType;
+    let inputVersion;
+
+    for (let type of types) {
+      if (type.name === mapping.inputType) {
+        for (let version of type.versions) {
+          if (version.version === mapping.inputVersion) {
+            inputVersion = version;
+            inputType = type;
+          }
+        }
+      }
+    }
+
+    assert(inputType);
+    assert(inputVersion);
+
     allMappings.push(
-      `${mapping.inputType}_V${mapping.inputVersion}: async (input: ${mapping.inputType}_V${mapping.inputVersion}): Promise<${mapping.outputType}_V${mapping.outputVersion}> => {
+      `${mapping.inputType}_V${mapping.inputVersion}: async (
+        ${generateFieldArgs(inputVersion.fields)}
+      ): Promise<${mapping.outputType}_V${mapping.outputVersion}> => {
+        const input = new ${mapping.inputType}_V${mapping.inputVersion}(
+          ${generateClientInputField(inputVersion.fields)}
+        );
+
         const response = await request.post(
           {
-            url: this.host + "/${version.name}",
+            url: process.env.VRPC_SERVICE_HOST + "/${version.name}",
             json: true,
-            body: input,
-            serviceVersion: "V${version.version}",
-            inputType: "${mapping.inputType}",
-            inputVersion: "${mapping.inputVersion}",
+            body: {
+              data: ${mapping.inputType}.serialize(input),
+              serviceVersion: "V${version.version}",
+              inputType: "${mapping.inputType}",
+              inputVersion: "${mapping.inputVersion}",
+            }
           }
         );
 
@@ -495,17 +524,20 @@ function generateClientMappings(version: ServiceVersion) {
   return `${allMappings.join('\n')}`;
 }
 
-function generateClientService(service: Service): string {
+function generateClientService(service: Service, types: Type[]): string {
   const allVersions = [];
   for (let version of service.versions) {
     allVersions.push(
-      `export const ${version.name}ClientV${version.version} = {
-        ${generateClientMappings(version)}
-      };
+      `V${version.version}: {
+        ${generateClientMappings(version, types)}
+      },
       `
     );
   }
-  return `${allVersions.join('\n')}`;
+  return `
+export const ${service.name} = {
+  ${allVersions.join('\n')}
+}`;
 }
 
 function generateClientImports(services: Service[]): string {
@@ -533,7 +565,7 @@ function generateClient(types: Type[], services: Service[]): string {
   const allClients = [];
 
   for (let service of services) {
-    allClients.push(generateClientService(service));
+    allClients.push(generateClientService(service, types));
   }
 
   return `${header}

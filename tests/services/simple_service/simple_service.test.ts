@@ -4,5 +4,5 @@ import * as client from './generated/client';
 
 
 it('Should send and receive properly', async () => {
-    new Test_V0('asdf', 1234);
+    const response = await client.TestService.V0.AnotherTest_V0(true, 1111);
 });

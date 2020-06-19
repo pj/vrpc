@@ -5,19 +5,28 @@ import * as request from "request-promise-native";
 
 import { AnotherTest, AnotherTest_V0, Test, Test_V0 } from "./types";
 
-export const TestServiceClientV0 = {
-  AnotherTest_V0: async (input: AnotherTest_V0): Promise<Test_V0> => {
-    const response = await request.post({
-      url: this.host + "/TestService",
-      json: true,
-      body: input,
-      serviceVersion: "V0",
-      inputType: "AnotherTest",
-      inputVersion: "0"
-    });
+export const TestService = {
+  V0: {
+    AnotherTest_V0: async (
+      another_field: boolean,
+      yet_another_field: number
+    ): Promise<Test_V0> => {
+      const input = new AnotherTest_V0(another_field, yet_another_field);
 
-    const body = JSON.parse(response);
+      const response = await request.post({
+        url: process.env.VRPC_SERVICE_HOST + "/TestService",
+        json: true,
+        body: {
+          data: AnotherTest.serialize(input),
+          serviceVersion: "V0",
+          inputType: "AnotherTest",
+          inputVersion: "0"
+        }
+      });
 
-    return Test.deserialize(body);
+      const body = JSON.parse(response);
+
+      return Test.deserialize(body);
+    }
   }
 };
