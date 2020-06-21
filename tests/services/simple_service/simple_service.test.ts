@@ -35,7 +35,6 @@ it('Should send and receive properly', async () => {
     });
 
     const response = await client.TestService.V0.AnotherTest_V0(true, 1111);
-    console.dir(response);
     expect(response.field1).toBe("hello: true");
     expect(response.field2).toBe(1112);
 });
