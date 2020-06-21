@@ -10,7 +10,7 @@ Ultimately the goal would be to version all the external interfaces of a service
 
 This is still extremely experimental and there's still a lot of work to do to make this truly useful. For now I've moved on to other things and it might be awhile before I continue work on this.
 
-## Examples
+## Example of the concept.
 
 **NB: Not all of this is working yet.**
 
