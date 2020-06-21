@@ -2,7 +2,7 @@
 
 VRPC (versioned rpc) is a tool to generate types and service stubs that are versioned e.g. Order_V0, Order_V2 or Post_V1. This is intended to help manage forwards and backwards compatibility and make it easier to evolve software as external interfaces change.
 
-Conceptually you can think of it as changes to the definition of your types being stored as a log of actions, where each action potentially produces a new type or service version. Underneath it uses something like a merkle tree, where every change to a type is hashed to ensure that past definitions can't be changed.
+Conceptually you can think of it as changes to your types being stored as a log of change actions, rather than as a static definition. Each action potentially produces a new type or service version. Underneath it uses something like a merkle tree, where every change to a type is hashed to ensure that past definitions can't be changed.
 
 Ultimately the goal would be to version all the external interfaces of a service, including things like files and the database.
 
