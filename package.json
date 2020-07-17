@@ -24,7 +24,7 @@
     "express": "^4.17.1",
     "express-async-handler": "^1.1.4",
     "json-object-mapper": "^1.6.0",
-    "lodash": "^4.17.13",
+    "lodash": "^4.17.19",
     "prettier": "^1.15.3",
     "proper-lockfile": "^4.1.1",
     "quicktype": "^15.0.243",
